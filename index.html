@@ -5,28 +5,36 @@ async function loadTrips() {
   const response = await fetch(sheetURL);
   const data = await response.text();
 
-  const rows = data.split("\n").slice(1);
+  const rows = data.trim().split("\n").slice(1);
   const table = document.getElementById("tripTable");
 
   rows.forEach(row => {
     const cols = row.split(",");
 
-    if (cols.length < 6) return;
+    if (cols.length < 7) return;
 
     const html = `
       <tr>
-        <td>${cols[0]}</td>
-        <td>${cols[1]}</td>
-        <td>${cols[2]}</td>
-        <td>${cols[3]}</td>
-        <td>${cols[4]}</td>
-        <td>${cols[5]}</td>
-        <td><button onclick="alert('Allowance request')">Submit</button></td>
+        <td>${cols[1]}</td>  <!-- Date -->
+        <td>${cols[0]}</td>  <!-- Driver -->
+        <td>${cols[3]}</td>  <!-- Vehicle -->
+        <td>${cols[4]}</td>  <!-- Requested By -->
+        <td>${cols[5]}</td>  <!-- Origin -->
+        <td>${cols[6]}</td>  <!-- Destination -->
+        <td>
+          <button onclick="submitAllowance('${cols[0]}','${cols[1]}')">
+            Submit
+          </button>
+        </td>
       </tr>
     `;
 
     table.innerHTML += html;
   });
+}
+
+function submitAllowance(driver, date) {
+  alert("Allowance request for " + driver + " on " + date);
 }
 
 loadTrips();
