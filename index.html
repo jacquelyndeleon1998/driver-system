@@ -1,96 +1,237 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Driver System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Driver Schedule</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f3f4f6;
+    margin:0;
+    padding:15px;
+}
+
+h1{
+    text-align:center;
+    color:#333;
+}
+
+.driver-card{
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.driver-header{
+    background:#1f2937;
+    color:white;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:12px;
+}
+
+.driver-header h2{
+    margin:0;
+    font-size:20px;
+}
+
+.driver-header p{
+    margin:5px 0;
+}
+
+.trip{
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:10px;
+    background:#fafafa;
+}
+
+.trip-title{
+    font-weight:bold;
+    color:#2563eb;
+    margin-bottom:8px;
+}
+
+.trip p{
+    margin:4px 0;
+    font-size:14px;
+}
+
+.allowance-btn{
+    width:100%;
+    padding:12px;
+    background:#16a34a;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.allowance-btn:hover{
+    background:#15803d;
+}
+
+</style>
 </head>
 
 <body>
 
 <h1>Driver Schedule</h1>
 
-<table border="1" style="width:100%; border-collapse:collapse;">
-  <thead>
-    <tr style="background:#333; color:white;">
-      <th>Date</th>
-      <th>Driver</th>
-      <th>Vehicle</th>
-      <th>Requested By</th>
-      <th>Origin</th>
-      <th>Destination</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-
-  <tbody id="tripTable"></tbody>
-</table>
+<div id="driversContainer"></div>
 
 <script>
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
-function submitAllowance(driver, date, vehicle) {
+const sheetURL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
-  const amount = prompt(
-    `Enter allowance amount\n\nDriver: ${driver}\nDate: ${date}\nVehicle: ${vehicle}`
-  );
+function submitAllowance(driver,date,vehicle){
 
-  if (!amount) return;
+    alert(
+`Daily Allowance
 
-  alert(
-    `Allowance Submitted!\n\nDriver: ${driver}\nDate: ${date}\nVehicle: ${vehicle}\nAmount: ₱${amount}`
-  );
+Driver: ${driver}
+Date: ${date}
+Vehicle: ${vehicle}
+
+(Allowance form will be added next)`
+    );
+
 }
 
-window.onload = async function () {
-  console.log("Page loaded");
+window.onload = async function(){
 
-  const table = document.getElementById("tripTable");
-
-  if (!table) {
-    console.error("tripTable NOT FOUND");
-    return;
-  }
-
-  try {
     const response = await fetch(sheetURL);
     const data = await response.text();
 
     const rows = data.trim().split("\n").slice(1);
 
-    rows.forEach(row => {
-      const cols = row.split(",");
+    const grouped = {};
 
-      if (cols.length < 7) return;
+    rows.forEach(row=>{
 
-      const date = cols[1];
-      const driver = cols[0];
-      const vehicle = cols[3];
-      const requestedBy = cols[4];
-      const origin = cols[5];
-      const destination = cols[6];
+        const cols = row.split(",");
 
-      const html = `
-        <tr>
-          <td>${date}</td>
-          <td>${driver}</td>
-          <td>${vehicle}</td>
-          <td>${requestedBy}</td>
-          <td>${origin}</td>
-          <td>${destination}</td>
-          <td>
-            <button onclick="submitAllowance('${driver}','${date}','${vehicle}')">
-              Submit
-            </button>
-          </td>
-        </tr>
-      `;
+        if(cols.length < 9) return;
 
-      table.innerHTML += html;
+        const driver = cols[0];
+        const date = cols[1];
+        const timeIn = cols[2];
+        const vehicle = cols[3];
+        const itinerary = cols[4];
+        const pickupTime = cols[5];
+        const requestedBy = cols[6];
+        const origin = cols[7];
+        const destination = cols[8];
+        const remarks = cols[9] || "";
+
+        if(!grouped[driver]){
+            grouped[driver]={
+                date,
+                timeIn,
+                vehicle,
+                trips:[]
+            };
+        }
+
+        grouped[driver].trips.push({
+            itinerary,
+            pickupTime,
+            requestedBy,
+            origin,
+            destination,
+            remarks
+        });
+
     });
 
-  } catch (err) {
-    console.error("FETCH ERROR:", err);
-  }
+    const container =
+    document.getElementById("driversContainer");
+
+    Object.keys(grouped).forEach(driver=>{
+
+        const d = grouped[driver];
+
+        let tripsHTML = "";
+
+        d.trips.forEach((trip,index)=>{
+
+            tripsHTML += `
+            <div class="trip">
+
+                <div class="trip-title">
+                Trip ${index+1}
+                </div>
+
+                <p><b>Itinerary:</b> ${trip.itinerary}</p>
+
+                <p><b>Pick Up Time:</b>
+                ${trip.pickupTime}</p>
+
+                <p><b>Passenger:</b>
+                ${trip.requestedBy}</p>
+
+                <p><b>Origin:</b>
+                ${trip.origin}</p>
+
+                <p><b>Destination:</b>
+                ${trip.destination}</p>
+
+                <p><b>Remarks:</b>
+                ${trip.remarks}</p>
+
+            </div>
+            `;
+        });
+
+        container.innerHTML += `
+
+        <div class="driver-card">
+
+            <div class="driver-header">
+
+                <h2>${driver}</h2>
+
+                <p><b>Date:</b>
+                ${d.date}</p>
+
+                <p><b>Time In:</b>
+                ${d.timeIn}</p>
+
+                <p><b>Vehicle:</b>
+                ${d.vehicle}</p>
+
+            </div>
+
+            ${tripsHTML}
+
+            <button
+            class="allowance-btn"
+            onclick="submitAllowance(
+            '${driver}',
+            '${d.date}',
+            '${d.vehicle}'
+            )">
+
+            Submit Daily Allowance
+
+            </button>
+
+        </div>
+
+        `;
+    });
+
 };
+
 </script>
 
 </body>
