@@ -1,29 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Driver System</title>
-</head>
-<body>
+<script>
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
-  <h1>Hello Driver System Works 🎉</h1>
+async function loadTrips() {
+  const response = await fetch(sheetURL);
+  const data = await response.text();
 
-  <div>
-    <h3>Today's Trip</h3>
-    <p>Driver: John</p>
-    <p>Date: 2026-06-24</p>
-    <p>Vehicle: Van 1</p>
+  const rows = data.split("\n").slice(1);
+  const table = document.getElementById("tripTable");
 
-    <button onclick="submitAllowance()">
-      Submit Allowance
-    </button>
-  </div>
+  rows.forEach(row => {
+    const cols = row.split(",");
 
-  <script>
-    function submitAllowance() {
-      alert("Allowance form will open soon!");
-    }
-  </script>
-  
+    if (cols.length < 6) return;
 
-</body>
-</html>
+    const html = `
+      <tr>
+        <td>${cols[0]}</td>
+        <td>${cols[1]}</td>
+        <td>${cols[2]}</td>
+        <td>${cols[3]}</td>
+        <td>${cols[4]}</td>
+        <td>${cols[5]}</td>
+        <td><button onclick="alert('Allowance request')">Submit</button></td>
+      </tr>
+    `;
+
+    table.innerHTML += html;
+  });
+}
+
+loadTrips();
+</script>
