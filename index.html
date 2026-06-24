@@ -8,9 +8,10 @@ async function loadTrips() {
 
     const rows = data.trim().split("\n").slice(1);
     const table = document.getElementById("tripTable");
+    <tbody id="tripTable"></tbody>
 
     rows.forEach(row => {
-      const cols = row.split(",");
+      const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
       if (cols.length < 7) return;
 
