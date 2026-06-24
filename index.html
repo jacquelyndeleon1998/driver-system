@@ -2,35 +2,47 @@
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
 async function loadTrips() {
-  const response = await fetch(sheetURL);
-  const data = await response.text();
+  try {
+    const response = await fetch(sheetURL);
+    const data = await response.text();
 
-  const rows = data.trim().split("\n").slice(1);
-  const table = document.getElementById("tripTable");
+    const rows = data.trim().split("\n").slice(1);
+    const table = document.getElementById("tripTable");
 
-  rows.forEach(row => {
-    const cols = row.split(",");
+    rows.forEach(row => {
+      const cols = row.split(",");
 
-    if (cols.length < 7) return;
+      if (cols.length < 7) return;
 
-    const html = `
-      <tr>
-        <td>${cols[1]}</td>  <!-- Date -->
-        <td>${cols[0]}</td>  <!-- Driver -->
-        <td>${cols[3]}</td>  <!-- Vehicle -->
-        <td>${cols[4]}</td>  <!-- Requested By -->
-        <td>${cols[5]}</td>  <!-- Origin -->
-        <td>${cols[6]}</td>  <!-- Destination -->
-        <td>
-          <button onclick="submitAllowance('${cols[0]}','${cols[1]}')">
-            Submit
-          </button>
-        </td>
-      </tr>
-    `;
+      const date = cols[1];
+      const driver = cols[0];
+      const vehicle = cols[3];
+      const requestedBy = cols[4];
+      const origin = cols[5];
+      const destination = cols[6];
 
-    table.innerHTML += html;
-  });
+      const html = `
+        <tr>
+          <td>${date}</td>
+          <td>${driver}</td>
+          <td>${vehicle}</td>
+          <td>${requestedBy}</td>
+          <td>${origin}</td>
+          <td>${destination}</td>
+          <td>
+            <button onclick="submitAllowance('${driver}','${date}')">
+              Submit
+            </button>
+          </td>
+        </tr>
+      `;
+
+      table.innerHTML += html;
+    });
+
+  } catch (error) {
+    console.error("Error loading sheet:", error);
+  }
 }
 
 function submitAllowance(driver, date) {
