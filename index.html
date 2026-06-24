@@ -1,53 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Driver System</title>
+</head>
+
+<body>
+
+<h1>Driver Schedule</h1>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Driver</th>
+      <th>Vehicle</th>
+      <th>Requested By</th>
+      <th>Origin</th>
+      <th>Destination</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody id="tripTable"></tbody>
+</table>
+
 <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
-async function loadTrips() {
+window.onload = async function () {
+  console.log("Page loaded");
+
+  const table = document.getElementById("tripTable");
+
+  if (!table) {
+    console.error("tripTable NOT FOUND");
+    return;
+  }
+
   try {
     const response = await fetch(sheetURL);
     const data = await response.text();
 
+    console.log("RAW DATA:", data);
+
     const rows = data.trim().split("\n").slice(1);
-    const table = document.getElementById("tripTable");
 
     rows.forEach(row => {
-      const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      const cols = row.split(",");
+
+      console.log(cols);
 
       if (cols.length < 7) return;
 
-      const date = cols[1];
-      const driver = cols[0];
-      const vehicle = cols[3];
-      const requestedBy = cols[4];
-      const origin = cols[5];
-      const destination = cols[6];
-
       const html = `
         <tr>
-          <td>${date}</td>
-          <td>${driver}</td>
-          <td>${vehicle}</td>
-          <td>${requestedBy}</td>
-          <td>${origin}</td>
-          <td>${destination}</td>
-          <td>
-            <button onclick="submitAllowance('${driver}','${date}')">
-              Submit
-            </button>
-          </td>
+          <td>${cols[1]}</td>
+          <td>${cols[0]}</td>
+          <td>${cols[3]}</td>
+          <td>${cols[4]}</td>
+          <td>${cols[5]}</td>
+          <td>${cols[6]}</td>
+          <td><button>Submit</button></td>
         </tr>
       `;
 
       table.innerHTML += html;
     });
 
-  } catch (error) {
-    console.error("Error loading sheet:", error);
+  } catch (err) {
+    console.error("FETCH ERROR:", err);
   }
-}
-
-function submitAllowance(driver, date) {
-  alert("Allowance request for " + driver + " on " + date);
-}
-
-loadTrips();
+};
 </script>
+
+</body>
+</html>
