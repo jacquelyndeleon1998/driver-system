@@ -75,6 +75,12 @@ a{color:#2563eb}
 </div>
 
 <script>
+
+    const show = (label, value) => {
+  return value && value.trim() !== ""
+    ? `<p><b>${label}:</b> ${value}</p>`
+    : "";
+};
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
 const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
@@ -183,30 +189,31 @@ window.onload = async function() {
 
    d.trips.forEach((trip,index) => {
      tripsHTML += `
-     <div class="trip">
-       <div class="trip-title">Trip ${index+1}</div>
+<div class="trip">
+  <div class="trip-title">Trip ${index+1}</div>
 
-       <p><b>Itinerary:</b> ${trip.itinerary || ""}</p>
-       <p><b>Pick Up Time:</b> ${trip.pickupTime || ""}</p>
+  ${show("Itinerary", trip.itinerary)}
+  ${show("Pick Up Time", trip.pickupTime)}
+  ${show("Passenger", trip.requestedBy)}
 
-       ${trip.requestedBy ? `<p><b>Passenger:</b> ${trip.requestedBy}</p>` : ""}
+  ${trip.origin ? `
+  <p><b>Origin:</b>
+    <a target="_blank"
+      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+      ${trip.origin}
+    </a>
+  </p>` : ""}
 
-       <p><b>Origin:</b>
-         <a target="_blank"
-           href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
-           ${trip.origin || ""}
-         </a>
-       </p>
+  ${trip.destination ? `
+  <p><b>Destination:</b>
+    <a target="_blank"
+      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+      ${trip.destination}
+    </a>
+  </p>` : ""}
 
-       <p><b>Destination:</b>
-         <a target="_blank"
-           href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
-           ${trip.destination || ""}
-         </a>
-       </p>
-
-       ${trip.remarks ? `<p><b>Remarks:</b> ${trip.remarks}</p>` : ""}
-     </div>`;
+  ${show("Remarks", trip.remarks)}
+</div>`;
    });
 
    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
