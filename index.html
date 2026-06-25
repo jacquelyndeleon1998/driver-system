@@ -211,17 +211,86 @@ grouped[key].trips.push({
 
    
  });
-
+const dates = [...new Set(
+  Object.values(grouped).map(d => d.date)
+)];
  const container = document.getElementById("driversContainer");
 
     
 
- Object.keys(summaryDrivers).forEach(date => {
+ dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
   const dayName = scheduleDate.toLocaleDateString("en-US", {
     weekday: "long"
+
+      Object.values(grouped)
+  .filter(d => d.date === date)
+  .forEach(d => {
+
+    if (
+      d.itinerary &&
+      d.itinerary.toLowerCase().trim() === "rest day"
+    ) {
+      return;
+    }
+
+    let tripsHTML = "";
+
+    d.trips.forEach((trip,index) => {
+      tripsHTML += `
+      <div class="trip">
+        <div class="trip-title">Trip ${index+1}</div>
+
+        ${show("Pick Up Time", trip.pickupTime)}
+        ${show("Passenger", trip.requestedBy)}
+
+        ${trip.origin ? `
+        <p><b>Pick-Up Address:</b>
+          <a target="_blank"
+             href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+             ${trip.origin}
+          </a>
+        </p>
+
+        <p><b>Destination:</b>
+          <a target="_blank"
+             href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+             ${trip.destination}
+          </a>
+        </p>` : ""}
+
+        ${show("Remarks", trip.remarks)}
+      </div>`;
+    });
+
+    const passengers =
+      [...new Set(d.trips.map(t => t.requestedBy))]
+      .join(", ");
+
+    container.innerHTML += `
+    <div class="driver-card">
+
+      <div class="driver-header">
+        <h2>${d.driver}</h2>
+
+        ${show("Itinerary", d.itinerary)}
+
+        <p><b>Date:</b> ${d.date}</p>
+        <p><b>Time In:</b> ${d.timeIn}</p>
+        <p><b>Vehicle:</b> ${d.vehicle}</p>
+      </div>
+
+      ${tripsHTML}
+
+      <button class="allowance-btn"
+        onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+        Submit Meal Allowance
+      </button>
+
+    </div>`;
+  });
   });
 
   let tableRows = "";
@@ -272,21 +341,7 @@ grouped[key].trips.push({
 });
      
      
-     Object.keys(grouped).forEach(key => {
-   const d = grouped[key];
-
-   if (
-     d.itinerary &&
-     d.itinerary.toLowerCase().trim() === "rest day"
-   ) {
-     return;
-   }
-
-     const scheduleDate = new Date(d.date);
-
-const dayName = scheduleDate.toLocaleDateString("en-US", {
-  weekday: "long"
-});
+     
 
    let tripsHTML = "";
 
