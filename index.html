@@ -272,86 +272,11 @@ grouped[key].trips.push({
   </table>
 
 </div>
-`;
-      <div class="driver-card">
 
-        <div class="driver-header">
-          <h2>${d.driver}</h2>
-
-          ${show("Itinerary", d.itinerary)}
-          <p><b>Time In:</b> ${d.timeIn}</p>
-          <p><b>Vehicle:</b> ${d.vehicle}</p>
-        </div>
-
-        ${tripsHTML}
-
-        <button class="allowance-btn"
-          onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-          Submit Meal Allowance
-        </button>
-
-      </div>
-    `;
-  });
-
-}
-    </div>
+    
   `;
-});
      
-     let schedulesByDate = {};
-     Object.keys(grouped).forEach(key => {
-   const d = grouped[key];
-if (!schedulesByDate[d.date]) {
-  schedulesByDate[d.date] = [];
-}
-
-schedulesByDate[d.date].push(d);
-   if (
-     d.itinerary &&
-     d.itinerary.toLowerCase().trim() === "rest day"
-   ) {
-     return;
-   }
-
-     const scheduleDate = new Date(d.date);
-
-const dayName = scheduleDate.toLocaleDateString("en-US", {
-  weekday: "long"
-});
-
-   let tripsHTML = "";
-
-   d.trips.forEach((trip,index) => {
-     tripsHTML += `
-<div class="trip">
-  <div class="trip-title">Trip ${index+1}</div>
-
-  ${show("Pick Up Time", trip.pickupTime)}
-  ${show("Passenger", trip.requestedBy)}
-
-  ${trip.origin ? `
-  <p><b>Pcik-Up Address:</b>
-  <a target="_blank"
-     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
-     ${trip.origin || ""}
-  </a>
-</p>
-
-<p><b>Destination:</b>
-  <a target="_blank"
-     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
-     ${trip.destination || ""}
-  </a>
-</p>` : ""}
-
-  ${show("Remarks", trip.remarks)}
-</div>`;
-   });
-
-   
-
-};
+     
 </script>
 
 </body>
