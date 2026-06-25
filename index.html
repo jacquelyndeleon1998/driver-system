@@ -222,46 +222,53 @@ grouped[key].trips.push({
     weekday: "long"
   });
 
+  let tableRows = "";
+
+  summaryDrivers[date].forEach(driver => {
+
+    tableRows += `
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">
+          ${driver.driver}
+        </td>
+
+        <td style="padding:8px;border-bottom:1px solid #ddd;">
+          ${driver.timeIn}
+        </td>
+
+        <td style="padding:8px;border-bottom:1px solid #ddd;">
+          ${driver.vehicle}
+        </td>
+
+        <td style="padding:8px;border-bottom:1px solid #ddd;">
+          ${driver.itinerary}
+        </td>
+      </tr>
+    `;
+  });
+
   container.innerHTML += `
     <div class="driver-card">
+
       <h2>${date} | ${dayName}</h2>
 
       <table style="width:100%;border-collapse:collapse;">
+
         <tr style="background:#1f2937;color:white;">
           <th style="padding:8px;text-align:left;">Driver Name</th>
           <th style="padding:8px;text-align:left;">Time In</th>
           <th style="padding:8px;text-align:left;">Vehicle</th>
           <th style="padding:8px;text-align:left;">Itinerary</th>
         </tr>
-  `;
 
-     summaryDrivers[date].forEach(driver => {
+        ${tableRows}
 
-  container.innerHTML += `
-    <tr>
-      <td style="padding:8px;border-bottom:1px solid #ddd;">
-        ${driver.driver}
-      </td>
+      </table>
 
-      <td style="padding:8px;border-bottom:1px solid #ddd;">
-        ${driver.timeIn}
-      </td>
-
-      <td style="padding:8px;border-bottom:1px solid #ddd;">
-        ${driver.vehicle}
-      </td>
-
-      <td style="padding:8px;border-bottom:1px solid #ddd;">
-        ${driver.itinerary}
-      </td>
-    </tr>
+    </div>
   `;
 });
-
-     container.innerHTML += `
-      </table>
-    </div>
-`;
+     
 });
      
      Object.keys(grouped).forEach(key => {
