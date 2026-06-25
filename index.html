@@ -178,15 +178,17 @@ const remarks = cols[9] || "";
    const key = driver + "_" + date;
 
      if (!summaryDrivers[date]) {
-  summaryDrivers[date] = [];
+  summaryDrivers[date] = {};
 }
 
-summaryDrivers[date].push({
-  driver,
-  timeIn,
-  vehicle,
-  itinerary
-});
+if (!summaryDrivers[date][driver]) {
+  summaryDrivers[date][driver] = {
+    driver,
+    timeIn,
+    vehicle,
+    itinerary
+  };
+}
 
    if (!grouped[key]) {
   grouped[key] = {
@@ -224,7 +226,7 @@ grouped[key].trips.push({
 
   let tableRows = "";
 
-  summaryDrivers[date].forEach(driver => {
+  Object.values(summaryDrivers[date]).forEach(driver => {
 
     tableRows += `
       <tr>
