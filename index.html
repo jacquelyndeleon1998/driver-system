@@ -243,14 +243,15 @@ dates.forEach(date => {
   });
 
   container.innerHTML += `
-    <h2 style="margin-top:25px;color:#1f2937;">
-      ${date} | ${dayName}
-    </h2>
+  <div class="driver-card">
 
-    <div class="driver-card">
-      <h3>Summary</h3>
+    <div class="driver-header">
+      <h2>${date} | ${dayName}</h2>
+    </div>
 
-      <table style="width:100%;border-collapse:collapse;">
+    <table style="width:100%;border-collapse:collapse;">
+
+      
         <tr style="background:#1f2937;color:white;">
           <th style="padding:8px;text-align:left;">Driver Name</th>
           <th style="padding:8px;text-align:left;">Time In</th>
