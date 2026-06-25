@@ -119,7 +119,7 @@ function saveAllowance(){
  })
  .catch(()=>alert("Error submitting allowance."));
 }
-
+const clean = (v) => (v || "").replace(/"/g, "").trim();
 window.onload=async function(){
  const response=await fetch(sheetURL);
  const data=await response.text();
@@ -127,43 +127,37 @@ window.onload=async function(){
 
  const grouped={};
 
- rows.forEach(row=>{
-   const cols=row.split(",");
-   if(cols.length<9) return;
+ rows.forEach(row => {
+  const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+  if (!cols || cols.length < 9) return;
 
-   const driver=cols[0];
-   const date=cols[1];
-   const timeIn=cols[2];
-   const vehicle=cols[3];
-   const itinerary=cols[4];
-const pickupTime=cols[5];
-const requestedBy=cols[6];
+  const driver = clean(cols[0]);
+  const date = clean(cols[1]);
+  const timeIn = clean(cols[2]);
+  const vehicle = clean(cols[3]);
+  const itinerary = clean(cols[4]);
+  const pickupTime = clean(cols[5]);
+  const requestedBy = clean(cols[6]);
 
-let origin = cols[7] || "";
-let destination = cols[8] || "";
+  const origin = clean(cols[7]);
+  const destination = clean(cols[8]);
+  const remarks = clean(cols[9]);
 
-// CLEAN DATA HERE
-origin = origin.replace(/"/g, '');
-destination = destination.replace(/"/g, '');
+  const key = driver + "_" + date;
 
-const remarks=cols[9]||"";
+  if (!grouped[key]) {
+    grouped[key] = { driver, date, timeIn, vehicle, trips: [] };
+  }
 
-const key=driver+"_"+date;
-
-if(!grouped[key]){
-  grouped[key]={driver,date,timeIn,vehicle,trips:[]};
-}
-
-grouped[key].trips.push({
-  itinerary,
-  pickupTime,
-  requestedBy,
-  origin,
-  destination,
-  remarks
+  grouped[key].trips.push({
+    itinerary,
+    pickupTime,
+    requestedBy,
+    origin,
+    destination,
+    remarks
+  });
 });
- });
-
  const container=document.getElementById("driversContainer");
 
  Object.keys(grouped).forEach(key=>{
