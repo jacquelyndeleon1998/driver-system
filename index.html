@@ -192,7 +192,6 @@ window.onload = async function() {
 <div class="trip">
   <div class="trip-title">Trip ${index+1}</div>
 
-  ${show("Itinerary", trip.itinerary)}
   ${show("Pick Up Time", trip.pickupTime)}
   ${show("Passenger", trip.requestedBy)}
 
@@ -219,13 +218,15 @@ window.onload = async function() {
    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
    container.innerHTML += `
-   <div class="driver-card">
-     <div class="driver-header">
-       <h2>${d.driver}</h2>
-       <p><b>Date:</b> ${d.date}</p>
-       <p><b>Time In:</b> ${d.timeIn}</p>
-       <p><b>Vehicle:</b> ${d.vehicle}</p>
-     </div>
+   <div class="driver-header">
+  <h2>${d.driver}</h2>
+
+  ${show("Itinerary", d.itinerary)}
+
+  <p><b>Date:</b> ${d.date}</p>
+  <p><b>Time In:</b> ${d.timeIn}</p>
+  <p><b>Vehicle:</b> ${d.vehicle}</p>
+</div>
 
      ${tripsHTML}
 
