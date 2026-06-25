@@ -6,6 +6,9 @@
 <title>Driver Schedule</title>
 
 <style>
+
+
+    
 body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:15px}
 h1{text-align:center;color:#333}
 .driver-card{background:#fff;border-radius:12px;padding:15px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
@@ -249,10 +252,9 @@ dates.forEach(date => {
       <h2>${date} | ${dayName}</h2>
     </div>
 
-    <table style="width:100%;border-collapse:collapse;">
+   <table class="summary-table">
 
-      
-        <tr style="background:#1f2937;color:white;">
+<tr>
           <th style="padding:4px;text-align:center;">Driver Name</th>
           <th style="padding:4px;text-align:center;">Time In</th>
           <th style="padding:4px;text-align:center;">Vehicle</th>
@@ -285,7 +287,7 @@ dates.forEach(date => {
         <div class="trip">
 
           <div class="trip-title">
-            Pick-UP ${index + 1}
+            Pick-Up ${index + 1}
           </div>
 
           ${show("Pick Up Time", trip.pickupTime)}
