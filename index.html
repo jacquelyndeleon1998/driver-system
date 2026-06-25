@@ -168,37 +168,47 @@ rows.forEach(row => {
 
    d.trips.forEach((trip,index)=>{
       tripsHTML += `
-      <div class="trip">
-        <div class="trip-title">Trip ${index+1}</div>
-        <p><b>Itinerary:</b> ${trip.itinerary}</p>
-        <p><b>Pick Up Time:</b> ${trip.pickupTime}</p>
-        <p><b>Passenger:</b> ${trip.requestedBy}</p>
-      <p><b>Origin:</b> 
-  <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-    ${trip.origin}
-  </a>
-</p>
+<div class="trip">
+  <div class="trip-title">Trip ${index+1}</div>
 
-<p><b>Destination:</b> 
-  <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-    ${trip.destination}
-  </a>
-</p>
+  <p><b>Itinerary:</b> ${trip.itinerary || ""}</p>
+  <p><b>Pick Up Time:</b> ${trip.pickupTime || ""}</p>
 
-<p><b>Remarks:</b> ${trip.remarks}</p>
-      </div>`;
+  ${trip.requestedBy ? `<p><b>Passenger:</b> ${trip.requestedBy}</p>` : ""}
+
+  <p><b>Origin:</b>
+    <a target="_blank"
+      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
+      ${trip.origin || ""}
+    </a>
+  </p>
+
+  <p><b>Destination:</b>
+    <a target="_blank"
+      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
+      ${trip.destination || ""}
+    </a>
+  </p>
+
+  ${trip.remarks ? `<p><b>Remarks:</b> ${trip.remarks}</p>` : ""}
+</div>`;
    });
 
    const passengers=[...new Set(d.trips.map(t=>t.requestedBy))].join(", ");
 
    container.innerHTML += `
-   <div class="driver-card">
-     <div class="driver-header">
-       <h2>${d.driver}</h2>
-       <p><b>Date:</b> ${d.date}</p>
-       <p><b>Time In:</b> ${d.timeIn}</p>
-       <p><b>Vehicle:</b> ${d.vehicle}</p>
-     </div>
+   <div class="driver-header">
+  <h2>${d.driver}</h2>
+
+  ${d.itinerary ? `
+    <div class="trip">
+      <div class="trip-title">Itinerary</div>
+      <p><b>Date:</b> ${d.date || ""}</p>
+      <p><b>Time In:</b> ${d.timeIn || ""}</p>
+      <p><b>Vehicle:</b> ${d.vehicle || ""}</p>
+    </div>
+  ` : ""}
+</div>
 
      ${tripsHTML}
 
