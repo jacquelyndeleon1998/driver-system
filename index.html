@@ -138,8 +138,12 @@ window.onload=async function(){
    const itinerary=cols[4];
    const pickupTime=cols[5];
    const requestedBy=cols[6];
-   const origin=cols[7];
-   const destination=cols[8];
+let origin = cols[7] || "";
+let destination = cols[8] || "";
+
+// CLEAN HERE (IMPORTANT)
+origin = origin.replace(/"/g, '');
+destination = destination.replace(/"/g, '');
    const remarks=cols[9]||"";
 
    const key=driver+"_"+date;
