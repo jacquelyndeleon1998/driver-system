@@ -152,9 +152,9 @@ destination = destination.replace(/"/g, '');
       grouped[key]={driver,date,timeIn,vehicle,trips:[]};
    }
 
-   grouped[key].trips.push({
-      itinerary,pickupTime,requestedBy,origin,destination,remarks
-   });
+  grouped[key].trips.push({
+  itinerary,pickupTime,requestedBy,origin,destination,remarks
+});
  });
 
  const container=document.getElementById("driversContainer");
