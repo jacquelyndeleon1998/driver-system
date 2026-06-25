@@ -4,13 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Schedule</title>
-    <h1>Driver Schedule</h1>
-
-<p class="page-description">
+    <p class="page-description">
   View the team schedule and submit your daily allowance.
 </p>
-
-<div id="driversContainer"></div>
 
 <style>
 
@@ -87,7 +83,7 @@ a{color:#2563eb}
 }
 </style>
 </head>
-<>
+<body>
 
 <h1>Driver Schedule</h1>
 <div id="driversContainer"></div>
@@ -162,7 +158,7 @@ function saveAllowance(){
  fetch(appScriptURL,{
   method:"POST",
   headers:{"Content-Type":"application/json"},
-  :JSON.stringify(payload)
+  body:JSON.stringify(payload)
  })
  .then(r=>r.json())
  .then(()=>{
@@ -386,5 +382,5 @@ dates.forEach(date => {
     
     </script>
 
-</>
+</body>
 </html>
