@@ -273,6 +273,13 @@ grouped[key].trips.push({
      Object.keys(grouped).forEach(key => {
    const d = grouped[key];
 
+   if (
+     d.itinerary &&
+     d.itinerary.toLowerCase().trim() === "rest day"
+   ) {
+     return;
+   }
+
      const scheduleDate = new Date(d.date);
 
 const dayName = scheduleDate.toLocaleDateString("en-US", {
