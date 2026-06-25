@@ -179,21 +179,15 @@ window.onload = async function(){
                 <p><b>Passenger:</b>
                 ${trip.requestedBy}</p>
 
-                <p>
-<b>Origin:</b>
-<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}"
-target="_blank"
-style="color:#2563eb;text-decoration:underline;">
-${trip.origin}
+                <p><b>Origin:</b>
+<a href="${trip.origin}" target="_blank">
+View Map
 </a>
 </p>
 
-<p>
-<b>Destination:</b>
-<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}"
-target="_blank"
-style="color:#2563eb;text-decoration:underline;">
-${trip.destination}
+<p><b>Destination:</b>
+<a href="${trip.destination}" target="_blank">
+View Map
 </a>
 </p>
 
