@@ -181,12 +181,18 @@ const remarks = cols[9] || "";
   summaryDrivers[date] = [];
 }
 
-summaryDrivers[date].push({
-  driver,
-  timeIn,
-  vehicle,
-  itinerary
-});
+const alreadyExists = summaryDrivers[date].some(
+  d => d.driver === driver
+);
+
+if (!alreadyExists) {
+  summaryDrivers[date].push({
+    driver,
+    timeIn,
+    vehicle,
+    itinerary
+  });
+}
 
    if (!grouped[key]) {
   grouped[key] = {
