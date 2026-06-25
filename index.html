@@ -254,26 +254,25 @@ grouped[key].trips.push({
   });
 
   container.innerHTML += `
-    <div class="driver-card">
+<div class="driver-card">
 
-      <h2>${date} | ${dayName}</h2>
+  <h2>${date} | ${dayName}</h2>
 
-      <table style="width:100%;border-collapse:collapse;">
+  <table style="width:100%;border-collapse:collapse;">
 
-        <tr style="background:#1f2937;color:white;">
-          <th style="padding:8px;text-align:left;">Driver Name</th>
-          <th style="padding:8px;text-align:left;">Time In</th>
-          <th style="padding:8px;text-align:left;">Vehicle</th>
-          <th style="padding:8px;text-align:left;">Itinerary</th>
-        </tr>
+    <tr style="background:#1f2937;color:white;">
+      <th style="padding:8px;text-align:left;">Driver Name</th>
+      <th style="padding:8px;text-align:left;">Time In</th>
+      <th style="padding:8px;text-align:left;">Vehicle</th>
+      <th style="padding:8px;text-align:left;">Itinerary</th>
+    </tr>
 
-        ${tableRows}
+    ${tableRows}
 
-      </table>
+  </table>
 
-    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
-
-    schedulesHTML += `
+</div>
+`;
       <div class="driver-card">
 
         <div class="driver-header">
@@ -350,10 +349,7 @@ const dayName = scheduleDate.toLocaleDateString("en-US", {
 </div>`;
    });
 
-   const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
-
-// moved to Step 2
- });
+   
 
 };
 </script>
