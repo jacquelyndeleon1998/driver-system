@@ -142,7 +142,23 @@ window.onload = async function() {
  grouped = {};
 
  rows.forEach(row => {
-   const cols = row.split(",").map(c => (c || "").replace(/"/g, "").trim());
+  const cols = [];
+let current = "";
+let insideQuotes = false;
+
+for (let i = 0; i < row.length; i++) {
+  const char = row[i];
+
+  if (char === '"' ) {
+    insideQuotes = !insideQuotes;
+  } else if (char === ',' && !insideQuotes) {
+    cols.push(current.trim());
+    current = "";
+  } else {
+    current += char;
+  }
+}
+cols.push(current.trim());
    if (cols.length < 9) return;
 
    const driver = cols[0] || "";
@@ -154,7 +170,9 @@ const itinerary = cols[4] || "";
 
 const pickupTime = cols[5] || "";
 const requestedBy = cols[6] || "";
-
+const clean = (v) => (v || "").replace(/"/g, "").trim();
+const origin = clean(cols[7]);
+const destination = clean(cols[8]);
 const origin = cols[7] || "";
 const destination = cols[8] || "";
 const remarks = cols[9] || "";
