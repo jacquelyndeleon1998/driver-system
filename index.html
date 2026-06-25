@@ -96,13 +96,13 @@ const sheetURL =
 function submitAllowance(driver,date,vehicle){
 
     alert(
-`Daily Allowance
+Daily Allowance
 
 Driver: ${driver}
 Date: ${date}
 Vehicle: ${vehicle}
 
-(Allowance form will be added next)`
+(Allowance form will be added next)
     );
 
 }
@@ -164,7 +164,7 @@ window.onload = async function(){
 
         d.trips.forEach((trip,index)=>{
 
-            tripsHTML += `
+            tripsHTML += 
             <div class="trip">
 
                 <div class="trip-title">
@@ -179,32 +179,20 @@ window.onload = async function(){
                 <p><b>Passenger:</b>
                 ${trip.requestedBy}</p>
 
-               <p>
-<b>Origin:</b>
-<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}"
-target="_blank"
-style="color:#2563eb;text-decoration:underline;">
-${trip.origin}
-</a>
-</p>
+                <p><b>Origin:</b>
+                ${trip.origin}</p>
 
-<p>
-<b>Destination:</b>
-<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}"
-target="_blank"
-style="color:#2563eb;text-decoration:underline;">
-${trip.destination}
-</a>
-</p>
+                <p><b>Destination:</b>
+                ${trip.destination}</p>
 
                 <p><b>Remarks:</b>
                 ${trip.remarks}</p>
 
             </div>
-            `;
+            ;
         });
 
-        container.innerHTML += `
+        container.innerHTML += 
 
         <div class="driver-card">
 
@@ -239,7 +227,7 @@ ${trip.destination}
 
         </div>
 
-        `;
+        ;
     });
 
 };
