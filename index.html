@@ -57,6 +57,29 @@
 
 }
          }
-         window.onload = async function(){ const response = await fetch(sheetURL); const data = await response.text(); const rows = data.trim().split("\n").slice(1); const grouped = {}; rows.forEach(row=>{ const cols = row.split(","); if(cols.length < 9) return; const driver = cols[0]; const date = cols[1]; const timeIn = cols[2]; const vehicle = cols[3]; const itinerary = cols[4]; const pickupTime = cols[5]; const requestedBy = cols[6]; const origin = cols[7]; const destination = cols[8]; const remarks = cols[9] || ""; if(!grouped[driver]){ grouped[driver]={ date, timeIn, vehicle, trips:[] }; } grouped[driver].trips.push({ itinerary, pickupTime, requestedBy, origin, destination, remarks }); }); const container = document.getElementById("driversContainer"); Object.keys(grouped).forEach(driver=>{ const d = grouped[driver]; let tripsHTML = ""; d.trips.forEach((trip,index)=>{ tripsHTML += ` <div class="trip"> <div class="trip-title"> Trip ${index+1} </div> <p><b>Itinerary:</b> ${trip.itinerary}</p> <p><b>Pick Up Time:</b> ${trip.pickupTime}</p> <p><b>Passenger:</b> ${trip.requestedBy}</p> <p><b>Origin:</b> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank"> ${trip.origin} </a> </p> <p><b>Destination:</b> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank"> ${trip.destination} </a> </p> <p><b>Remarks:</b> ${trip.remarks}</p> </div> `; }); container.innerHTML += ` <div class="driver-card"> <div class="driver-header"> <h2>${driver}</h2> <p><b>Date:</b> ${d.date}</p> <p><b>Time In:</b> ${d.timeIn}</p> <p><b>Vehicle:</b> ${d.vehicle}</p> </div> ${tripsHTML} <button class="allowance-btn" onclick="submitAllowance( '${driver}', '${d.date}', '${d.vehicle}' )"> Submit Your Daily Allowance before 2 PM tomorrow </button> </div> `; }); }; </script> 
+         window.onload = async function(){ const response = await fetch(sheetURL); const data = await response.text(); const rows = data.trim().split("\n").slice(1); const grouped = {}; rows.forEach(row=>{ const cols = row.split(","); if(cols.length < 9) return; const driver = cols[0]; const date = cols[1]; const timeIn = cols[2]; const vehicle = cols[3]; const itinerary = cols[4]; const pickupTime = cols[5]; const requestedBy = cols[6]; const origin = cols[7]; const destination = cols[8]; const remarks = cols[9] || ""; if(!grouped[driver]){ grouped[driver]={ date, timeIn, vehicle, trips:[] }; } grouped[driver].trips.push({ itinerary, pickupTime, requestedBy, origin, destination, remarks }); }); const container = document.getElementById("driversContainer"); Object.keys(grouped).forEach(driver=>{ const d = grouped[driver]; let tripsHTML = ""; d.trips.forEach((trip,index)=>{ 
+            
+            tripsHTML += ` <div class="trip"> <div class="trip-title"> Trip ${index+1} </div> <p><b>Itinerary:</b> ${trip.itinerary}</p> <p><b>Pick Up Time:</b> ${trip.pickupTime}</p> <p><b>Passenger:</b> ${trip.requestedBy}</p> <p><b>Origin:</b> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank"> ${trip.origin} </a> </p> <p><b>Destination:</b> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank"> ${trip.destination} </a> </p> 
+         
+         <p><b>Remarks:</b> ${trip.remarks}</p>
+
+         <button
+class="allowance-btn"
+onclick="submitAllowance(
+'${driver}',
+'${d.date}',
+'${trip.requestedBy}'
+)">
+Submit Allowance
+</button>
+         
+         </div> `; }); container.innerHTML += ` <div class="driver-card"> <div class="driver-header"> <h2>${driver}</h2> <p><b>Date:</b> ${d.date}</p> <p><b>Time In:</b> ${d.timeIn}</p> <p><b>Vehicle:</b> ${d.vehicle}</p> </div> ${tripsHTML} 
+         <button class="allowance-btn" onclick="submitAllowance(
+'${driver}',
+'${d.date}',
+'${trip.requestedBy}'
+)">
+
+Submit Your Meal Allowance </button> </div> `; }); }; </script> 
    </body>
 </html>
