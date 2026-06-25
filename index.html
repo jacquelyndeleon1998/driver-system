@@ -88,6 +88,7 @@ const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9
 let currentDriver="", currentDate="", currentPassenger="";
 
 let grouped = {}; // ✔️ IMPORTANT FIX
+    let summaryDrivers = {};
 
 const clean = (v) => (v || "").replace(/"/g, "").trim();
 
@@ -211,7 +212,7 @@ grouped[key].trips.push({
 
  const container = document.getElementById("driversContainer");
 
-    let summaryDrivers = {};
+    
 
  Object.keys(summaryDrivers).forEach(date => {
 
