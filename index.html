@@ -142,21 +142,22 @@ window.onload = async function() {
  grouped = {};
 
  rows.forEach(row => {
-   const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+   const cols = row.split(",").map(c => (c || "").replace(/"/g, "").trim());
    if (!cols || cols.length < 9) return;
 
-   const driver = clean(cols[0]);
-   const date = clean(cols[1]);
-   const timeIn = clean(cols[2]);
-   const vehicle = clean(cols[3]);
+   const driver = cols[0] || "";
+const date = cols[1] || "";
+const timeIn = cols[2] || "";
+const vehicle = cols[3] || "";
 
-   const itinerary = clean(cols[4]);
+const itinerary = cols[4] || "";
 
-   const pickupTime = clean(cols[5]);
-   const requestedBy = clean(cols[6]);
-   const origin = clean(cols[7]);
-   const destination = clean(cols[8]);
-   const remarks = clean(cols[9]);
+const pickupTime = cols[5] || "";
+const requestedBy = cols[6] || "";
+
+const origin = cols[7] || "";
+const destination = cols[8] || "";
+const remarks = cols[9] || "";
 
    const key = driver + "_" + date;
 
