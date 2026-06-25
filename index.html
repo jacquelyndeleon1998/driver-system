@@ -211,120 +211,46 @@ grouped[key].trips.push({
 
    
  });
-const dates = [...new Set(
+
+    const dates = [...new Set(
   Object.values(grouped).map(d => d.date)
 )];
- const container = document.getElementById("driversContainer");
 
-    
+const container = document.getElementById("driversContainer");
 
- dates.forEach(date => {
+dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
   const dayName = scheduleDate.toLocaleDateString("en-US", {
     weekday: "long"
-
-      Object.values(grouped)
-  .filter(d => d.date === date)
-  .forEach(d => {
-
-    if (
-      d.itinerary &&
-      d.itinerary.toLowerCase().trim() === "rest day"
-    ) {
-      return;
-    }
-
-    let tripsHTML = "";
-
-    d.trips.forEach((trip,index) => {
-      tripsHTML += `
-      <div class="trip">
-        <div class="trip-title">Trip ${index+1}</div>
-
-        ${show("Pick Up Time", trip.pickupTime)}
-        ${show("Passenger", trip.requestedBy)}
-
-        ${trip.origin ? `
-        <p><b>Pick-Up Address:</b>
-          <a target="_blank"
-             href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-             ${trip.origin}
-          </a>
-        </p>
-
-        <p><b>Destination:</b>
-          <a target="_blank"
-             href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-             ${trip.destination}
-          </a>
-        </p>` : ""}
-
-        ${show("Remarks", trip.remarks)}
-      </div>`;
-    });
-
-    const passengers =
-      [...new Set(d.trips.map(t => t.requestedBy))]
-      .join(", ");
-
-    container.innerHTML += `
-    <div class="driver-card">
-
-      <div class="driver-header">
-        <h2>${d.driver}</h2>
-
-        ${show("Itinerary", d.itinerary)}
-
-        <p><b>Date:</b> ${d.date}</p>
-        <p><b>Time In:</b> ${d.timeIn}</p>
-        <p><b>Vehicle:</b> ${d.vehicle}</p>
-      </div>
-
-      ${tripsHTML}
-
-      <button class="allowance-btn"
-        onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-        Submit Meal Allowance
-      </button>
-
-    </div>`;
   });
-  });
+
+  // SUMMARY TABLE
 
   let tableRows = "";
 
-  Object.values(summaryDrivers[date]).forEach(driver => {
+  Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
     tableRows += `
       <tr>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">
-          ${driver.driver}
-        </td>
-
-        <td style="padding:8px;border-bottom:1px solid #ddd;">
-          ${driver.timeIn}
-        </td>
-
-        <td style="padding:8px;border-bottom:1px solid #ddd;">
-          ${driver.vehicle}
-        </td>
-
-        <td style="padding:8px;border-bottom:1px solid #ddd;">
-          ${driver.itinerary}
-        </td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
       </tr>
     `;
   });
 
   container.innerHTML += `
-    <div class="driver-card">
+    <h2 style="margin-top:25px;color:#1f2937;">
+      ${date} | ${dayName}
+    </h2>
 
-      <h2>${date} | ${dayName}</h2>
+    <div class="driver-card">
+      <h3>Summary</h3>
 
       <table style="width:100%;border-collapse:collapse;">
-
         <tr style="background:#1f2937;color:white;">
           <th style="padding:8px;text-align:left;">Driver Name</th>
           <th style="padding:8px;text-align:left;">Time In</th>
@@ -333,83 +259,91 @@ const dates = [...new Set(
         </tr>
 
         ${tableRows}
-
       </table>
-
     </div>
   `;
+
+  // DRIVER DETAILS
+
+  Object.values(grouped)
+    .filter(d => d.date === date)
+    .forEach(d => {
+
+      if (
+        d.itinerary &&
+        d.itinerary.toLowerCase().trim() === "rest day"
+      ) {
+        return;
+      }
+
+      let tripsHTML = "";
+
+      d.trips.forEach((trip,index) => {
+
+        tripsHTML += `
+        <div class="trip">
+
+          <div class="trip-title">
+            Trip ${index + 1}
+          </div>
+
+          ${show("Pick Up Time", trip.pickupTime)}
+          ${show("Passenger", trip.requestedBy)}
+
+          ${trip.origin ? `
+          <p><b>Pick-Up Address:</b>
+            <a target="_blank"
+               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+              ${trip.origin}
+            </a>
+          </p>
+
+          <p><b>Destination:</b>
+            <a target="_blank"
+               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+              ${trip.destination}
+            </a>
+          </p>
+          ` : ""}
+
+          ${show("Remarks", trip.remarks)}
+
+        </div>
+        `;
+      });
+
+      const passengers =
+        [...new Set(d.trips.map(t => t.requestedBy))]
+        .join(", ");
+
+      container.innerHTML += `
+      <div class="driver-card">
+
+        <div class="driver-header">
+          <h2>${d.driver}</h2>
+
+          ${show("Itinerary", d.itinerary)}
+
+          <p><b>Date:</b> ${d.date}</p>
+          <p><b>Time In:</b> ${d.timeIn}</p>
+          <p><b>Vehicle:</b> ${d.vehicle}</p>
+        </div>
+
+        ${tripsHTML}
+
+        <button class="allowance-btn"
+          onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+          Submit Meal Allowance
+        </button>
+
+      </div>
+      `;
+    });
+
 });
-     
-     
-     
-
-   let tripsHTML = "";
-
-   d.trips.forEach((trip,index) => {
-     tripsHTML += `
-<div class="trip">
-  <div class="trip-title">Trip ${index+1}</div>
-
-  ${show("Pick Up Time", trip.pickupTime)}
-  ${show("Passenger", trip.requestedBy)}
-
-  ${trip.origin ? `
-  <p><b>Pcik-Up Address:</b>
-  <a target="_blank"
-     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
-     ${trip.origin || ""}
-  </a>
-</p>
-
-<p><b>Destination:</b>
-  <a target="_blank"
-     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
-     ${trip.destination || ""}
-  </a>
-</p>` : ""}
-
-  ${show("Remarks", trip.remarks)}
-</div>`;
-   });
-
-   const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
-
-container.innerHTML += `
-<h2 style="
-  margin-top:25px;
-  margin-bottom:10px;
-  color:#1f2937;
-">
-  ${d.date} | ${dayName}
-</h2>
-`;
-
-     
-   container.innerHTML += `
-<div class="driver-card">
-
-  <div class="driver-header">
-    <h2>${d.driver}</h2>
-
-    ${show("Itinerary", d.itinerary)}
-
-    <p><b>Date:</b> ${d.date}</p>
-    <p><b>Time In:</b> ${d.timeIn}</p>
-    <p><b>Vehicle:</b> ${d.vehicle}</p>
-  </div>
-
-  ${tripsHTML}
-
-  <button class="allowance-btn"
-    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-    Submit Meal Allowance
-  </button>
-
-</div>`;
- });
-
-};
-</script>
+    
+    
+    </script>
 
 </body>
 </html>
