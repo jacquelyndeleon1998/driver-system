@@ -201,6 +201,12 @@ const remarks = cols[9] || "";
  Object.keys(grouped).forEach(key => {
    const d = grouped[key];
 
+     const scheduleDate = new Date(d.date);
+
+const dayName = scheduleDate.toLocaleDateString("en-US", {
+  weekday: "long"
+});
+
    let tripsHTML = "";
 
    d.trips.forEach((trip,index) => {
@@ -232,6 +238,17 @@ const remarks = cols[9] || "";
 
    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
+container.innerHTML += `
+<h2 style="
+  margin-top:25px;
+  margin-bottom:10px;
+  color:#1f2937;
+">
+  ${d.date} | ${dayName}
+</h2>
+`;
+
+     
    container.innerHTML += `
 <div class="driver-card">
 
