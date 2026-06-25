@@ -198,19 +198,18 @@ const remarks = cols[9] || "";
 
   ${trip.origin ? `
   <p><b>Origin:</b>
-    <a target="_blank"
-      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-      ${trip.origin}
-    </a>
-  </p>` : ""}
+  <a target="_blank"
+     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
+     ${trip.origin || ""}
+  </a>
+</p>
 
-  ${trip.destination ? `
-  <p><b>Destination:</b>
-    <a target="_blank"
-      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-      ${trip.destination}
-    </a>
-  </p>` : ""}
+<p><b>Destination:</b>
+  <a target="_blank"
+     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
+     ${trip.destination || ""}
+  </a>
+</p>` : ""}
 
   ${show("Remarks", trip.remarks)}
 </div>`;
