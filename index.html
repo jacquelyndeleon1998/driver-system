@@ -7,6 +7,8 @@
       <style> body{ font-family:Arial,sans-serif; background:#f3f4f6; margin:0; padding:15px; } 
         h1{ text-align:center; color:#333; } .driver-card{ background:white; border-radius:12px; padding:15px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.1); } .driver-header{ background:#1f2937; color:white; padding:12px; border-radius:8px; margin-bottom:12px; } .driver-header h2{ margin:0; font-size:20px; } .driver-header p{ margin:5px 0; } .trip{ border:1px solid #ddd; border-radius:8px; padding:10px; margin-bottom:10px; background:#fafafa; } .trip-title{ font-weight:bold; color:#2563eb; margin-bottom:8px; } .trip p{ margin:4px 0; font-size:14px; } .allowance-btn{ width:100%; padding:12px; background:#16a34a; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer; } .allowance-btn:hover{ background:#15803d; } a{ color:#2563eb; text-decoration:underline; } </style>
    </head>
+
+   
    <body>
       <h1>Driver Schedule</h1>
       <div id="driversContainer"></div>
@@ -63,6 +65,35 @@ function submitAllowance(driver,date){
 
 window.onload = async function(){
 
+   <div id="allowanceModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:999;">
+
+  <div style="background:white;max-width:400px;margin:50px auto;padding:20px;border-radius:10px;">
+
+    <h3>Meal Allowance</h3>
+
+    <p id="modalDriver"></p>
+    <p id="modalDate"></p>
+
+    <input id="timeIn" type="time" placeholder="Time In"><br><br>
+
+    <input id="timeOut" type="time" placeholder="Time Out"><br><br>
+
+    <input id="breakfast" type="number" placeholder="Breakfast Amount"><br><br>
+
+    <input id="lunch" type="number" placeholder="Lunch Amount"><br><br>
+
+    <input id="dinner" type="number" placeholder="Dinner Amount"><br><br>
+
+    <input id="parkingFee" type="number" placeholder="Parking Fee Amount"><br><br>
+
+    <button onclick="saveAllowance()">Submit</button>
+
+    <button onclick="closeModal()">Cancel</button>
+
+  </div>
+
+</div>
+
     const response = await fetch(sheetURL);
     const data = await response.text();
 
@@ -87,8 +118,10 @@ window.onload = async function(){
         const destination = cols[8];
         const remarks = cols[9] || "";
 
-        if(!grouped[driver]){
-            grouped[driver] = {
+     const key = driver + "_" + date;
+
+if(!grouped[key]){
+           grouped[key] = {
                 date,
                 timeIn,
                 vehicle,
@@ -110,7 +143,11 @@ window.onload = async function(){
     const container =
     document.getElementById("driversContainer");
 
-    Object.keys(grouped).forEach(driver => {
+  Object.keys(grouped).forEach(key=>{
+
+    const d = grouped[key];
+    const driver = d.driver;
+     driver: driver,
 
         const d = grouped[driver];
 
@@ -169,16 +206,14 @@ window.onload = async function(){
 
             ${tripsHTML}
 
-            <button
-            class="allowance-btn"
-            onclick="submitAllowance(
-            '${driver}',
-            '${d.date}'
-            )">
-
-            Submit Your Meal Allowance
-
-            </button>
+          <button
+class="allowance-btn"
+onclick="submitAllowance(
+'${driver}',
+'${d.date}'
+)">
+Submit Your Meal Allowance
+</button>
 
         </div>
         `;
@@ -187,5 +222,47 @@ window.onload = async function(){
 
 };
 </script> 
+
+      <div id="allowanceModal" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.5);
+z-index:999;
+">
+
+<div style="
+background:white;
+max-width:400px;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h3>Meal Allowance</h3>
+
+<p id="modalDriver"></p>
+<p id="modalDate"></p>
+
+<input id="timeIn" type="time" placeholder="Time In"><br><br>
+
+<input id="timeOut" type="time" placeholder="Time Out"><br><br>
+
+<input id="breakfast" type="number" placeholder="Breakfast"><br><br>
+
+<input id="lunch" type="number" placeholder="Lunch"><br><br>
+
+<input id="dinner" type="number" placeholder="Dinner"><br><br>
+
+<input id="parkingFee" type="number" placeholder="Parking Fee"><br><br>
+
+<button onclick="saveAllowance()">Submit</button>
+<button onclick="closeModal()">Cancel</button>
+
+</div>
+</div>
    </body>
 </html>
