@@ -165,16 +165,13 @@ cols.push(current.trim());
 const date = cols[1] || "";
 const timeIn = cols[2] || "";
 const vehicle = cols[3] || "";
-
 const itinerary = cols[4] || "";
 
 const pickupTime = cols[5] || "";
 const requestedBy = cols[6] || "";
-const clean = (v) => (v || "").replace(/"/g, "").trim();
-const origin = clean(cols[7]);
-const destination = clean(cols[8]);
-const origin = cols[7] || "";
-const destination = cols[8] || "";
+
+const origin = (cols[7] || "").replace(/"/g, "").trim();
+const destination = (cols[8] || "").replace(/"/g, "").trim();
 const remarks = cols[9] || "";
 
    const key = driver + "_" + date;
@@ -236,23 +233,26 @@ const remarks = cols[9] || "";
    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
    container.innerHTML += `
-   <div class="driver-header">
-  <h2>${d.driver}</h2>
+<div class="driver-card">
 
-  ${show("Itinerary", d.itinerary)}
+  <div class="driver-header">
+    <h2>${d.driver}</h2>
 
-  <p><b>Date:</b> ${d.date}</p>
-  <p><b>Time In:</b> ${d.timeIn}</p>
-  <p><b>Vehicle:</b> ${d.vehicle}</p>
-</div>
+    ${show("Itinerary", d.itinerary)}
 
-     ${tripsHTML}
+    <p><b>Date:</b> ${d.date}</p>
+    <p><b>Time In:</b> ${d.timeIn}</p>
+    <p><b>Vehicle:</b> ${d.vehicle}</p>
+  </div>
 
-     <button class="allowance-btn"
-       onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-       Submit Meal Allowance
-     </button>
-   </div>`;
+  ${tripsHTML}
+
+  <button class="allowance-btn"
+    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+    Submit Meal Allowance
+  </button>
+
+</div>`;
  });
 
 };
