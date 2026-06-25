@@ -177,15 +177,22 @@ const remarks = cols[9] || "";
    const key = date;
 
    if (!grouped[key]) {
-     grouped[key] = {
-       driver,
-       date,
-       timeIn,
-       vehicle,
-       itinerary,
-       trips: []
-     };
-   }
+  grouped[key] = {
+    date,
+    drivers: []
+  };
+}
+     grouped[key].drivers.push({
+  driver,
+  timeIn,
+  vehicle,
+  itinerary,
+  pickupTime,
+  requestedBy,
+  origin,
+  destination,
+  remarks
+});
 
    grouped[key].trips.push({
      pickupTime,
