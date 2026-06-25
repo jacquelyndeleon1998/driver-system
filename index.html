@@ -275,10 +275,14 @@ grouped[key].trips.push({
   `;
 });
      
-     
+     let schedulesByDate = {};
      Object.keys(grouped).forEach(key => {
    const d = grouped[key];
+if (!schedulesByDate[d.date]) {
+  schedulesByDate[d.date] = [];
+}
 
+schedulesByDate[d.date].push(d);
    if (
      d.itinerary &&
      d.itinerary.toLowerCase().trim() === "rest day"
@@ -323,38 +327,7 @@ const dayName = scheduleDate.toLocaleDateString("en-US", {
 
    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
-container.innerHTML += `
-<h2 style="
-  margin-top:25px;
-  margin-bottom:10px;
-  color:#1f2937;
-">
-  ${d.date} | ${dayName}
-</h2>
-`;
-
-     
-   container.innerHTML += `
-<div class="driver-card">
-
-  <div class="driver-header">
-    <h2>${d.driver}</h2>
-
-    ${show("Itinerary", d.itinerary)}
-
-    <p><b>Date:</b> ${d.date}</p>
-    <p><b>Time In:</b> ${d.timeIn}</p>
-    <p><b>Vehicle:</b> ${d.vehicle}</p>
-  </div>
-
-  ${tripsHTML}
-
-  <button class="allowance-btn"
-    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-    Submit Meal Allowance
-  </button>
-
-</div>`;
+// moved to Step 2
  });
 
 };
