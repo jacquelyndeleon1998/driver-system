@@ -174,7 +174,7 @@ const origin = (cols[7] || "").replace(/"/g, "").trim();
 const destination = (cols[8] || "").replace(/"/g, "").trim();
 const remarks = cols[9] || "";
 
-   const key = driver + "_" + date;
+   const key = date;
 
    if (!grouped[key]) {
      grouped[key] = {
