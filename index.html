@@ -167,9 +167,19 @@ window.onload=async function(){
         <p><b>Itinerary:</b> ${trip.itinerary}</p>
         <p><b>Pick Up Time:</b> ${trip.pickupTime}</p>
         <p><b>Passenger:</b> ${trip.requestedBy}</p>
-        <p><b>Origin:</b> <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin = place.formatted_address;}</a></p>
-        <p><b>Destination:</b> <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination = place.formatted_address;)}">${trip.destination}</a></p>
-        <p><b>Remarks:</b> ${trip.remarks}</p>
+      <p><b>Origin:</b> 
+  <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+    ${trip.origin}
+  </a>
+</p>
+
+<p><b>Destination:</b> 
+  <a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+    ${trip.destination}
+  </a>
+</p>
+
+<p><b>Remarks:</b> ${trip.remarks}</p>
       </div>`;
    });
 
