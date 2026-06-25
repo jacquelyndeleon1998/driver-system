@@ -76,17 +76,24 @@ a{color:#2563eb}
 
 <script>
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
+
 const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
 
 let currentDriver="", currentDate="", currentPassenger="";
+
+let grouped = {}; // ✔️ IMPORTANT FIX
+
+const clean = (v) => (v || "").replace(/"/g, "").trim();
 
 function submitAllowance(driver,date,passenger){
  currentDriver=driver;
  currentDate=date;
  currentPassenger=passenger;
+
  document.getElementById("modalDriver").innerHTML="<b>Driver:</b> "+driver;
  document.getElementById("modalDate").innerHTML="<b>Date:</b> "+date;
  document.getElementById("modalPassenger").innerHTML="<b>Passenger(s):</b> "+passenger;
+
  document.getElementById("allowanceModal").style.display="block";
 }
 
@@ -119,92 +126,99 @@ function saveAllowance(){
  })
  .catch(()=>alert("Error submitting allowance."));
 }
-const clean = (v) => (v || "").replace(/"/g, "").trim();
 
-rows.forEach(row => {
-  const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-  if (!cols || cols.length < 9) return;
+window.onload = async function() {
 
-  const driver = clean(cols[0]);
-  const date = clean(cols[1]);
-  const timeIn = clean(cols[2]);
-  const vehicle = clean(cols[3]);
+ const response = await fetch(sheetURL);
+ const data = await response.text();
+ const rows = data.trim().split("\n").slice(1);
 
-  const itinerary = clean(cols[4]); // NOW STORED ONCE PER DAY
+ grouped = {};
 
-  const pickupTime = clean(cols[5]);
-  const requestedBy = clean(cols[6]);
-  const origin = clean(cols[7]);
-  const destination = clean(cols[8]);
-  const remarks = clean(cols[9]);
+ rows.forEach(row => {
+   const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+   if (!cols || cols.length < 9) return;
 
-  const key = driver + "_" + date;
+   const driver = clean(cols[0]);
+   const date = clean(cols[1]);
+   const timeIn = clean(cols[2]);
+   const vehicle = clean(cols[3]);
 
-  if (!grouped[key]) {
-    grouped[key] = {
-      driver,
-      date,
-      timeIn,
-      vehicle,
-      itinerary,
-      trips: []
-    };
-  }
+   const itinerary = clean(cols[4]);
 
-  grouped[key].trips.push({
-    pickupTime,
-    requestedBy,
-    origin,
-    destination,
-    remarks
-  });
-});
- const container=document.getElementById("driversContainer");
+   const pickupTime = clean(cols[5]);
+   const requestedBy = clean(cols[6]);
+   const origin = clean(cols[7]);
+   const destination = clean(cols[8]);
+   const remarks = clean(cols[9]);
 
- Object.keys(grouped).forEach(key=>{
-   const d=grouped[key];
+   const key = driver + "_" + date;
 
-   let tripsHTML="";
+   if (!grouped[key]) {
+     grouped[key] = {
+       driver,
+       date,
+       timeIn,
+       vehicle,
+       itinerary,
+       trips: []
+     };
+   }
 
-   d.trips.forEach((trip,index)=>{
-      tripsHTML += `
-<div class="trip">
-  <div class="trip-title">Trip ${index+1}</div>
+   grouped[key].trips.push({
+     pickupTime,
+     requestedBy,
+     origin,
+     destination,
+     remarks
+   });
+ });
 
-  <p><b>Itinerary:</b> ${trip.itinerary || ""}</p>
-  <p><b>Pick Up Time:</b> ${trip.pickupTime || ""}</p>
+ const container = document.getElementById("driversContainer");
 
-  ${trip.requestedBy ? `<p><b>Passenger:</b> ${trip.requestedBy}</p>` : ""}
+ Object.keys(grouped).forEach(key => {
+   const d = grouped[key];
 
-  <p><b>Origin:</b>
-    <a target="_blank"
-      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
-      ${trip.origin || ""}
-    </a>
-  </p>
+   let tripsHTML = "";
 
-  <p><b>Destination:</b>
-    <a target="_blank"
-      href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
-      ${trip.destination || ""}
-    </a>
-  </p>
+   d.trips.forEach((trip,index) => {
+     tripsHTML += `
+     <div class="trip">
+       <div class="trip-title">Trip ${index+1}</div>
 
-  ${trip.remarks ? `<p><b>Remarks:</b> ${trip.remarks}</p>` : ""}
-</div>`;
+       <p><b>Itinerary:</b> ${trip.itinerary || ""}</p>
+       <p><b>Pick Up Time:</b> ${trip.pickupTime || ""}</p>
+
+       ${trip.requestedBy ? `<p><b>Passenger:</b> ${trip.requestedBy}</p>` : ""}
+
+       <p><b>Origin:</b>
+         <a target="_blank"
+           href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin || "")}">
+           ${trip.origin || ""}
+         </a>
+       </p>
+
+       <p><b>Destination:</b>
+         <a target="_blank"
+           href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination || "")}">
+           ${trip.destination || ""}
+         </a>
+       </p>
+
+       ${trip.remarks ? `<p><b>Remarks:</b> ${trip.remarks}</p>` : ""}
+     </div>`;
    });
 
-   const passengers=[...new Set(d.trips.map(t=>t.requestedBy))].join(", ");
+   const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
    container.innerHTML += `
-   <div class="driver-header">
-  <h2>${d.driver}</h2>
-  <p><b>Date:</b> ${d.date}</p>
-  <p><b>Time In:</b> ${d.timeIn}</p>
-  <p><b>Vehicle:</b> ${d.vehicle}</p>
-</div>
-  ` : ""}
-</div>
+   <div class="driver-card">
+     <div class="driver-header">
+       <h2>${d.driver}</h2>
+       <p><b>Date:</b> ${d.date}</p>
+       <p><b>Time In:</b> ${d.timeIn}</p>
+       <p><b>Vehicle:</b> ${d.vehicle}</p>
+     </div>
 
      ${tripsHTML}
 
@@ -214,6 +228,7 @@ rows.forEach(row => {
      </button>
    </div>`;
  });
+
 };
 </script>
 
