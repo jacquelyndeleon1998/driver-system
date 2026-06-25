@@ -136,24 +136,31 @@ window.onload=async function(){
    const timeIn=cols[2];
    const vehicle=cols[3];
    const itinerary=cols[4];
-   const pickupTime=cols[5];
-   const requestedBy=cols[6];
+const pickupTime=cols[5];
+const requestedBy=cols[6];
+
 let origin = cols[7] || "";
 let destination = cols[8] || "";
 
-// CLEAN HERE (IMPORTANT)
+// CLEAN DATA HERE
 origin = origin.replace(/"/g, '');
 destination = destination.replace(/"/g, '');
-   const remarks=cols[9]||"";
 
-   const key=driver+"_"+date;
+const remarks=cols[9]||"";
 
-   if(!grouped[key]){
-      grouped[key]={driver,date,timeIn,vehicle,trips:[]};
-   }
+const key=driver+"_"+date;
 
-  grouped[key].trips.push({
-  itinerary,pickupTime,requestedBy,origin,destination,remarks
+if(!grouped[key]){
+  grouped[key]={driver,date,timeIn,vehicle,trips:[]};
+}
+
+grouped[key].trips.push({
+  itinerary,
+  pickupTime,
+  requestedBy,
+  origin,
+  destination,
+  remarks
 });
  });
 
