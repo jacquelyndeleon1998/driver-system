@@ -308,7 +308,8 @@ function submitAllowance(driver, date, passenger){
   }
 }
    
-   window.onload = async function() {
+   window.onload = async function () {
+try {
 
  // Load Schedule Sheet
  const response = await fetch(sheetURL);
@@ -341,7 +342,7 @@ for (let i = 0; i < row.length; i++) {
   }
 }
 cols.push(current.trim());
-   if (cols.length < 9) return;
+  if (cols.length < 11) return;
 
    const driver = cols[0] || "";
 const date = cols[1] || "";
@@ -541,7 +542,11 @@ trip.requestedBy
 
 }); // dates.forEach
 
-}; // window.onload
+} catch (err) {
+    console.error(err);
+    alert(err.stack);
+}
+};
     </script>
 
 </body>
