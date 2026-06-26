@@ -208,46 +208,68 @@ function closeModal(){
 }
 
 
- async function saveAllowance(){
+ async function saveAllowance() {
 
- const payload = {
-  tripDate: currentDate,
-  driver: currentDriver,
-  passenger: currentPassenger,
-  timeIn: document.getElementById("allowanceTimeIn").value,
-  timeOut: document.getElementById("allowanceTimeOut").value,
-  breakfast: document.getElementById("allowanceBreakfast").value || 0,
-  lunch: document.getElementById("allowanceLunch").value || 0,
-  dinner: document.getElementById("allowanceDinner").value || 0,
-  parkingFee: document.getElementById("allowanceParking").value || 0
- };
+  if (isSubmitting) return; // block double click
+  isSubmitting = true;
 
- try {
+  const btn = document.querySelector(".modal .allowance-btn");
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
 
-  const response = await fetch(appScriptURL, {
-    method: "POST",
-    redirect: "follow",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(payload)
-  });
+  const payload = {
+    tripDate: currentDate,
+    driver: currentDriver,
+    passenger: currentPassenger,
+    timeIn: document.getElementById("allowanceTimeIn").value,
+    timeOut: document.getElementById("allowanceTimeOut").value,
+    breakfast: document.getElementById("allowanceBreakfast").value || 0,
+    lunch: document.getElementById("allowanceLunch").value || 0,
+    dinner: document.getElementById("allowanceDinner").value || 0,
+    parkingFee: document.getElementById("allowanceParking").value || 0
+  };
 
-  const text = await response.text();
+  try {
+    const response = await fetch(appScriptURL, {
+      method: "POST",
+      redirect: "follow",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
 
-  console.log("Server Response:", text);
+    const text = await response.text();
+const result = JSON.parse(text);
 
-  alert("Allowance submitted successfully!");
+console.log("Server Response:", result);
 
-  closeModal();
-
-} catch (err) {
-
-  console.error(err);
-
-  alert("Submission Error:\n\n" + err.message);
-
+// ❌ DUPLICATE ENTRY
+if (result.success === false && result.message === "DUPLICATE_ENTRY") {
+  alert("❌ Already submitted for this trip.");
+  return;
 }
+
+// ❌ OTHER ERRORS
+if (!result.success) {
+  alert("❌ Error: " + result.message);
+  return;
+}
+
+// ✅ SUCCESS
+alert("✅ Allowance submitted successfully!");
+closeModal();
+
+  } catch (err) {
+    console.error(err);
+    alert("Submission Error:\n\n" + err.message);
+
+  } finally {
+    // reset lock
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.innerText = "Submit Meal Allowance";
+  }
 }
 window.onload = async function() {
 
