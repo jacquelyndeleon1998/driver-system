@@ -224,17 +224,34 @@ function submitAllowance(driver, date, passenger){
   document.getElementById("allowanceModal").style.display = "block";
 }
 
+   function closeModal() {
+  document.getElementById("allowanceModal").style.display = "none";
+
+  // Clear the form
+  document.getElementById("allowanceTimeIn").value = "";
+  document.getElementById("allowanceTimeOut").value = "";
+  document.getElementById("allowanceBreakfast").value = "";
+  document.getElementById("allowanceLunch").value = "";
+  document.getElementById("allowanceDinner").value = "";
+  document.getElementById("allowanceParking").value = "";
+
+  // Reset submit lock
+  isSubmitting = false;
+
+  // Re-enable submit button
+  const btn = document.querySelector("#allowanceModal .allowance-btn");
+  if (btn) {
+    btn.disabled = false;
+    btn.innerText = "Submit Meal Allowance";
+  }
+}
+
  async function saveAllowance() {
 
-    const breakfast = Number(document.getElementById("allowanceBreakfast").value || 0);
-const lunch = Number(document.getElementById("allowanceLunch").value || 0);
-const dinner = Number(document.getElementById("allowanceDinner").value || 0);
-const parking = Number(document.getElementById("allowanceParking").value || 0);
-
-  if (isSubmitting) return; // block double click
+  if (isSubmitting) return;
   isSubmitting = true;
 
-  const btn = document.querySelector(".modal .allowance-btn");
+  const btn = document.querySelector("#allowanceModal .allowance-btn");
   btn.disabled = true;
   btn.innerText = "Submitting...";
 
@@ -244,13 +261,14 @@ const parking = Number(document.getElementById("allowanceParking").value || 0);
     passenger: currentPassenger,
     timeIn: document.getElementById("allowanceTimeIn").value,
     timeOut: document.getElementById("allowanceTimeOut").value,
-    breakfast: document.getElementById("allowanceBreakfast").value || 0,
-    lunch: document.getElementById("allowanceLunch").value || 0,
-    dinner: document.getElementById("allowanceDinner").value || 0,
-    parkingFee: document.getElementById("allowanceParking").value || 0
+    breakfast: Number(document.getElementById("allowanceBreakfast").value || 0),
+    lunch: Number(document.getElementById("allowanceLunch").value || 0),
+    dinner: Number(document.getElementById("allowanceDinner").value || 0),
+    parkingFee: Number(document.getElementById("allowanceParking").value || 0)
   };
 
   try {
+
     const response = await fetch(appScriptURL, {
       method: "POST",
       redirect: "follow",
@@ -260,39 +278,35 @@ const parking = Number(document.getElementById("allowanceParking").value || 0);
       body: JSON.stringify(payload)
     });
 
-    const text = await response.text();
-const result = JSON.parse(text);
+    const result = await response.json();
 
-console.log("Server Response:", result);
+    console.log(result);
 
-// ❌ DUPLICATE ENTRY
-if (result.success === false && result.message === "DUPLICATE_ENTRY") {
-  alert("❌ Already submitted for this trip.");
-  return;
-}
+    if (!result.success && result.message === "DUPLICATE_ENTRY") {
+      alert("Already submitted for this trip.");
+      return;
+    }
 
-// ❌ OTHER ERRORS
-if (!result.success) {
-  alert("❌ Error: " + result.message);
-  return;
-}
+    if (!result.success) {
+      alert(result.message || "Submission failed.");
+      return;
+    }
 
-// ✅ SUCCESS
-alert("✅ Allowance submitted successfully!");
-closeModal();
+    alert("Allowance submitted successfully!");
+    closeModal();
 
   } catch (err) {
     console.error(err);
     alert("Submission Error:\n\n" + err.message);
 
   } finally {
-    // reset lock
     isSubmitting = false;
     btn.disabled = false;
     btn.innerText = "Submit Meal Allowance";
   }
 }
-window.onload = async function() {
+   
+   window.onload = async function() {
 
  const response = await fetch(sheetURL);
  const data = await response.text();
