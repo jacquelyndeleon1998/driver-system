@@ -7,7 +7,29 @@
    
 
 <style>
+@media (max-width: 600px){
 
+    .driver-header p,
+    .trip p,
+    .trip a{
+        font-size:11px;
+        line-height:1.2;
+    }
+
+    .trip-title{
+        font-size:12px;
+    }
+
+    .driver-header h2{
+        font-size:15px;
+    }
+
+    .allowance-btn{
+        font-size:13px;
+        padding:10px;
+    }
+
+}
     
 body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:15px}
 h1{text-align:center;color:#333}
@@ -52,24 +74,7 @@ h1{text-align:center;color:#333}
     margin:0;
     padding:2px 0;
     line-height:1.2;
-   /* Smaller schedule details for mobile */
-.driver-header p,
-.trip p,
-.trip a{
-    font-size:12px;   /* Change to 11px if you want it even smaller */
-    line-height:1.2;
-}
-
-.trip-title{
-    font-size:13px;
-    font-weight:bold;
-}
-
-.trip b,
-.driver-header b{
-    font-size:12px;
-}
-}
+  }
 .allowance-btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer}
 a{color:#2563eb}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
