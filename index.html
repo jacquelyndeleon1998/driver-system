@@ -508,7 +508,7 @@ trip.requestedBy
 
         </div>
         `;
-      });
+     }); // closes d.trips.forEach
 
       const passengers =
         [...new Set(d.trips.map(t => t.requestedBy))]
@@ -537,11 +537,11 @@ trip.requestedBy
       </div>
       `;
 
-  }); // closes Object.values(grouped)...forEach(d => {
+  }); // Object.values(...).forEach
 
-}); // closes dates.forEach(date => {
+}); // dates.forEach
 
-}; // closes window.onload   
+}; // window.onload
     </script>
 
 </body>
