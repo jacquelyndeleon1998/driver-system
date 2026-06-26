@@ -255,10 +255,11 @@ const itinerary = cols[4] || "";
 
 const pickupTime = cols[5] || "";
 const requestedBy = cols[6] || "";
+const contactNumber = cols[7] || "";
 
-const origin = (cols[7] || "").replace(/"/g, "").trim();
-const destination = (cols[8] || "").replace(/"/g, "").trim();
-const remarks = cols[9] || "";
+const origin = (cols[8] || "").replace(/"/g, "").trim();
+const destination = (cols[9] || "").replace(/"/g, "").trim();
+const remarks = cols[10] || "";
 
    const key = driver + "_" + date;
 
@@ -289,6 +290,7 @@ if (!summaryDrivers[date][driver]) {
 grouped[key].trips.push({
   pickupTime,
   requestedBy,
+  contactNumber,
   origin,
   destination,
   remarks
@@ -373,7 +375,10 @@ dates.forEach(date => {
           </div>
 
           ${show("Pick Up Time", trip.pickupTime)}
-          ${show("Passenger", trip.requestedBy)}
+        ${show(
+  "Passenger",
+  `${trip.requestedBy}${trip.contactNumber ? " " + trip.contactNumber : ""}`
+)}
 
           ${trip.origin ? `
           <p><b>Pick-Up Address:</b>
