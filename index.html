@@ -218,20 +218,18 @@ function saveAllowance(){
   parkingFee:document.getElementById("allowanceParking").value||0
  };
 
- fetch(appScriptURL, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    redirect: "follow"
-})
-.then(response => response.json())
-.then(data => {
-    alert("Allowance submitted successfully!");
-    closeModal();
-})
-.catch(error => {
-    console.error(error);
-    alert(error);
-});
+ fetch(appScriptURL,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(payload)
+ })
+ .then(r=>r.json())
+ .then(()=>{
+   alert("Allowance submitted successfully!");
+   closeModal();
+ })
+ .catch(()=>alert("Error submitting allowance."));
+}
 
 window.onload = async function() {
 
