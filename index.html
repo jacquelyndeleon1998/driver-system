@@ -375,10 +375,15 @@ dates.forEach(date => {
           </div>
 
           ${show("Pick Up Time", trip.pickupTime)}
-        ${show(
-  "Passenger",
-  `${trip.requestedBy}${trip.contactNumber ? " " + trip.contactNumber : ""}`
-)}
+       ${
+trip.requestedBy
+? `<p><b>Passenger:</b> ${trip.requestedBy}${
+    trip.contactNumber
+      ? ` <a href="tel:${trip.contactNumber}">${trip.contactNumber}</a>`
+      : ""
+  }</p>`
+: ""
+}
 
           ${trip.origin ? `
           <p><b>Pick-Up Address:</b>
