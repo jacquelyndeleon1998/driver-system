@@ -7,18 +7,6 @@
    
 
 <style>
-
-   .rest-day-row{
-    background:#f8d7da;   /* Light red */
-    color:#721c24;
-    font-weight:bold;
-}
-
-   a{
-    color:#000;
-    text-decoration:none;
-}
-
 .summary-header{
     background:darkgreen;
     color:#fff;
@@ -116,7 +104,7 @@ h1{text-align:center;color:#333}
     line-height:1.2;
   }
 .allowance-btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer}
-
+a{color:#2563eb}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
 .modal-content{background:#fff;max-width:450px;margin:40px auto;padding:20px;border-radius:10px}
 .modal-content input{width:100%;padding:8px;margin-bottom:10px;box-sizing:border-box}
@@ -165,9 +153,7 @@ h1{text-align:center;color:#333}
     <input id="allowanceDinner" type="number" placeholder="Dinner Amount">
     <input id="allowanceParking" type="number" placeholder="Parking Fee Amount">
 
-   <button class="allowance-btn" onclick="saveAllowance()">
-    Submit Meal Allowance
-</button>
+    <button class="allowance-btn" onclick="saveAllowance()">Submit</button>
     <br><br>
     <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
   </div>
@@ -182,147 +168,64 @@ h1{text-align:center;color:#333}
 };
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
-
-   
 const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
 
 let currentDriver="", currentDate="", currentPassenger="";
-let isSubmitting = false;
+
 let grouped = {}; // ✔️ IMPORTANT FIX
     let summaryDrivers = {};
 
 const clean = (v) => (v || "").replace(/"/g, "").trim();
 
-function submitAllowance(driver, date, passenger){
+function submitAllowance(driver,date,passenger){
+ currentDriver=driver;
+ currentDate=date;
+ currentPassenger=passenger;
 
-  currentDriver = driver;
-  currentDate = date;
-  currentPassenger = passenger;
+ document.getElementById("modalDriver").innerHTML="<b>Driver:</b> "+driver;
+ document.getElementById("modalDate").innerHTML="<b>Date:</b> "+date;
+ document.getElementById("modalPassenger").innerHTML="<b>Passenger(s):</b> "+passenger;
 
-  document.getElementById("modalDriver").innerHTML =
-    "<b>Driver:</b> " + driver;
-
-  document.getElementById("modalDate").innerHTML =
-    "<b>Date:</b> " + date;
-
-  document.getElementById("modalPassenger").innerHTML =
-    "<b>Passenger(s):</b> " + passenger;
-
-  // 🔥 HARD RESET (THIS FIXES YOUR ISSUE)
-  const inputs = [
-    "allowanceTimeIn",
-    "allowanceTimeOut",
-    "allowanceBreakfast",
-    "allowanceLunch",
-    "allowanceDinner",
-    "allowanceParking"
-  ];
-
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-
-  document.getElementById("allowanceModal").style.display = "block";
+ document.getElementById("allowanceModal").style.display="block";
 }
 
-   function closeModal() {
-  document.getElementById("allowanceModal").style.display = "none";
-
-  // Clear the form
-  document.getElementById("allowanceTimeIn").value = "";
-  document.getElementById("allowanceTimeOut").value = "";
-  document.getElementById("allowanceBreakfast").value = "";
-  document.getElementById("allowanceLunch").value = "";
-  document.getElementById("allowanceDinner").value = "";
-  document.getElementById("allowanceParking").value = "";
-
-  // Reset submit lock
-  isSubmitting = false;
-
-  // Re-enable submit button
-  const btn = document.querySelector("#allowanceModal .allowance-btn");
-  if (btn) {
-    btn.disabled = false;
-    btn.innerText = "Submit Meal Allowance";
-  }
+function closeModal(){
+ document.getElementById("allowanceModal").style.display="none";
 }
 
- async function saveAllowance() {
+function saveAllowance(){
+ const payload={
+  tripDate:currentDate,
+  driver:currentDriver,
+  passenger:currentPassenger,
+  timeIn:document.getElementById("allowanceTimeIn").value,
+  timeOut:document.getElementById("allowanceTimeOut").value,
+  breakfast:document.getElementById("allowanceBreakfast").value||0,
+  lunch:document.getElementById("allowanceLunch").value||0,
+  dinner:document.getElementById("allowanceDinner").value||0,
+  parkingFee:document.getElementById("allowanceParking").value||0
+ };
 
-  if (isSubmitting) return;
-  isSubmitting = true;
-
-  const btn = document.querySelector("#allowanceModal .allowance-btn");
-  btn.disabled = true;
-  btn.innerText = "Submitting...";
-
-  const payload = {
-    tripDate: currentDate,
-    driver: currentDriver,
-    passenger: currentPassenger,
-    timeIn: document.getElementById("allowanceTimeIn").value,
-    timeOut: document.getElementById("allowanceTimeOut").value,
-    breakfast: Number(document.getElementById("allowanceBreakfast").value || 0),
-    lunch: Number(document.getElementById("allowanceLunch").value || 0),
-    dinner: Number(document.getElementById("allowanceDinner").value || 0),
-    parkingFee: Number(document.getElementById("allowanceParking").value || 0)
-  };
-
-  try {
-
-    const response = await fetch(appScriptURL, {
-      method: "POST",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-
-    console.log(result);
-
-    if (!result.success && result.message === "DUPLICATE_ENTRY") {
-      alert("Already submitted for this trip.");
-      return;
-    }
-
-    if (!result.success) {
-      alert(result.message || "Submission failed.");
-      return;
-    }
-
-    alert("Allowance submitted successfully!");
-    closeModal();
-
-  } catch (err) {
-    console.error(err);
-    alert("Submission Error:\n\n" + err.message);
-
-  } finally {
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.innerText = "Submit Meal Allowance";
-  }
+ fetch(appScriptURL,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(payload)
+ })
+ .then(r=>r.json())
+ .then(()=>{
+   alert("Allowance submitted successfully!");
+   closeModal();
+ })
+ .catch(()=>alert("Error submitting allowance."));
 }
-   
-   window.onload = async function () {
-try {
 
- // Load Schedule Sheet
+window.onload = async function() {
+
  const response = await fetch(sheetURL);
  const data = await response.text();
-
- // Load Allowances Sheet
- 
-
-
  const rows = data.trim().split("\n").slice(1);
 
  grouped = {};
-summaryDrivers = {};
 
  rows.forEach(row => {
   const cols = [];
@@ -342,7 +245,7 @@ for (let i = 0; i < row.length; i++) {
   }
 }
 cols.push(current.trim());
-  if (cols.length < 11) return;
+   if (cols.length < 9) return;
 
    const driver = cols[0] || "";
 const date = cols[1] || "";
@@ -416,18 +319,14 @@ dates.forEach(date => {
 
   Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
-    const isRestDay =
-  driver.itinerary &&
-  driver.itinerary.toLowerCase().trim() === "rest day";
-
-tableRows += `
-  <tr class="${isRestDay ? "rest-day-row" : ""}">
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
-  </tr>
-`;
+    tableRows += `
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
+        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
+      </tr>
+    `;
   });
 
   container.innerHTML += `
@@ -454,10 +353,8 @@ tableRows += `
   // DRIVER DETAILS
 
   Object.values(grouped)
-  .filter(d => d.date === date)
-  .forEach(d => {
-
-    
+    .filter(d => d.date === date)
+    .forEach(d => {
 
       if (
         d.itinerary &&
@@ -477,17 +374,11 @@ tableRows += `
             Pick-Up ${index + 1}
           </div>
 
-         ${show("Pick Up Time", trip.pickupTime)}
-
-${
-trip.requestedBy
-? `<p><b>Passenger:</b> ${trip.requestedBy}${
-    trip.contactNumber
-      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
-      : ""
-  }</p>`
-: ""
-}
+          ${show("Pick Up Time", trip.pickupTime)}
+        ${show(
+  "Passenger",
+  `${trip.requestedBy}${trip.contactNumber ? " " + trip.contactNumber : ""}`
+)}
 
           ${trip.origin ? `
           <p><b>Pick-Up Address:</b>
@@ -509,7 +400,7 @@ trip.requestedBy
 
         </div>
         `;
-     }); // closes d.trips.forEach
+      });
 
       const passengers =
         [...new Set(d.trips.map(t => t.requestedBy))]
@@ -535,18 +426,16 @@ trip.requestedBy
           Submit Meal Allowance
         </button>
 
-      </div>
+       </div>
       `;
+    });
 
-  }); // Object.values(...).forEach
+}); // end dates.forEach
 
-}); // dates.forEach
+}; // end window.onload
 
-} catch (err) {
-    console.error(err);
-    alert(err.stack);
-}
-};
+   
+   
     </script>
 
 </body>
