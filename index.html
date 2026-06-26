@@ -165,17 +165,8 @@ h1{text-align:center;color:#333}
     <input id="allowanceDinner" type="number" placeholder="Dinner Amount">
     <input id="allowanceParking" type="number" placeholder="Parking Fee Amount">
 
-   <button
-  class="allowance-btn"
-  data-driver="${encodeURIComponent(d.driver)}"
-  data-date="${encodeURIComponent(d.date)}"
-  data-passenger="${encodeURIComponent(passengers)}"
-  onclick="submitAllowance(
-    decodeURIComponent(this.dataset.driver),
-    decodeURIComponent(this.dataset.date),
-    decodeURIComponent(this.dataset.passenger)
-  )">
-  Submit Meal Allowance
+   <button class="allowance-btn" onclick="saveAllowance()">
+    Submit Meal Allowance
 </button>
     <br><br>
     <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
