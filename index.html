@@ -7,6 +7,21 @@
    
 
 <style>
+
+   a{
+    color:#000;
+    text-decoration:none;
+}
+
+   .phone-link{
+    color:inherit;          /* Uses the same color as the surrounding text */
+    text-decoration:none;   /* Removes the underline */
+    font-weight:normal;
+}
+
+.phone-link:hover{
+    text-decoration:underline;
+}
 .summary-header{
     background:darkgreen;
     color:#fff;
@@ -376,14 +391,17 @@ dates.forEach(date => {
 
           ${show("Pick Up Time", trip.pickupTime)}
        ${
+${
 trip.requestedBy
 ? `<p><b>Passenger:</b> ${trip.requestedBy}${
     trip.contactNumber
-      ? ` <a href="tel:${trip.contactNumber}">${trip.contactNumber}</a>`
+      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">
+    📞 ${trip.contactNumber}
+</a>`
       : ""
   }</p>`
 : ""
-}
+       }
 
           ${trip.origin ? `
           <p><b>Pick-Up Address:</b>
