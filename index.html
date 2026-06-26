@@ -380,19 +380,17 @@ dates.forEach(date => {
             Pick-Up ${index + 1}
           </div>
 
-          ${show("Pick Up Time", trip.pickupTime)}
-       ${
+         ${show("Pick Up Time", trip.pickupTime)}
+
 ${
 trip.requestedBy
 ? `<p><b>Passenger:</b> ${trip.requestedBy}${
     trip.contactNumber
-      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">
-    📞 ${trip.contactNumber}
-</a>`
+      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
       : ""
   }</p>`
 : ""
-       }
+}
 
           ${trip.origin ? `
           <p><b>Pick-Up Address:</b>
