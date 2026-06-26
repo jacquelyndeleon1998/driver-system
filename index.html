@@ -7,6 +7,15 @@
    
 
 <style>
+
+   .detail-label{
+    display:inline-block;
+    background:#b2cd8b;
+    padding:2px 6px;
+    border-radius:4px;
+    font-weight:bold;
+    min-width:110px; /* Keeps all labels the same width */
+}
 @media (max-width: 600px){
 
     .driver-header p,
@@ -135,7 +144,7 @@ a{color:#2563eb}
 
     const show = (label, value) => {
   return value && value.trim() !== ""
-    ? `<p><b>${label}:</b> ${value}</p>`
+    ? `<p><span class="detail-label">${label}</span> ${value}</p>`
     : "";
 };
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
@@ -348,19 +357,21 @@ dates.forEach(date => {
           ${show("Passenger", trip.requestedBy)}
 
           ${trip.origin ? `
-          <p><b>Pick-Up Address:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-              ${trip.origin}
-            </a>
-          </p>
+<p>
+  <span class="detail-label">Pick-Up Address</span>
+  <a target="_blank"
+     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+    ${trip.origin}
+  </a>
+</p>
 
-          <p><b>Destination:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-              ${trip.destination}
-            </a>
-          </p>
+<p>
+  <span class="detail-label">Destination</span>
+  <a target="_blank"
+     href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+    ${trip.destination}
+  </a>
+</p>
           ` : ""}
 
           ${show("Remarks", trip.remarks)}
