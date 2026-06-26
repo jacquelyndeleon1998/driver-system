@@ -8,6 +8,12 @@
 
 <style>
 
+   .rest-day-row{
+    background:#f8d7da;   /* Light red */
+    color:#721c24;
+    font-weight:bold;
+}
+
    a{
     color:#000;
     text-decoration:none;
@@ -325,14 +331,18 @@ dates.forEach(date => {
 
   Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
-    tableRows += `
-      <tr>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
-      </tr>
-    `;
+    const isRestDay =
+  driver.itinerary &&
+  driver.itinerary.toLowerCase().trim() === "rest day";
+
+tableRows += `
+  <tr class="${isRestDay ? "rest-day-row" : ""}">
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
+  </tr>
+`;
   });
 
   container.innerHTML += `
