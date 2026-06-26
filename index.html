@@ -182,9 +182,7 @@ h1{text-align:center;color:#333}
 };
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 
-const allowanceSheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=552280364&single=true&output=csv";
 
-let submittedAllowances = new Set();
    
 const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
 
@@ -317,42 +315,13 @@ function submitAllowance(driver, date, passenger){
  const data = await response.text();
 
  // Load Allowances Sheet
- const allowanceResponse = await fetch(allowanceSheetURL);
- const allowanceData = await allowanceResponse.text();
-
- const allowanceRows = allowanceData.trim().split("\n").slice(1);
-
- allowanceRows.forEach(row => {
-
-   const cols = [];
-let current = "";
-let insideQuotes = false;
-
-for (let i = 0; i < row.length; i++) {
-  const char = row[i];
-
-  if (char === '"') {
-    insideQuotes = !insideQuotes;
-  } else if (char === "," && !insideQuotes) {
-    cols.push(current.trim());
-    current = "";
-  } else {
-    current += char;
-  }
-}
-cols.push(current.trim());
-
-   if (cols.length < 4) return;
-
-   const tripDate = cols[1].replace(/"/g, "").trim();
-   const driver = cols[2].replace(/"/g, "").trim();
-
-   submittedAllowances.add(`${driver}_${tripDate}`);
+ 
 
  });
  const rows = data.trim().split("\n").slice(1);
 
  grouped = {};
+summaryDrivers = {};
 
  rows.forEach(row => {
   const cols = [];
@@ -487,10 +456,7 @@ tableRows += `
   .filter(d => d.date === date)
   .forEach(d => {
 
-    // Hide driver if allowance already submitted
-    if (submittedAllowances.has(`${d.driver}_${d.date}`)) {
-      return;
-    }
+    
 
       if (
         d.itinerary &&
