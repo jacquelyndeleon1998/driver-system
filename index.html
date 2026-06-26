@@ -191,24 +191,45 @@ let grouped = {}; // ✔️ IMPORTANT FIX
 
 const clean = (v) => (v || "").replace(/"/g, "").trim();
 
-function submitAllowance(driver,date,passenger){
- currentDriver=driver;
- currentDate=date;
- currentPassenger=passenger;
+function submitAllowance(driver, date, passenger){
 
- document.getElementById("modalDriver").innerHTML="<b>Driver:</b> "+driver;
- document.getElementById("modalDate").innerHTML="<b>Date:</b> "+date;
- document.getElementById("modalPassenger").innerHTML="<b>Passenger(s):</b> "+passenger;
+  currentDriver = driver;
+  currentDate = date;
+  currentPassenger = passenger;
 
- document.getElementById("allowanceModal").style.display="block";
+  document.getElementById("modalDriver").innerHTML =
+    "<b>Driver:</b> " + driver;
+
+  document.getElementById("modalDate").innerHTML =
+    "<b>Date:</b> " + date;
+
+  document.getElementById("modalPassenger").innerHTML =
+    "<b>Passenger(s):</b> " + passenger;
+
+  // 🔥 HARD RESET (THIS FIXES YOUR ISSUE)
+  const inputs = [
+    "allowanceTimeIn",
+    "allowanceTimeOut",
+    "allowanceBreakfast",
+    "allowanceLunch",
+    "allowanceDinner",
+    "allowanceParking"
+  ];
+
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  document.getElementById("allowanceModal").style.display = "block";
 }
-
-function closeModal(){
- document.getElementById("allowanceModal").style.display="none";
-}
-
 
  async function saveAllowance() {
+
+    const breakfast = Number(document.getElementById("allowanceBreakfast").value || 0);
+const lunch = Number(document.getElementById("allowanceLunch").value || 0);
+const dinner = Number(document.getElementById("allowanceDinner").value || 0);
+const parking = Number(document.getElementById("allowanceParking").value || 0);
 
   if (isSubmitting) return; // block double click
   isSubmitting = true;
