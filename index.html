@@ -216,18 +216,6 @@ function closeModal(){
  document.getElementById("allowanceModal").style.display="none";
 }
 
-function saveAllowance(){
- const payload={
-  tripDate:currentDate,
-  driver:currentDriver,
-  passenger:currentPassenger,
-  timeIn:document.getElementById("allowanceTimeIn").value,
-  timeOut:document.getElementById("allowanceTimeOut").value,
-  breakfast:document.getElementById("allowanceBreakfast").value||0,
-  lunch:document.getElementById("allowanceLunch").value||0,
-  dinner:document.getElementById("allowanceDinner").value||0,
-  parkingFee:document.getElementById("allowanceParking").value||0
- };
 
  async function saveAllowance(){
 
