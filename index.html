@@ -224,30 +224,30 @@ function closeModal(){
 
  try {
 
-   const response = await const response = await fetch(appScriptURL, {
-  method: "POST",
-  redirect: "follow",
-  headers: {
-    "Content-Type": "text/plain;charset=utf-8"
-  },
-  body: JSON.stringify(payload)
-});
+  const response = await fetch(appScriptURL, {
+    method: "POST",
+    redirect: "follow",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(payload)
+  });
 
-const text = await response.text();
-console.log(text);
+  const text = await response.text();
 
-   alert("Allowance submitted successfully!");
+  console.log("Server Response:", text);
 
-   closeModal();
+  alert("Allowance submitted successfully!");
 
- } catch(err){
+  closeModal();
 
-   console.error(err);
+} catch (err) {
 
-   alert("Submission Error:\n\n" + err.message);
+  console.error(err);
 
- }
+  alert("Submission Error:\n\n" + err.message);
 
+}
 }
 window.onload = async function() {
 
