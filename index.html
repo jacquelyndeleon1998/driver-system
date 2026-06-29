@@ -176,8 +176,8 @@ h1{text-align:center;color:#333}
 <script>
 console.log("VERSION 2026-06-29 09:45");
 
-    const show = (label, value) => {
-  return value && value.trim() !== ""
+const show = (label, value) => {
+return value && value.trim() !== ""
     ? `<p><b>${label}:</b> ${value}</p>`
     : "";
 };
@@ -484,7 +484,7 @@ trip.requestedBy
         .join(", ");
 
       container.innerHTML += `
-      <div class="driver-card">
+    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
         <div class="driver-header">
           <h2>${d.driver}</h2>
