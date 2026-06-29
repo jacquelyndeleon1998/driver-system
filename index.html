@@ -123,6 +123,11 @@ a{color:#2563eb}
     white-space:nowrap;
     line-height:1.1;
 }
+   .summary-restday{
+    background:#f8d7da;   /* Light red */
+    color:#721c24;
+    font-weight:bold;
+}
 
 .driver-header h2{
     margin:0;
@@ -319,15 +324,20 @@ dates.forEach(date => {
 
   Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
+    const rowClass =
+        (driver.itinerary || "").toLowerCase().trim() === "rest day"
+        ? "summary-restday"
+        : "";
+
     tableRows += `
-      <tr>
+      <tr class="${rowClass}">
         <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
         <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
       </tr>
     `;
-  });
+});
 
   container.innerHTML += `
 <div class="summary-card">
