@@ -247,7 +247,22 @@ function submitAllowance(driver,date,passenger){
 function closeModal(){
  document.getElementById("allowanceModal").style.display="none";
 }
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
+    reader.onload = () => {
+      const base64 = reader.result.split(",")[1]; // remove data:image/... prefix
+      resolve({
+        name: file.name,
+        base64: base64
+      });
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
  async function saveAllowance() {
 
@@ -261,27 +276,25 @@ function closeModal(){
   btn.innerText = "Submitting...";
 
   const payload = {
-    tripDate: currentDate,
-    driver: currentDriver,
-    passenger: currentPassenger,
-    timeIn: document.getElementById("allowanceTimeIn").value,
-    timeOut: document.getElementById("allowanceTimeOut").value,
-    breakfast: document.getElementById("allowanceBreakfast").value || 0,
-    lunch: document.getElementById("allowanceLunch").value || 0,
-    dinner: document.getElementById("allowanceDinner").value || 0,
-    parkingFee: document.getElementById("allowanceParking").value || 0
-  };
+  tripDate: currentDate,
+  driver: currentDriver,
+  passenger: currentPassenger,
+  timeIn: document.getElementById("allowanceTimeIn").value,
+  timeOut: document.getElementById("allowanceTimeOut").value,
+  breakfast: document.getElementById("allowanceBreakfast").value || 0,
+  lunch: document.getElementById("allowanceLunch").value || 0,
+  dinner: document.getElementById("allowanceDinner").value || 0,
+  parkingFee: document.getElementById("allowanceParking").value || 0
+};
 
-  try {
-    const response = await fetch(appScriptURL, {
-      method: "POST",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(payload)
-    });
-
+const response = await fetch(appScriptURL, {
+  method: "POST",
+  redirect: "follow",
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify(payload)
+});
     const result = await response.json();
 
 console.log("Server Response:", result);
