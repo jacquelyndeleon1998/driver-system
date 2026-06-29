@@ -412,13 +412,17 @@ tableRows += `
     .filter(d => d.date === date)
     .forEach(d => {
 
-      if (
-        d.itinerary &&
-        d.itinerary.toLowerCase().trim() === "rest day"
-      ) {
-        return;
-      }
+     const noAllowanceItineraries = [
+    "rest day",
+    "am carpool",
+    "standby",
+    "banking",
+    "pm carpool"
+];
 
+if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
+    return;
+}
       let tripsHTML = "";
 
       d.trips.forEach((trip,index) => {
