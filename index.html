@@ -260,6 +260,35 @@ function closeModal(){
   btn.disabled = true;
   btn.innerText = "Submitting...";
 
+    // Require Time In
+if (!document.getElementById("allowanceTimeIn").value) {
+  alert("❌ Please enter Time In.");
+  isSubmitting = false;
+  btn.disabled = false;
+  btn.innerText = "Submit Meal Allowance";
+  return;
+}
+
+// Require Time Out
+if (!document.getElementById("allowanceTimeOut").value) {
+  alert("❌ Please enter Time Out.");
+  isSubmitting = false;
+  btn.disabled = false;
+  btn.innerText = "Submit Meal Allowance";
+  return;
+}
+
+// Require receipt if Parking Fee > 0
+const parking = Number(document.getElementById("allowanceParking").value || 0);
+
+if (parking > 0 && document.getElementById("receiptFiles").files.length === 0) {
+  alert("❌ Please upload at least one parking receipt.");
+  isSubmitting = false;
+  btn.disabled = false;
+  btn.innerText = "Submit Meal Allowance";
+  return;
+}
+
   const payload = {
     tripDate: currentDate,
     driver: currentDriver,
