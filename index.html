@@ -7,6 +7,18 @@
    
 
 <style>
+
+   .rest-day-row{
+    background:#f8d7da;   /* Light red */
+    color:#721c24;
+    font-weight:bold;
+}
+
+   a{
+    color:#000;
+    text-decoration:none;
+}
+
 .summary-header{
     background:darkgreen;
     color:#fff;
@@ -104,7 +116,7 @@ h1{text-align:center;color:#333}
     line-height:1.2;
   }
 .allowance-btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer}
-a{color:#2563eb}
+
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
 .modal-content{background:#fff;max-width:450px;margin:40px auto;padding:20px;border-radius:10px}
 .modal-content input{width:100%;padding:8px;margin-bottom:10px;box-sizing:border-box}
@@ -122,11 +134,6 @@ a{color:#2563eb}
     padding:2px 4px;
     white-space:nowrap;
     line-height:1.1;
-}
-   .summary-restday{
-    background:#f8d7da;   /* Light red */
-    color:#721c24;
-    font-weight:bold;
 }
 
 .driver-header h2{
@@ -158,7 +165,9 @@ a{color:#2563eb}
     <input id="allowanceDinner" type="number" placeholder="Dinner Amount">
     <input id="allowanceParking" type="number" placeholder="Parking Fee Amount">
 
-    <button class="allowance-btn" onclick="saveAllowance()">Submit</button>
+   <button class="allowance-btn" onclick="saveAllowance()">
+    Submit Meal Allowance
+</button>
     <br><br>
     <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
   </div>
@@ -198,32 +207,70 @@ function closeModal(){
  document.getElementById("allowanceModal").style.display="none";
 }
 
-function saveAllowance(){
- const payload={
-  tripDate:currentDate,
-  driver:currentDriver,
-  passenger:currentPassenger,
-  timeIn:document.getElementById("allowanceTimeIn").value,
-  timeOut:document.getElementById("allowanceTimeOut").value,
-  breakfast:document.getElementById("allowanceBreakfast").value||0,
-  lunch:document.getElementById("allowanceLunch").value||0,
-  dinner:document.getElementById("allowanceDinner").value||0,
-  parkingFee:document.getElementById("allowanceParking").value||0
- };
 
- fetch(appScriptURL,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify(payload)
- })
- .then(r=>r.json())
- .then(()=>{
-   alert("Allowance submitted successfully!");
-   closeModal();
- })
- .catch(()=>alert("Error submitting allowance."));
+ async function saveAllowance() {
+
+  if (isSubmitting) return; // block double click
+  isSubmitting = true;
+
+  const btn = document.querySelector(".modal .allowance-btn");
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
+
+  const payload = {
+    tripDate: currentDate,
+    driver: currentDriver,
+    passenger: currentPassenger,
+    timeIn: document.getElementById("allowanceTimeIn").value,
+    timeOut: document.getElementById("allowanceTimeOut").value,
+    breakfast: document.getElementById("allowanceBreakfast").value || 0,
+    lunch: document.getElementById("allowanceLunch").value || 0,
+    dinner: document.getElementById("allowanceDinner").value || 0,
+    parkingFee: document.getElementById("allowanceParking").value || 0
+  };
+
+  try {
+    const response = await fetch(appScriptURL, {
+      method: "POST",
+      redirect: "follow",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const text = await response.text();
+const result = JSON.parse(text);
+
+console.log("Server Response:", result);
+
+// ❌ DUPLICATE ENTRY
+if (result.success === false && result.message === "DUPLICATE_ENTRY") {
+  alert("❌ Already submitted for this trip.");
+  return;
 }
 
+// ❌ OTHER ERRORS
+if (!result.success) {
+  alert("❌ Error: " + result.message);
+  return;
+}
+
+// ✅ SUCCESS
+alert("✅ Allowance submitted successfully!");
+closeModal();
+
+  } catch (err) {
+    console.error(err);
+    alert("Submission Error:\n\n" + err.message);
+
+  } finally {
+    // reset lock
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.innerText = "Submit Meal Allowance";
+  }
+}
 window.onload = async function() {
 
  const response = await fetch(sheetURL);
@@ -250,7 +297,7 @@ for (let i = 0; i < row.length; i++) {
   }
 }
 cols.push(current.trim());
-   if (cols.length < 11) return;
+   if (cols.length < 9) return;
 
    const driver = cols[0] || "";
 const date = cols[1] || "";
@@ -324,20 +371,19 @@ dates.forEach(date => {
 
   Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
-    const rowClass =
-        (driver.itinerary || "").toLowerCase().trim() === "rest day"
-        ? "summary-restday"
-        : "";
+    const isRestDay =
+  driver.itinerary &&
+  driver.itinerary.toLowerCase().trim() === "rest day";
 
-    tableRows += `
-      <tr class="${rowClass}">
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
-        <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
-      </tr>
-    `;
-});
+tableRows += `
+  <tr class="${isRestDay ? "rest-day-row" : ""}">
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
+  </tr>
+`;
+  });
 
   container.innerHTML += `
 <div class="summary-card">
@@ -366,24 +412,16 @@ dates.forEach(date => {
     .filter(d => d.date === date)
     .forEach(d => {
 
-     
-   const noAllowanceItineraries = [
-    "rest day",
-    "am carpool",
-    "standby",
-    "banking",
-    "pm carpool"
-];
+      if (
+        d.itinerary &&
+        d.itinerary.toLowerCase().trim() === "rest day"
+      ) {
+        return;
+      }
 
-if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
-    return;
-}
-       
       let tripsHTML = "";
 
-
-
-d.trips.forEach((trip,index) => {
+      d.trips.forEach((trip,index) => {
 
         tripsHTML += `
         <div class="trip">
@@ -392,11 +430,17 @@ d.trips.forEach((trip,index) => {
             Pick-Up ${index + 1}
           </div>
 
-          ${show("Pick Up Time", trip.pickupTime)}
-        ${show(
-  "Passenger",
-  `${trip.requestedBy}${trip.contactNumber ? " " + trip.contactNumber : ""}`
-)}
+         ${show("Pick Up Time", trip.pickupTime)}
+
+${
+trip.requestedBy
+? `<p><b>Passenger:</b> ${trip.requestedBy}${
+    trip.contactNumber
+      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
+      : ""
+  }</p>`
+: ""
+}
 
           ${trip.origin ? `
           <p><b>Pick-Up Address:</b>
@@ -419,7 +463,6 @@ d.trips.forEach((trip,index) => {
         </div>
         `;
       });
-
 
       const passengers =
         [...new Set(d.trips.map(t => t.requestedBy))]
