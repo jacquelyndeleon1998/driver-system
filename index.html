@@ -262,6 +262,15 @@ if (!result.success) {
 // ✅ SUCCESS
 alert("✅ Allowance submitted successfully!");
 
+// Remove the driver's schedule card
+const driverCard = document.getElementById(
+  "driver-" + currentDriver.replace(/\s+/g, "-")
+);
+
+if (driverCard) {
+  driverCard.remove();
+}
+
 document.getElementById("allowanceTimeIn").value = "";
 document.getElementById("allowanceTimeOut").value = "";
 document.getElementById("allowanceBreakfast").value = "";
