@@ -356,18 +356,22 @@ dates.forEach(date => {
     .filter(d => d.date === date)
     .forEach(d => {
 
-     const hideTripDetails = [
+     
+   const noAllowanceItineraries = [
     "rest day",
     "am carpool",
-          "standby",
-          "banking",
+    "standby",
+    "banking",
     "pm carpool"
-].includes((d.itinerary || "").toLowerCase().trim());
+];
 
+if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
+    return;
+}
        
       let tripsHTML = "";
 
-if (!hideTripDetails) {
+
 
 d.trips.forEach((trip,index) => {
 
@@ -406,7 +410,7 @@ d.trips.forEach((trip,index) => {
         `;
       });
 
-}
+
       const passengers =
         [...new Set(d.trips.map(t => t.requestedBy))]
         .join(", ");
