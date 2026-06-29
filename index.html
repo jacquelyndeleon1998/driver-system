@@ -183,6 +183,34 @@ h1{text-align:center;color:#333}
 
 <script>
 
+   function hideDriverCard(driver) {
+  const card = document.getElementById(
+    "driver-" + driver.replace(/\s+/g, "-")
+  );
+
+  if (card) {
+    card.style.display = "none";
+  }
+}
+
+   const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
+
+   async function checkDriver(driver, date) {
+  try {
+    const url = `${WEBAPP_URL}?action=check&driver=${encodeURIComponent(driver)}&date=${encodeURIComponent(date)}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.submitted === true) {
+      hideDriverCard(driver);
+    }
+
+  } catch (err) {
+    console.error("Check failed:", err);
+  }
+}
+
    document.getElementById("allowanceParking").addEventListener("input", function () {
   const value = parseFloat(this.value) || 0;
   const section = document.getElementById("receiptSection");
@@ -398,6 +426,8 @@ closeModal();
 }
 window.onload = async function() {
 
+   const today = new Date().toISOString().split("T")[0];
+
  const response = await fetch(sheetURL);
  const data = await response.text();
  const rows = data.trim().split("\n").slice(1);
@@ -596,7 +626,7 @@ trip.requestedBy
       const passengers =
         [...new Set(d.trips.map(t => t.requestedBy))]
         .join(", ");
-
+checkDriver(d.driver, d.date);
       container.innerHTML += `
     <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
