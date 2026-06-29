@@ -248,6 +248,25 @@ function closeModal(){
  document.getElementById("allowanceModal").style.display="none";
 }
 
+   // Convert uploaded image to Base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const base64 = reader.result.split(",")[1];
+
+      resolve({
+        name: file.name,
+        base64: base64
+      });
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
 
  async function saveAllowance() {
 
@@ -300,6 +319,14 @@ if (parking > 0 && document.getElementById("receiptFiles").files.length === 0) {
     dinner: document.getElementById("allowanceDinner").value || 0,
     parkingFee: document.getElementById("allowanceParking").value || 0
   };
+
+    const receiptFiles = document.getElementById("receiptFiles").files;
+
+const receipts = [];
+
+for (const file of receiptFiles) {
+  receipts.push(await fileToBase64(file));
+}
 
   try {
     const response = await fetch(appScriptURL, {
