@@ -1,580 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Schedule</title>
-   
+function doPost(e) {
 
-<style>
+  try {
 
-   .rest-day-row{
-    background:#f8d7da;   /* Light red */
-    color:#721c24;
-    font-weight:bold;
-}
+    const sheet = SpreadsheetApp
+      .getActiveSpreadsheet()
+      .getSheetByName("Allowances");
 
-   a{
-    color:#000;
-    text-decoration:none;
-}
-
-.summary-header{
-    background:darkgreen;
-    color:#fff;
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:12px;
-    text-align:center;
-}
-
-.summary-header h2{
-    margin:0;
-    font-size:16px;
-}
-   
-@media (max-width: 600px){
-
-    .driver-header p,
-    .trip p,
-    .trip a{
-        font-size:12px;
-        line-height:1.2;
-    }
-
-    .trip-title{
-        font-size:12px;
-    }
-
-    .driver-header h2{
-        font-size:15px;
-    }
-
-    .allowance-btn{
-        font-size:13px;
-        padding:10px;
-    }
-
-}
-   
-body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:15px}
-h1{text-align:center;color:#333}
-.driver-card{
-    background:#fff;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
-}
-   .summary-card{
-    background:#b2cd8b;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
-}
-.driver-header{
-    background:#1f2937;
-    color:#fff;
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:12px;
-}
-    .page-description{
-    text-align:center;
-    color:#6b7280;
-    font-size:12px;
-    margin-top:-10px;
-    margin-bottom:20px;
-}
-
-
-.driver-header p{
-    margin:0;
-    padding:2px 0;
-    line-height:1.2;
-    color:#fff;
-}
-
-.trip{
-    border:1px solid #ddd;
-    border-radius:8px;
-    padding:10px;
-    margin-bottom:10px;
-    background:#fafafa;
-}
-
-.trip-title{
-    font-weight:bold;
-    color:#2563eb;
-    margin-bottom:4px;
-}
-
-.trip p{
-    margin:0;
-    padding:2px 0;
-    line-height:1.2;
-  }
-.allowance-btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer}
-
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
-.modal-content{background:#fff;max-width:450px;margin:40px auto;padding:20px;border-radius:10px}
-.modal-content input{width:100%;padding:8px;margin-bottom:10px;box-sizing:border-box}
-
-
-    .summary-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:12px;
-    text-align:center;
-}
-
-.summary-table th,
-.summary-table td{
-    padding:2px 4px;
-    white-space:nowrap;
-    line-height:1.1;
-}
-
-.driver-header h2{
-    margin:0;
-    font-size:16px;
-    text-align:left;
-}
-</style>
-</head>
-<body>
-
-<h1>Daily Dispatch Hub</h1>
-     <p class="page-description">
-  View the team schedule and submit your daily allowance.
-</p>
-<div id="driversContainer"></div>
-
-<div id="allowanceModal" class="modal">
-  <div class="modal-content">
-    <h3>Meal Allowance</h3>
-    <p id="modalDriver"></p>
-    <p id="modalDate"></p>
-    <p id="modalPassenger"></p>
-
-    <input id="allowanceTimeIn" type="time">
-    <input id="allowanceTimeOut" type="time">
-    <input id="allowanceBreakfast" type="number" placeholder="Breakfast Amount">
-    <input id="allowanceLunch" type="number" placeholder="Lunch Amount">
-    <input id="allowanceDinner" type="number" placeholder="Dinner Amount">
-    <input id="allowanceParking" type="number" placeholder="Parking Fee Amount">
-
-     <div id="receiptSection" style="display:none; margin-top:10px;">
-  <label><b>Upload Parking Receipt(s)</b></label><br>
-
-  <input type="file" id="receiptFiles" multiple accept="image/*">
-
-  <div id="receiptPreview" style="margin-top:10px;"></div>
-</div>
-
-   <button class="allowance-btn" onclick="saveAllowance()">
-    Submit Meal Allowance
-</button>
-    <br><br>
-    <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
-  </div>
-</div>
-
-<script>
-
-   document.getElementById("allowanceParking").addEventListener("input", function () {
-  const value = parseFloat(this.value) || 0;
-  const section = document.getElementById("receiptSection");
-
-  if (value > 0) {
-    section.style.display = "block";
-  } else {
-    section.style.display = "none";
-    document.getElementById("receiptFiles").value = "";
-    document.getElementById("receiptPreview").innerHTML = "";
-  }
-});
-
-   document.getElementById("receiptFiles").addEventListener("change", function () {
-  const preview = document.getElementById("receiptPreview");
-  preview.innerHTML = "";
-
-  Array.from(this.files).forEach(file => {
-    const img = document.createElement("img");
-    img.style.width = "80px";
-    img.style.marginRight = "5px";
-    img.style.borderRadius = "6px";
-    img.style.border = "1px solid #ccc";
-
-    img.src = URL.createObjectURL(file);
-
-    preview.appendChild(img);
-  });
-});
-   
-console.log("VERSION 2026-06-29 09:45");
-
-const show = (label, value) => {
-return value && value.trim() !== ""
-    ? `<p><b>${label}:</b> ${value}</p>`
-    : "";
-};
-const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
-
-const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
-
-let currentDriver="", currentDate="", currentPassenger="";
-let isSubmitting = false;
-
-let grouped = {}; // ✔️ IMPORTANT FIX
-    let summaryDrivers = {};
-
-const clean = (v) => (v || "").replace(/"/g, "").trim();
-
-function submitAllowance(driver,date,passenger){
- currentDriver=driver;
- currentDate=date;
- currentPassenger=passenger;
-
- document.getElementById("modalDriver").innerHTML="<b>Driver:</b> "+driver;
- document.getElementById("modalDate").innerHTML="<b>Date:</b> "+date;
- document.getElementById("modalPassenger").innerHTML="<b>Passenger(s):</b> "+passenger;
-
- document.getElementById("allowanceModal").style.display="block";
-}
-
-function closeModal(){
- document.getElementById("allowanceModal").style.display="none";
-}
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const base64 = reader.result.split(",")[1]; // remove data:image/... prefix
-      resolve({
-        name: file.name,
-        base64: base64
+    if (!e || !e.parameter || !e.parameter.data) {
+      return jsonResponse({
+        success: false,
+        message: "NO_DATA_RECEIVED"
       });
-    };
+    }
 
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
+    // MAIN DATA
+    const data = JSON.parse(e.parameter.data);
 
- async function saveAllowance() {
+    // RECEIPTS (base64 array from frontend)
+    const receipts = JSON.parse(e.parameter.receipts || "[]");
 
-    console.count("saveAllowance called");
+    let receiptUrls = [];
 
-  if (isSubmitting) return; // block double click
-  isSubmitting = true;
-
-  const btn = document.querySelector("#allowanceModal .allowance-btn");
-  btn.disabled = true;
-  btn.innerText = "Submitting...";
-
-  const payload = {
-  tripDate: currentDate,
-  driver: currentDriver,
-  passenger: currentPassenger,
-  timeIn: document.getElementById("allowanceTimeIn").value,
-  timeOut: document.getElementById("allowanceTimeOut").value,
-  breakfast: document.getElementById("allowanceBreakfast").value || 0,
-  lunch: document.getElementById("allowanceLunch").value || 0,
-  dinner: document.getElementById("allowanceDinner").value || 0,
-  parkingFee: document.getElementById("allowanceParking").value || 0
-};
-
-const response = await fetch(appScriptURL, {
-  method: "POST",
-  redirect: "follow",
-  headers: {
-    "Content-Type": "text/plain;charset=utf-8"
-  },
-  body: JSON.stringify(payload)
-});
-    const result = await response.json();
-
-console.log("Server Response:", result);
-
-// ❌ DUPLICATE ENTRY
-if (result.success === false && result.message === "DUPLICATE_ENTRY") {
-  alert("❌ Already submitted for this trip.");
-  return;
-}
-
-// ❌ OTHER ERRORS
-if (!result.success) {
-  alert("❌ Error: " + result.message);
-  return;
-}
-
-// ✅ SUCCESS
-alert("✅ Allowance submitted successfully!");
-
-// Remove the driver's schedule card
-const driverCard = document.getElementById(
-  "driver-" + currentDriver.replace(/\s+/g, "-")
-);
-
-if (driverCard) {
-  driverCard.remove();
-}
-
-document.getElementById("allowanceTimeIn").value = "";
-document.getElementById("allowanceTimeOut").value = "";
-document.getElementById("allowanceBreakfast").value = "";
-document.getElementById("allowanceLunch").value = "";
-document.getElementById("allowanceDinner").value = "";
-document.getElementById("allowanceParking").value = "";
-
-closeModal();
-
-  } catch (err) {
-    console.error(err);
-    alert("Submission Error:\n\n" + err.message);
-
-  } finally {
-    // reset lock
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.innerText = "Submit Meal Allowance";
-  }
-}
-window.onload = async function() {
-
- const response = await fetch(sheetURL);
- const data = await response.text();
- const rows = data.trim().split("\n").slice(1);
-
- grouped = {};
-
- rows.forEach(row => {
-  const cols = [];
-let current = "";
-let insideQuotes = false;
-
-for (let i = 0; i < row.length; i++) {
-  const char = row[i];
-
-  if (char === '"' ) {
-    insideQuotes = !insideQuotes;
-  } else if (char === ',' && !insideQuotes) {
-    cols.push(current.trim());
-    current = "";
-  } else {
-    current += char;
-  }
-}
-cols.push(current.trim());
-  if (cols.length < 11) return;
-
-   const driver = cols[0] || "";
-const date = cols[1] || "";
-const timeIn = cols[2] || "";
-const vehicle = cols[3] || "";
-const itinerary = cols[4] || "";
-
-const pickupTime = cols[5] || "";
-const requestedBy = cols[6] || "";
-const contactNumber = cols[7] || "";
-
-const origin = (cols[8] || "").replace(/"/g, "").trim();
-const destination = (cols[9] || "").replace(/"/g, "").trim();
-const remarks = cols[10] || "";
-
-   const key = driver + "_" + date;
-
-     if (!summaryDrivers[date]) {
-  summaryDrivers[date] = {};
-}
-
-if (!summaryDrivers[date][driver]) {
-  summaryDrivers[date][driver] = {
-    driver,
-    timeIn,
-    vehicle,
-    itinerary
-  };
-}
-
-   if (!grouped[key]) {
-  grouped[key] = {
-    driver,
-    date,
-    timeIn,
-    vehicle,
-    itinerary,
-    trips: []
-  };
-}
-
-grouped[key].trips.push({
-  pickupTime,
-  requestedBy,
-  contactNumber,
-  origin,
-  destination,
-  remarks
-});
-
-   
- });
-
-    const dates = [...new Set(
-  Object.values(grouped).map(d => d.date)
-)];
-
-const container = document.getElementById("driversContainer");
-
-dates.forEach(date => {
-
-  const scheduleDate = new Date(date);
-
-  const dayName = scheduleDate.toLocaleDateString("en-US", {
-    weekday: "long"
-  });
-
-  // SUMMARY TABLE
-
-  let tableRows = "";
-
-  Object.values(summaryDrivers[date] || {}).forEach(driver => {
-
-    const isRestDay =
-  driver.itinerary &&
-  driver.itinerary.toLowerCase().trim() === "rest day";
-
-tableRows += `
-  <tr class="${isRestDay ? "rest-day-row" : ""}">
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
-  </tr>
-`;
-  });
-
-  container.innerHTML += `
-<div class="summary-card">
-
-  <div class="summary-header">
-  <h2>${date} | ${dayName}</h2>
-</div>
-
-   <table class="summary-table">
-
-<tr>
-          <th style="padding:4px;text-align:center;">Driver Name</th>
-          <th style="padding:4px;text-align:center;">Time In</th>
-          <th style="padding:4px;text-align:center;">Vehicle</th>
-          <th style="padding:4px;text-align:center;">Itinerary</th>
-        </tr>
-
-        ${tableRows}
-      </table>
-    </div>
-  `;
-
-  // DRIVER DETAILS
-
-  Object.values(grouped)
-    .filter(d => d.date === date)
-    .forEach(d => {
-
-     const noAllowanceItineraries = [
-    "rest day",
-    "am carpool",
-    "standby",
-    "banking",
-    "pm carpool"
-];
-
-if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
-    return;
-}
-      let tripsHTML = "";
-
-      d.trips.forEach((trip,index) => {
-
-        tripsHTML += `
-        <div class="trip">
-
-          <div class="trip-title">
-            Pick-Up ${index + 1}
-          </div>
-
-         ${show("Pick Up Time", trip.pickupTime)}
-
-${
-trip.requestedBy
-? `<p><b>Passenger:</b> ${trip.requestedBy}${
-    trip.contactNumber
-      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
-      : ""
-  }</p>`
-: ""
-}
-
-          ${trip.origin ? `
-          <p><b>Pick-Up Address:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-              ${trip.origin}
-            </a>
-          </p>
-
-          <p><b>Destination:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-              ${trip.destination}
-            </a>
-          </p>
-          ` : ""}
-
-          ${show("Remarks", trip.remarks)}
-
-        </div>
-        `;
+    // UPLOAD RECEIPTS TO DRIVE
+    if (receipts.length > 0) {
+      receipts.forEach(r => {
+        const url = uploadBase64ToDrive(
+          r.base64,
+          r.name,
+          data.driver,
+          data.tripDate
+        );
+        receiptUrls.push(url);
       });
+    }
 
-      const passengers =
-        [...new Set(d.trips.map(t => t.requestedBy))]
-        .join(", ");
+    // TOTAL COMPUTATION
+    const total =
+      Number(data.breakfast || 0) +
+      Number(data.lunch || 0) +
+      Number(data.dinner || 0) +
+      Number(data.parkingFee || 0);
 
-      container.innerHTML += `
-    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+    // UNIQUE KEY FOR DUPLICATE CHECK
+    const newKey = `${data.tripDate}_${data.driver}_${data.passenger}`;
 
-        <div class="driver-header">
-          <h2>${d.driver}</h2>
+    const values = sheet.getDataRange().getValues();
 
-          ${show("Itinerary", d.itinerary)}
+    for (let i = 1; i < values.length; i++) {
+      const existingKey = `${values[i][1]}_${values[i][2]}_${values[i][3]}`;
 
-          <p><b>Date:</b> ${d.date}</p>
-          <p><b>Time In:</b> ${d.timeIn}</p>
-          <p><b>Vehicle:</b> ${d.vehicle}</p>
-        </div>
+      if (existingKey === newKey) {
+        return jsonResponse({
+          success: false,
+          message: "DUPLICATE_ENTRY"
+        });
+      }
+    }
 
-        ${tripsHTML}
+    // SAVE TO SHEET
+    sheet.appendRow([
+      new Date(),                 // timestamp
+      data.tripDate,             // date
+      data.driver,               // driver
+      data.passenger,            // passenger
+      data.timeIn,               // time in
+      data.timeOut,              // time out
+      data.breakfast,            // breakfast
+      data.lunch,                // lunch
+      data.dinner,               // dinner
+      data.parkingFee,           // parking fee
+      receiptUrls.join(", "),    // receipts links
+      total                      // total
+    ]);
 
-        <button class="allowance-btn"
-          onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-          Submit Meal Allowance
-        </button>
-
-       </div>
-      `;
+    return jsonResponse({
+      success: true,
+      message: "SAVED"
     });
 
-}); // end dates.forEach
+  } catch (err) {
 
-}; // end window.onload
+    return jsonResponse({
+      success: false,
+      message: err.toString()
+    });
+  }
+}
 
-   
-   
-    </script>
 
-</body>
-</html>
+/**
+ * UPLOAD BASE64 IMAGE TO GOOGLE DRIVE
+ */
+function uploadBase64ToDrive(base64, name, driver, date) {
+
+  const folder = DriveApp.getFolderById("17IoUjnNpBivAATe6SMauJ9rLyLr6MGEi");
+
+  const blob = Utilities.newBlob(
+    Utilities.base64Decode(base64),
+    "image/jpeg",
+    driver + "_" + date + "_" + name
+  );
+
+  const file = folder.createFile(blob);
+
+  file.setSharing(
+    DriveApp.Access.ANYONE_WITH_LINK,
+    DriveApp.Permission.VIEW
+  );
+
+  return file.getUrl();
+}
+
+
+/**
+ * JSON RESPONSE HELPER
+ */
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
