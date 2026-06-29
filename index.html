@@ -212,6 +212,8 @@ function closeModal(){
 
  async function saveAllowance() {
 
+    console.count("saveAllowance called");
+
   if (isSubmitting) return; // block double click
   isSubmitting = true;
 
