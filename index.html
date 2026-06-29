@@ -516,6 +516,15 @@ dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
+    // Hide summaries for dates before today
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  scheduleDate.setHours(0,0,0,0);
+
+  if (scheduleDate < today) {
+      return;
+  }
+
   const dayName = scheduleDate.toLocaleDateString("en-US", {
     weekday: "long"
   });
