@@ -339,7 +339,16 @@ const response = await fetch(appScriptURL, {
   body: formData
 });
 
-    const result = await response.json();
+    const text = await response.text();
+console.log("RAW RESPONSE:", text);
+
+let result;
+try {
+  result = JSON.parse(text);
+} catch (e) {
+  alert("Server returned:\n\n" + text);
+  return;
+}
 
 console.log("Server Response:", result);
 
