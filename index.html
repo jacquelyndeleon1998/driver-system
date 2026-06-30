@@ -993,6 +993,14 @@ dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
+   const now = new Date();
+
+const isToday =
+    scheduleDate.toDateString() === now.toDateString();
+
+const hideSummary =
+    isToday && now.getHours() >= 16;
+
     // Hide summaries for dates before today
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -1026,8 +1034,10 @@ tableRows += `
 `;
   });
 
-  container.innerHTML += `
-<div class="summary-card">
+if (!hideSummary) {
+
+container.innerHTML += `
+<div class="summary-card" id="summary-${date}">
 
   <div class="summary-header">
   <h2>${date} | ${dayName}</h2>
@@ -1046,6 +1056,7 @@ tableRows += `
       </table>
     </div>
   `;
+   }
 
   // DRIVER DETAILS
 
