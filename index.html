@@ -1012,6 +1012,13 @@ dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
+    // Only show approved dates
+  const status = (approvedDates[date] || "").trim().toLowerCase();
+
+  if (status !== "approved") {
+      return;
+  }
+
 console.log("Schedule Date:", date);
 console.log("Approval Status:", approvedDates[date]);
    
