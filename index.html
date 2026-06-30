@@ -170,10 +170,33 @@ h1{text-align:center;color:#333}
 
 <input
     type="file"
-    id="receiptFiles"
+    id="cameraInput"
     accept="image/*"
     capture="environment"
-    multiple>
+    style="display:none;">
+
+<input
+    type="file"
+    id="galleryInput"
+    accept="image/*"
+    multiple
+    style="display:none;">
+
+<button type="button"
+        class="allowance-btn"
+        style="background:#2563eb;margin-top:8px;"
+        onclick="document.getElementById('cameraInput').click();">
+📷 Take Photo
+</button>
+
+<button type="button"
+        class="allowance-btn"
+        style="background:#6b7280;margin-top:8px;"
+        onclick="document.getElementById('galleryInput').click();">
+🖼️ Choose Gallery
+</button>
+
+<div id="receiptPreview" style="margin-top:10px;"></div>
 
   <div id="receiptPreview" style="margin-top:10px;"></div>
 </div>
@@ -229,22 +252,48 @@ h1{text-align:center;color:#333}
   }
 });
 
-   document.getElementById("receiptFiles").addEventListener("change", function () {
+   let selectedReceipts = [];
+
+function addReceipts(files) {
+
+  Array.from(files).forEach(file => {
+    selectedReceipts.push(file);
+  });
+
+  refreshReceiptPreview();
+}
+
+document.getElementById("cameraInput").addEventListener("change", function () {
+  addReceipts(this.files);
+  this.value = "";
+});
+
+document.getElementById("galleryInput").addEventListener("change", function () {
+  addReceipts(this.files);
+  this.value = "";
+});
+
+function refreshReceiptPreview() {
+
   const preview = document.getElementById("receiptPreview");
   preview.innerHTML = "";
 
-  Array.from(this.files).forEach(file => {
+  selectedReceipts.forEach(file => {
+
     const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+
     img.style.width = "80px";
     img.style.marginRight = "5px";
+    img.style.marginBottom = "5px";
     img.style.borderRadius = "6px";
     img.style.border = "1px solid #ccc";
 
-    img.src = URL.createObjectURL(file);
-
     preview.appendChild(img);
+
   });
-});
+
+}
    
 console.log("VERSION 2026-06-29 09:45");
 
@@ -333,7 +382,7 @@ if (!document.getElementById("allowanceTimeOut").value) {
 // Require receipt if Parking Fee > 0
 const parking = Number(document.getElementById("allowanceParking").value || 0);
 
-if (parking > 0 && document.getElementById("receiptFiles").files.length === 0) {
+if (parking > 0 && selectedReceipts.length === 0) {
   alert("❌ Please upload at least one parking receipt.");
   isSubmitting = false;
   btn.disabled = false;
@@ -353,7 +402,7 @@ if (parking > 0 && document.getElementById("receiptFiles").files.length === 0) {
     parkingFee: document.getElementById("allowanceParking").value || 0
   };
 
-    const receiptFiles = document.getElementById("receiptFiles").files;
+    const receiptFiles = selectedReceipts;
 
 const receipts = [];
 
