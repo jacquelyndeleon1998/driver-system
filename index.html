@@ -198,7 +198,7 @@ h1{text-align:center;color:#333}
 
 <div id="receiptPreview" style="margin-top:10px;"></div>
 
-  <div id="receiptPreview" style="margin-top:10px;"></div>
+ 
 </div>
 
    <button class="allowance-btn" onclick="saveAllowance()">
@@ -245,11 +245,17 @@ h1{text-align:center;color:#333}
 
   if (value > 0) {
     section.style.display = "block";
-  } else {
+  } 
+  
+  else {
     section.style.display = "none";
-    document.getElementById("receiptFiles").value = "";
+
+    selectedReceipts = [];
+
+    document.getElementById("cameraInput").value = "";
+    document.getElementById("galleryInput").value = "";
     document.getElementById("receiptPreview").innerHTML = "";
-  }
+}
 });
 
    let selectedReceipts = [];
@@ -464,6 +470,12 @@ document.getElementById("allowanceBreakfast").value = "";
 document.getElementById("allowanceLunch").value = "";
 document.getElementById("allowanceDinner").value = "";
 document.getElementById("allowanceParking").value = "";
+
+     selectedReceipts = [];
+
+document.getElementById("cameraInput").value = "";
+document.getElementById("galleryInput").value = "";
+document.getElementById("receiptPreview").innerHTML = "";
 
 closeModal();
 
