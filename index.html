@@ -8,6 +8,52 @@
 
 <style>
 
+   .success-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:100000;
+
+    justify-content:center;
+    align-items:center;
+}
+
+.success-box{
+
+    width:290px;
+    background:#fff;
+    border-radius:14px;
+    padding:25px;
+
+    text-align:center;
+
+    box-shadow:0 10px 35px rgba(0,0,0,.25);
+
+}
+
+.success-icon{
+
+    font-size:55px;
+    margin-bottom:12px;
+
+}
+
+.success-box h2{
+
+    margin:0 0 10px;
+    color:#16a34a;
+
+}
+
+.success-box p{
+
+    color:#4b5563;
+    line-height:1.5;
+    margin-bottom:20px;
+
+}
+
    .loading-overlay{
     display:none;
     position:fixed;
@@ -652,6 +698,14 @@ function closeModal(){
  document.getElementById("allowanceModal").style.display="none";
 }
 
+document.getElementById("successOK").onclick = function(){
+
+    document.getElementById("successModal").style.display = "none";
+
+    closeModal();
+
+};
+
    // Convert uploaded image to Base64
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -771,7 +825,7 @@ if (!result.success) {
 }
 
 // ✅ SUCCESS
-alert("✅ Allowance submitted successfully!");
+document.getElementById("successModal").style.display = "flex";
 
 // Remove the driver's schedule card
 const driverCard = document.getElementById(
@@ -1065,6 +1119,27 @@ checkDriver(d.driver, d.date);
             Please wait while your allowance<br>
             and receipt(s) are being uploaded.
         </p>
+
+    </div>
+
+</div>
+
+   <div id="successModal" class="success-overlay">
+
+    <div class="success-box">
+
+        <div class="success-icon">✅</div>
+
+        <h2>Submitted Successfully</h2>
+
+        <p>
+            Your meal allowance has been
+            recorded for review and approval.
+        </p>
+
+        <button id="successOK" class="allowance-btn">
+            OK
+        </button>
 
     </div>
 
