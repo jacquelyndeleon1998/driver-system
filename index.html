@@ -921,12 +921,11 @@ let approvedDates = {};
 
    approvalRows.forEach(row => {
 
-      console.log(row);
+    const parts = row.split(",");
 
-    const cols = row.split(",");
+    const status = parts.pop().replace(/"/g, "").trim();
 
-    const date = (cols[0] || "").replace(/"/g, "").trim();
-    const status = (cols[1] || "").replace(/"/g, "").trim();
+    const date = parts.join(",").replace(/"/g, "").trim();
 
     approvedDates[date] = status;
 
