@@ -540,6 +540,44 @@ h1{text-align:center;color:#333}
   </div>
 </div>
 
+    <div id="loadingOverlay" class="loading-overlay">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <h3>Uploading...</h3>
+
+        <p>
+            Please wait while your allowance<br>
+            and receipt(s) are being uploaded.
+        </p>
+
+    </div>
+
+</div>
+
+   <div id="successModal" class="success-overlay">
+
+    <div class="success-box">
+
+        <div class="success-icon">✅</div>
+
+        <h2>Submitted Successfully</h2>
+
+        <p>
+            Your meal allowance has been
+            recorded for review and approval.
+        </p>
+
+        <button id="successOK" class="allowance-btn">
+            OK
+        </button>
+
+    </div>
+
+</div>
+
 <script>
 
    function hideDriverCard(driver) {
@@ -698,13 +736,13 @@ function closeModal(){
  document.getElementById("allowanceModal").style.display="none";
 }
 
-document.getElementById("successOK").onclick = function(){
+window.addEventListener("DOMContentLoaded", () => {
 
-    document.getElementById("successModal").style.display = "none";
+    document.getElementById("successOK").onclick = function () {
+        document.getElementById("successModal").style.display = "none";
+    };
 
-    closeModal();
-
-};
+});
 
    // Convert uploaded image to Base64
 function fileToBase64(file) {
@@ -1107,43 +1145,7 @@ checkDriver(d.driver, d.date);
    
     </script>
 
-   <div id="loadingOverlay" class="loading-overlay">
-
-    <div class="loading-box">
-
-        <div class="spinner"></div>
-
-        <h3>Uploading...</h3>
-
-        <p>
-            Please wait while your allowance<br>
-            and receipt(s) are being uploaded.
-        </p>
-
-    </div>
-
-</div>
-
-   <div id="successModal" class="success-overlay">
-
-    <div class="success-box">
-
-        <div class="success-icon">✅</div>
-
-        <h2>Submitted Successfully</h2>
-
-        <p>
-            Your meal allowance has been
-            recorded for review and approval.
-        </p>
-
-        <button id="successOK" class="allowance-btn">
-            OK
-        </button>
-
-    </div>
-
-</div>
+  
 
 </body>
 </html>
