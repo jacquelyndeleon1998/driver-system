@@ -8,6 +8,40 @@
 
 <style>
 
+   .upload-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.upload-btn{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    color:#fff;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.camera-btn{
+    background:#2563eb;
+}
+
+.gallery-btn{
+    background:#6b7280;
+}
+
+@media (max-width:600px){
+
+    .upload-btn{
+        font-size:13px;
+        padding:10px;
+    }
+
+}
+
    .rest-day-row{
     background:#f8d7da;   /* Light red */
     color:#721c24;
@@ -202,19 +236,21 @@ h1{text-align:center;color:#333}
     multiple
     style="display:none;">
 
-<button type="button"
-        class="allowance-btn"
-        style="background:#2563eb;margin-top:8px;"
-        onclick="document.getElementById('cameraInput').click();">
-📷 Take Photo
-</button>
+<div class="upload-buttons">
 
-<button type="button"
-        class="allowance-btn"
-        style="background:#6b7280;margin-top:8px;"
-        onclick="document.getElementById('galleryInput').click();">
-🖼️ Choose Gallery
-</button>
+  <button type="button"
+          class="upload-btn camera-btn"
+          onclick="document.getElementById('cameraInput').click();">
+    📷 Take Photo
+  </button>
+
+  <button type="button"
+          class="upload-btn gallery-btn"
+          onclick="document.getElementById('galleryInput').click();">
+    🖼️ Gallery
+  </button>
+
+</div>
 
 <div id="receiptPreview" style="margin-top:10px;"></div>
 
