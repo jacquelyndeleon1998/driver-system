@@ -340,18 +340,49 @@ function refreshReceiptPreview() {
   const preview = document.getElementById("receiptPreview");
   preview.innerHTML = "";
 
-  selectedReceipts.forEach(file => {
+  selectedReceipts.forEach((file, index) => {
+
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "inline-block";
+    wrapper.style.position = "relative";
+    wrapper.style.margin = "5px";
 
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
-
     img.style.width = "80px";
-    img.style.marginRight = "5px";
-    img.style.marginBottom = "5px";
-    img.style.borderRadius = "6px";
+    img.style.height = "80px";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "8px";
     img.style.border = "1px solid #ccc";
 
-    preview.appendChild(img);
+    const removeBtn = document.createElement("button");
+    removeBtn.innerHTML = "✕";
+    removeBtn.type = "button";
+
+    removeBtn.style.position = "absolute";
+    removeBtn.style.top = "-8px";
+    removeBtn.style.right = "-8px";
+    removeBtn.style.width = "22px";
+    removeBtn.style.height = "22px";
+    removeBtn.style.border = "none";
+    removeBtn.style.borderRadius = "50%";
+    removeBtn.style.background = "#dc2626";
+    removeBtn.style.color = "#fff";
+    removeBtn.style.cursor = "pointer";
+    removeBtn.style.fontWeight = "bold";
+
+    removeBtn.onclick = function () {
+
+      selectedReceipts.splice(index, 1);
+
+      refreshReceiptPreview();
+
+    };
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(removeBtn);
+
+    preview.appendChild(wrapper);
 
   });
 
