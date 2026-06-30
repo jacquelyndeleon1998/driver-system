@@ -709,7 +709,8 @@ return value && value.trim() !== ""
     : "";
 };
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
-
+const approvalURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=441234750&single=true&output=csv";
+   
 const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
 
 let currentDriver="", currentDate="", currentPassenger="";
@@ -905,11 +906,29 @@ window.onload = async function() {
 
    const today = new Date().toISOString().split("T")[0];
 
- const response = await fetch(sheetURL);
- const data = await response.text();
- const rows = data.trim().split("\n").slice(1);
+// Load Schedule Sheet
+const response = await fetch(sheetURL);
+const data = await response.text();
+const rows = data.trim().split("\n").slice(1);
 
- grouped = {};
+// Load Approval Sheet
+const approvalResponse = await fetch(approvalURL);
+const approvalData = await approvalResponse.text();
+const approvalRows = approvalData.trim().split("\n").slice(1);
+
+grouped = {};
+let approvedDates = {};
+
+   approvalRows.forEach(row => {
+
+    const cols = row.split(",");
+
+    const date = (cols[0] || "").replace(/"/g, "").trim();
+    const status = (cols[1] || "").replace(/"/g, "").trim();
+
+    approvedDates[date] = status;
+
+});
 
  rows.forEach(row => {
   const cols = [];
