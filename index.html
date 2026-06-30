@@ -1015,10 +1015,7 @@ dates.forEach(date => {
 console.log("Schedule Date:", date);
 console.log("Approval Status:", approvedDates[date]);
    
-   // Skip dates that are not approved
-if ((approvedDates[date] || "Pending") !== "Approved") {
-    return;
-}
+  
 
    const now = new Date();
 
