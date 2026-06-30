@@ -8,6 +8,58 @@
 
 <style>
 
+   .loading-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:99999;
+
+    justify-content:center;
+    align-items:center;
+}
+
+.loading-box{
+
+    width:280px;
+    background:white;
+    border-radius:14px;
+    padding:25px;
+
+    text-align:center;
+
+    box-shadow:0 10px 35px rgba(0,0,0,.25);
+
+}
+
+.spinner{
+
+    width:55px;
+    height:55px;
+
+    margin:auto auto 18px;
+
+    border:5px solid #e5e7eb;
+    border-top:5px solid #16a34a;
+
+    border-radius:50%;
+
+    animation:spin 1s linear infinite;
+
+}
+
+@keyframes spin{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
    .upload-buttons{
     display:flex;
     gap:10px;
@@ -627,6 +679,8 @@ function fileToBase64(file) {
   if (isSubmitting) return; // block double click
   isSubmitting = true;
 
+    document.getElementById("loadingOverlay").style.display = "flex";
+
   const btn = document.querySelector("#allowanceModal .allowance-btn");
   btn.disabled = true;
   btn.innerText = "Submitting...";
@@ -748,6 +802,7 @@ closeModal();
     alert("Submission Error:\n\n" + err.message);
 
   } finally {
+     document.getElementById("loadingOverlay").style.display = "none";
     // reset lock
     isSubmitting = false;
     btn.disabled = false;
@@ -997,6 +1052,23 @@ checkDriver(d.driver, d.date);
    
    
     </script>
+
+   <div id="loadingOverlay" class="loading-overlay">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <h3>Uploading...</h3>
+
+        <p>
+            Please wait while your allowance<br>
+            and receipt(s) are being uploaded.
+        </p>
+
+    </div>
+
+</div>
 
 </body>
 </html>
