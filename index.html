@@ -168,7 +168,12 @@ h1{text-align:center;color:#333}
      <div id="receiptSection" style="display:none; margin-top:10px;">
   <label><b>Upload Parking Receipt(s)</b></label><br>
 
-  <input type="file" id="receiptFiles" multiple accept="image/*">
+<input
+    type="file"
+    id="receiptFiles"
+    accept="image/*"
+    capture="environment"
+    multiple>
 
   <div id="receiptPreview" style="margin-top:10px;"></div>
 </div>
