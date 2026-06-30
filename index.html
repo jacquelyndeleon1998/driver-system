@@ -34,7 +34,18 @@
 }
 
 @media (max-width:600px){
+.duty-time-row{
+    gap:8px;
+}
 
+.time-card input{
+    height:48px;
+    font-size:16px;
+}
+
+.section-title{
+    font-size:16px;
+}
     .upload-btn{
         font-size:13px;
         padding:10px;
@@ -224,6 +235,51 @@ h1{text-align:center;color:#333}
     font-weight:500;
     color:#111827;
 }
+
+   .section-title{
+    margin:18px 0 12px;
+    font-size:17px;
+    font-weight:700;
+    color:#1f2937;
+    border-bottom:2px solid #2563eb;
+    padding-bottom:5px;
+}
+
+.duty-time-row{
+    display:flex;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.time-card{
+    flex:1;
+}
+
+.time-card label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:#374151;
+    margin-bottom:6px;
+}
+
+.time-card input{
+    width:100%;
+    height:52px;
+    font-size:18px;
+    font-weight:600;
+    text-align:center;
+    border:2px solid #2563eb;
+    border-radius:10px;
+    background:#eff6ff;
+    box-sizing:border-box;
+}
+
+.time-card input:focus{
+    outline:none;
+    border-color:#1d4ed8;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
    
 </style>
 </head>
@@ -258,8 +314,23 @@ h1{text-align:center;color:#333}
 
 </div>
 
-    <input id="allowanceTimeIn" type="time">
-    <input id="allowanceTimeOut" type="time">
+  <h4 class="section-title">
+    🕒 Duty Time
+</h4>
+
+<div class="duty-time-row">
+
+    <div class="time-card">
+        <label for="allowanceTimeIn">Time In</label>
+        <input id="allowanceTimeIn" type="time">
+    </div>
+
+    <div class="time-card">
+        <label for="allowanceTimeOut">Time Out</label>
+        <input id="allowanceTimeOut" type="time">
+    </div>
+
+</div>
     <input id="allowanceBreakfast" type="number" placeholder="Breakfast Amount">
     <input id="allowanceLunch" type="number" placeholder="Lunch Amount">
     <input id="allowanceDinner" type="number" placeholder="Dinner Amount">
