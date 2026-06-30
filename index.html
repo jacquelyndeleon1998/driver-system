@@ -1012,6 +1012,11 @@ dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
+   // Skip dates that are not approved
+if ((approvedDates[date] || "Pending") !== "Approved") {
+    return;
+}
+
    const now = new Date();
 
 const isToday =
