@@ -195,6 +195,37 @@ h1{text-align:center;color:#333}
     font-size:16px;
     text-align:left;
 }
+
+.trip-info-card{
+    background:#f8fafc;
+    border:1px solid #dbe4ee;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:18px;
+}
+
+.info-item{
+    margin-bottom:10px;
+}
+
+.info-item:last-child{
+    margin-bottom:0;
+}
+
+.info-label{
+    font-size:12px;
+    font-weight:bold;
+    color:#6b7280;
+    text-transform:uppercase;
+    margin-bottom:2px;
+}
+
+.info-value{
+    font-size:16px;
+    font-weight:600;
+    color:#111827;
+}
+   
 </style>
 </head>
 <body>
@@ -207,10 +238,26 @@ h1{text-align:center;color:#333}
 
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
-    <h3>Meal Allowance</h3>
-    <p id="modalDriver"></p>
-    <p id="modalDate"></p>
-    <p id="modalPassenger"></p>
+   <h3 style="margin-top:0;">Meal Allowance</h3>
+
+<div class="trip-info-card">
+
+  <div class="info-item">
+    <div class="info-label">🚗 Driver</div>
+    <div id="modalDriver" class="info-value"></div>
+  </div>
+
+  <div class="info-item">
+    <div class="info-label">📅 Date</div>
+    <div id="modalDate" class="info-value"></div>
+  </div>
+
+  <div class="info-item">
+    <div class="info-label">👥 Passenger(s)</div>
+    <div id="modalPassenger" class="info-value"></div>
+  </div>
+
+</div>
 
     <input id="allowanceTimeIn" type="time">
     <input id="allowanceTimeOut" type="time">
@@ -412,9 +459,9 @@ function submitAllowance(driver,date,passenger){
  currentDate=date;
  currentPassenger=passenger;
 
- document.getElementById("modalDriver").innerHTML="<b>Driver:</b> "+driver;
- document.getElementById("modalDate").innerHTML="<b>Date:</b> "+date;
- document.getElementById("modalPassenger").innerHTML="<b>Passenger(s):</b> "+passenger;
+ document.getElementById("modalDriver").textContent = driver;
+document.getElementById("modalDate").textContent = date;
+document.getElementById("modalPassenger").textContent = passenger;
 
  document.getElementById("allowanceModal").style.display="block";
 }
