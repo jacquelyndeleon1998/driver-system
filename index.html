@@ -921,6 +921,8 @@ let approvedDates = {};
 
    approvalRows.forEach(row => {
 
+      console.log(row);
+
     const cols = row.split(",");
 
     const date = (cols[0] || "").replace(/"/g, "").trim();
@@ -929,6 +931,8 @@ let approvedDates = {};
     approvedDates[date] = status;
 
 });
+
+   console.log("Approved Dates:", approvedDates);
 
  rows.forEach(row => {
   const cols = [];
@@ -1009,6 +1013,8 @@ grouped[key].trips.push({
 const container = document.getElementById("driversContainer");
 
 dates.forEach(date => {
+
+   console.log("Checking:", date, "Status:", approvedDates[date]);
 
   const scheduleDate = new Date(date);
 
@@ -1183,15 +1189,12 @@ checkDriver(d.driver, d.date);
 
 }; // end window.onload
 
-   
-   
+
     </script>
 <script>
 document.getElementById("successOK").onclick = function () {
     document.getElementById("successModal").style.display = "none";
 };
 </script>
-  
-
 </body>
 </html>
