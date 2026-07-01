@@ -943,6 +943,9 @@ window.onload = async function() {
 
    await loadSubmittedAllowances();
 
+   container.innerHTML = "";
+   pageHTML = "";
+
    const today = new Date().toISOString().split("T")[0];
 
 // Load Schedule Sheet
@@ -1198,13 +1201,16 @@ trip.requestedBy
       });
 
       const passengers =
-        [...new Set(d.trips.map(t => t.requestedBy))]
-        .join(", ");
+    [...new Set(d.trips.map(t => t.requestedBy))]
+    .join(",");
+
 const submittedKey = `${d.driver}|${d.date}`;
 
+// Skip rendering completely if already submitted
 if (submittedDrivers[submittedKey]) {
     return;
 }
+
       pageHTML += `
 <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
