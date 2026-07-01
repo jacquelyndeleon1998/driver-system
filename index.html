@@ -1105,13 +1105,25 @@ dates.forEach(date => {
 
   if (!hideSummary) {
     pageHTML += `
-      <div class="summary-card">
-        <h2>${date} | ${dayName}</h2>
-        <table>
-          ${tableRows}
-        </table>
-      </div>
-    `;
+  <div class="driver-card">
+
+    <h2>${d.driver}</h2>
+
+    ${show("Itinerary", d.itinerary)}
+
+    <p><b>Date:</b> ${d.date}</p>
+    <p><b>Time In:</b> ${d.timeIn}</p>
+    <p><b>Vehicle:</b> ${d.vehicle}</p>
+
+    ${tripsHTML}
+
+    <button class="allowance-btn"
+      onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+      Submit Meal Allowance
+    </button>
+
+  </div>
+`;
   }
 
   // ======================
@@ -1136,36 +1148,40 @@ dates.forEach(date => {
 
       let tripsHTML = "";
 
-      d.trips.forEach((trip, index) => {
-        tripsHTML += `
-          <div class="trip">
-            Pick-Up ${index + 1}
-          </div>
-        `;
-      });
+d.trips.forEach((trip, index) => {
+  tripsHTML += `
+    <div class="trip">
 
-      const passengers =
-        [...new Set(d.trips.map(t => t.requestedBy))]
-        .join(",");
+      <div class="trip-title">
+        Pick-Up ${index + 1}
+      </div>
 
-      const submittedKey = `${d.driver}|${d.date}`;
-      if (submittedDrivers[submittedKey]) return;
+      ${show("Pick Up Time", trip.pickupTime)}
 
-      pageHTML += `
-  <div class="driver-card">
-    <h2>${d.driver}</h2>
+      ${
+        trip.requestedBy
+          ? `<p><b>Passenger:</b> ${trip.requestedBy}${
+              trip.contactNumber
+                ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
+                : ""
+            }</p>`
+          : ""
+      }
 
-    ${show("Itinerary", d.itinerary)}
+      ${
+        trip.origin
+          ? `
+        <p><b>Pick-Up Address:</b> ${trip.origin}</p>
+        <p><b>Destination:</b> ${trip.destination}</p>
+      `
+          : ""
+      }
 
-    <p><b>Date:</b> ${d.date}</p>
-    <p><b>Time In:</b> ${d.timeIn}</p>
-    <p><b>Vehicle:</b> ${d.vehicle}</p>
+      ${show("Remarks", trip.remarks)}
 
-    ${tripsHTML}
-  </div>
-`;
-    });
-
+    </div>
+  `;
+});
 });
 
 container.innerHTML = pageHTML;
