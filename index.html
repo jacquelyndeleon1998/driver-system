@@ -1054,187 +1054,111 @@ const container = document.getElementById("driversContainer");
 
 let pageHTML = "";
 
-dates.forEach(date => {
+const now = new Date();
+const today = new Date();
+today.setHours(0,0,0,0);
 
-   console.log("Checking:", date, "Status:", approvedDates[date]);
+dates.forEach(date => {
 
   const scheduleDate = new Date(date);
 
-    // Only show approved dates
   const status = (approvedDates[date] || "").trim().toLowerCase();
 
-  if (status !== "approved") {
-      return;
-  }
+  if (status !== "approved") return;
 
-console.log("Schedule Date:", date);
-console.log("Approval Status:", approvedDates[date]);
-   
-  
+  const checkDate = new Date(scheduleDate);
+  checkDate.setHours(0,0,0,0);
 
-   const now = new Date();
+  if (checkDate < today) return;
 
-const isToday =
+  const isToday =
     scheduleDate.toDateString() === now.toDateString();
 
-const hideSummary =
+  const hideSummary =
     isToday && now.getHours() >= 16;
-
-    // Hide summaries for dates before today
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  scheduleDate.setHours(0,0,0,0);
-
-  if (scheduleDate < today) {
-      return;
-  }
 
   const dayName = scheduleDate.toLocaleDateString("en-US", {
     weekday: "long"
   });
 
-  // SUMMARY TABLE
-
+  // ======================
+  // SUMMARY
+  // ======================
   let tableRows = "";
 
   Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
     const isRestDay =
-  driver.itinerary &&
-  driver.itinerary.toLowerCase().trim() === "rest day";
+      driver.itinerary &&
+      driver.itinerary.toLowerCase().trim() === "rest day";
 
-tableRows += `
-  <tr class="${isRestDay ? "rest-day-row" : ""}">
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
-  </tr>
-`;
+    tableRows += `
+      <tr class="${isRestDay ? "rest-day-row" : ""}">
+        <td>${driver.driver}</td>
+        <td>${driver.timeIn}</td>
+        <td>${driver.vehicle}</td>
+        <td>${driver.itinerary}</td>
+      </tr>
+    `;
   });
 
-if (!hideSummary) {
+  if (!hideSummary) {
+    pageHTML += `
+      <div class="summary-card">
+        <h2>${date} | ${dayName}</h2>
+        <table>
+          ${tableRows}
+        </table>
+      </div>
+    `;
+  }
 
-pageHTML += `
-<div class="summary-card" id="summary-${date}">
-
-  <div class="summary-header">
-  <h2>${date} | ${dayName}</h2>
-</div>
-
-   <table class="summary-table">
-
-<tr>
-          <th style="padding:4px;text-align:center;">Driver Name</th>
-          <th style="padding:4px;text-align:center;">Time In</th>
-          <th style="padding:4px;text-align:center;">Vehicle</th>
-          <th style="padding:4px;text-align:center;">Itinerary</th>
-        </tr>
-
-        ${tableRows}
-      </table>
-    </div>
-  `;
-   }
-
-  // DRIVER DETAILS
+  // ======================
+  // DRIVER DETAILS (MOVED HERE)
+  // ======================
 
   Object.values(grouped)
     .filter(d => d.date === date)
     .forEach(d => {
 
-     const noAllowanceItineraries = [
-    "rest day",
-    "am carpool",
-    "standby",
-    "banking",
-    "pm carpool"
-];
+      const noAllowanceItineraries = [
+        "rest day",
+        "am carpool",
+        "standby",
+        "banking",
+        "pm carpool"
+      ];
 
-if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
-    return;
-}
+      if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
+        return;
+      }
+
       let tripsHTML = "";
 
-      d.trips.forEach((trip,index) => {
-
+      d.trips.forEach((trip, index) => {
         tripsHTML += `
-        <div class="trip">
-
-          <div class="trip-title">
+          <div class="trip">
             Pick-Up ${index + 1}
           </div>
-
-         ${show("Pick Up Time", trip.pickupTime)}
-
-${
-trip.requestedBy
-? `<p><b>Passenger:</b> ${trip.requestedBy}${
-    trip.contactNumber
-      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
-      : ""
-  }</p>`
-: ""
-}
-
-          ${trip.origin ? `
-          <p><b>Pick-Up Address:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-              ${trip.origin}
-            </a>
-          </p>
-
-          <p><b>Destination:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-              ${trip.destination}
-            </a>
-          </p>
-          ` : ""}
-
-          ${show("Remarks", trip.remarks)}
-
-        </div>
         `;
       });
 
       const passengers =
-    [...new Set(d.trips.map(t => t.requestedBy))]
-    .join(",");
+        [...new Set(d.trips.map(t => t.requestedBy))]
+        .join(",");
 
-const submittedKey = `${d.driver}|${d.date}`;
-
-// Skip rendering completely if already submitted
-if (submittedDrivers[submittedKey]) {
-    return;
-}
+      const submittedKey = `${d.driver}|${d.date}`;
+      if (submittedDrivers[submittedKey]) return;
 
       pageHTML += `
-<div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
-
-        <div class="driver-header">
+        <div class="driver-card">
           <h2>${d.driver}</h2>
-
-          ${show("Itinerary", d.itinerary)}
-
-          <p><b>Date:</b> ${d.date}</p>
-          <p><b>Time In:</b> ${d.timeIn}</p>
-          <p><b>Vehicle:</b> ${d.vehicle}</p>
+          ${tripsHTML}
         </div>
-
-        ${tripsHTML}
-
-        <button class="allowance-btn"
-          onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-          Submit Meal Allowance
-        </button>
-
-       </div>
       `;
     });
 
-}); // end dates.forEach
+});
 
 container.innerHTML = pageHTML;
 
