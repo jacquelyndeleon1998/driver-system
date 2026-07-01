@@ -1050,6 +1050,8 @@ grouped[key].trips.push({
 
 const container = document.getElementById("driversContainer");
 
+let pageHTML = "";
+
 dates.forEach(date => {
 
    console.log("Checking:", date, "Status:", approvedDates[date]);
@@ -1111,7 +1113,7 @@ tableRows += `
 
 if (!hideSummary) {
 
-container.innerHTML += `
+pageHTML += `
 <div class="summary-card" id="summary-${date}">
 
   <div class="summary-header">
@@ -1203,8 +1205,8 @@ const submittedKey = `${d.driver}|${d.date}`;
 if (submittedDrivers[submittedKey]) {
     return;
 }
-      container.innerHTML += `
-    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+      pageHTML += `
+<div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
         <div class="driver-header">
           <h2>${d.driver}</h2>
@@ -1228,6 +1230,10 @@ if (submittedDrivers[submittedKey]) {
     });
 
 }); // end dates.forEach
+
+container.innerHTML = pageHTML;
+
+document.getElementById("loadingScreen").style.display = "none";
 
 }; // end window.onload
 
