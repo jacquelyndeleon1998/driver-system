@@ -415,10 +415,48 @@ h1{text-align:center;color:#333}
     width:100%;
     box-sizing:border-box;
 }
+
+   .loading-screen{
+    position:fixed;
+    inset:0;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999999;
+}
+
+.loading-box{
+    text-align:center;
+}
+
+.loading-title{
+    font-size:28px;
+    font-weight:bold;
+    color:#1b5e20;
+    margin-bottom:10px;
+}
+
+.loading-text{
+    color:#666;
+    font-size:15px;
+}
    
 </style>
 </head>
 <body>
+
+   <div id="loadingScreen" class="loading-screen">
+    <div class="loading-box">
+        <div class="loading-title">
+            Dispatch Hub
+        </div>
+
+        <div class="loading-text">
+            Loading schedules...
+        </div>
+    </div>
+</div>
 
 <h1>Daily Dispatch Hub</h1>
      <p class="page-description">
