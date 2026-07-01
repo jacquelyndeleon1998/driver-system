@@ -943,10 +943,9 @@ window.onload = async function() {
 
    await loadSubmittedAllowances();
 
-   container.innerHTML = "";
-   pageHTML = "";
+pageHTML = "";
 
-   const today = new Date().toISOString().split("T")[0];
+const today = new Date().toISOString().split("T")[0];
 
 // Load Schedule Sheet
 const response = await fetch(sheetURL);
