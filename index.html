@@ -940,10 +940,11 @@ closeModal();
   }
 }
 window.onload = async function() {
-
+   const container = document.getElementById("driversContainer");
+let pageHTML = "";
    await loadSubmittedAllowances();
 
-pageHTML = "";
+
 
 
 
@@ -1050,9 +1051,9 @@ grouped[key].trips.push({
   Object.values(grouped).map(d => d.date)
 )];
 
-const container = document.getElementById("driversContainer");
 
-let pageHTML = "";
+
+
 
 const now = new Date();
 const today = new Date();
@@ -1151,11 +1152,18 @@ dates.forEach(date => {
       if (submittedDrivers[submittedKey]) return;
 
       pageHTML += `
-        <div class="driver-card">
-          <h2>${d.driver}</h2>
-          ${tripsHTML}
-        </div>
-      `;
+  <div class="driver-card">
+    <h2>${d.driver}</h2>
+
+    ${show("Itinerary", d.itinerary)}
+
+    <p><b>Date:</b> ${d.date}</p>
+    <p><b>Time In:</b> ${d.timeIn}</p>
+    <p><b>Vehicle:</b> ${d.vehicle}</p>
+
+    ${tripsHTML}
+  </div>
+`;
     });
 
 });
