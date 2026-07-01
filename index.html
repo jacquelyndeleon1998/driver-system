@@ -901,297 +901,240 @@ closeModal();
     btn.innerText = "Submit Meal Allowance";
   }
 }
-window.onload = async function() {
+window.onload = async function () {
 
-   await loadSubmittedAllowances();
+  document.getElementById("loadingOverlay").style.display = "flex";
 
-   const today = new Date().toISOString().split("T")[0];
+  try {
 
-// Load Schedule Sheet
-const response = await fetch(sheetURL);
-const data = await response.text();
-const rows = data.trim().split("\n").slice(1);
+    await loadSubmittedAllowances();
 
-// Load Approval Sheet
-const approvalResponse = await fetch(approvalURL);
-const approvalData = await approvalResponse.text();
-const approvalRows = approvalData.trim().split("\n").slice(1);
+    const today = new Date().toISOString().split("T")[0];
 
-grouped = {};
-let approvedDates = {};
+    // Load Schedule Sheet
+    const response = await fetch(sheetURL);
+    const data = await response.text();
+    const rows = data.trim().split("\n").slice(1);
 
-   approvalRows.forEach(row => {
+    // Load Approval Sheet
+    const approvalResponse = await fetch(approvalURL);
+    const approvalData = await approvalResponse.text();
+    const approvalRows = approvalData.trim().split("\n").slice(1);
 
-    const parts = row.split(",");
+    grouped = {};
+    let approvedDates = {};
 
-    const status = parts.pop().replace(/"/g, "").trim();
+    approvalRows.forEach(row => {
+      const parts = row.split(",");
+      const status = parts.pop().replace(/"/g, "").trim();
+      const date = parts.join(",").replace(/"/g, "").trim();
+      approvedDates[date] = status;
+    });
 
-    const date = parts.join(",").replace(/"/g, "").trim();
+    console.log("Approved Dates:", approvedDates);
 
-    approvedDates[date] = status;
+    rows.forEach(row => {
+      const cols = [];
+      let current = "";
+      let insideQuotes = false;
 
-});
+      for (let i = 0; i < row.length; i++) {
+        const char = row[i];
 
-   console.log("Approved Dates:", approvedDates);
+        if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          cols.push(current.trim());
+          current = "";
+        } else {
+          current += char;
+        }
+      }
 
- rows.forEach(row => {
-  const cols = [];
-let current = "";
-let insideQuotes = false;
+      cols.push(current.trim());
+      if (cols.length < 11) return;
 
-for (let i = 0; i < row.length; i++) {
-  const char = row[i];
+      const driver = cols[0] || "";
+      const date = cols[1] || "";
+      const timeIn = cols[2] || "";
+      const vehicle = cols[3] || "";
+      const itinerary = cols[4] || "";
+      const pickupTime = cols[5] || "";
+      const requestedBy = cols[6] || "";
+      const contactNumber = cols[7] || "";
+      const origin = (cols[8] || "").replace(/"/g, "").trim();
+      const destination = (cols[9] || "").replace(/"/g, "").trim();
+      const remarks = cols[10] || "";
 
-  if (char === '"' ) {
-    insideQuotes = !insideQuotes;
-  } else if (char === ',' && !insideQuotes) {
-    cols.push(current.trim());
-    current = "";
-  } else {
-    current += char;
-  }
-}
-cols.push(current.trim());
-  if (cols.length < 11) return;
+      const key = driver + "_" + date;
 
-   const driver = cols[0] || "";
-const date = cols[1] || "";
-const timeIn = cols[2] || "";
-const vehicle = cols[3] || "";
-const itinerary = cols[4] || "";
+      if (!summaryDrivers[date]) {
+        summaryDrivers[date] = {};
+      }
 
-const pickupTime = cols[5] || "";
-const requestedBy = cols[6] || "";
-const contactNumber = cols[7] || "";
+      if (!summaryDrivers[date][driver]) {
+        summaryDrivers[date][driver] = {
+          driver,
+          timeIn,
+          vehicle,
+          itinerary
+        };
+      }
 
-const origin = (cols[8] || "").replace(/"/g, "").trim();
-const destination = (cols[9] || "").replace(/"/g, "").trim();
-const remarks = cols[10] || "";
+      if (!grouped[key]) {
+        grouped[key] = {
+          driver,
+          date,
+          timeIn,
+          vehicle,
+          itinerary,
+          trips: []
+        };
+      }
 
-   const key = driver + "_" + date;
+      grouped[key].trips.push({
+        pickupTime,
+        requestedBy,
+        contactNumber,
+        origin,
+        destination,
+        remarks
+      });
 
-     if (!summaryDrivers[date]) {
-  summaryDrivers[date] = {};
-}
+    });
 
-if (!summaryDrivers[date][driver]) {
-  summaryDrivers[date][driver] = {
-    driver,
-    timeIn,
-    vehicle,
-    itinerary
-  };
-}
+    const dates = [...new Set(Object.values(grouped).map(d => d.date))];
+    const container = document.getElementById("driversContainer");
 
-   if (!grouped[key]) {
-  grouped[key] = {
-    driver,
-    date,
-    timeIn,
-    vehicle,
-    itinerary,
-    trips: []
-  };
-}
+    dates.forEach(date => {
 
-grouped[key].trips.push({
-  pickupTime,
-  requestedBy,
-  contactNumber,
-  origin,
-  destination,
-  remarks
-});
+      console.log("Checking:", date, "Status:", approvedDates[date]);
 
-   
- });
+      const scheduleDate = new Date(date);
 
-    const dates = [...new Set(
-  Object.values(grouped).map(d => d.date)
-)];
+      const status = (approvedDates[date] || "").trim().toLowerCase();
+      if (status !== "approved") return;
 
-const container = document.getElementById("driversContainer");
+      const now = new Date();
+      const isToday = scheduleDate.toDateString() === now.toDateString();
+      const hideSummary = isToday && now.getHours() >= 16;
 
-dates.forEach(date => {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      scheduleDate.setHours(0,0,0,0);
 
-   console.log("Checking:", date, "Status:", approvedDates[date]);
+      if (scheduleDate < today) return;
 
-  const scheduleDate = new Date(date);
+      const dayName = scheduleDate.toLocaleDateString("en-US", {
+        weekday: "long"
+      });
 
-    // Only show approved dates
-  const status = (approvedDates[date] || "").trim().toLowerCase();
+      let tableRows = "";
 
-  if (status !== "approved") {
-      return;
-  }
+      Object.values(summaryDrivers[date] || {}).forEach(driver => {
 
-console.log("Schedule Date:", date);
-console.log("Approval Status:", approvedDates[date]);
-   
-  
+        const isRestDay =
+          driver.itinerary &&
+          driver.itinerary.toLowerCase().trim() === "rest day";
 
-   const now = new Date();
-
-const isToday =
-    scheduleDate.toDateString() === now.toDateString();
-
-const hideSummary =
-    isToday && now.getHours() >= 16;
-
-    // Hide summaries for dates before today
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  scheduleDate.setHours(0,0,0,0);
-
-  if (scheduleDate < today) {
-      return;
-  }
-
-  const dayName = scheduleDate.toLocaleDateString("en-US", {
-    weekday: "long"
-  });
-
-  // SUMMARY TABLE
-
-  let tableRows = "";
-
-  Object.values(summaryDrivers[date] || {}).forEach(driver => {
-
-    const isRestDay =
-  driver.itinerary &&
-  driver.itinerary.toLowerCase().trim() === "rest day";
-
-tableRows += `
-  <tr class="${isRestDay ? "rest-day-row" : ""}">
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
-    <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
-  </tr>
-`;
-  });
-
-if (!hideSummary) {
-
-container.innerHTML += `
-<div class="summary-card" id="summary-${date}">
-
-  <div class="summary-header">
-  <h2>${date} | ${dayName}</h2>
-</div>
-
-   <table class="summary-table">
-
-<tr>
-          <th style="padding:4px;text-align:center;">Driver Name</th>
-          <th style="padding:4px;text-align:center;">Time In</th>
-          <th style="padding:4px;text-align:center;">Vehicle</th>
-          <th style="padding:4px;text-align:center;">Itinerary</th>
-        </tr>
-
-        ${tableRows}
-      </table>
-    </div>
-  `;
-   }
-
-  // DRIVER DETAILS
-
-  Object.values(grouped)
-    .filter(d => d.date === date)
-    .forEach(d => {
-
-     const noAllowanceItineraries = [
-    "rest day",
-    "am carpool",
-    "standby",
-    "banking",
-    "pm carpool"
-];
-
-if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) {
-    return;
-}
-      let tripsHTML = "";
-
-      d.trips.forEach((trip,index) => {
-
-        tripsHTML += `
-        <div class="trip">
-
-          <div class="trip-title">
-            Pick-Up ${index + 1}
-          </div>
-
-         ${show("Pick Up Time", trip.pickupTime)}
-
-${
-trip.requestedBy
-? `<p><b>Passenger:</b> ${trip.requestedBy}${
-    trip.contactNumber
-      ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
-      : ""
-  }</p>`
-: ""
-}
-
-          ${trip.origin ? `
-          <p><b>Pick-Up Address:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-              ${trip.origin}
-            </a>
-          </p>
-
-          <p><b>Destination:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-              ${trip.destination}
-            </a>
-          </p>
-          ` : ""}
-
-          ${show("Remarks", trip.remarks)}
-
-        </div>
+        tableRows += `
+          <tr class="${isRestDay ? "rest-day-row" : ""}">
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
+          </tr>
         `;
       });
 
-      const passengers =
-        [...new Set(d.trips.map(t => t.requestedBy))]
-        .join(", ");
-const submittedKey = `${d.driver}|${d.date}`;
+      if (!hideSummary) {
+        container.innerHTML += `
+          <div class="summary-card" id="summary-${date}">
+            <div class="summary-header">
+              <h2>${date} | ${dayName}</h2>
+            </div>
 
-if (submittedDrivers[submittedKey]) {
-    return;
-}
-      container.innerHTML += `
-    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+            <table class="summary-table">
+              <tr>
+                <th>Driver Name</th>
+                <th>Time In</th>
+                <th>Vehicle</th>
+                <th>Itinerary</th>
+              </tr>
+              ${tableRows}
+            </table>
+          </div>
+        `;
+      }
 
-        <div class="driver-header">
-          <h2>${d.driver}</h2>
+      Object.values(grouped)
+        .filter(d => d.date === date)
+        .forEach(d => {
 
-          ${show("Itinerary", d.itinerary)}
+          const noAllowanceItineraries = [
+            "rest day",
+            "am carpool",
+            "standby",
+            "banking",
+            "pm carpool"
+          ];
 
-          <p><b>Date:</b> ${d.date}</p>
-          <p><b>Time In:</b> ${d.timeIn}</p>
-          <p><b>Vehicle:</b> ${d.vehicle}</p>
-        </div>
+          if (noAllowanceItineraries.includes((d.itinerary || "").toLowerCase().trim())) return;
 
-        ${tripsHTML}
+          let tripsHTML = "";
 
-        <button class="allowance-btn"
-          onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-          Submit Meal Allowance
-        </button>
+          d.trips.forEach((trip,index) => {
 
-       </div>
-      `;
+            tripsHTML += `
+              <div class="trip">
+                <div class="trip-title">Pick-Up ${index + 1}</div>
+                ${show("Pick Up Time", trip.pickupTime)}
+
+                ${trip.requestedBy
+                  ? `<p><b>Passenger:</b> ${trip.requestedBy}</p>`
+                  : ""
+                }
+
+              </div>
+            `;
+          });
+
+          const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
+          const submittedKey = `${d.driver}|${d.date}`;
+
+          if (submittedDrivers[submittedKey]) return;
+
+          container.innerHTML += `
+            <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+
+              <div class="driver-header">
+                <h2>${d.driver}</h2>
+                ${show("Itinerary", d.itinerary)}
+                <p><b>Date:</b> ${d.date}</p>
+                <p><b>Time In:</b> ${d.timeIn}</p>
+                <p><b>Vehicle:</b> ${d.vehicle}</p>
+              </div>
+
+              ${tripsHTML}
+
+              <button class="allowance-btn"
+                onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+                Submit Meal Allowance
+              </button>
+
+            </div>
+          `;
+        });
+
     });
 
-}); // end dates.forEach
-
-}; // end window.onload
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load schedule.");
+  } finally {
+    document.getElementById("loadingOverlay").style.display = "none";
+  }
+};
 
 
     </script>
