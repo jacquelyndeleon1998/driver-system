@@ -353,7 +353,7 @@ h1{
     width:100%;
     border-collapse:collapse;
     table-layout:fixed;
-    font-size:11px;
+    font-size:12px;
     text-align:center;
 }
 
@@ -377,7 +377,8 @@ h1{
 
 .summary-table th:nth-child(2),
 .summary-table td:nth-child(2){
-    width:18%;
+    width:22%;
+    white-space:nowrap;
 }
 
 .summary-table th:nth-child(3),
@@ -387,9 +388,8 @@ h1{
 
 .summary-table th:nth-child(4),
 .summary-table td:nth-child(4){
-    width:25%;
+    width:21%;
 }
-
 .summary-table tr:last-child td{
     border-bottom:none;
 }
@@ -422,7 +422,7 @@ h1{
 
     font-size:13px;
     font-weight:600;
-    color:#6b7280;
+   color:rgba(255,255,255,.88);
 
     white-space:nowrap;
 }
@@ -431,9 +431,25 @@ h1{
     flex:1;
     font-size:14px;
     font-weight:500;
-    color:#111827;
+     color:#ffffff;
     word-break:break-word;
 }
+.driver-header .info-label{
+    color:rgba(255,255,255,.88);
+}
+
+.driver-header .info-value{
+    color:#fff;
+}
+
+   .trip .info-value,
+.trip .info-value a{
+    font-size:14px;
+    font-weight:500;
+    color:#111827;
+    text-decoration:none;
+}
+   
    .trip .info-label{
     color:#6b7280;
     font-weight:600;
@@ -1261,7 +1277,7 @@ trip.requestedBy
 
 ${trip.origin ? `
 <div class="info-item">
- <div class="info-label">PickUp Add.</div>
+<div class="info-label">Origin</div>
     <div class="info-value">
         <a target="_blank"
            href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
