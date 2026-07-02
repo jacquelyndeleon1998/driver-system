@@ -327,18 +327,29 @@ h1{
     box-sizing:border-box;
 }
 
-    .summary-table{
+   .summary-table{
     width:100%;
     border-collapse:collapse;
-    font-size:12px;
-    text-align:center;
+    font-size:13px;
+    text-align:left;
 }
 
-.summary-table th,
+.summary-table th{
+    background:#ecfdf5;
+    color:#14532d;
+    font-weight:700;
+    padding:8px;
+    border-bottom:2px solid #bbf7d0;
+}
+
 .summary-table td{
-    padding:2px 4px;
-    white-space:nowrap;
-    line-height:1.1;
+    padding:8px;
+    border-bottom:1px solid #e5e7eb;
+    color:#374151;
+}
+
+.summary-table tr:last-child td{
+    border-bottom:none;
 }
 
 .driver-header h2{
@@ -1109,18 +1120,22 @@ window.onload = async function () {
 
       if (!hideSummary) {
         container.innerHTML += `
-          <div class="summary-card" id="summary-${date}">
-            <div class="summary-header">
-              <h2>${date} | ${dayName}</h2>
-            </div>
+        <div class="summary-card" id="summary-${date}">
 
-            <table class="summary-table">
+    <div class="summary-header">
+        <h2>📅 Today's Schedule</h2>
+        <div style="font-size:13px;opacity:.9;margin-top:4px;">
+            ${dayName} • ${date}
+        </div>
+    </div>
+
+    <table class="summary-table">
               <tr>
-                <th>Driver Name</th>
-                <th>Time In</th>
-                <th>Vehicle</th>
-                <th>Itinerary</th>
-              </tr>
+    <th>Driver</th>
+    <th>Duty</th>
+    <th>Vehicle</th>
+    <th>Assignment</th>
+</tr>
               ${tableRows}
             </table>
           </div>
