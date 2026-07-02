@@ -350,6 +350,7 @@ h1{
 
  .summary-table{
     width:100%;
+      table-layout:auto;
     border-collapse:collapse;
     font-size:12px;
 }
@@ -392,7 +393,7 @@ h1{
 
 .summary-table th:nth-child(2),
 .summary-table td:nth-child(2){
-    width:20%;
+    white-space: nowrap;
 }
 
 .summary-table th:nth-child(3),
@@ -406,6 +407,20 @@ h1{
 }
 .summary-table tr:last-child td{
     border-bottom:none;
+}
+
+   .summary-table th:first-child,
+.summary-table td:first-child{
+    text-align:left;
+}
+
+.summary-table th:nth-child(2),
+.summary-table td:nth-child(2),
+.summary-table th:nth-child(3),
+.summary-table td:nth-child(3),
+.summary-table th:nth-child(4),
+.summary-table td:nth-child(4){
+    text-align:center;
 }
 
 .driver-header h2{
