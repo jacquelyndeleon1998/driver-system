@@ -349,25 +349,35 @@ h1{
     box-sizing:border-box;
 }
 
-   .summary-table{
+ .summary-table{
     width:100%;
     border-collapse:collapse;
     font-size:13px;
-    text-align:left;
+    text-align:center;
 }
 
 .summary-table th{
     background:#ecfdf5;
     color:#14532d;
     font-weight:700;
-    padding:8px;
+  padding:6px 8px;
     border-bottom:2px solid #bbf7d0;
+   white-space:nowrap;
 }
 
 .summary-table td{
-    padding:8px;
+   padding:6px 8px;
     border-bottom:1px solid #e5e7eb;
     color:#374151;
+   white-space:nowrap;
+}
+   .summary-table th:nth-child(1),
+.summary-table td:nth-child(1),
+.summary-table th:nth-child(2),
+.summary-table td:nth-child(2),
+.summary-table th:nth-child(3),
+.summary-table td:nth-child(3){
+    white-space:nowrap;
 }
 
 .summary-table tr:last-child td{
@@ -392,8 +402,8 @@ h1{
 .info-item{
     display:flex;
     align-items:center;
-    gap:10px;
-    padding:6px 0;
+    gap:8px;
+    padding:3px 0;
 }
 
 .info-label{
@@ -1170,9 +1180,9 @@ window.onload = async function () {
     <table class="summary-table">
               <tr>
     <th>Driver</th>
-    <th>Duty</th>
-    <th>Vehicle</th>
-    <th>Assignment</th>
+<th>Time In</th>
+<th>Unit</th>
+<th>Assignment</th>
 </tr>
               ${tableRows}
             </table>
@@ -1236,7 +1246,7 @@ trip.requestedBy
 
 ${trip.origin ? `
 <div class="info-item">
-    <div class="info-label">Pick-Up Address</div>
+ <div class="info-label">PickUp Add.</div>
     <div class="info-value">
         <a target="_blank"
            href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
