@@ -376,17 +376,17 @@ h1{
 }
 
 .info-label{
-    width:105px;
+    width:110px;
     font-size:13px;
     font-weight:600;
-    color:#6b7280;
+    color:#d1d5db;
 }
 
 .info-value{
     flex:1;
-    font-size:14px;
+    font-size:13px;
     font-weight:500;
-    color:#111827;
+    color:#ffffff;
 }
 
   .section-title{
@@ -1208,13 +1208,36 @@ d.trips.forEach((trip,index) => {
           container.innerHTML += `
             <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
-             <div class="driver-header">
+          <div class="driver-header">
 
     <h2>${d.driver}</h2>
-    <p><b>Date:</b> ${d.date}</p>
-    <p><b>Time In:</b> ${d.timeIn}</p>
-    <p><b>Assigned Unit:</b> ${d.vehicle}</p>
-    ${show("Assignment", d.itinerary)}
+
+    <div class="info-item">
+        <div class="info-label">Date</div>
+        <div class="info-value">${d.date}</div>
+    </div>
+
+    <div class="info-item">
+        <div class="info-label">Time In</div>
+        <div class="info-value">${d.timeIn}</div>
+    </div>
+
+    <div class="info-item">
+        <div class="info-label">Assigned Unit</div>
+        <div class="info-value">${d.vehicle}</div>
+    </div>
+
+    ${
+        d.itinerary
+        ? `
+        <div class="info-item">
+            <div class="info-label">Assignment</div>
+            <div class="info-value">${d.itinerary}</div>
+        </div>
+        `
+        : ""
+    }
+
 </div>
 
               ${tripsHTML}
