@@ -1286,23 +1286,18 @@ trip.pickupTime
 : ""
 }
 
-      ${
-trip.requestedBy
-? `
-<div class="info-item">
-    <div class="info-label">Passenger</div>
-    <div class="info-value">
-        ${trip.requestedBy}
-        ${
-            trip.contactNumber
-            ? ` <a class="phone-link" href="tel:${trip.contactNumber}">${trip.contactNumber}</a>`
+     ${trip.requestedBy
+  ? `<div class="info-item">
+      <div class="info-label">Passenger</div>
+      <div class="info-value">
+        ${trip.requestedBy}${
+          trip.contactNumber
+            ? ` <span style="color:#9ca3af;">|</span> ${trip.contactNumber}`
             : ""
         }
-    </div>
-</div>
-`
-: ""
-}
+      </div>
+    </div>`
+  : ""}
 
 ${trip.origin ? `
 <div class="info-item">
