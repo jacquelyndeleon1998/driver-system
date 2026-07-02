@@ -231,16 +231,16 @@
 .app-header{
     display:flex;
     align-items:center;
-    justify-content:center;
-    gap:16px;
+    gap:18px;
 
-    margin-bottom:18px;
+    margin-bottom:22px;
 }
 
 .app-logo{
-    width:70px;
-    height:70px;
+    width:72px;
+    height:72px;
     object-fit:contain;
+    flex-shrink:0;
 }
 
 .app-title h1{
@@ -249,88 +249,44 @@
     color:#14532d;
     font-weight:700;
     text-align:left;
+    line-height:1.1;
 }
 
-.app-title p{
-    margin:4px 0 0;
+.app-subtitle{
+    margin-top:4px;
+    font-size:16px;
+    font-weight:600;
+    color:#374151;
+}
+
+.app-description{
+    margin-top:6px;
+    font-size:13px;
     color:#6b7280;
-    font-size:14px;
-    font-weight:500;
 }
 
 @media(max-width:600px){
 
-.app-header{
-    gap:12px;
-}
+    .app-header{
+        gap:14px;
+    }
 
-.app-logo{
-    width:56px;
-    height:56px;
-}
+    .app-logo{
+        width:56px;
+        height:56px;
+    }
 
-.app-title h1{
-    font-size:24px;
-}
+    .app-title h1{
+        font-size:24px;
+    }
 
-.app-title p{
-    font-size:13px;
-}
+    .app-subtitle{
+        font-size:14px;
+    }
 
-}
-
-/* =========================
-   Dispatch Hub Header
-========================= */
-
-.app-header{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:16px;
-
-    margin-bottom:18px;
-}
-
-.app-logo{
-    width:70px;
-    height:70px;
-    object-fit:contain;
-}
-
-.app-title h1{
-    margin:0;
-    font-size:30px;
-    color:#14532d;
-    font-weight:700;
-    text-align:left;
-}
-
-.app-title p{
-    margin:4px 0 0;
-    color:#6b7280;
-    font-size:14px;
-    font-weight:500;
-}
-
-@media(max-width:600px){
-
-.app-header{
-    gap:12px;
-}
-
-.app-logo{
-    width:56px;
-    height:56px;
-}
-
-.app-title h1{
-    font-size:24px;
-}
-
-.app-title p{
-    font-size:13px;
-}
+    .app-description{
+        font-size:12px;
+    }
 
 }
    
@@ -697,16 +653,21 @@ h1{
         alt="Dispatch Hub Logo"
         class="app-logo">
 
-    <div class="app-title">
-        <h1>Dispatch Hub</h1>
-        <p>Driver Allowance System</p>
+   <div class="app-title">
+
+    <h1>Dispatch Hub</h1>
+
+    <div class="app-subtitle">
+        Driver Operations Portal
+    </div>
+
+    <div class="app-description">
+        Real-time Schedule &amp; Allowance Management
     </div>
 
 </div>
-
-<p class="page-description">
-    View the team schedule and submit your daily allowance.
-</p>
+    </div>
+   
 <div id="driversContainer"></div>
 
 <div id="allowanceModal" class="modal">
@@ -834,17 +795,19 @@ h1{
             margin-bottom:18px;
             box-shadow:0 4px 12px rgba(22,163,74,.25);">
 
-            <h2 style="margin:0;font-size:20px;">
-                Daily Dispatch Hub
-            </h2>
+           <h2 style="margin:0;font-size:22px;font-weight:700;">
+    Dispatch Hub
+</h2>
 
-            <div style="font-size:13px;opacity:.9;margin-top:4px;">
-                Driver Schedule System
-            </div>
+<div style="font-size:14px;opacity:.95;margin-top:4px;font-weight:600;">
+    Driver Operations Portal
+</div>
 
-        </div>
+<div style="font-size:12px;opacity:.85;margin-top:6px;">
+    Real-time Schedule &amp; Allowance Management
+</div>
 
-        <div class="spinner"></div>
+<div class="spinner"></div>
 
         <h3 style="margin:0 0 8px;color:#111827;">
             Getting Dispatch Schedule...
