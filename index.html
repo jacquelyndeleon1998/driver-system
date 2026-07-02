@@ -1180,7 +1180,16 @@ d.trips.forEach((trip,index) => {
             Pick-Up ${index + 1}
         </div>
 
-        ${show("Pick Up Time", trip.pickupTime)}
+      ${
+trip.pickupTime
+? `
+<div class="info-item">
+    <div class="info-label">Pick Up Time</div>
+    <div class="info-value">${trip.pickupTime}</div>
+</div>
+`
+: ""
+}
 
       ${
 trip.requestedBy
