@@ -411,23 +411,28 @@ h1{
 
 .info-item{
     display:flex;
-    align-items:center;
-     gap:4px;
-    padding:3px 0;
+    align-items:flex-start;
+    gap:4px;
+    padding:2px 0;
 }
 
 .info-label{
     width:82px;
+    min-width:82px;
+
     font-size:13px;
     font-weight:600;
     color:#6b7280;
+
+    white-space:nowrap;
 }
 
 .info-value{
     flex:1;
-    font-size:13px;
+    font-size:14px;
     font-weight:500;
-    color:#ffffff;
+    color:#111827;
+    word-break:break-word;
 }
    .trip .info-label{
     color:#6b7280;
@@ -1314,7 +1319,7 @@ trip.remarks
     </div>
 
     <div class="info-item">
-        <div class="info-label">Assigned Unit</div>
+        <div class="info-label">Unit</div>
         <div class="info-value">${d.vehicle}</div>
     </div>
 
