@@ -223,6 +223,116 @@
     }
 
 }
+
+/* =========================
+   Dispatch Hub Header
+========================= */
+
+.app-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+
+    margin-bottom:18px;
+}
+
+.app-logo{
+    width:70px;
+    height:70px;
+    object-fit:contain;
+}
+
+.app-title h1{
+    margin:0;
+    font-size:30px;
+    color:#14532d;
+    font-weight:700;
+    text-align:left;
+}
+
+.app-title p{
+    margin:4px 0 0;
+    color:#6b7280;
+    font-size:14px;
+    font-weight:500;
+}
+
+@media(max-width:600px){
+
+.app-header{
+    gap:12px;
+}
+
+.app-logo{
+    width:56px;
+    height:56px;
+}
+
+.app-title h1{
+    font-size:24px;
+}
+
+.app-title p{
+    font-size:13px;
+}
+
+}
+
+/* =========================
+   Dispatch Hub Header
+========================= */
+
+.app-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+
+    margin-bottom:18px;
+}
+
+.app-logo{
+    width:70px;
+    height:70px;
+    object-fit:contain;
+}
+
+.app-title h1{
+    margin:0;
+    font-size:30px;
+    color:#14532d;
+    font-weight:700;
+    text-align:left;
+}
+
+.app-title p{
+    margin:4px 0 0;
+    color:#6b7280;
+    font-size:14px;
+    font-weight:500;
+}
+
+@media(max-width:600px){
+
+.app-header{
+    gap:12px;
+}
+
+.app-logo{
+    width:56px;
+    height:56px;
+}
+
+.app-title h1{
+    font-size:24px;
+}
+
+.app-title p{
+    font-size:13px;
+}
+
+}
    
 body{
     font-family:Arial,Helvetica,sans-serif;
@@ -575,11 +685,27 @@ h1{
    
 </style>
 </head>
+
+
+   
 <body>
 
-<h1>Daily Dispatch Hub</h1>
-     <p class="page-description">
-  View the team schedule and submit your daily allowance.
+<div class="app-header">
+
+    <img
+        src="assets/dispatch-hub-logo.png"
+        alt="Dispatch Hub Logo"
+        class="app-logo">
+
+    <div class="app-title">
+        <h1>Dispatch Hub</h1>
+        <p>Driver Allowance System</p>
+    </div>
+
+</div>
+
+<p class="page-description">
+    View the team schedule and submit your daily allowance.
 </p>
 <div id="driversContainer"></div>
 
