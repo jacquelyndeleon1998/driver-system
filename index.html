@@ -8,6 +8,16 @@
 
 <style>
 
+   .phone-link{
+    color:#111827;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.phone-link:hover{
+    text-decoration:underline;
+}
+
    .success-overlay{
     display:none;
     position:fixed;
@@ -1286,13 +1296,16 @@ trip.pickupTime
 : ""
 }
 
-     ${trip.requestedBy
+    ${trip.requestedBy
   ? `<div class="info-item">
       <div class="info-label">Passenger</div>
       <div class="info-value">
         ${trip.requestedBy}${
           trip.contactNumber
-            ? ` <span style="color:#9ca3af;">|</span> ${trip.contactNumber}`
+            ? ` <span style="color:#9ca3af;">|</span>
+                <a href="tel:${trip.contactNumber}" class="phone-link">
+                  ${trip.contactNumber}
+                </a>`
             : ""
         }
       </div>
