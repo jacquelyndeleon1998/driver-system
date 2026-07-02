@@ -539,7 +539,22 @@ h1{text-align:center;color:#333}
     <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
   </div>
 </div>
+<div id="pageLoadingOverlay" class="loading-overlay">
 
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <h3>Loading Schedule...</h3>
+
+        <p>
+            Please wait while we load today's
+            dispatch schedule.
+        </p>
+
+    </div>
+
+</div>
     <div id="loadingOverlay" class="loading-overlay">
 
     <div class="loading-box">
@@ -771,7 +786,7 @@ function fileToBase64(file) {
   if (isSubmitting) return; // block double click
   isSubmitting = true;
 
-    document.getElementById("loadingOverlay").style.display = "flex";
+    document.getElementById("pageLoadingOverlay").style.display = "flex";
 
   const btn = document.querySelector("#allowanceModal .allowance-btn");
   btn.disabled = true;
@@ -894,7 +909,7 @@ closeModal();
     alert("Submission Error:\n\n" + err.message);
 
   } finally {
-     document.getElementById("loadingOverlay").style.display = "none";
+     document.getElementById("pageLoadingOverlay").style.display = "none";
     // reset lock
     isSubmitting = false;
     btn.disabled = false;
