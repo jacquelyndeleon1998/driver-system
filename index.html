@@ -786,7 +786,7 @@ function fileToBase64(file) {
   if (isSubmitting) return; // block double click
   isSubmitting = true;
 
-    document.getElementById("pageLoadingOverlay").style.display = "flex";
+    document.getElementById("loadingOverlay").style.display = "flex";
 
   const btn = document.querySelector("#allowanceModal .allowance-btn");
   btn.disabled = true;
@@ -909,7 +909,7 @@ closeModal();
     alert("Submission Error:\n\n" + err.message);
 
   } finally {
-     document.getElementById("pageLoadingOverlay").style.display = "none";
+    document.getElementById("loadingOverlay").style.display = "none";
     // reset lock
     isSubmitting = false;
     btn.disabled = false;
@@ -918,7 +918,7 @@ closeModal();
 }
 window.onload = async function () {
 
-  document.getElementById("loadingOverlay").style.display = "flex";
+ document.getElementById("pageLoadingOverlay").style.display = "flex";
 
   try {
 
@@ -1147,7 +1147,7 @@ window.onload = async function () {
     console.error(err);
     alert("Failed to load schedule.");
   } finally {
-    document.getElementById("loadingOverlay").style.display = "none";
+    document.getElementById("pageLoadingOverlay").style.display = "none";
   }
 };
 
