@@ -761,17 +761,36 @@ h1{
 ========================== */
 
 .modal-info{
-    margin:14px 0 18px;
-    padding:12px 0;
-
-    border-top:1px solid #e5e7eb;
-    border-bottom:1px solid #e5e7eb;
-
-    text-align:center;
+    background:#ecfdf5;
+    border:1px solid #a7f3d0;
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:18px;
 }
 
+.modal-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+}
 
+.modal-row:not(:last-child){
+    border-bottom:1px solid #d1fae5;
+}
 
+.modal-label{
+    font-size:13px;
+    font-weight:600;
+    color:#6b7280;
+}
+
+.modal-value{
+    font-size:14px;
+    font-weight:600;
+    color:#14532d;
+    text-align:right;
+}
 
    .app-footer {
   margin-top: 30px;
@@ -843,11 +862,20 @@ h1{
 
 <div class="modal-info">
 
-    <div id="modalDriver" class="modal-value"></div>
+    <div class="modal-row">
+        <span class="modal-label">Driver</span>
+        <span id="modalDriver" class="modal-value"></span>
+    </div>
 
-    <div id="modalDate" class="modal-value"></div>
+    <div class="modal-row">
+        <span class="modal-label">Date</span>
+        <span id="modalDate" class="modal-value"></span>
+    </div>
 
-    <div id="modalPassenger" class="modal-value"></div>
+    <div class="modal-row">
+        <span class="modal-label">Passenger</span>
+        <span id="modalPassenger" class="modal-value"></span>
+    </div>
 
 </div>
 
