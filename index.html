@@ -8,6 +8,23 @@
 
 <style>
 
+   .field textarea{
+
+    width:100%;
+    box-sizing:border-box;
+
+    border:1px solid #d1d5db;
+    border-radius:8px;
+
+    padding:10px;
+
+    resize:vertical;
+
+    font-family:inherit;
+    font-size:13px;
+
+}
+
    .phone-link{
     color:#111827;
     text-decoration:none;
@@ -224,6 +241,55 @@
 
 }
 
+   .modal-actions{
+    display:flex;
+    gap:12px;
+    margin-top:18px;
+}
+
+.btn-primary,
+.btn-secondary{
+
+    flex:1;
+
+    height:46px;
+
+    border:none;
+    border-radius:10px;
+
+    font-size:14px;
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+.btn-primary{
+
+    background:#16a34a;
+    color:#fff;
+
+}
+
+.btn-primary:hover{
+
+    background:#15803d;
+
+}
+
+.btn-secondary{
+
+    background:#6b7280;
+    color:#fff;
+
+}
+
+.btn-secondary:hover{
+
+    background:#4b5563;
+
+}
+
 /* =========================
    Dispatch Hub Header
 ========================= */
@@ -416,6 +482,30 @@ h1{
     border-radius:10px;
     overflow-y:auto;
     box-sizing:border-box;
+}
+   .trip-meta{
+    text-align:center;
+    padding:10px 0 14px;
+    border-bottom:1px solid #e5e7eb;
+    margin-bottom:14px;
+}
+
+.trip-driver{
+    font-size:16px;
+    font-weight:600;
+    color:#14532d;
+}
+
+.trip-date{
+    margin-top:4px;
+    font-size:13px;
+    color:#6b7280;
+}
+
+.trip-passenger{
+    margin-top:4px;
+    font-size:13px;
+    color:#374151;
 }
 .modal-content input{
     width:100%;
@@ -706,13 +796,15 @@ h1{
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
      
-<div class="modal-title">Meal Allowance</div>
+<div class="modal-title" style="text-align:center;">
+  Meal Allowance Form
+</div>
 
 <div class="trip-meta">
 
-  <div><span>Driver:</span> <span id="modalDriver"></span></div>
-  <div><span>Date:</span> <span id="modalDate"></span></div>
-  <div><span>Passenger:</span> <span id="modalPassenger"></span></div>
+    <div id="modalDriver" class="trip-driver"></div>
+    <div id="modalDate" class="trip-date"></div>
+    <div id="modalPassenger" class="trip-passenger"></div>
 
 </div>
      
@@ -720,44 +812,53 @@ h1{
 
 <div class="duty-row">
 
-    <div class="time-card">
-        <label for="allowanceTimeIn">Time In</label>
-        <input id="allowanceTimeIn" type="time">
-    </div>
+  <div class="field">
+    <label>Time In</label>
+    <input id="allowanceTimeIn" type="time">
+  </div>
 
-    <div class="time-card">
-        <label for="allowanceTimeOut">Time Out</label>
-        <input id="allowanceTimeOut" type="time">
-    </div>
-
-</div>
-
-  <div class="section-title">Meal Allowance</div>
-     
-  <div class="grid-2">
-
-    <div class="meal-item">
-        <label>Breakfast</label>
-        <input id="allowanceBreakfast" type="number" placeholder="₱0">
-    </div>
-
-    <div class="meal-item">
-        <label>Lunch</label>
-        <input id="allowanceLunch" type="number" placeholder="₱0">
-    </div>
-
-    <div class="meal-item">
-        <label>Dinner</label>
-        <input id="allowanceDinner" type="number" placeholder="₱0">
-    </div>
-
-    <div class="meal-item">
-        <label>Parking Fee</label>
-        <input id="allowanceParking" type="number" placeholder="₱0">
-    </div>
+  <div class="field">
+    <label>Time Out</label>
+    <input id="allowanceTimeOut" type="time">
+  </div>
 
 </div>
 
+ <div class="section-title">Meal Allowance</div>
+
+<div class="grid-2">
+
+  <div class="field">
+    <label>Breakfast</label>
+    <input id="allowanceBreakfast" type="number" placeholder="₱0">
+  </div>
+
+  <div class="field">
+    <label>Lunch</label>
+    <input id="allowanceLunch" type="number" placeholder="₱0">
+  </div>
+
+  <div class="field">
+    <label>Dinner</label>
+    <input id="allowanceDinner" type="number" placeholder="₱0">
+  </div>
+
+  <div class="field">
+    <label>Parking Fee / Others</label>
+    <input id="allowanceParking" type="number" placeholder="₱0">
+  </div>
+
+</div>
+<div class="section-title">Remarks</div>
+
+<div class="field">
+    <textarea
+        id="allowanceRemarks"
+        placeholder="Enter remarks (optional)..."
+        rows="3"></textarea>
+</div>
+
+<div id="receiptSection" style="display:none; margin-top:10px;">
      <div id="receiptSection" style="display:none; margin-top:10px;">
   <label><b>Upload Parking Receipt(s)</b></label><br>
 
@@ -798,13 +899,25 @@ h1{
 
 <div class="modal-actions">
 
-  <button class="btn-primary" onclick="saveAllowance()">
-    Submit Meal Allowance
-  </button>
+ <div class="modal-actions">
 
-  <button class="btn-secondary" onclick="closeModal()">
-    Cancel
-  </button>
+    <button
+        class="btn-primary"
+        onclick="saveAllowance()">
+
+        Submit Allowance
+
+    </button>
+
+    <button
+        class="btn-secondary"
+        onclick="closeModal()">
+
+        Cancel
+
+    </button>
+
+</div>
 
 </div>
   </div>
