@@ -1118,21 +1118,50 @@ window.onload = async function () {
 
           let tripsHTML = "";
 
-          d.trips.forEach((trip,index) => {
+         let tripsHTML = "";
 
-            tripsHTML += `
-              <div class="trip">
-                <div class="trip-title">Pick-Up ${index + 1}</div>
-                ${show("Pick Up Time", trip.pickupTime)}
+d.trips.forEach((trip,index) => {
 
-                ${trip.requestedBy
-                  ? `<p><b>Passenger:</b> ${trip.requestedBy}</p>`
-                  : ""
-                }
+    tripsHTML += `
+    <div class="trip">
 
-              </div>
-            `;
-          });
+        <div class="trip-title">
+            Pick-Up ${index + 1}
+        </div>
+
+        ${show("Pick Up Time", trip.pickupTime)}
+
+        ${
+        trip.requestedBy
+        ? `<p><b>Passenger:</b> ${trip.requestedBy}${
+            trip.contactNumber
+              ? ` <a class="phone-link" href="tel:${trip.contactNumber}">📞 ${trip.contactNumber}</a>`
+              : ""
+          }</p>`
+        : ""
+        }
+
+        ${trip.origin ? `
+        <p><b>Pick-Up Address:</b>
+            <a target="_blank"
+               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+                ${trip.origin}
+            </a>
+        </p>
+
+        <p><b>Destination:</b>
+            <a target="_blank"
+               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+                ${trip.destination}
+            </a>
+        </p>
+        ` : ""}
+
+        ${show("Remarks", trip.remarks)}
+
+    </div>
+    `;
+});
 
           const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
           const submittedKey = `${d.driver}|${d.date}`;
