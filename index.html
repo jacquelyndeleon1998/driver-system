@@ -1208,13 +1208,14 @@ d.trips.forEach((trip,index) => {
           container.innerHTML += `
             <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
-              <div class="driver-header">
-                <h2>${d.driver}</h2>
-                ${show("Itinerary", d.itinerary)}
-                <p><b>Date:</b> ${d.date}</p>
-                <p><b>Time In:</b> ${d.timeIn}</p>
-                <p><b>Vehicle:</b> ${d.vehicle}</p>
-              </div>
+             <div class="driver-header">
+
+    <h2>${d.driver}</h2>
+    <p><b>Date:</b> ${d.date}</p>
+    <p><b>Time In:</b> ${d.timeIn}</p>
+    <p><b>Assigned Unit:</b> ${d.vehicle}</p>
+    ${show("Assignment", d.itinerary)}
+</div>
 
               ${tripsHTML}
 
