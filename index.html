@@ -178,17 +178,16 @@
 .summary-header{
     background:#14532d;
     color:#fff;
-    padding:14px 16px;
+    padding:10px 12px;
     border-radius:10px;
-    margin-bottom:14px;
+    margin-bottom:8px;
     text-align:center;
 }
 
 .summary-header h2{
     margin:0;
     font-size:16px;
-    font-weight:600;
-    letter-spacing:.3px;
+    font-weight:700;
 }
    
 @media (max-width: 600px){
@@ -237,12 +236,12 @@ h1{
     box-shadow:0 6px 18px rgba(0,0,0,.08);
     border:1px solid #e5e7eb;
 }
-  .summary-card{
-    background:#b2cd8b;
-    border-radius:12px;
-    padding:10px;
-    margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
+ .summary-card{
+    background:#b7d58c;
+    border-radius:14px;
+    padding:8px;
+    margin-bottom:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 .driver-header{
     background:#14532d;
@@ -352,43 +351,51 @@ h1{
  .summary-table{
     width:100%;
     border-collapse:collapse;
-    table-layout:fixed;
     font-size:12px;
-    text-align:center;
 }
 
 .summary-table th{
-    background:#ecfdf5;
     color:#14532d;
     font-weight:700;
-    adding:6px 4px;
-    border-bottom:2px solid #bbf7d0;
+    padding:5px 4px;
+    text-align:center;
+    border-bottom:2px solid #d1d5db;
 }
 
 .summary-table td{
-   padding:6px 4px;
-    border-bottom:1px solid #e5e7eb;
-    color:#374151;
-  white-space:nowrap;
+    padding:7px 4px;
+    text-align:center;
+    border-bottom:1px solid #dfe6dc;
+    white-space:nowrap;
+}
+
+.summary-table tr:last-child td{
+    border-bottom:none;
 }
    .summary-table th:nth-child(1),
+.summary-table td:first-child{
+    font-weight:600;
+    text-align:left;
+}
+
+.summary-table th:nth-child(1),
 .summary-table td:nth-child(1){
-    width:36%;
+    width:40%;
 }
 
 .summary-table th:nth-child(2),
 .summary-table td:nth-child(2){
-    width:18%;
+    width:20%;
 }
 
 .summary-table th:nth-child(3),
 .summary-table td:nth-child(3){
-    width:16%;
+    width:15%;
 }
 
 .summary-table th:nth-child(4),
 .summary-table td:nth-child(4){
-    width:30%;
+    width:25%;
 }
 .summary-table tr:last-child td{
     border-bottom:none;
@@ -1210,7 +1217,7 @@ window.onload = async function () {
 
     <table class="summary-table">
               <tr>
-    <th>Driver</th>
+    <th>Driver Name</th>
 <th>Time In</th>
 <th>Unit</th>
 <th>Assignment</th>
