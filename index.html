@@ -293,7 +293,7 @@ h1{
 .allowance-btn{
     width:100%;
     height:46px;
-    margin-top:14px;
+    margin-top:8px;
 
     background:#16a34a;
     color:#fff;
@@ -1292,17 +1292,18 @@ trip.requestedBy
 <div class="info-item">
     <div class="info-label">Passenger</div>
     <div class="info-value">
-        ${trip.requestedBy}
-        ${
-            trip.contactNumber
-            ? ` <a class="phone-link" href="tel:${trip.contactNumber}">${trip.contactNumber}</a>`
+      ${trip.requestedBy
+  ? `<div class="info-item">
+      <div class="info-label">Passenger</div>
+      <div class="info-value">
+        ${trip.requestedBy}${
+          trip.contactNumber
+            ? ` <span style="color:#9ca3af;">|</span> ${trip.contactNumber}`
             : ""
         }
-    </div>
-</div>
-`
-: ""
-}
+      </div>
+    </div>`
+  : ""}
 
 ${trip.origin ? `
 <div class="info-item">
