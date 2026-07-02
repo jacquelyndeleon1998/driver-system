@@ -573,30 +573,26 @@ h1{
     margin-bottom:15px;
 }
 
-.info-item{
-    display:flex;
-    align-items:flex-start;
-    gap:4px;
-    padding:2px 0;
+.modal-driver{
+    text-align:left;
+    font-size:18px;
+    font-weight:700;
+    color:#14532d;
+    margin-top:8px;
 }
 
-.info-label{
-    width:82px;
-    min-width:82px;
-
+.modal-date{
+    text-align:left;
     font-size:13px;
-    font-weight:600;
-   color:rgba(255,255,255,.88);
-
-    white-space:nowrap;
+    color:#6b7280;
+    margin-top:4px;
 }
 
-.info-value{
-    flex:1;
-    font-size:14px;
-    font-weight:500;
-     color:#ffffff;
-    word-break:break-word;
+.modal-passenger{
+    text-align:left;
+    font-size:13px;
+    color:#374151;
+    margin:4px 0 18px;
 }
 .driver-header .info-label{
     color:rgba(255,255,255,.88);
@@ -782,20 +778,11 @@ h1{
 
 <div class="trip-info-card">
 
-  <div class="info-item">
-    <div class="info-label">Driver</div>
-    <div id="modalDriver" class="info-value"></div>
-  </div>
+<div id="modalDriver" class="modal-driver"></div>
 
-  <div class="info-item">
-    <div class="info-label">Date</div>
-    <div id="modalDate" class="info-value"></div>
-  </div>
+<div id="modalDate" class="modal-date"></div>
 
-  <div class="info-item">
-    <div class="info-label">Passenger(s)</div>
-    <div id="modalPassenger" class="info-value"></div>
-  </div>
+<div id="modalPassenger" class="modal-passenger"></div>
 
 </div>
 
