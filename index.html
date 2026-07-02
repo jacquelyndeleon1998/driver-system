@@ -705,32 +705,20 @@ h1{
 
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
-   <h3 style="margin-top:0;">Meal Allowance</h3>
+     
+<div class="modal-title">Meal Allowance</div>
 
-<div class="trip-info-card">
+<div class="trip-meta">
 
-  <div class="info-item">
-    <div class="info-label">🚗 Driver</div>
-    <div id="modalDriver" class="info-value"></div>
-  </div>
-
-  <div class="info-item">
-    <div class="info-label">📅 Date</div>
-    <div id="modalDate" class="info-value"></div>
-  </div>
-
-  <div class="info-item">
-    <div class="info-label">👥 Passenger(s)</div>
-    <div id="modalPassenger" class="info-value"></div>
-  </div>
+  <div><span>Driver:</span> <span id="modalDriver"></span></div>
+  <div><span>Date:</span> <span id="modalDate"></span></div>
+  <div><span>Passenger:</span> <span id="modalPassenger"></span></div>
 
 </div>
+     
+<div class="section-title">Duty Time</div>
 
-  <h4 class="section-title">
-    🕒 Duty Time
-</h4>
-
-<div class="duty-time-row">
+<div class="duty-row">
 
     <div class="time-card">
         <label for="allowanceTimeIn">Time In</label>
@@ -744,10 +732,9 @@ h1{
 
 </div>
 
-     <h4 class="section-title">
-    🍽️ Meal Allowance
-</h4>
-  <div class="meal-grid">
+  <div class="section-title">Meal Allowance</div>
+     
+  <div class="grid-2">
 
     <div class="meal-item">
         <label>Breakfast</label>
@@ -809,11 +796,17 @@ h1{
  
 </div>
 
-   <button class="allowance-btn" onclick="saveAllowance()">
+<div class="modal-actions">
+
+  <button class="btn-primary" onclick="saveAllowance()">
     Submit Meal Allowance
-</button>
-    <br><br>
-    <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
+  </button>
+
+  <button class="btn-secondary" onclick="closeModal()">
+    Cancel
+  </button>
+
+</div>
   </div>
 </div>
 <div id="pageLoadingOverlay" class="loading-overlay">
