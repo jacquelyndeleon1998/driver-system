@@ -213,14 +213,27 @@
 
 }
    
-body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:15px}
-h1{text-align:center;color:#333}
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#eef3ef;
+    margin:0;
+    padding:20px;
+    color:#111827;
+}
+h1{
+    text-align:center;
+    color:#14532d;
+    font-size:28px;
+    margin-bottom:6px;
+    font-weight:700;
+}
 .driver-card{
     background:#fff;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:22px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    border:1px solid #e5e7eb;
 }
    .summary-card{
     background:#b2cd8b;
@@ -230,20 +243,19 @@ h1{text-align:center;color:#333}
     box-shadow:0 2px 8px rgba(0,0,0,.1);
 }
 .driver-header{
-    background:#1f2937;
-    color:#fff;
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:12px;
+    background:#14532d;
+    color:white;
+    padding:14px 16px;
+    border-radius:12px;
+    margin-bottom:15px;
 }
-    .page-description{
+ .page-description{
     text-align:center;
-    color:#6b7280;
-    font-size:12px;
-    margin-top:-10px;
-    margin-bottom:20px;
+    color:#4b5563;
+    font-size:14px;
+    margin-top:0;
+    margin-bottom:28px;
 }
-
 
 .driver-header p{
     margin:0;
@@ -253,11 +265,11 @@ h1{text-align:center;color:#333}
 }
 
 .trip{
-    border:1px solid #ddd;
-    border-radius:8px;
-    padding:10px;
-    margin-bottom:10px;
-    background:#fafafa;
+    border:1px solid #d1d5db;
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:12px;
+    background:#fcfcfc;
 }
 
 .trip-title{
@@ -271,8 +283,21 @@ h1{text-align:center;color:#333}
     padding:2px 0;
     line-height:1.2;
   }
-.allowance-btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;cursor:pointer}
+.allowance-btn{
+    width:100%;
+    padding:13px;
+    background:#059669;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+}
 
+.allowance-btn:hover{
+    background:#047857;
+}
 .modal{
     display:none;
     position:fixed;
