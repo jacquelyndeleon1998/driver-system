@@ -398,6 +398,15 @@ h1{
     font-weight:600;
 }
 
+   .trip .info-value a{
+    color:inherit;
+    text-decoration:none;
+}
+
+.trip .info-value a:hover{
+    text-decoration:underline;
+}
+
 .trip .info-value{
     color:#111827;
     font-weight:500;
@@ -1209,21 +1218,27 @@ trip.requestedBy
 : ""
 }
 
-        ${trip.origin ? `
-        <p><b>Pick-Up Address:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
-                ${trip.origin}
-            </a>
-        </p>
+${trip.origin ? `
+<div class="info-item">
+    <div class="info-label">Pick-Up Address</div>
+    <div class="info-value">
+        <a target="_blank"
+           href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">
+            ${trip.origin}
+        </a>
+    </div>
+</div>
 
-        <p><b>Destination:</b>
-            <a target="_blank"
-               href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
-                ${trip.destination}
-            </a>
-        </p>
-        ` : ""}
+<div class="info-item">
+    <div class="info-label">Destination</div>
+    <div class="info-value">
+        <a target="_blank"
+           href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">
+            ${trip.destination}
+        </a>
+    </div>
+</div>
+` : ""}
 
         ${show("Remarks", trip.remarks)}
 
