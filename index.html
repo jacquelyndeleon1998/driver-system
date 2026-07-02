@@ -1240,7 +1240,16 @@ ${trip.origin ? `
 </div>
 ` : ""}
 
-        ${show("Remarks", trip.remarks)}
+     ${
+trip.remarks
+? `
+<div class="info-item">
+    <div class="info-label">Remarks</div>
+    <div class="info-value">${trip.remarks}</div>
+</div>
+`
+: ""
+}
 
     </div>
     `;
