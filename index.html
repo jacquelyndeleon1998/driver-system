@@ -1126,8 +1126,6 @@ function fileToBase64(file) {
   if (isSubmitting) return; // block double click
   isSubmitting = true;
 
-    document.getElementById("loadingOverlay").style.display = "flex";
-
   const btn = document.querySelector("#allowanceModal .allowance-btn");
   btn.disabled = true;
   btn.innerText = "Submitting...";
@@ -1160,6 +1158,7 @@ if (parking > 0 && selectedReceipts.length === 0) {
   btn.innerText = "Submit Meal Allowance";
   return;
 }
+    document.getElementById("loadingOverlay").style.display = "flex";
 
   const payload = {
     tripDate: currentDate,
