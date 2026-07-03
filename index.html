@@ -1590,6 +1590,22 @@ document
     document.getElementById("adminLoginModal").style.display = "block";
 
 });
+
+function showActionLoading(title, message){
+
+    document.getElementById("actionLoadingTitle").textContent = title;
+    document.getElementById("actionLoadingMessage").textContent = message;
+
+    document.getElementById("actionLoadingOverlay").style.display = "flex";
+
+}
+
+function hideActionLoading(){
+
+    document.getElementById("actionLoadingOverlay").style.display = "none";
+
+}
+   
 function closeAdminLogin(){
 
     document.getElementById("adminLoginModal").style.display = "none";
@@ -1600,6 +1616,11 @@ async function adminLogin() {
 
     const username = document.getElementById("adminUsername").value.trim();
     const password = document.getElementById("adminPassword").value.trim();
+
+   showActionLoading(
+    "Signing In...",
+    "Please wait while we prepare your dashboard."
+);
 
     try {
 
@@ -1629,10 +1650,11 @@ async function adminLogin() {
 console.log("userRole:", localStorage.getItem("userRole"));
 console.log("loginExpires:", localStorage.getItem("loginExpires"));
 
-    closeAdminLogin();
-    alert("Login successful!");
+   closeAdminLogin();
 
-    showAdminDashboard();
+hideActionLoading();
+
+showAdminDashboard();
 
 }
         
@@ -1640,7 +1662,11 @@ console.log("loginExpires:", localStorage.getItem("loginExpires"));
             alert(result.message || "Invalid login");
         }
 
+   
+
     } catch (err) {
+
+           hideActionLoading();
         console.error(err);
         alert("Network error. Please try again.");
     }
