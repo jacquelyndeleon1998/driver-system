@@ -7,6 +7,44 @@
 
 <style>
 
+   .admin-toolbar{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:18px;
+}
+
+.admin-btn{
+    background:#14532d;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.admin-btn:hover{
+    background:#166534;
+}
+
+@media(max-width:600px){
+
+    .admin-toolbar{
+
+        justify-content:stretch;
+
+    }
+
+    .admin-btn{
+
+        width:100%;
+
+    }
+
+}
+
    .phone-link{
     color:#111827;
     text-decoration:none;
@@ -817,6 +855,12 @@ h1{
     </button>
 
 </div>
+<div class="admin-toolbar">
+    <button id="adminBtn" class="admin-btn">
+        Admin Dashboard
+    </button>
+</div>
+
 <div id="driversContainer"></div>
 
 <div id="allowanceModal" class="modal">
