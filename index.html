@@ -1121,7 +1121,17 @@ h1{
 
 <script>
 
+function refreshLoginSession() {
+
+    const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
+
+    localStorage.setItem("loginExpires", expires);
+
+}
+   
   function showAdminDashboard() {
+
+    refreshLoginSession();
 
     document.getElementById("driversContainer").style.display = "none";
     document.getElementById("adminContainer").style.display = "block";
