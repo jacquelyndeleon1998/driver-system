@@ -210,7 +210,26 @@
     flex:1;
     margin-top:0;
     height:48px;
+    border-radius:8px;
 }
+
+.submit-btn{
+    background:#16a34a;
+}
+
+.submit-btn:hover{
+    background:#15803d;
+}
+
+.cancel-btn{
+    background:#6b7280;
+    color:#fff;
+}
+
+.cancel-btn:hover{
+    background:#4b5563;
+}
+
 /* =========================
    Dispatch Hub Header
 ========================= */
@@ -357,25 +376,23 @@ h1{
     width:100%;
     height:46px;
     margin-top:14px;
+
+    background:#16a34a;
+    color:#fff;
+
     border:none;
     border-radius:10px;
-    color:#fff;
+
     font-size:14px;
     font-weight:600;
-    cursor:pointer;
-    transition:background .2s ease, transform .15s ease;
-}
 
-.submit-btn{
-    background:#16a34a;
+    cursor:pointer;
+
+    transition:background .2s ease;
 }
 
 .submit-btn:hover{
     background:#15803d;
-}
-
-.cancel-btn{
-    background:#6b7280;
 }
 
 .cancel-btn:hover{
@@ -383,7 +400,7 @@ h1{
 }
 
 .allowance-btn:active{
-    transform:scale(.98);
+    transform:scale(.99);
 }
 .modal{
     display:none;
