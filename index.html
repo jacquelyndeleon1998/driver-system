@@ -777,12 +777,16 @@ h1{
 }
 
 .top-nav{
+    width:100%;
     display:flex;
+    justify-content:flex-end;
     align-items:center;
     gap:10px;
-    margin-top:4px;
-    margin-left:0;
-    padding-left:0;
+
+    margin-top:8px;
+
+    font-size:13px;
+    font-weight:600;
 }
 
 .nav-btn{
@@ -791,37 +795,36 @@ h1{
     padding:0;
 
     color:#6b7280;
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
 
     cursor:pointer;
     transition:.2s;
 }
 
-.nav-btn.active{
-    color:#14532d;
-}
-
 .nav-btn:hover{
     color:#14532d;
 }
 
-.top-nav span{
+.nav-btn.active{
+    color:#16a34a;
+}
+
+   .nav-separator{
     color:#9ca3af;
+    user-select:none;
 }
 
 @media (max-width:600px){
 
     .top-nav{
+        justify-content:center;
+        margin-top:8px;
+        font-size:12px;
         gap:8px;
-        margin-top:6px;
     }
 
     .nav-btn{
-        font-size:12px;
-    }
-
-    .top-nav span{
         font-size:12px;
     }
 }
@@ -862,17 +865,13 @@ h1{
 
     <button class="nav-btn active">Dashboard</button>
 
-    <span>|</span>
+    <span class="nav-separator">|</span>
 
-    <button id="allowanceBtn" class="nav-btn">
-        Allowances
-    </button>
+    <button class="nav-btn">Allowances</button>
 
-    <span>|</span>
+    <span class="nav-separator">|</span>
 
-    <button id="adminBtn" class="nav-btn">
-        Admin
-    </button>
+    <button id="adminBtn" class="nav-btn">Admin</button>
 
 </div>
 </div>
