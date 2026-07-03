@@ -758,15 +758,16 @@ h1{
   line-height: 1.2;
 }
 
-   /* =========================
-   Admin Dashboard Button
-========================= */
+ /* ==========================
+   Top Navigation
+========================== */
 
 .app-header{
     display:flex;
-    justify-content:space-between;
+    flex-direction:column;
     align-items:center;
-    flex-wrap:wrap;
+    text-align:center;
+    gap:14px;
 }
 
 .app-left{
@@ -775,48 +776,65 @@ h1{
     gap:18px;
 }
 
-.admin-btn{
-    background:#2f6f4f;          /* Softer green */
-    color:#fff;
+.top-nav{
+    display:flex;
+    gap:8px;
+}
 
-    border:none;
-    border-radius:8px;
+.nav-btn{
+    height:34px;
+    padding:0 16px;
 
-    width:150px;                 /* Around 1/4 page width on desktop */
-    height:38px;                 /* Much shorter */
+    border-radius:999px;
 
-    padding:0 14px;
+    border:1px solid #d1d5db;
 
-    font-size:13px;
+    background:#fff;
+
+    color:#374151;
+
+    font-size:12px;
     font-weight:600;
 
     cursor:pointer;
-    transition:.2s;
 
-    box-shadow:0 2px 6px rgba(0,0,0,.08);
+    transition:.2s;
 }
 
-.admin-btn:hover{
-    background:#3d8762;
+.nav-btn.active{
+
+    background:#15803d;
+    border-color:#15803d;
+    color:white;
+
+}
+
+.nav-btn.secondary:hover{
+
+    background:#f3f4f6;
+
 }
 
 @media(max-width:600px){
 
-    .app-header{
-        flex-direction:column;
-        align-items:center;
-        gap:12px;
-    }
-
     .app-left{
-        width:100%;
+
+        gap:12px;
+
     }
 
-    .admin-btn{
-        width:150px;
-        height:36px;
-        font-size:12px;
-        align-self:flex-end;
+    .top-nav{
+
+        margin-top:2px;
+
+    }
+
+    .nav-btn{
+
+        height:32px;
+        padding:0 14px;
+        font-size:11px;
+
     }
 
 }
@@ -853,9 +871,21 @@ h1{
 
     </div>
 
-    <button id="adminBtn" class="admin-btn">
-        Admin Dashboard
+<div class="top-nav">
+
+    <button class="nav-btn active">
+        Main Dashboard
     </button>
+
+    <button
+        id="adminBtn"
+        class="nav-btn secondary">
+
+        Admin
+
+    </button>
+
+</div>
 
 </div>
 
