@@ -1491,27 +1491,25 @@ async function adminLogin() {
     const username = document.getElementById("adminUsername").value.trim();
     const password = document.getElementById("adminPassword").value.trim();
 
-    const url = WEBAPP_URL + `?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-
     try {
 
-        const res = await fetch(url);
-        const text = await res.text();
+        const res = await fetch(WEBAPP_URL + `?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
 
-        console.log("RAW LOGIN RESPONSE:", text);
+        const text = await res.text();
+        console.log("LOGIN RAW RESPONSE:", text);
 
         let result;
 
         try {
             result = JSON.parse(text);
         } catch (e) {
-            alert("Server did NOT return JSON:\n\n" + text);
+            alert("Server error (not JSON):\n\n" + text);
             return;
         }
 
-        if (result.success) {
+        if (result.success === true) {
 
-            sessionStorage.setItem("userRole", result.role);
+            sessionStorage.setItem("userRole", result.role || "user");
             sessionStorage.setItem("loggedIn", "true");
 
             closeAdminLogin();
@@ -1520,12 +1518,12 @@ async function adminLogin() {
             showAdminDashboard();
 
         } else {
-            alert(result.message || "Invalid username or password.");
+            alert(result.message || "Invalid login");
         }
 
     } catch (err) {
         console.error(err);
-        alert("Login failed. Please try again.");
+        alert("Network error. Please try again.");
     }
 }
    
