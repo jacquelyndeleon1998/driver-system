@@ -450,6 +450,24 @@ h1{
     overflow-y:auto;
     box-sizing:border-box;
 }
+.modal-title{
+    margin-top:0;
+    color:#111827;
+}
+
+.receipt-section{
+    display:none;
+    margin-top:10px;
+}
+
+.file-input-hidden{
+    display:none;
+}
+
+.receipt-preview{
+    margin-top:10px;
+}
+   
 .modal-content input{
     width:100%;
     padding:8px;
@@ -735,7 +753,7 @@ h1{
 
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
-   <h3 style="margin-top:0;">Meal Allowance Form</h3>
+<h3 class="modal-title">Meal Allowance Form</h3>
 
 <div class="trip-info-card">
 
@@ -801,7 +819,7 @@ h1{
 
 </div>
 
-     <div id="receiptSection" style="display:none; margin-top:10px;">
+    <div id="receiptSection" class="receipt-section">
  <label class="section-title">
     Upload Parking Receipt(s)
 </label>
@@ -811,14 +829,14 @@ h1{
     id="cameraInput"
     accept="image/*"
     capture="environment"
-    style="display:none;">
+    class="file-input-hidden">
 
 <input
     type="file"
     id="galleryInput"
     accept="image/*"
     multiple
-    style="display:none;">
+    class="file-input-hidden">
 
 <div class="upload-buttons">
 
@@ -836,7 +854,7 @@ h1{
 
 </div>
 
-<div id="receiptPreview" style="margin-top:10px;"></div>
+<div id="receiptPreview" class="receipt-preview"></div>
 
  
 </div>
@@ -1080,11 +1098,36 @@ function submitAllowance(driver,date,passenger){
 document.getElementById("modalDate").textContent = date;
 document.getElementById("modalPassenger").textContent = passenger;
 
- document.getElementById("allowanceModal").style.display="block";
+document.getElementById("allowanceModal").style.display = "block";
+document.body.style.overflow = "hidden";
+}
+
+function resetAllowanceForm(){
+
+    document.getElementById("allowanceTimeIn").value = "";
+    document.getElementById("allowanceTimeOut").value = "";
+
+    document.getElementById("allowanceBreakfast").value = "";
+    document.getElementById("allowanceLunch").value = "";
+    document.getElementById("allowanceDinner").value = "";
+    document.getElementById("allowanceParking").value = "";
+
+    selectedReceipts = [];
+
+    document.getElementById("cameraInput").value = "";
+    document.getElementById("galleryInput").value = "";
+    document.getElementById("receiptPreview").innerHTML = "";
+
+    document.getElementById("receiptSection").style.display = "none";
 }
 
 function closeModal(){
- document.getElementById("allowanceModal").style.display="none";
+
+    resetAllowanceForm();
+
+    document.getElementById("allowanceModal").style.display = "none";
+
+    document.body.style.overflow = "";
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -1217,19 +1260,6 @@ const driverCard = document.getElementById(
 if (driverCard) {
   driverCard.remove();
 }
-
-document.getElementById("allowanceTimeIn").value = "";
-document.getElementById("allowanceTimeOut").value = "";
-document.getElementById("allowanceBreakfast").value = "";
-document.getElementById("allowanceLunch").value = "";
-document.getElementById("allowanceDinner").value = "";
-document.getElementById("allowanceParking").value = "";
-
-     selectedReceipts = [];
-
-document.getElementById("cameraInput").value = "";
-document.getElementById("galleryInput").value = "";
-document.getElementById("receiptPreview").innerHTML = "";
 
 closeModal();
 
