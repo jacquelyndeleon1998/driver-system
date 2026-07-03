@@ -883,6 +883,11 @@ h1{
 
 <div id="driversContainer"></div>
 
+<div id="adminContainer" style="display:none; padding:20px;">
+    <h2 style="color:#14532d;">Admin Dashboard</h2>
+    <p>Phase 2 UI coming here (approvals, drivers, analytics)</p>
+</div>
+
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
 <h3 class="modal-title">Meal Allowance Form</h3>
@@ -1115,6 +1120,18 @@ h1{
 </div>
 
 <script>
+
+  function showAdminDashboard() {
+
+    document.getElementById("driversContainer").style.display = "none";
+    document.getElementById("adminContainer").style.display = "block";
+
+    document.getElementById("adminBtn").classList.add("active");
+
+    sessionStorage.setItem("view", "admin");
+
+    console.log("Admin dashboard activated");
+}
 
    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
 
@@ -1496,6 +1513,8 @@ async function adminLogin() {
             closeAdminLogin();
 
             alert("Login successful!");
+
+           showAdminDashboard();
 
             // TODO: next step → redirect to Admin Dashboard
             console.log("Logged in as:", result.role);
