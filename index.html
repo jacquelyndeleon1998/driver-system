@@ -981,12 +981,7 @@ h1{
 </div>
 
 
-<div id="driversContainer"></div>
-
-<div id="adminContainer" style="display:none; padding:20px;">
-    <h2 style="color:#14532d;">Admin Dashboard</h2>
-    <p>Phase 2 UI coming here (approvals, drivers, analytics)</p>
-</div>
+<div id="adminContainer" style="display:none;"></div>
 
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
@@ -1234,13 +1229,11 @@ function refreshLoginSession() {
     refreshLoginSession();
 
     document.getElementById("driversContainer").style.display = "none";
-    document.getElementById("adminContainer").style.display = "block";
-
+    document.getElementById("adminContainer").style.display = "none";
+    document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("adminBtn").classList.add("active");
-
-    sessionStorage.setItem("view", "admin");
-
-    console.log("Admin dashboard activated");
+    sessionStorage.setItem("view","admin");
+    console.log("Schedule Approval page opened.");
 }
 
    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
@@ -1814,13 +1807,15 @@ const approvalRows = approvalData.trim().split("\n").slice(1);
    approvalDates = {};
 
     approvalRows.forEach(row => {
-      const parts = row.split(",");
-      const status = parts.pop().replace(/"/g, "").trim();
-      const date = parts.join(",").replace(/"/g, "").trim();
-      approvedDates[date] = status;
-    });
 
-    console.log("Approved Dates:", approvedDates);
+    const parts = row.split(",");
+    const status = parts.pop().replace(/"/g,"").trim();
+    const date = parts.join(",").replace(/"/g,"").trim();
+    approvalDates[date] = status;
+
+});
+
+console.log("Approved Dates:", approvalDates);
 
     rows.forEach(row => {
       const cols = [];
@@ -1902,13 +1897,13 @@ const approvalRows = approvalData.trim().split("\n").slice(1);
    const container = document.getElementById("driversContainer");
 
 let pageHTML = "";
-    dates.forEach(date => {
+  scheduleDates.forEach(date => {
 
       console.log("Checking:", date, "Status:", approvedDates[date]);
 
       const scheduleDate = new Date(date);
 
-      const status = (approvedDates[date] || "").trim().toLowerCase();
+    const status = (approvalDates[date] || "").trim().toLowerCase();
       if (status !== "approved") return;
 
       const now = new Date();
@@ -2120,6 +2115,15 @@ container.innerHTML = pageHTML;
 }
 };
 
+   document.getElementById("backToDriverBtn").onclick = function(){
+
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+
+    document.getElementById("driversContainer").style.display = "block";
+
+    document.getElementById("adminBtn").classList.remove("active");
+
+};
 
     </script>
 
