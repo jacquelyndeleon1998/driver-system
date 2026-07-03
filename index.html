@@ -1617,10 +1617,20 @@ async function adminLogin() {
     const username = document.getElementById("adminUsername").value.trim();
     const password = document.getElementById("adminPassword").value.trim();
 
+   const loginBtn = document.querySelector("#adminLoginModal .submit-btn");
+
+loginBtn.disabled = true;
+loginBtn.innerText = "Signing In...";
+
    showActionLoading(
     "Signing In...",
     "Please wait while we prepare your dashboard."
 );
+
+   loginBtn.disabled = false;
+loginBtn.innerText = "Login";
+
+   closeAdminLogin();
 
     try {
 
@@ -1650,23 +1660,32 @@ async function adminLogin() {
 console.log("userRole:", localStorage.getItem("userRole"));
 console.log("loginExpires:", localStorage.getItem("loginExpires"));
 
-closeAdminLogin();
 
 showAdminDashboard();
 }
         
-        else {
-            alert(result.message || "Invalid login");
-        }
+      else {
+
+    loginBtn.disabled = false;
+    loginBtn.innerText = "Login";
+
+    alert(result.message || "Invalid login");
+
+}
 
    
 
-    } catch (err) {
+   } catch (err) {
 
-           hideActionLoading();
-        console.error(err);
-        alert("Network error. Please try again.");
-    }
+    hideActionLoading();
+
+    loginBtn.disabled = false;
+    loginBtn.innerText = "Login";
+
+    console.error(err);
+
+    alert("Network error. Please try again.");
+
 }
 
    let approvalDates = {};
