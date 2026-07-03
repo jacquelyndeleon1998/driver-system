@@ -1671,6 +1671,101 @@ showAdminDashboard();
         alert("Network error. Please try again.");
     }
 }
+
+   let approvalDates = {};
+let scheduleDates = [];
+
+   function loadScheduleApprovalPage(){
+
+    const approvedDiv = document.getElementById("approvedSchedules");
+    const pendingDiv = document.getElementById("pendingSchedules");
+
+    approvedDiv.innerHTML = "";
+    pendingDiv.innerHTML = "";
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    scheduleDates.forEach(date=>{
+
+        const scheduleDate = new Date(date);
+        scheduleDate.setHours(0,0,0,0);
+
+        const status =
+            (approvalDates[date] || "")
+            .trim()
+            .toLowerCase();
+
+        const weekday =
+            scheduleDate.toLocaleDateString(
+                "en-US",
+                {weekday:"long"}
+            );
+
+        const row = `
+
+        <div class="approval-row">
+
+            <div>
+
+                <div class="approval-day">
+                    ${weekday}
+                </div>
+
+                <div class="approval-date">
+                    ${date}
+                </div>
+
+            </div>
+
+            <div class="approval-actions">
+
+                <button
+                    class="approval-view-btn">
+
+                    View
+
+                </button>
+
+                ${
+                    status==="approved"
+                    ? ""
+                    :
+                    `<button
+                        class="approval-approve-btn">
+
+                        Approve
+
+                    </button>`
+                }
+
+            </div>
+
+        </div>
+
+        `;
+
+        if(status==="approved"){
+
+            if(scheduleDate >= today){
+
+                approvedDiv.innerHTML += row;
+
+            }
+
+        }else{
+
+            if(scheduleDate >= today){
+
+                pendingDiv.innerHTML += row;
+
+            }
+
+        }
+
+    });
+
+}
    
 window.onload = async function () {
 
@@ -1716,7 +1811,7 @@ const rows = data.trim().split("\n").slice(1);
 const approvalRows = approvalData.trim().split("\n").slice(1);
 
     grouped = {};
-    let approvedDates = {};
+   approvalDates = {};
 
     approvalRows.forEach(row => {
       const parts = row.split(",");
@@ -1797,7 +1892,13 @@ const approvalRows = approvalData.trim().split("\n").slice(1);
 
     });
 
-    const dates = [...new Set(Object.values(grouped).map(d => d.date))];
+  scheduleDates =
+[
+    ...new Set(
+        Object.values(grouped)
+        .map(d=>d.date)
+    )
+].sort();
    const container = document.getElementById("driversContainer");
 
 let pageHTML = "";
@@ -2005,6 +2106,8 @@ trip.remarks
 
     });
 container.innerHTML = pageHTML;
+
+     loadScheduleApprovalPage();
   } catch (err) {
     console.error(err);
     alert("Failed to load schedule.");
@@ -2080,13 +2183,8 @@ container.innerHTML = pageHTML;
 
         <h3>Approved</h3>
 
-        <div id="approvedSchedules">
+       <div id="approvedSchedules"></div>
 
-            <p class="empty-text">
-                No approved schedules.
-            </p>
-
-        </div>
 
     </div>
 
@@ -2094,13 +2192,7 @@ container.innerHTML = pageHTML;
 
         <h3>Pending Approval</h3>
 
-        <div id="pendingSchedules">
-
-            <p class="empty-text">
-                No pending schedules.
-            </p>
-
-        </div>
+     <div id="pendingSchedules"></div>
 
     </div>
 
