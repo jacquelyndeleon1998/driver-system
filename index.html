@@ -816,7 +816,7 @@ h1{
     <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
   </div>
 </div>
-<div id="pageLoadingOverlay" class="loading-overlay">
+<div id="pageLoadingOverlay" class="loading-overlay" style="display:flex;">
 
     <div class="loading-box" style="max-width:340px;">
 
@@ -1215,23 +1215,30 @@ closeModal();
 }
 window.onload = async function () {
 
- document.getElementById("pageLoadingOverlay").style.display = "flex";
-
   try {
-
-    await loadSubmittedAllowances();
 
     const today = new Date().toISOString().split("T")[0];
 
-    // Load Schedule Sheet
-    const response = await fetch(sheetURL);
-    const data = await response.text();
-    const rows = data.trim().split("\n").slice(1);
+const [
+    _,
+    scheduleResponse,
+    approvalResponse
+] = await Promise.all([
+    loadSubmittedAllowances(),
+    fetch(sheetURL),
+    fetch(approvalURL)
+]);
 
-    // Load Approval Sheet
-    const approvalResponse = await fetch(approvalURL);
-    const approvalData = await approvalResponse.text();
-    const approvalRows = approvalData.trim().split("\n").slice(1);
+const [
+    data,
+    approvalData
+] = await Promise.all([
+    scheduleResponse.text(),
+    approvalResponse.text()
+]);
+
+const rows = data.trim().split("\n").slice(1);
+const approvalRows = approvalData.trim().split("\n").slice(1);
 
     grouped = {};
     let approvedDates = {};
