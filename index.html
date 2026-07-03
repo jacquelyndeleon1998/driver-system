@@ -2234,6 +2234,17 @@ container.innerHTML = pageHTML;
 
     </div>
 
+   <!-- APPROVAL LISTS (ADD THIS) -->
+<div class="approval-container">
+
+    <h3 style="margin-top:15px;">Approved Schedules</h3>
+    <div id="approvedSchedules"></div>
+
+    <h3 style="margin-top:15px;">Pending Schedules</h3>
+    <div id="pendingSchedules"></div>
+
+</div>
+
    
 
 <!-- =========================================
@@ -2266,30 +2277,7 @@ container.innerHTML = pageHTML;
 
 </div>
 
-   <!-- =========================================
-     SCHEDULE VIEWER
-========================================= -->
-<div id="scheduleViewerPage" style="display:none;">
 
-    <div class="summary-header">
-        <h2 id="viewerTitle">Driver Schedule</h2>
-    </div>
-
-    <div id="scheduleViewerContent"></div>
-
-    <div class="approval-footer">
-
-        <button
-            class="allowance-btn cancel-btn"
-            id="backToApprovalBtn">
-
-            ← Back to Schedule Approval
-
-        </button>
-
-    </div>
-
-</div>
    
 </body>
 </html>
