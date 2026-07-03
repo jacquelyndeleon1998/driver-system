@@ -1100,7 +1100,57 @@ function resetSubmitButton(btn) {
 let grouped = {};
 let summaryDrivers = {};
 
-   
+   function populateTimeSelectors() {
+
+    // Hours (1-12)
+    const hours = [];
+    for (let i = 1; i <= 12; i++) {
+        hours.push(`<option value="${i}">${String(i).padStart(2,"0")}</option>`);
+    }
+
+    // Minutes
+    const minutes = `
+        <option value="00">00</option>
+        <option value="30">30</option>
+    `;
+
+    // AM / PM
+    const periods = `
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+    `;
+
+    [
+        "timeInHour",
+        "timeOutHour"
+    ].forEach(id => {
+
+        document.getElementById(id).innerHTML =
+            `<option value="">Hour</option>` + hours.join("");
+
+    });
+
+    [
+        "timeInMinute",
+        "timeOutMinute"
+    ].forEach(id => {
+
+        document.getElementById(id).innerHTML =
+            `<option value="">Min</option>` + minutes;
+
+    });
+
+    [
+        "timeInPeriod",
+        "timeOutPeriod"
+    ].forEach(id => {
+
+        document.getElementById(id).innerHTML =
+            `<option value="">AM/PM</option>` + periods;
+
+    });
+
+}
 
 const clean = (v) => (v || "").replace(/"/g, "").trim();
 
@@ -1127,6 +1177,28 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
 });
+
+
+   function getSelectedTime(prefix) {
+
+    const hour = document.getElementById(prefix + "Hour").value;
+    const minute = document.getElementById(prefix + "Minute").value;
+    const period = document.getElementById(prefix + "Period").value;
+
+    if (!hour || !minute || !period) {
+        return "";
+    }
+
+    let h = parseInt(hour, 10);
+
+    if (period === "AM") {
+        if (h === 12) h = 0;
+    } else {
+        if (h !== 12) h += 12;
+    }
+
+    return String(h).padStart(2, "0") + ":" + minute;
+}
 
    // Convert uploaded image to Base64
 function fileToBase64(file) {
@@ -1160,17 +1232,21 @@ btn.disabled = true;
 btn.innerText = "Submitting...";
 
     // Require Time In
-if (!document.getElementById("allowanceTimeIn").value) {
-  alert("❌ Please enter Time In.");
- resetSubmitButton(btn);
-  return;
+const timeIn = getSelectedTime("timeIn");
+
+if (!timeIn) {
+    alert("❌ Please select Time In.");
+    resetSubmitButton(btn);
+    return;
 }
 
 // Require Time Out
-if (!document.getElementById("allowanceTimeOut").value) {
-  alert("❌ Please enter Time Out.");
- resetSubmitButton(btn);
-  return;
+const timeOut = getSelectedTime("timeOut");
+
+if (!timeOut) {
+    alert("❌ Please select Time Out.");
+    resetSubmitButton(btn);
+    return;
 }
 
 // Require receipt if Parking Fee > 0
@@ -1183,17 +1259,17 @@ if (parking > 0 && selectedReceipts.length === 0) {
 }
     document.getElementById("loadingOverlay").style.display = "flex";
 
-  const payload = {
+const payload = {
     tripDate: currentDate,
     driver: currentDriver,
     passenger: currentPassenger,
-    timeIn: document.getElementById("allowanceTimeIn").value,
-    timeOut: document.getElementById("allowanceTimeOut").value,
+    timeIn,
+    timeOut,
     breakfast: document.getElementById("allowanceBreakfast").value || 0,
     lunch: document.getElementById("allowanceLunch").value || 0,
     dinner: document.getElementById("allowanceDinner").value || 0,
     parkingFee: document.getElementById("allowanceParking").value || 0
-  };
+};
 
     const receiptFiles = selectedReceipts;
 
@@ -1251,8 +1327,14 @@ if (driverCard) {
   driverCard.remove();
 }
 
-document.getElementById("allowanceTimeIn").value = "";
-document.getElementById("allowanceTimeOut").value = "";
+document.getElementById("timeInHour").value = "";
+document.getElementById("timeInMinute").value = "";
+document.getElementById("timeInPeriod").value = "";
+
+document.getElementById("timeOutHour").value = "";
+document.getElementById("timeOutMinute").value = "";
+document.getElementById("timeOutPeriod").value = "";
+     
 document.getElementById("allowanceBreakfast").value = "";
 document.getElementById("allowanceLunch").value = "";
 document.getElementById("allowanceDinner").value = "";
@@ -1281,7 +1363,7 @@ closeModal();
    
 window.onload = async function () {
 
-   
+   populateTimeSelectors();
   try {
 
     const today = new Date().toISOString().split("T")[0];
