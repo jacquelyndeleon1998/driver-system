@@ -1621,15 +1621,16 @@ async function adminLogin() {
 
 loginBtn.disabled = true;
 loginBtn.innerText = "Signing In...";
+loginBtn.disabled = false;
+loginBtn.innerText = "Login";
 
+   
    showActionLoading(
     "Signing In...",
     "Please wait while we prepare your dashboard."
 );
 
-   loginBtn.disabled = false;
-loginBtn.innerText = "Login";
-
+   
    closeAdminLogin();
 
     try {
@@ -1675,7 +1676,7 @@ showAdminDashboard();
 
    
 
-   } catch (err) {
+ } catch (err) {
 
     hideActionLoading();
 
@@ -1686,7 +1687,12 @@ showAdminDashboard();
 
     alert("Network error. Please try again.");
 
-}
+}   // closes catch
+
+}   // <-- ADD THIS (closes adminLogin)
+
+let approvalDates = {};
+let scheduleDates = [];
 
    let approvalDates = {};
 let scheduleDates = [];
