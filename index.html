@@ -70,7 +70,40 @@
     text-align:center;
     box-shadow:0 10px 35px rgba(0,0,0,.25);
 }
+.loading-box-large{
+    max-width:340px;
+}
 
+.loading-banner{
+    background:#16a34a;
+    color:#fff;
+    padding:16px;
+    border-radius:12px;
+    margin-bottom:18px;
+    box-shadow:0 4px 12px rgba(22,163,74,.25);
+}
+
+.loading-banner h2{
+    margin:0;
+    font-size:20px;
+}
+
+.loading-banner-subtitle{
+    margin-top:4px;
+    font-size:13px;
+    opacity:.9;
+}
+
+.loading-title{
+    margin:0 0 8px;
+    color:#111827;
+}
+
+.loading-message{
+    margin:0;
+    color:#6b7280;
+    line-height:1.5;
+}
 .spinner{
     width:55px;
     height:55px;
@@ -823,21 +856,15 @@ h1{
 </div>
 <div id="pageLoadingOverlay" class="loading-overlay" style="display:flex;">
 
-    <div class="loading-box" style="max-width:340px;">
+ <div class="loading-box loading-box-large">
 
-        <div style="
-            background:#16a34a;
-            color:#fff;
-            padding:16px;
-            border-radius:12px;
-            margin-bottom:18px;
-            box-shadow:0 4px 12px rgba(22,163,74,.25);">
+      <div class="loading-banner">
 
-            <h2 style="margin:0;font-size:20px;">
+          <h2>
                 Daily Dispatch Hub
             </h2>
 
-            <div style="font-size:13px;opacity:.9;margin-top:4px;">
+           <div class="loading-banner-subtitle">
                 Driver Schedule System
             </div>
 
@@ -845,11 +872,11 @@ h1{
 
         <div class="spinner"></div>
 
-        <h3 style="margin:0 0 8px;color:#111827;">
+      <h3 class="loading-title">
             Getting Dispatch Schedule...
         </h3>
 
-        <p style="margin:0;color:#6b7280;line-height:1.5;">
+      <p class="loading-message">
             Preparing driver schedules,
             trips, and assignments.
         </p>
