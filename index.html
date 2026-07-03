@@ -778,44 +778,30 @@ h1{
 
 .top-nav{
     display:flex;
-    gap:8px;
-    align-self:flex-start;
-    margin-left:0;
+    align-items:center;
+    gap:12px;
+    margin-top:8px;
 }
 
 .nav-btn{
+    background:none;
+    border:none;
+    padding:0;
 
-    height:30px;            /* smaller buttons */
-    padding:0 14px;
-
-    border-radius:999px;
-
-    border:1px solid #d1d5db;
-
-    background:#fff;
-
-    color:#374151;
-
-    font-size:11px;
+    font-size:14px;
     font-weight:600;
 
+    color:#6b7280;
     cursor:pointer;
 
     transition:.2s;
 }
-
 .nav-btn.active{
-
-    background:#14532d;      /* same green as date header */
-    border-color:#14532d;
-    color:#fff;
-
+    color:#14532d;
 }
 
-.nav-btn.secondary:hover{
-
-    background:#f3f4f6;
-
+.nav-btn:hover{
+    color:#14532d;
 }
 
 @media(max-width:600px){
@@ -870,24 +856,18 @@ h1{
 
 <div class="top-nav">
 
-    <button class="nav-btn active">
-        Dashboard
-    </button>
+    <button class="nav-btn active">Dashboard</button>
 
-    <button
-        id="allowanceBtn"
-        class="nav-btn secondary">
+    <span>|</span>
 
+    <button id="allowanceBtn" class="nav-btn">
         Allowances
-
     </button>
 
-    <button
-        id="adminBtn"
-        class="nav-btn secondary">
+    <span>|</span>
 
+    <button id="adminBtn" class="nav-btn">
         Admin
-
     </button>
 
 </div>
