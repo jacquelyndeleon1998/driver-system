@@ -638,7 +638,8 @@ h1{
     margin-bottom:2px;
 }
 
-.time-card input{
+.time-card input,
+.time-card select{
     width:100%;
     height:38px;
     padding:4px 8px;
@@ -771,12 +772,12 @@ h1{
 
     <div class="time-card">
         <label for="allowanceTimeIn">Time In</label>
-        <input id="allowanceTimeIn" type="time">
+      <select id="allowanceTimeIn"></select>
     </div>
 
     <div class="time-card">
         <label for="allowanceTimeOut">Time Out</label>
-        <input id="allowanceTimeOut" type="time">
+       <select id="allowanceTimeOut"></select>
     </div>
 
 </div>
@@ -1257,7 +1258,40 @@ closeModal();
     resetSubmitButton(btn);
 }
 }
+
+function populateTimeDropdown(id){
+
+    const select = document.getElementById(id);
+
+    select.innerHTML = '<option value="">Select Time</option>';
+
+    for(let hour=0; hour<24; hour++){
+
+        for(let minute=0; minute<60; minute+=30){
+
+            const h24 = hour;
+            const h12 = ((hour + 11) % 12) + 1;
+            const ampm = hour < 12 ? "AM" : "PM";
+
+            const mm = minute === 0 ? "00" : "30";
+
+            const display = `${h12}:${mm} ${ampm}`;
+
+            const value = `${String(h24).padStart(2,"0")}:${mm}`;
+
+            select.innerHTML +=
+                `<option value="${value}">${display}</option>`;
+        }
+
+    }
+
+}
+   
 window.onload = async function () {
+
+     populateTimeDropdown("allowanceTimeIn");
+    populateTimeDropdown("allowanceTimeOut");
+
 
   try {
 
