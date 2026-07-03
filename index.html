@@ -1541,22 +1541,19 @@ window.onload = async function () {
    const loggedIn = localStorage.getItem("loggedIn");
 const expires = Number(localStorage.getItem("loginExpires"));
 
-if (loggedIn === "true") {
+let autoLogin = false;
 
-    if (Date.now() < expires) {
+if (loggedIn === "true" && Date.now() < expires) {
 
-        showAdminDashboard();
+    autoLogin = true;
 
-    } else {
+} else {
 
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("userRole");
-        localStorage.removeItem("loginExpires");
-
-    }
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("loginExpires");
 
 }
-
   try {
 
     const today = new Date().toISOString().split("T")[0];
@@ -1878,6 +1875,10 @@ container.innerHTML = pageHTML;
   } finally {
     document.getElementById("pageLoadingOverlay").style.display = "none";
   }
+
+   if (autoLogin) {
+    showAdminDashboard();
+}
 };
 
 
