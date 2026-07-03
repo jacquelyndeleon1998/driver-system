@@ -1534,6 +1534,25 @@ async function adminLogin() {
    
 window.onload = async function () {
 
+   const loggedIn = localStorage.getItem("loggedIn");
+const expires = Number(localStorage.getItem("loginExpires"));
+
+if (loggedIn === "true") {
+
+    if (Date.now() < expires) {
+
+        showAdminDashboard();
+
+    } else {
+
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("loginExpires");
+
+    }
+
+}
+
   try {
 
     const today = new Date().toISOString().split("T")[0];
