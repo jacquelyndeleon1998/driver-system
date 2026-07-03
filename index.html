@@ -758,16 +758,16 @@ h1{
   line-height: 1.2;
 }
 
- /* ==========================
+/* ==========================
    Top Navigation
 ========================== */
 
 .app-header{
     display:flex;
     flex-direction:column;
-    align-items:center;
-    text-align:center;
-    gap:14px;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:22px;
 }
 
 .app-left{
@@ -779,11 +779,14 @@ h1{
 .top-nav{
     display:flex;
     gap:8px;
+
+    margin-left:92px;      /* moves buttons under the text */
 }
 
 .nav-btn{
-    height:34px;
-    padding:0 16px;
+
+    height:30px;            /* smaller buttons */
+    padding:0 14px;
 
     border-radius:999px;
 
@@ -793,7 +796,7 @@ h1{
 
     color:#374151;
 
-    font-size:12px;
+    font-size:11px;
     font-weight:600;
 
     cursor:pointer;
@@ -803,9 +806,9 @@ h1{
 
 .nav-btn.active{
 
-    background:#15803d;
-    border-color:#15803d;
-    color:white;
+    background:#14532d;      /* same green as date header */
+    border-color:#14532d;
+    color:#fff;
 
 }
 
@@ -818,23 +821,17 @@ h1{
 @media(max-width:600px){
 
     .app-left{
-
-        gap:12px;
-
+        gap:14px;
     }
 
     .top-nav{
-
-        margin-top:2px;
-
+        margin-left:70px;
     }
 
     .nav-btn{
-
-        height:32px;
-        padding:0 14px;
-        font-size:11px;
-
+        height:28px;
+        padding:0 12px;
+        font-size:10px;
     }
 
 }
