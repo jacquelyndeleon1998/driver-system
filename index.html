@@ -1367,8 +1367,9 @@ const approvalRows = approvalData.trim().split("\n").slice(1);
     });
 
     const dates = [...new Set(Object.values(grouped).map(d => d.date))];
-    const container = document.getElementById("driversContainer");
+   const container = document.getElementById("driversContainer");
 
+let pageHTML = "";
     dates.forEach(date => {
 
       console.log("Checking:", date, "Status:", approvedDates[date]);
@@ -1411,7 +1412,7 @@ const approvalRows = approvalData.trim().split("\n").slice(1);
       });
 
       if (!hideSummary) {
-        container.innerHTML += `
+      pageHTML += `
         <div class="summary-card" id="summary-${date}">
 
   <div class="summary-header">
@@ -1525,7 +1526,7 @@ trip.remarks
 
           if (submittedDrivers[submittedKey]) return;
 
-          container.innerHTML += `
+          pageHTML += `
             <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
 
           <div class="driver-header">
@@ -1572,7 +1573,7 @@ trip.remarks
         });
 
     });
-
+container.innerHTML = pageHTML;
   } catch (err) {
     console.error(err);
     alert("Failed to load schedule.");
