@@ -1515,6 +1515,10 @@ async function adminLogin() {
     localStorage.setItem("loggedIn", "true");
     localStorage.setItem("loginExpires", expires);
 
+           console.log("loggedIn:", localStorage.getItem("loggedIn"));
+console.log("userRole:", localStorage.getItem("userRole"));
+console.log("loginExpires:", localStorage.getItem("loginExpires"));
+
     closeAdminLogin();
     alert("Login successful!");
 
