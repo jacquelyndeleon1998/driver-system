@@ -224,6 +224,35 @@
 
 }
 
+   .modal-buttons{
+    display:flex;
+    gap:12px;
+    margin-top:18px;
+}
+
+.modal-buttons .allowance-btn{
+    flex:1;
+    margin-top:0;
+    height:48px;
+    border-radius:8px;
+}
+
+.submit-btn{
+    background:#16a34a;
+}
+
+.submit-btn:hover{
+    background:#15803d;
+}
+
+.cancel-btn{
+    background:#6b7280;
+}
+
+.cancel-btn:hover{
+    background:#4b5563;
+}
+
 /* =========================
    Dispatch Hub Header
 ========================= */
@@ -817,11 +846,17 @@ h1{
  
 </div>
 
-   <button class="allowance-btn" onclick="saveAllowance()">
-    Submit Meal Allowance
-</button>
-    <br><br>
-    <button class="allowance-btn" style="background:#6b7280" onclick="closeModal()">Cancel</button>
+  <div class="modal-buttons">
+
+    <button class="allowance-btn submit-btn" onclick="saveAllowance()">
+        Submit Meal Allowance
+    </button>
+
+    <button class="allowance-btn cancel-btn" onclick="closeModal()">
+        Cancel
+    </button>
+
+</div>
   </div>
 </div>
 <div id="pageLoadingOverlay" class="loading-overlay" style="display:flex;">
