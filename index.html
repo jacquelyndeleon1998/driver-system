@@ -306,13 +306,7 @@
    Dispatch Hub Header
 ========================= */
 
-.app-header{
-    display:flex;
-    align-items:center;
-    gap:18px;
 
-    margin-bottom:22px;
-}
 
 .app-logo{
     width:72px;
@@ -937,6 +931,8 @@ h1{
 
    
 <body>
+
+   <div id="scheduleApprovalPage" style="display:none;">
 
 <div class="app-header">
 
@@ -1592,12 +1588,14 @@ document
 });
 
 function showActionLoading(title, message){
+    const overlay = document.getElementById("actionLoadingOverlay");
+    const t = document.getElementById("actionLoadingTitle");
+    const m = document.getElementById("actionLoadingMessage");
 
-    document.getElementById("actionLoadingTitle").textContent = title;
-    document.getElementById("actionLoadingMessage").textContent = message;
+    if (t) t.textContent = title;
+    if (m) m.textContent = message;
 
-    document.getElementById("actionLoadingOverlay").style.display = "flex";
-
+    if (overlay) overlay.style.display = "flex";
 }
 
 function hideActionLoading(){
@@ -2175,7 +2173,8 @@ container.innerHTML = pageHTML;
 
         document.getElementById("driversContainer").style.display="block";
 
-        document.getElementById("adminBtn").classList.remove("active");
+       document.getElementById("adminBtn").classList.remove("active");
+document.querySelector(".nav-btn.active")?.classList.remove("active");
 
     };
 
@@ -2216,7 +2215,7 @@ container.innerHTML = pageHTML;
 <!-- =========================================
      DRIVER SCHEDULE APPROVAL
 ========================================= -->
-<div id="scheduleApprovalPage" style="display:none;">
+
 
     <div class="schedule-header">
 
