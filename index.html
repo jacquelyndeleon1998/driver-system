@@ -1070,8 +1070,16 @@ const appScriptURL="https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9
 let currentDriver="", currentDate="", currentPassenger="";
 let isSubmitting = false;
 
-let grouped = {}; // ✔️ IMPORTANT FIX
-    let summaryDrivers = {};
+function resetSubmitButton(btn) {
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.innerText = "Submit Meal Allowance";
+}
+
+let grouped = {};
+let summaryDrivers = {};
+
+   
 
 const clean = (v) => (v || "").replace(/"/g, "").trim();
 
@@ -1124,27 +1132,23 @@ function fileToBase64(file) {
     console.count("saveAllowance called");
 
   if (isSubmitting) return; // block double click
-  isSubmitting = true;
+isSubmitting = true;
 
-  const btn = document.querySelector("#allowanceModal .allowance-btn");
-  btn.disabled = true;
-  btn.innerText = "Submitting...";
+const btn = document.querySelector("#allowanceModal .allowance-btn");
+btn.disabled = true;
+btn.innerText = "Submitting...";
 
     // Require Time In
 if (!document.getElementById("allowanceTimeIn").value) {
   alert("❌ Please enter Time In.");
-  isSubmitting = false;
-  btn.disabled = false;
-  btn.innerText = "Submit Meal Allowance";
+ resetSubmitButton(btn);
   return;
 }
 
 // Require Time Out
 if (!document.getElementById("allowanceTimeOut").value) {
   alert("❌ Please enter Time Out.");
-  isSubmitting = false;
-  btn.disabled = false;
-  btn.innerText = "Submit Meal Allowance";
+ resetSubmitButton(btn);
   return;
 }
 
@@ -1153,9 +1157,7 @@ const parking = Number(document.getElementById("allowanceParking").value || 0);
 
 if (parking > 0 && selectedReceipts.length === 0) {
   alert("❌ Please upload at least one parking receipt.");
-  isSubmitting = false;
-  btn.disabled = false;
-  btn.innerText = "Submit Meal Allowance";
+ resetSubmitButton(btn);
   return;
 }
     document.getElementById("loadingOverlay").style.display = "flex";
@@ -1247,13 +1249,11 @@ closeModal();
     console.error(err);
     alert("Submission Error:\n\n" + err.message);
 
-  } finally {
+  } 
+  finally {
     document.getElementById("loadingOverlay").style.display = "none";
-    // reset lock
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.innerText = "Submit Meal Allowance";
-  }
+    resetSubmitButton(btn);
+}
 }
 window.onload = async function () {
 
