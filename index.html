@@ -1488,41 +1488,39 @@ function closeAdminLogin(){
 
 async function adminLogin() {
 
-    const username =
-        document.getElementById("adminUsername").value.trim();
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value.trim();
 
-    const password =
-        document.getElementById("adminPassword").value.trim();
-
-    if (!username || !password) {
-        alert("Please enter username and password.");
-        return;
-    }
+    const url = WEBAPP_URL + `?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
 
     try {
 
-        const res = await fetch(WEBAPP_URL + `?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
-        const result = await res.json();
+        const res = await fetch(url);
+        const text = await res.text();
+
+        console.log("RAW LOGIN RESPONSE:", text);
+
+        let result;
+
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            alert("Server did NOT return JSON:\n\n" + text);
+            return;
+        }
 
         if (result.success) {
 
-            // store session (simple version)
             sessionStorage.setItem("userRole", result.role);
             sessionStorage.setItem("loggedIn", "true");
 
             closeAdminLogin();
-
             alert("Login successful!");
 
-           showAdminDashboard();
-
-            // TODO: next step → redirect to Admin Dashboard
-            console.log("Logged in as:", result.role);
+            showAdminDashboard();
 
         } else {
-
             alert(result.message || "Invalid username or password.");
-
         }
 
     } catch (err) {
@@ -1530,7 +1528,6 @@ async function adminLogin() {
         alert("Login failed. Please try again.");
     }
 }
-
    
 window.onload = async function () {
 
