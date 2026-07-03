@@ -1744,12 +1744,13 @@ let scheduleDates = [];
 
             <div class="approval-actions">
 
-                <button
-                    class="approval-view-btn">
+              <button
+    class="approval-view-btn"
+    onclick="viewSchedule('${date}')">
 
-                    View
+    View
 
-                </button>
+</button>
 
                 ${
                     status==="approved"
@@ -1788,6 +1789,27 @@ let scheduleDates = [];
         }
 
     });
+
+}
+
+   function viewSchedule(date){
+
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+
+    document.getElementById("scheduleViewerPage").style.display = "block";
+
+    document.getElementById("viewerTitle").textContent =
+        "Driver Schedule • " + date;
+
+    document.getElementById("scheduleViewerContent").innerHTML = `
+        <div class="driver-card">
+            <h3>${date}</h3>
+
+            <p>Schedule viewer is ready.</p>
+
+            <p>Next step: render all drivers for this date.</p>
+        </div>
+    `;
 
 }
    
@@ -2239,6 +2261,31 @@ container.innerHTML = pageHTML;
             id="backToDriverBtn">
 
             ← Driver Schedule
+
+        </button>
+
+    </div>
+
+</div>
+
+   <!-- =========================================
+     SCHEDULE VIEWER
+========================================= -->
+<div id="scheduleViewerPage" style="display:none;">
+
+    <div class="summary-header">
+        <h2 id="viewerTitle">Driver Schedule</h2>
+    </div>
+
+    <div id="scheduleViewerContent"></div>
+
+    <div class="approval-footer">
+
+        <button
+            class="allowance-btn cancel-btn"
+            id="backToApprovalBtn">
+
+            ← Back to Schedule Approval
 
         </button>
 
