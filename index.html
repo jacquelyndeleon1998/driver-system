@@ -1469,7 +1469,7 @@ function closeAdminLogin(){
 
 }
 
-function adminLogin(){
+async function adminLogin() {
 
     const username =
         document.getElementById("adminUsername").value.trim();
@@ -1477,21 +1477,42 @@ function adminLogin(){
     const password =
         document.getElementById("adminPassword").value.trim();
 
-    if(username==="admin" && password==="12345"){
-
-        closeAdminLogin();
-
-        alert("Admin Dashboard coming in Phase 2.");
-
+    if (!username || !password) {
+        alert("Please enter username and password.");
+        return;
     }
 
-    else{
+    try {
 
-        alert("Invalid username or password.");
+        const res = await fetch(WEBAPP_URL + `?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const result = await res.json();
 
+        if (result.success) {
+
+            // store session (simple version)
+            sessionStorage.setItem("userRole", result.role);
+            sessionStorage.setItem("loggedIn", "true");
+
+            closeAdminLogin();
+
+            alert("Login successful!");
+
+            // TODO: next step → redirect to Admin Dashboard
+            console.log("Logged in as:", result.role);
+
+        } else {
+
+            alert(result.message || "Invalid username or password.");
+
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Login failed. Please try again.");
     }
-
 }
+
+   
 window.onload = async function () {
 
   try {
