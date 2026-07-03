@@ -2050,6 +2050,73 @@ container.innerHTML = pageHTML;
     </div>
 
 </div>
+
+<!-- =========================================
+     DRIVER SCHEDULE APPROVAL
+========================================= -->
+<div id="scheduleApprovalPage" style="display:none;">
+
+    <div class="schedule-header">
+
+        <h2>Driver Schedule Approval</h2>
+
+        <div class="month-selector">
+
+            <label for="approvalMonth">
+                Month
+            </label>
+
+            <select id="approvalMonth">
+
+                <option>July 2026</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <div class="approval-section">
+
+        <h3>Approved</h3>
+
+        <div id="approvedSchedules">
+
+            <p class="empty-text">
+                No approved schedules.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="approval-section">
+
+        <h3>Pending Approval</h3>
+
+        <div id="pendingSchedules">
+
+            <p class="empty-text">
+                No pending schedules.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="approval-footer">
+
+        <button
+            class="allowance-btn cancel-btn"
+            id="backToDriverBtn">
+
+            ← Driver Schedule
+
+        </button>
+
+    </div>
+
+</div>
    
 </body>
 </html>
