@@ -1509,15 +1509,20 @@ async function adminLogin() {
 
         if (result.success === true) {
 
-            sessionStorage.setItem("userRole", result.role || "user");
-            sessionStorage.setItem("loggedIn", "true");
+    const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
 
-            closeAdminLogin();
-            alert("Login successful!");
+    localStorage.setItem("userRole", result.role || "user");
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("loginExpires", expires);
 
-            showAdminDashboard();
+    closeAdminLogin();
+    alert("Login successful!");
 
-        } else {
+    showAdminDashboard();
+
+}
+        
+        else {
             alert(result.message || "Invalid login");
         }
 
