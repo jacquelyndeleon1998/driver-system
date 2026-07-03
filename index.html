@@ -1277,40 +1277,11 @@ closeModal();
 }
 }
 
-function populateTimeDropdown(id){
 
-    const select = document.getElementById(id);
-
-    select.innerHTML = '<option value="">Select Time</option>';
-
-    for(let hour=0; hour<24; hour++){
-
-        for(let minute=0; minute<60; minute+=30){
-
-            const h24 = hour;
-            const h12 = ((hour + 11) % 12) + 1;
-            const ampm = hour < 12 ? "AM" : "PM";
-
-            const mm = minute === 0 ? "00" : "30";
-
-            const display = `${h12}:${mm} ${ampm}`;
-
-            const value = `${String(h24).padStart(2,"0")}:${mm}`;
-
-            select.innerHTML +=
-                `<option value="${value}">${display}</option>`;
-        }
-
-    }
-
-}
    
 window.onload = async function () {
 
-     populateTimeDropdown("allowanceTimeIn");
-    populateTimeDropdown("allowanceTimeOut");
-
-
+   
   try {
 
     const today = new Date().toISOString().split("T")[0];
