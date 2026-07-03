@@ -982,6 +982,7 @@ h1{
 
 
 <div id="adminContainer" style="display:none;"></div>
+<div id="driversContainer"></div>
 
 <div id="allowanceModal" class="modal">
   <div class="modal-content">
@@ -1231,9 +1232,15 @@ function refreshLoginSession() {
     document.getElementById("driversContainer").style.display = "none";
     document.getElementById("adminContainer").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
+
     document.getElementById("adminBtn").classList.add("active");
+
     sessionStorage.setItem("view","admin");
+
+    hideActionLoading();
+
     console.log("Schedule Approval page opened.");
+
 }
 
    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
@@ -1643,12 +1650,9 @@ async function adminLogin() {
 console.log("userRole:", localStorage.getItem("userRole"));
 console.log("loginExpires:", localStorage.getItem("loginExpires"));
 
-   closeAdminLogin();
-
-hideActionLoading();
+closeAdminLogin();
 
 showAdminDashboard();
-
 }
         
         else {
@@ -2190,7 +2194,6 @@ container.innerHTML = pageHTML;
         <h3>Approved</h3>
 
        <div id="approvedSchedules"></div>
-
 
     </div>
 
