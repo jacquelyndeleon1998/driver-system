@@ -507,8 +507,8 @@ h1{
 }
 
 .trip-info-card{
-    background:#f8fafc;
-    border:1px solid #dbe4ee;
+    background:#f0fdf4;
+    border:1px solid #bbf7d0;
     border-radius:10px;
     padding:10px 12px;
     margin-bottom:15px;
@@ -530,6 +530,14 @@ h1{
    color:rgba(255,255,255,.88);
 
     white-space:nowrap;
+}
+   .trip-info-card .info-label{
+    color:#166534;
+    font-weight:600;
+}
+   .trip-info-card .info-value{
+    color:#111827;
+    font-weight:600;
 }
 
 .info-value{
@@ -710,17 +718,17 @@ h1{
 <div class="trip-info-card">
 
   <div class="info-item">
-    <div class="info-label">🚗 Driver</div>
+    <div class="info-label">Driver</div>
     <div id="modalDriver" class="info-value"></div>
   </div>
 
   <div class="info-item">
-    <div class="info-label">📅 Date</div>
+    <div class="info-label">Trip Date</div>
     <div id="modalDate" class="info-value"></div>
   </div>
 
   <div class="info-item">
-    <div class="info-label">👥 Passenger(s)</div>
+    <div class="info-label">Passenger</div>
     <div id="modalPassenger" class="info-value"></div>
   </div>
 
