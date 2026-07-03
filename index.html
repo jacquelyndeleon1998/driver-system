@@ -1697,7 +1697,7 @@ showAdminDashboard();
 
 let approvalDates = {};
 let scheduleDates = [];
-
+let selectedViewDate = "";
 
    function loadScheduleApprovalPage(){
 
@@ -2224,20 +2224,33 @@ container.innerHTML = pageHTML;
 
         <div class="month-selector">
 
-            <label for="approvalMonth">
-                Month
-            </label>
+            <label for="approvalMonth">Month</label>
 
             <select id="approvalMonth">
-
                 <option>July 2026</option>
-
             </select>
 
         </div>
 
     </div>
 
+   
+
+<!-- =========================================
+     SCHEDULE VIEWER (SEPARATE PAGE)
+========================================= -->
+<div id="scheduleViewerPage" style="display:none;">
+
+    <div class="summary-header">
+        <h2 id="viewerTitle">Driver Schedule</h2>
+    </div>
+
+    <div id="scheduleViewerContent"></div>
+
+</div>
+
+
+   
     <div class="approval-section">
 
         <h3>Approved</h3>
