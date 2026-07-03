@@ -871,7 +871,15 @@ h1{
 <div class="top-nav">
 
     <button class="nav-btn active">
-        Main Dashboard
+        Dashboard
+    </button>
+
+    <button
+        id="allowanceBtn"
+        class="nav-btn secondary">
+
+        Allowances
+
     </button>
 
     <button
@@ -883,7 +891,6 @@ h1{
     </button>
 
 </div>
-
 </div>
 
 
@@ -1454,14 +1461,21 @@ closeModal();
 }
 }
 
-   document
+ document
+.getElementById("allowanceBtn")
+.addEventListener("click", function(){
+
+    alert("Allowance History will be available in the next phase.");
+
+});
+
+document
 .getElementById("adminBtn")
 .addEventListener("click", function(){
 
     document.getElementById("adminLoginModal").style.display = "block";
 
 });
-
 function closeAdminLogin(){
 
     document.getElementById("adminLoginModal").style.display = "none";
