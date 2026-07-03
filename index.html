@@ -1621,8 +1621,7 @@ async function adminLogin() {
 
 loginBtn.disabled = true;
 loginBtn.innerText = "Signing In...";
-loginBtn.disabled = false;
-loginBtn.innerText = "Login";
+
 
    
    showActionLoading(
@@ -1645,8 +1644,13 @@ loginBtn.innerText = "Login";
         try {
             result = JSON.parse(text);
         } catch (e) {
+
+              loginBtn.disabled = false;
+loginBtn.innerText = "Login";
             alert("Server error (not JSON):\n\n" + text);
             return;
+
+        
         }
 
         if (result.success === true) {
@@ -1694,8 +1698,6 @@ showAdminDashboard();
 let approvalDates = {};
 let scheduleDates = [];
 
-   let approvalDates = {};
-let scheduleDates = [];
 
    function loadScheduleApprovalPage(){
 
