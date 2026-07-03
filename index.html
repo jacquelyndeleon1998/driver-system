@@ -1899,8 +1899,7 @@ console.log("Approved Dates:", approvalDates);
 let pageHTML = "";
   scheduleDates.forEach(date => {
 
-      console.log("Checking:", date, "Status:", approvedDates[date]);
-
+      console.log("Checking:", date, "Status:", approvalDates[date]);
       const scheduleDate = new Date(date);
 
     const status = (approvalDates[date] || "").trim().toLowerCase();
@@ -2115,16 +2114,19 @@ container.innerHTML = pageHTML;
 }
 };
 
-   document.getElementById("backToDriverBtn").onclick = function(){
+  window.addEventListener("DOMContentLoaded", function(){
 
-    document.getElementById("scheduleApprovalPage").style.display = "none";
+    document.getElementById("backToDriverBtn").onclick=function(){
 
-    document.getElementById("driversContainer").style.display = "block";
+        document.getElementById("scheduleApprovalPage").style.display="none";
 
-    document.getElementById("adminBtn").classList.remove("active");
+        document.getElementById("driversContainer").style.display="block";
 
-};
+        document.getElementById("adminBtn").classList.remove("active");
 
+    };
+
+});
     </script>
 
 
