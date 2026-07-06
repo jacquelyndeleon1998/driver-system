@@ -753,9 +753,9 @@ function refreshLoginSession() {
    
 function showAdminDashboard() {
     refreshLoginSession();
-    document.getElementById("driversContainer").style.display = "none";
-    document.getElementById("adminContainer").style.display = "none";
-    document.getElementById("scheduleApprovalPage").style.display = "block";
+  document.getElementById("driversContainer").style.display = "none";
+document.getElementById("adminContainer").style.display = "block";
+document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("adminBtn").classList.add("active");
     sessionStorage.setItem("view","admin");
     hideActionLoading();
