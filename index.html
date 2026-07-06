@@ -508,14 +508,13 @@ h1 {
     to { transform: rotate(360deg); }
 }
 
-/* Summary Table */
+/* Driver View Table Styles */
 .summary-table {
     width: 100%;
     table-layout: auto;
     border-collapse: collapse;
     font-size: 12px;
 }
-
 .summary-table th {
     color: #14532d;
     font-weight: 700;
@@ -524,14 +523,12 @@ h1 {
     border-bottom: 2px solid #16a34a;
     background: #f6fff7;
 }
-
 .summary-table td {
     color: #374151;
     font-weight: 500;
     padding: 7px 4px;
     border-bottom: 1px solid #e5e7eb;
 }
-
 .summary-table tr:last-child td { border-bottom: none; }
 .summary-table th:nth-child(1), .summary-table td:first-child { font-weight: 600; text-align: left; width: 40%; }
 .summary-table th:nth-child(2), .summary-table td:nth-child(2) { white-space: nowrap; }
@@ -555,6 +552,141 @@ h1 {
 .footer-sub { font-size: 11px; color: #6b7280; line-height: 1.2; }
 .footer-copy { font-size: 10px; color: #9ca3af; line-height: 1.2; }
 
+/* =========================================
+   Admin Panel Specific Layout Styles
+========================================= */
+.schedule-header {
+    background: #14532d;
+    color: #ffffff;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 10px rgba(20,83,45,.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.schedule-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.month-selector label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+}
+
+.month-selector select {
+    padding: 5px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #14532d;
+    background: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+}
+
+.approval-container h3 {
+    color: #14532d;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 22px 0 10px;
+    padding-left: 6px;
+    border-left: 4px solid #16a34a;
+}
+
+/* =========================================
+   FIXED: Admin Panel Master Tables Theme
+========================================= */
+.approval-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #b7d58c !important; /* Base layout green background */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    margin-bottom: 15px;
+}
+
+.approval-table th {
+    background: #14532d !important; /* Dark green column block headers */
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: left;
+    padding: 10px 14px;
+}
+
+.approval-table td {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #14532d !important; /* Dark Green text values */
+    font-weight: 600;
+    border-bottom: 1px solid rgba(20, 83, 45, 0.15);
+}
+
+.approval-table tr:last-child td {
+    border-bottom: none;
+}
+
+.approval-table tr:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.approval-day-name {
+    font-weight: 700;
+}
+
+.approval-date-val {
+    font-weight: 500;
+}
+
+/* Custom Mini Inline Buttons inside Table Rows */
+.action-btn-grp {
+    display: flex;
+    gap: 6px;
+}
+
+.action-table-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.btn-view {
+    background: #ffffff;
+    color: #14532d;
+    border: 1px solid rgba(20, 83, 45, 0.3);
+}
+
+.btn-view:hover {
+    background: #eef3ef;
+}
+
+.btn-approve {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.btn-approve:hover {
+    background: #15803d;
+}
+
 /* =========================
    Responsive Styles (Max 600px)
 ========================= */
@@ -576,143 +708,9 @@ h1 {
     .app-subtitle { font-size: 14px; }
     .app-description { font-size: 12px; }
     .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
+    .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .month-selector { width: 100%; justify-content: space-between; }
 }
-
-   /* =========================================
-   Admin Schedule Approval Table Styles
-========================================= */
-.schedule-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #14532d;
-    color: #fff;
-    padding: 15px 20px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 12px rgba(20,83,45,.15);
-}
-
-.schedule-header h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.month-selector {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.month-selector label {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.month-selector select {
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #14532d;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    cursor: pointer;
-    outline: none;
-}
-
-.approval-container h3 {
-    color: #14532d;
-    font-size: 16px;
-    font-weight: 700;
-    margin: 25px 0 12px;
-    padding-left: 4px;
-    border-left: 4px solid #16a34a;
-}
-
-/* Approval Table UI */
-.approval-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,.05);
-    margin-bottom: 15px;
-}
-
-.approval-table th {
-    background: #b7d58c;
-    color: #14532d;
-    font-weight: 700;
-    font-size: 14px;
-    text-align: left;
-    padding: 12px 16px;
-    border-bottom: 2px solid #16a34a;
-}
-
-.approval-table td {
-    padding: 14px 16px;
-    font-size: 14px;
-    color: #374151;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.approval-table tr:last-child td {
-    border-bottom: none;
-}
-
-.approval-table tr:hover {
-    background: #f6fff7;
-}
-
-.approval-day-name {
-    font-weight: 700;
-    color: #14532d;
-}
-
-.approval-date-val {
-    color: #6b7280;
-    font-weight: 500;
-}
-
-/* Compact Action Buttons inside Table */
-.action-btn-grp {
-    display: flex;
-    gap: 8px;
-}
-
-.action-table-btn {
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background .2s ease;
-}
-
-.btn-view {
-    background: #eef3ef;
-    color: #14532d;
-    border: 1px solid #b7d58c;
-}
-
-.btn-view:hover {
-    background: #b7d58c;
-}
-
-.btn-approve {
-    background: #16a34a;
-    color: #ffffff;
-}
-
-.btn-approve:hover {
-    background: #15803d;
-}
-   
 </style>
 </head>
 
@@ -763,8 +761,7 @@ h1 {
                     <th style="width: 25%;">Actions</th>
                 </tr>
             </thead>
-            <tbody id="approvedSchedules">
-                </tbody>
+            <tbody id="approvedSchedules"></tbody>
         </table>
 
         <h3>Pending Schedules</h3>
@@ -776,8 +773,7 @@ h1 {
                     <th style="width: 25%;">Actions</th>
                 </tr>
             </thead>
-            <tbody id="pendingSchedules">
-                </tbody>
+            <tbody id="pendingSchedules"></tbody>
         </table>
     </div>
 
@@ -795,6 +791,7 @@ h1 {
     </div>
 
 </div>
+
 <div id="allowanceModal" class="modal">
     <div class="modal-content">
         <h3 class="modal-title">Meal Allowance Form</h3>
@@ -916,17 +913,14 @@ function refreshLoginSession() {
 function showAdminDashboard() {
     refreshLoginSession();
 
-    // Hide Driver Dashboard & Schedule Lists Viewers inside Admin
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     
-    // Ensure lists are shown and single viewer template is clean when landing back
-    document.querySelector(".schedule-header").style.display = "block";
+    document.querySelector(".schedule-header").style.display = "flex";
     document.querySelector(".approval-container").style.display = "block";
     document.querySelector(".approval-footer").style.display = "block";
     document.getElementById("scheduleViewerPage").style.display = "none";
 
-    // Update active navigation tabs
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.add("active");
     document.getElementById("allowanceBtn").classList.remove("active");
@@ -1111,33 +1105,26 @@ async function saveAllowance() {
 
 document.getElementById("allowanceBtn").addEventListener("click", () => { alert("Allowance History will be available in the next phase."); });
 
-// INAYOS NA ADMIN BUTTON LOGIC
 document.getElementById("adminBtn").addEventListener("click", () => {
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
 
-    // Kung logged in na at hindi pa expired ang session, direkta nang papasok sa dashboard
     if (loggedIn === "true" && Date.now() < expires) {
         showAdminDashboard();
     } else {
-        // Kung walang session o expired na, saka lang hihingi ng login
         document.getElementById("adminLoginModal").style.display = "block";
     }
 });
-document.getElementById("dashboardBtn").addEventListener("click", () => {
-    // Show Driver Dashboard
-    document.getElementById("driverDashboard").style.display = "block";
 
-    // Hide Admin Dashboard & Active pages inside it
+document.getElementById("dashboardBtn").addEventListener("click", () => {
+    document.getElementById("driverDashboard").style.display = "block";
     document.getElementById("scheduleApprovalPage").style.display = "none";
 
-    // Update active navigation
     document.getElementById("dashboardBtn").classList.add("active");
     document.getElementById("adminBtn").classList.remove("active");
     document.getElementById("allowanceBtn").classList.remove("active");
 });
 
-// Back to Driver view routing inside Admin Panel footer
 document.getElementById("backToDriverBtn").addEventListener("click", () => {
     document.getElementById("driverDashboard").style.display = "block";
     document.getElementById("scheduleApprovalPage").style.display = "none";
@@ -1200,7 +1187,6 @@ function loadScheduleApprovalPage(){
     const today = new Date(); 
     today.setHours(0,0,0,0);
 
-    // Flag to check if tables are empty
     let hasApproved = false;
     let hasPending = false;
 
@@ -1210,7 +1196,6 @@ function loadScheduleApprovalPage(){
         const status = (approvalDates[date] || "").trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
-        // INAYOS NA TABLE ROW AT THEME-BASED BUTTONS TEMPLATE
         const row = `
         <tr>
             <td class="approval-day-name">${weekday}</td>
@@ -1232,22 +1217,19 @@ function loadScheduleApprovalPage(){
         }
     });
 
-    // Fallback message kung walang schedule na nag-match
     if(!hasApproved) {
-        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#9ca3af; padding:20px;">No approved schedules found.</td></tr>`;
+        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found.</td></tr>`;
     }
     if(!hasPending) {
-        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#9ca3af; padding:20px;">No pending schedules found.</td></tr>`;
+        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found.</td></tr>`;
     }
 }
 
 function viewSchedule(date){
-    // Hide standard list headers inside Admin Approval view
     document.querySelector(".schedule-header").style.display = "none";
     document.querySelector(".approval-container").style.display = "none";
     document.querySelector(".approval-footer").style.display = "none";
 
-    // Show the specific schedule viewer content block
     document.getElementById("scheduleViewerPage").style.display = "block";
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
