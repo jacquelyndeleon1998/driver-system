@@ -582,25 +582,25 @@ h1 {
 
 <body>
 
-<div id="driverDashboard">
-    <div class="app-header">
-        <div class="app-left">
-            <img src="assets/dispatch-hub-logo.png" alt="Dispatch Hub Logo" class="app-logo">
-            <div class="app-title">
-                <h1>Dispatch Hub</h1>
-                <div class="app-subtitle">Driver Operations Portal</div>
-                <div class="app-description">Real-time Schedule & Allowance Management</div>
-            </div>
-        </div>
-        <div class="top-nav">
-            <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
-            <span class="nav-separator">|</span>
-            <button id="allowanceBtn" class="nav-btn">Allowances</button>
-            <span class="nav-separator">|</span>
-            <button id="adminBtn" class="nav-btn">Admin</button>
+<div class="app-header">
+    <div class="app-left">
+        <img src="assets/dispatch-hub-logo.png" alt="Dispatch Hub Logo" class="app-logo">
+        <div class="app-title">
+            <h1>Dispatch Hub</h1>
+            <div class="app-subtitle">Driver Operations Portal</div>
+            <div class="app-description">Real-time Schedule & Allowance Management</div>
         </div>
     </div>
+    <div class="top-nav">
+        <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+        <span class="nav-separator">|</span>
+        <button id="allowanceBtn" class="nav-btn">Allowances</button>
+        <span class="nav-separator">|</span>
+        <button id="adminBtn" class="nav-btn">Admin</button>
+    </div>
+</div>
 
+<div id="driverDashboard">
     <div id="adminContainer" style="display:none;"></div>
     <div id="driversContainer"></div>
 </div>
@@ -609,7 +609,6 @@ h1 {
 
     <div class="schedule-header">
         <h2>Driver Schedule Approval</h2>
-
         <div class="month-selector">
             <label for="approvalMonth">Month</label>
             <select id="approvalMonth">
@@ -630,11 +629,14 @@ h1 {
         <div class="summary-header">
             <h2 id="viewerTitle">Driver Schedule</h2>
         </div>
-
         <div id="scheduleViewerContent"></div>
     </div>
 
-   
+    <div class="approval-footer">
+        <button class="allowance-btn cancel-btn" id="backToDriverBtn">
+            ← Driver Schedule
+        </button>
+    </div>
 
 </div>
 
@@ -757,24 +759,27 @@ function refreshLoginSession() {
 }
    
 function showAdminDashboard() {
-
     refreshLoginSession();
 
-    // Hide Driver Dashboard
+    // Hide Driver Dashboard & Schedule Lists Viewers inside Admin
     document.getElementById("driverDashboard").style.display = "none";
-
-    // Show Admin Dashboard
     document.getElementById("scheduleApprovalPage").style.display = "block";
+    
+    // Ensure lists are shown and single viewer template is clean when landing back
+    document.querySelector(".schedule-header").style.display = "block";
+    document.querySelector(".approval-container").style.display = "block";
+    document.querySelector(".approval-footer").style.display = "block";
+    document.getElementById("scheduleViewerPage").style.display = "none";
 
-    // Update active navigation
+    // Update active navigation tabs
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.add("active");
     document.getElementById("allowanceBtn").classList.remove("active");
 
     sessionStorage.setItem("view", "admin");
-
     hideActionLoading();
 }
+
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(WEBAPP_URL + "?action=submitted");
@@ -953,18 +958,25 @@ document.getElementById("allowanceBtn").addEventListener("click", () => { alert(
 document.getElementById("adminBtn").addEventListener("click", () => { document.getElementById("adminLoginModal").style.display = "block"; });
 
 document.getElementById("dashboardBtn").addEventListener("click", () => {
-
     // Show Driver Dashboard
     document.getElementById("driverDashboard").style.display = "block";
 
-    // Hide Admin Dashboard
+    // Hide Admin Dashboard & Active pages inside it
     document.getElementById("scheduleApprovalPage").style.display = "none";
 
     // Update active navigation
     document.getElementById("dashboardBtn").classList.add("active");
     document.getElementById("adminBtn").classList.remove("active");
     document.getElementById("allowanceBtn").classList.remove("active");
+});
 
+// Back to Driver view routing inside Admin Panel footer
+document.getElementById("backToDriverBtn").addEventListener("click", () => {
+    document.getElementById("driverDashboard").style.display = "block";
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+
+    document.getElementById("dashboardBtn").classList.add("active");
+    document.getElementById("adminBtn").classList.remove("active");
 });
    
 function showActionLoading(title, message){
@@ -1042,17 +1054,14 @@ function loadScheduleApprovalPage(){
 }
 
 function viewSchedule(date){
-
-    // Keep the admin page visible
+    // Hide standard list headers inside Admin Approval view
     document.querySelector(".schedule-header").style.display = "none";
     document.querySelector(".approval-container").style.display = "none";
     document.querySelector(".approval-footer").style.display = "none";
 
-    // Show the schedule viewer
+    // Show the specific schedule viewer content block
     document.getElementById("scheduleViewerPage").style.display = "block";
-
-    document.getElementById("viewerTitle").textContent =
-        "Driver Schedule • " + date;
+    document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     document.getElementById("scheduleViewerContent").innerHTML = `
         <div class="driver-card">
@@ -1063,11 +1072,9 @@ function viewSchedule(date){
 }
    
 window.onload = async function () {
-
     document.getElementById("successOK").onclick = () => {
         document.getElementById("successModal").style.display = "none";
     };
-
     
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
@@ -1163,7 +1170,6 @@ window.onload = async function () {
 
                 let tripsHTML = "";
                 d.trips.forEach((trip, index) => {
-                    /* FIXED TEMPLATE LITERAL BUGS FOR GOOGLE MAPS HERE */
                     tripsHTML += `
                     <div class="trip">
                         <div class="trip-title">Pick-Up ${index + 1}</div>
@@ -1178,11 +1184,11 @@ window.onload = async function () {
                         ${trip.origin ? `
                         <div class="info-item">
                             <div class="info-label">Origin</div>
-                            <div class="info-value"><a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
+                            <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">Destination</div>
-                            <div class="info-value"><a target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
+                            <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
                         </div>` : ""}
                         ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
                     </div>`;
