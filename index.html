@@ -1126,11 +1126,20 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
 });
 
 document.getElementById("backToDriverBtn").addEventListener("click", () => {
-    document.getElementById("driverDashboard").style.display = "block";
-    document.getElementById("scheduleApprovalPage").style.display = "none";
+    // Kung kasalukuyang may tinitignang schedule viewer (naka-view sa isang araw)
+    if (document.getElementById("scheduleViewerPage").style.display === "block") {
+        // Ipakita ulit ang listahan ng mga Approved/Pending na araw
+        document.querySelector(".schedule-header").style.display = "flex";
+        document.querySelector(".approval-container").style.display = "block";
+        document.getElementById("scheduleViewerPage").style.display = "none";
+    } else {
+        // Kung nasa main list ka na ng admin, saka pa lang babalik sa Driver Dashboard
+        document.getElementById("driverDashboard").style.display = "block";
+        document.getElementById("scheduleApprovalPage").style.display = "none";
 
-    document.getElementById("dashboardBtn").classList.add("active");
-    document.getElementById("adminBtn").classList.remove("active");
+        document.getElementById("dashboardBtn").classList.add("active");
+        document.getElementById("adminBtn").classList.remove("active");
+    }
 });
    
 function showActionLoading(title, message){
@@ -1226,19 +1235,98 @@ function loadScheduleApprovalPage(){
 }
 
 function viewSchedule(date){
+    // 1. Itago ang standard list headers at container sa Admin Approval view
     document.querySelector(".schedule-header").style.display = "none";
     document.querySelector(".approval-container").style.display = "none";
-    document.querySelector(".approval-footer").style.display = "none";
 
-    document.getElementById("scheduleViewerPage").style.display = "block";
+    // 2. Ipakita ang schedule viewer container page
+    const viewerPage = document.getElementById("scheduleViewerPage");
+    viewerPage.style.display = "block";
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
-    document.getElementById("scheduleViewerContent").innerHTML = `
-        <div class="driver-card">
-            <h3>${date}</h3>
-            <p>Schedule viewer is ready.</p>
-            <p>Next step: render all drivers for this date.</p>
+    const viewerContent = document.getElementById("scheduleViewerContent");
+    let viewerHTML = "";
+
+    // 3. I-GENERATE ANG SUMMARY CARD (Katulad ng sa Driver Dashboard)
+    const scheduleDate = new Date(date);
+    const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
+    let tableRows = "";
+
+    Object.values(summaryDrivers[date] || {}).forEach(driver => {
+        const isRestDay = driver.itinerary && driver.itinerary.toLowerCase().trim() === "rest day";
+        tableRows += `
+          <tr class="${isRestDay ? "rest-day-row" : ""}">
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
+            <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.itinerary}</td>
+          </tr>`;
+    });
+
+    if (tableRows !== "") {
+        viewerHTML += `
+        <div class="summary-card" id="viewer-summary-${date}">
+            <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+            <table class="summary-table">
+                <tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr>
+                ${tableRows}
+            </table>
         </div>`;
+    }
+
+    // 4. I-GENERATE ANG MGA DRIVER CARDS AT TRIPS (Katulad ng sa Driver Dashboard)
+    Object.values(grouped)
+        .filter(d => d.date === date)
+        .forEach(d => {
+            // Huwag ipakita kung rest day o walang biyahe sa card view
+            if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
+
+            let tripsHTML = "";
+            d.trips.forEach((trip, index) => {
+                tripsHTML += `
+                <div class="trip">
+                    <div class="trip-title">Pick-Up ${index + 1}</div>
+                    ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
+                    ${trip.requestedBy ? `
+                    <div class="info-item">
+                        <div class="info-label">Passenger</div>
+                        <div class="info-value">
+                            ${trip.requestedBy} ${trip.contactNumber ? `<span style="color:#9ca3af;">|</span> <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
+                        </div>
+                    </div>` : ""}
+                    ${trip.origin ? `
+                    <div class="info-item">
+                        <div class="info-label">Origin</div>
+                        <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Destination</div>
+                        <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
+                    </div>` : ""}
+                    ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
+                </div>`;
+            });
+
+            viewerHTML += `
+            <div class="driver-card" style="margin-top: 15px;">
+                <div class="driver-header">
+                    <h2>${d.driver}</h2>
+                    <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                    <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                    <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                    ${d.itinerary ? `<div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>` : ""}
+                </div>
+                ${tripsHTML}
+            </div>`;
+        });
+
+    // Kung walang nahanap na kahit anong biyahe para sa petsang ito
+    if (viewerHTML === "") {
+        viewerHTML = `<div class="driver-card" style="text-align:center; padding:30px; color:#6b7280;">Walang nakatalagang biyahe o active schedule para sa petsang ito.</div>`;
+    }
+
+    // Isulat ang nabuong HTML sa viewer container
+    viewerContent.innerHTML = viewerHTML;
 }
    
 window.onload = async function () {
