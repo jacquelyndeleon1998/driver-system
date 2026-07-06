@@ -582,7 +582,7 @@ h1 {
 
 <body>
 
-<div id="scheduleApprovalPage" style="display:none;">
+<div id="driverDashboard">
     <div class="app-header">
         <div class="app-left">
             <img src="assets/dispatch-hub-logo.png" alt="Dispatch Hub Logo" class="app-logo">
@@ -603,9 +603,13 @@ h1 {
 
     <div id="adminContainer" style="display:none;"></div>
     <div id="driversContainer"></div>
+</div>
+
+<div id="scheduleApprovalPage" style="display:none;">
 
     <div class="schedule-header">
         <h2>Driver Schedule Approval</h2>
+
         <div class="month-selector">
             <label for="approvalMonth">Month</label>
             <select id="approvalMonth">
@@ -617,6 +621,7 @@ h1 {
     <div class="approval-container">
         <h3 style="margin-top:15px;">Approved Schedules</h3>
         <div id="approvedSchedules"></div>
+
         <h3 style="margin-top:15px;">Pending Schedules</h3>
         <div id="pendingSchedules"></div>
     </div>
@@ -625,12 +630,16 @@ h1 {
         <div class="summary-header">
             <h2 id="viewerTitle">Driver Schedule</h2>
         </div>
+
         <div id="scheduleViewerContent"></div>
     </div>
 
     <div class="approval-footer">
-        <button class="allowance-btn cancel-btn" id="backToDriverBtn">← Driver Schedule</button>
+        <button class="allowance-btn cancel-btn" id="backToDriverBtn">
+            ← Driver Schedule
+        </button>
     </div>
+
 </div>
 
 <div id="allowanceModal" class="modal">
@@ -674,6 +683,18 @@ h1 {
     </div>
 </div>
 
+<div id="adminLoginModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-title">Supervisor Login</h3>
+        <input id="adminUsername" type="text" placeholder="Username">
+        <input id="adminPassword" type="password" placeholder="Password">
+        <div class="modal-buttons">
+            <button class="allowance-btn submit-btn" onclick="adminLogin()">Login</button>
+            <button class="allowance-btn cancel-btn" onclick="closeAdminLogin()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <div id="pageLoadingOverlay" class="loading-overlay" style="display:flex;">
     <div class="loading-box loading-box-large">
         <div class="loading-banner">
@@ -700,18 +721,6 @@ h1 {
         <h2>Submitted Successfully</h2>
         <p>Your meal allowance has been recorded for review and approval.</p>
         <button id="successOK" class="allowance-btn">OK</button>
-    </div>
-</div>
-
-<div id="adminLoginModal" class="modal">
-    <div class="modal-content">
-        <h3 class="modal-title">Supervisor Login</h3>
-        <input id="adminUsername" type="text" placeholder="Username">
-        <input id="adminPassword" type="password" placeholder="Password">
-        <div class="modal-buttons">
-            <button class="allowance-btn submit-btn" onclick="adminLogin()">Login</button>
-            <button class="allowance-btn cancel-btn" onclick="closeAdminLogin()">Cancel</button>
-        </div>
     </div>
 </div>
 
@@ -752,13 +761,21 @@ function refreshLoginSession() {
 }
    
 function showAdminDashboard() {
+
     refreshLoginSession();
-  document.getElementById("driversContainer").style.display = "none";
-document.getElementById("adminContainer").style.display = "block";
-document.getElementById("scheduleApprovalPage").style.display = "block";
+
+    // Hide Driver Dashboard
+    document.getElementById("driverDashboard").style.display = "none";
+
+    // Show Admin Dashboard
+    document.getElementById("scheduleApprovalPage").style.display = "block";
+
     document.getElementById("adminBtn").classList.add("active");
+
     sessionStorage.setItem("view","admin");
+
     hideActionLoading();
+
 }
 
 async function loadSubmittedAllowances() {
@@ -1025,13 +1042,22 @@ function viewSchedule(date){
 }
    
 window.onload = async function () {
-    document.getElementById("successOK").onclick = () => { document.getElementById("successModal").style.display = "none"; };
-    document.getElementById("backToDriverBtn").onclick = () => {
-        document.getElementById("scheduleApprovalPage").style.display = "none";
-        document.getElementById("driversContainer").style.display = "block";
-        document.getElementById("adminBtn").classList.remove("active");
+
+    document.getElementById("successOK").onclick = () => {
+        document.getElementById("successModal").style.display = "none";
     };
 
+    document.getElementById("backToDriverBtn").onclick = () => {
+
+        // Hide Admin Dashboard
+        document.getElementById("scheduleApprovalPage").style.display = "none";
+
+        // Show Driver Dashboard
+        document.getElementById("driverDashboard").style.display = "block";
+
+        document.getElementById("adminBtn").classList.remove("active");
+
+    };
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
     let autoLogin = (loggedIn === "true" && Date.now() < expires);
