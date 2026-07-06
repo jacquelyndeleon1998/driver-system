@@ -613,33 +613,34 @@ h1 {
 }
 
 /* =========================================
-   FIXED: Admin Panel Master Tables Theme
+   UPDATED: Admin Panel Master Tables Theme
 ========================================= */
 .approval-table {
     width: 100%;
     border-collapse: collapse;
-    background: #b7d58c !important; 
+    background: #ffffff !important; /* Changed table background to white */
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
     margin-bottom: 15px;
+    border: 1px solid #e5e7eb;
 }
 
 .approval-table th {
-    background: #14532d !important; 
+    background: #14532d !important; /* Kept headers dark green for text clarity */
     color: #ffffff !important;
     font-weight: 700;
     font-size: 13px;
     text-align: left;
-    padding: 10px 14px;
+    padding: 12px 14px;
 }
 
 .approval-table td {
-    padding: 10px 14px;
+    padding: 12px 14px;
     font-size: 13px;
-    color: #14532d !important; 
+    color: #111827 !important; /* Changed text inside white rows to dark grey/black for readability */
     font-weight: 600;
-    border-bottom: 1px solid rgba(20, 83, 45, 0.15);
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .approval-table tr:last-child td {
@@ -647,7 +648,7 @@ h1 {
 }
 
 .approval-table tr:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: #f9fafb; /* Subtle grey hover effect on white rows */
 }
 
 .approval-day-name {
@@ -664,32 +665,34 @@ h1 {
 }
 
 .action-table-btn {
-    padding: 4px 10px;
+    padding: 6px 12px;
     font-size: 12px;
     font-weight: 700;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background .2s;
+    transition: background .2s, color .2s;
 }
 
+/* CHANGED: View button is now Green */
 .btn-view {
-    background: #ffffff;
-    color: #14532d;
-    border: 1px solid rgba(20, 83, 45, 0.3);
+    background: #16a34a !important;
+    color: #ffffff !important;
 }
 
 .btn-view:hover {
-    background: #eef3ef;
+    background: #15803d !important;
 }
 
+/* CHANGED: Approve button is now White/Light grey outline style */
 .btn-approve {
-    background: #16a34a;
-    color: #ffffff;
+    background: #ffffff !important;
+    color: #14532d !important;
+    border: 1px solid rgba(20, 83, 45, 0.4) !important;
 }
 
 .btn-approve:hover {
-    background: #15803d;
+    background: #eef3ef !important;
 }
 
 /* =========================
