@@ -844,6 +844,11 @@ h1 {
             <div class="meal-item"><label>Parking Fee</label><input id="allowanceParking" type="number" placeholder="₱0"></div>
         </div>
 
+        <div class="meal-item" style="margin-bottom: 15px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 4px;">Remarks</label>
+            <textarea id="allowanceRemarks" rows="2" placeholder="e.g., Sidetrips or overtime of passenger" style="width: 100%; padding: 8px; font-family: Arial, sans-serif; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
+        </div>
+
         <div id="receiptSection" class="receipt-section">
             <label class="section-title">Upload Parking Receipt(s)</label>
             <input type="file" id="cameraInput" accept="image/*" capture="environment" class="file-input-hidden">
@@ -915,7 +920,7 @@ h1 {
 <footer class="app-footer">
     <div class="footer-content">
         <div class="footer-title">Dispatch Hub v1.0</div>
-        <div class="footer-sub">Developed by JCD-A </div>
+        <div class="footer-sub">Developed by JCD-A</div>
         <div class="footer-copy">© 2026</div>
     </div>
 </footer>
@@ -1042,6 +1047,7 @@ function resetAllowanceForm(){
     document.getElementById("allowanceLunch").value = "";
     document.getElementById("allowanceDinner").value = "";
     document.getElementById("allowanceParking").value = "";
+    document.getElementById("allowanceRemarks").value = "";
     selectedReceipts = [];
     document.getElementById("cameraInput").value = "";
     document.getElementById("galleryInput").value = "";
@@ -1096,7 +1102,8 @@ async function saveAllowance() {
         breakfast: document.getElementById("allowanceBreakfast").value || 0,
         lunch: document.getElementById("allowanceLunch").value || 0,
         dinner: document.getElementById("allowanceDinner").value || 0,
-        parkingFee: parking
+        parkingFee: parking,
+        remarks: document.getElementById("allowanceRemarks").value.trim()
     };
 
     const receipts = [];
