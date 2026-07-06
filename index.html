@@ -766,14 +766,15 @@ function showAdminDashboard() {
     // Show Admin Dashboard
     document.getElementById("scheduleApprovalPage").style.display = "block";
 
+    // Update active navigation
+    document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.add("active");
+    document.getElementById("allowanceBtn").classList.remove("active");
 
-    sessionStorage.setItem("view","admin");
+    sessionStorage.setItem("view", "admin");
 
     hideActionLoading();
-
 }
-
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(WEBAPP_URL + "?action=submitted");
@@ -953,14 +954,16 @@ document.getElementById("adminBtn").addEventListener("click", () => { document.g
 
 document.getElementById("dashboardBtn").addEventListener("click", () => {
 
-    // Hide Admin Dashboard
-    document.getElementById("scheduleApprovalPage").style.display = "none";
-
     // Show Driver Dashboard
     document.getElementById("driverDashboard").style.display = "block";
 
-    // Reset Admin button highlight
+    // Hide Admin Dashboard
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+
+    // Update active navigation
+    document.getElementById("dashboardBtn").classList.add("active");
     document.getElementById("adminBtn").classList.remove("active");
+    document.getElementById("allowanceBtn").classList.remove("active");
 
 });
    
