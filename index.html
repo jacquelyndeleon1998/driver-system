@@ -13,7 +13,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background: #eef3ef;
     margin: 0;
-    padding: 140px 20px 20px 20px; /* Added significant top padding to accommodate the fixed header layout without cutting off content */
+    padding: 140px 20px 20px 20px; /* Dinagdagan ng space para sa fixed header navigation */
     color: #111827;
 }
 
@@ -170,7 +170,7 @@ h1 {
 }
 
 /* =========================
-   App Header & Navigation (Fixed Layout)
+   App Header & Navigation (Fixed Header Layout)
 ========================= */
 .app-header {
     display: flex;
@@ -178,12 +178,12 @@ h1 {
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 22px;
-    position: fixed;            /* Forces header to stay static when users scroll content */
+    position: fixed;            
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000;              /* Layering preservation to hover cleanly above list items */
-    background: #eef3ef;        /* Native background color matching body structural rules */
+    z-index: 1000;              
+    background: #eef3ef;        
     padding: 20px 20px 10px 20px;
     box-sizing: border-box;
 }
@@ -540,7 +540,7 @@ h1 {
 .summary-table td {
     padding: 7px 6px;
     border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap; /* Inasinta para maging single line ang alignment */
+    white-space: nowrap; 
     word-break: normal;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -621,7 +621,7 @@ h1 {
 }
 
 /* =========================================
-   UPDATED: Admin Panel Master Tables Theme (Compact Row Heights)
+   UPDATED: Admin Panel Compact Table Row Heights
 ========================================= */
 .approval-table {
     width: 100%;
@@ -640,16 +640,16 @@ h1 {
     font-weight: 700;
     font-size: 12px;
     text-align: left;
-    padding: 7px 8px; /* Binabaan para kapantay ng summary header vertical width */
+    padding: 7px 8px; 
 }
 
 .approval-table td {
-    padding: 7px 8px; /* Ginawang 7px 8px para pantay na pantay sa summary view rows niyo */
+    padding: 7px 8px; 
     font-size: 12px;
     color: #111827 !important; 
     font-weight: 600;
     border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap; /* Pinwersa ang content na maging single line lang at bawal mag wrap-down */
+    white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
 }
@@ -676,7 +676,7 @@ h1 {
 }
 
 .action-table-btn {
-    padding: 4px 10px; /* Binawasan ang padding ng inner action elements para pumasok sa mas maliit na row */
+    padding: 4px 10px; 
     font-size: 11px;
     font-weight: 700;
     border: none;
@@ -685,7 +685,6 @@ h1 {
     transition: background .2s, color .2s;
 }
 
-/* View button style */
 .btn-view {
     background: #16a34a !important;
     color: #ffffff !important;
@@ -695,7 +694,6 @@ h1 {
     background: #15803d !important;
 }
 
-/* Approve button style */
 .btn-approve {
     background: #ffffff !important;
     color: #14532d !important;
@@ -705,7 +703,6 @@ h1 {
 .btn-approve:hover {
     background: #eef3ef !important;
 }
- 
  
  /* =========================
    Responsive Styles (Max 600px)
@@ -1452,13 +1449,15 @@ window.onload = async function () {
         const container = document.getElementById("driversContainer");
         let pageHTML = "";
 
+        const now = new Date();
+        const todayStr = now.toDateString(); 
+
         scheduleDates.forEach(date => {
             const scheduleDate = new Date(date);
             const status = (approvalDates[date] || "").toString().trim().toLowerCase();
             if (status !== "approved") return;
 
-            const now = new Date();
-            const isToday = scheduleDate.toDateString() === now.toDateString();
+            const isToday = scheduleDate.toDateString() === todayStr;
             if (scheduleDate < now && !isToday) return;
 
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
@@ -1475,6 +1474,7 @@ window.onload = async function () {
                   </tr>`;
             });
 
+            // IMPROVEMENT 1: Ang 4:00 PM (16:00) rule ay inilapat LAMANG sa Summary Card box.
             if (!(isToday && now.getHours() >= 16)) {
                 pageHTML += `
                 <div class="summary-card" id="summary-${date}">
@@ -1486,6 +1486,9 @@ window.onload = async function () {
                 </div>`;
             }
 
+            // IMPROVEMENT 2: Inihiwalay natin ang Driver Cards/Trips loop.
+            // Ang block na ito ay HINDI apektado ng 4:00 PM constraint. 
+            // Kaya kahit gabi na in-approve, gagawa at lalabas agad ito sa dashboard ng driver.
             Object.values(grouped).filter(d => d.date === date).forEach(d => {
                 if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
 
