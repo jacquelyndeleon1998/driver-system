@@ -593,7 +593,7 @@ h1 {
             </div>
         </div>
         <div class="top-nav">
-            <button class="nav-btn active">Dashboard</button>
+            <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
             <span class="nav-separator">|</span>
             <button id="allowanceBtn" class="nav-btn">Allowances</button>
             <span class="nav-separator">|</span>
@@ -634,11 +634,7 @@ h1 {
         <div id="scheduleViewerContent"></div>
     </div>
 
-    <div class="approval-footer">
-        <button class="allowance-btn cancel-btn" id="backToDriverBtn">
-            ← Driver Schedule
-        </button>
-    </div>
+   
 
 </div>
 
@@ -955,6 +951,19 @@ async function saveAllowance() {
 document.getElementById("allowanceBtn").addEventListener("click", () => { alert("Allowance History will be available in the next phase."); });
 document.getElementById("adminBtn").addEventListener("click", () => { document.getElementById("adminLoginModal").style.display = "block"; });
 
+document.getElementById("dashboardBtn").addEventListener("click", () => {
+
+    // Hide Admin Dashboard
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+
+    // Show Driver Dashboard
+    document.getElementById("driverDashboard").style.display = "block";
+
+    // Reset Admin button highlight
+    document.getElementById("adminBtn").classList.remove("active");
+
+});
+   
 function showActionLoading(title, message){
     const t = document.getElementById("actionLoadingTitle");
     const m = document.getElementById("actionLoadingMessage");
@@ -1056,17 +1065,7 @@ window.onload = async function () {
         document.getElementById("successModal").style.display = "none";
     };
 
-    document.getElementById("backToDriverBtn").onclick = () => {
-
-        // Hide Admin Dashboard
-        document.getElementById("scheduleApprovalPage").style.display = "none";
-
-        // Show Driver Dashboard
-        document.getElementById("driverDashboard").style.display = "block";
-
-        document.getElementById("adminBtn").classList.remove("active");
-
-    };
+    
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
     let autoLogin = (loggedIn === "true" && Date.now() < expires);
