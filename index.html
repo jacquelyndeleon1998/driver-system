@@ -535,6 +535,9 @@ h1 {
     table-layout: auto;
     border-collapse: collapse;
     font-size: 11px;
+    background: #ffffff; /* Adds the bright white background inside the card */
+    border-radius: 8px;  /* Smooths out the table inner edges */
+    overflow: hidden;
 }
 
 .summary-table th, 
@@ -546,12 +549,19 @@ h1 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+ 
 .summary-table tr:last-child td { border-bottom: none; }
 
-.summary-table th:nth-child(1), .summary-table td:first-child { font-weight: normal; text-align: left; width: 32%; }
+.summary-table th:nth-child(1), .summary-table td:first-child { text-align: left; width: 32%; }
 .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
-.summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; font-weight: normal; }
+.summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; }
 .summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
+
+/* Forces only the header names row to be bold */
+.summary-table th {
+    font-weight: bold !important;
+    color: #14532d;
+}
 
 /* Footer */
 .app-footer {
