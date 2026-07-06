@@ -164,9 +164,9 @@ h1 {
 }
 
 .rest-day-row {
-    background: #f8d7da;
-    color: #721c24;
-    font-weight: bold;
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    font-weight: normal !important;
 }
 
 /* =========================
@@ -534,21 +534,25 @@ h1 {
     table-layout: auto;
     border-collapse: collapse;
     font-size: 11px;
-    background: #ffffff; /* Adds the bright white background inside the card */
-    border-radius: 8px;  /* Smooths out the table inner edges */
+    background: #ffffff; /* Lumilikha ng hiwalay na maputing background panel */
+    border-radius: 8px;
     overflow: hidden;
 }
 
 .summary-table th, 
 .summary-table td {
-    padding: 7px 6px;
+    padding: 8px 6px;
     border-bottom: 1px solid #e5e7eb;
     white-space: nowrap; 
     word-break: normal;
     overflow: hidden;
     text-overflow: ellipsis;
 }
- 
+
+.summary-table tr {
+    background: #ffffff; /* Default transparent row override sa white card look */
+}
+
 .summary-table tr:last-child td { border-bottom: none; }
 
 .summary-table th:nth-child(1), .summary-table td:first-child { text-align: left; width: 32%; }
@@ -556,10 +560,14 @@ h1 {
 .summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; }
 .summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
 
-/* Forces only the header names row to be bold */
+/* Ginagawa nitong matapang (Bold) ang pangalan ng header, habang nananatiling plain at pino ang mga row sa baba */
 .summary-table th {
     font-weight: bold !important;
     color: #14532d;
+}
+
+.summary-table td {
+    font-weight: normal !important;
 }
 
 /* Footer */
@@ -856,7 +864,7 @@ h1 {
 
         <div class="meal-item" style="margin-bottom: 15px;">
             <label style="display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 4px;">Remarks</label>
-            <textarea id="allowanceRemarks" rows="2" style="width: 100%; padding: 8px; font-family: Arial, sans-serif; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
+            <textarea id="allowanceRemarks" rows="2" placeholder="e.g., Sidetrips or overtime of passenger" style="width: 100%; padding: 8px; font-family: Arial, sans-serif; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
         </div>
 
         <div id="receiptSection" class="receipt-section">
@@ -1348,8 +1356,8 @@ function viewSchedule(date){
         <div class="summary-card" id="viewer-summary-${date}">
             <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
             <table class="summary-table">
-                <tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr>
-                ${tableRows}
+                <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                <tbody>${tableRows}</tbody>
             </table>
         </div>`;
     }
@@ -1467,7 +1475,6 @@ window.onload = async function () {
         let pageHTML = "";
 
         const now = new Date();
-        // Clear time variables so we only compare the calendar dates
         const coreToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         scheduleDates.forEach(date => {
@@ -1475,12 +1482,9 @@ window.onload = async function () {
             const status = (approvalDates[date] || "").toString().trim().toLowerCase();
             if (status !== "approved") return;
 
-            // Accurate day boundary tracking
             const isToday = scheduleDate.toDateString() === now.toDateString();
-            
-            // Fix: Only hide it if the schedule date is strictly older than today's calendar date
             if (scheduleDate < coreToday) return;
-         
+
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             let tableRows = "";
 
@@ -1501,14 +1505,13 @@ window.onload = async function () {
                 <div class="summary-card" id="summary-${date}">
                     <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
                     <table class="summary-table">
-                        <tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr>
-                        ${tableRows}
+                        <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                        <tbody>${tableRows}</tbody>
                     </table>
                 </div>`;
             }
 
             // IMPROVEMENT 2: Driver cards build configuration.
-            // Ang layout na ito ay kailanman HINDI magpapakita kung nahanap na sa submitted set map cache array natin.
             Object.values(grouped).filter(d => d.date === date).forEach(d => {
                 if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
                 if (submittedDrivers[`${d.driver}|${d.date}`]) return;
@@ -1516,7 +1519,7 @@ window.onload = async function () {
                 let tripsHTML = "";
                 
                 // CONDITIONAL SUMMARY SWITCH: Kung lagpas na sa araw na ito o sumapit ang 11:59 PM (23:59), burahin ang biyahe loops para maging Option B.
-                const isLateNightSummary = (isToday && now.getHours() === 23 && now.getMinutes() === 59) || (!isToday && scheduleDate < now);
+                const isLateNightSummary = (isToday && now.getHours() === 23 && now.getMinutes() === 59) || (!isToday && scheduleDate < coreToday);
 
                 if (!isLateNightSummary) {
                     d.trips.forEach((trip, index) => {
