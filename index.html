@@ -1210,7 +1210,11 @@ async function approveSchedule(date, buttonElement) {
     showActionLoading("Approving Schedule...", "Updating system database. Please wait.");
 
     try {
-        const res = await fetch(`${WEBAPP_URL}?action=approve&date=${encodeURIComponent(date)}`);
+        // Appending the explicit request parameters for tracking
+        const res = await fetch(`${WEBAPP_URL}?action=approve&date=${encodeURIComponent(date)}`, {
+            method: "GET",
+            mode: "cors"
+        });
         const result = await res.json();
 
         if (result.success === true) {
