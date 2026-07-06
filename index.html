@@ -1493,40 +1493,45 @@ window.onload = async function () {
                 </div>`;
             }
 
-            // IMPROVEMENT 2: Inihiwalay natin ang Driver Cards/Trips loop.
-            // Ang block na ito ay HINDI apektado ng 4:00 PM constraint. 
-            // Kaya kahit gabi na in-approve, gagawa at lalabas agad ito sa dashboard ng driver.
+            // IMPROVEMENT 2: Driver cards build configuration.
+            // Ang layout na ito ay kailanman HINDI magpapakita kung nahanap na sa submitted set map cache array natin.
             Object.values(grouped).filter(d => d.date === date).forEach(d => {
                 if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
+                if (submittedDrivers[`${d.driver}|${d.date}`]) return;
 
                 let tripsHTML = "";
-                d.trips.forEach((trip, index) => {
-                    tripsHTML += `
-                    <div class="trip">
-                        <div class="trip-title">Pick-Up ${index + 1}</div>
-                        ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                        ${trip.requestedBy ? `
-                        <div class="info-item">
-                            <div class="info-label">Passenger</div>
-                            <div class="info-value">
-                                ${trip.requestedBy} ${trip.contactNumber ? `<span style="color:#9ca3af;">|</span> <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                        </div>
-                    </div>` : ""}
-                        ${trip.origin ? `
-                        <div class="info-item">
-                            <div class="info-label">Origin</div>
-                            <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Destination</div>
-                            <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
-                        </div>` : ""}
-                        ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
-                    </div>`;
-                });
+                
+                // CONDITIONAL SUMMARY SWITCH: Kung lagpas na sa araw na ito o sumapit ang 11:59 PM (23:59), burahin ang biyahe loops para maging Option B.
+                const isLateNightSummary = (isToday && now.getHours() === 23 && now.getMinutes() === 59) || (!isToday && scheduleDate < now);
+
+                if (!isLateNightSummary) {
+                    d.trips.forEach((trip, index) => {
+                        tripsHTML += `
+                        <div class="trip">
+                            <div class="trip-title">Pick-Up ${index + 1}</div>
+                            ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
+                            ${trip.requestedBy ? `
+                            <div class="info-item">
+                                <div class="info-label">Passenger</div>
+                                <div class="info-value">
+                                    ${trip.requestedBy} ${trip.contactNumber ? `<span style="color:#9ca3af;">|</span> <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
+                                </div>
+                            </div>` : ""}
+                            ${trip.origin ? `
+                            <div class="info-item">
+                                <div class="info-label">Origin</div>
+                                <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Destination</div>
+                                <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
+                            </div>` : ""}
+                            ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
+                        </div>`;
+                    });
+                }
 
                 const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
-                if (submittedDrivers[`${d.driver}|${d.date}`]) return;
 
                 pageHTML += `
                 <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
