@@ -515,19 +515,20 @@ h1 {
     border-collapse: collapse;
     font-size: 12px;
 }
-.summary-table th {
-    color: #14532d;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 6px 4px;
-    border-bottom: 2px solid #16a34a;
-    background: #f6fff7;
+.summary-table {
+    width: 100%;
+    table-layout: fixed; /* Binago mula 'auto' patungong 'fixed' para masunod ang eksaktong width */
+    border-collapse: collapse;
+    font-size: 12px;
 }
+
+.summary-table th, 
 .summary-table td {
-    color: #374151;
-    font-weight: 500;
     padding: 7px 4px;
     border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap; /* Pinipigilan ang pag-break ng text sa bagong linya */
+    overflow: hidden;    /* Safety measure para sa mahahabang text */
+    text-overflow: ellipsis; 
 }
 .summary-table tr:last-child td { border-bottom: none; }
 .summary-table th:nth-child(1), .summary-table td:first-child { font-weight: 600; text-align: left; width: 40%; }
