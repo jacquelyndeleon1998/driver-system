@@ -511,34 +511,44 @@ h1 {
 /* Driver View Table Styles */
 .summary-table {
     width: 100%;
-    table-layout: auto;
+    table-layout: auto; /* Hinahayaan ang columns na mag-adjust base sa nilalaman */
     border-collapse: collapse;
-    font-size: 12px;
-}
-.summary-table {
-    width: 100%;
-    table-layout: fixed; /* Binago mula 'auto' patungong 'fixed' para masunod ang eksaktong width */
-    border-collapse: collapse;
-    font-size: 12px;
+    font-size: 11px;    /* Bahagyang mas maliit para magkasya sa mobile screens */
 }
 
 .summary-table th, 
 .summary-table td {
-    padding: 7px 4px;
+    padding: 7px 6px;
     border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap; /* Pinipigilan ang pag-break ng text sa bagong linya */
-    overflow: hidden;    /* Safety measure para sa mahahabang text */
-    text-overflow: ellipsis; 
+    white-space: normal;    /* Pinapayagan ang text na bumaba sa susunod na linya */
+    word-break: break-word; /* Puputulin ang mahahabang salita nang maayos kung kulang sa espasyo */
+    overflow: visible;      /* Siguradong hindi itatago ang text */
+    text-overflow: clip;
 }
-.summary-table tr:last-child td { border-bottom: none; }
-.summary-table th:nth-child(1), .summary-table td:first-child { font-weight: 600; text-align: left; width: 40%; }
-.summary-table th:nth-child(2), .summary-table td:nth-child(2) { white-space: nowrap; }
-.summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 15%; }
-.summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 25%; }
-.summary-table th:nth-child(2), .summary-table td:nth-child(2),
-.summary-table th:nth-child(3), .summary-table td:nth-child(3),
-.summary-table th:nth-child(4), .summary-table td:nth-child(4) { text-align: center; }
 
+.summary-table tr:last-child td { 
+    border-bottom: none; 
+}
+
+/* Eksaktong kontrol sa lapad ng bawat Column para balanse ang hitsura */
+.summary-table th:nth-child(1), .summary-table td:first-child { 
+    font-weight: 600; 
+    text-align: left; 
+    width: 32%; 
+}
+.summary-table th:nth-child(2), .summary-table td:nth-child(2) { 
+    width: 20%; 
+    text-align: center; 
+}
+.summary-table th:nth-child(3), .summary-table td:nth-child(3) { 
+    width: 18%; 
+    text-align: center; 
+    font-weight: 600; 
+}
+.summary-table th:nth-child(4), .summary-table td:nth-child(4) { 
+    width: 30%; 
+    text-align: center; 
+}
 /* Footer */
 .app-footer {
     margin-top: 30px;
