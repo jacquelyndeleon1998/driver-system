@@ -1,3 +1,10 @@
+Okey, naliwanagan ko ang iyong gustong mangyari! Para maging compact at matipid sa space ang Schedule Approval Table (sa Admin view), babawasan natin ang vertical spacing (padding) nito para pumantay sa sukat ng Driver Summary Table.
+
+Gagamit din tayo ng white-space: nowrap; at text-overflow: ellipsis; para masiguradong ang bawat entry ay mananatili sa isang linya lamang (1 line only) at hindi magre-wrap pababa kapag sumisikip ang screen.
+
+Narito ang buong code na may updated CSS rules para sa .approval-table:
+
+HTML
 <!DOCTYPE html>
 <html>
 <head>
@@ -170,7 +177,7 @@ h1 {
 }
 
 /* =========================
-   App Header & Navigation (UPDATED: Fixed Layout)
+   App Header & Navigation (Fixed Layout)
 ========================= */
 .app-header {
     display: flex;
@@ -540,10 +547,10 @@ h1 {
 .summary-table td {
     padding: 7px 6px;
     border-bottom: 1px solid #e5e7eb;
-    white-space: normal;
-    word-break: break-word;
-    overflow: visible;
-    text-overflow: clip;
+    white-space: nowrap; /* Inasinta para maging single line ang alignment */
+    word-break: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .summary-table tr:last-child td { border-bottom: none; }
 
@@ -621,12 +628,12 @@ h1 {
 }
 
 /* =========================================
-   UPDATED: Admin Panel Master Tables Theme
+   UPDATED: Admin Panel Master Tables Theme (Compact Row Heights)
 ========================================= */
 .approval-table {
     width: 100%;
     border-collapse: collapse;
-    background: #ffffff !important; /* Changed table background to white */
+    background: #ffffff !important; 
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,.08);
@@ -635,20 +642,23 @@ h1 {
 }
 
 .approval-table th {
-    background: #14532d !important; /* Kept headers dark green for text clarity */
+    background: #14532d !important; 
     color: #ffffff !important;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
     text-align: left;
-    padding: 12px 14px;
+    padding: 7px 8px; /* Binabaan para kapantay ng summary header vertical width */
 }
 
 .approval-table td {
-    padding: 12px 14px;
-    font-size: 13px;
-    color: #111827 !important; /* Changed text inside white rows to dark grey/black for readability */
+    padding: 7px 8px; /* Ginawang 7px 8px para pantay na pantay sa summary view rows niyo */
+    font-size: 12px;
+    color: #111827 !important; 
     font-weight: 600;
     border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap; /* Pinwersa ang content na maging single line lang at bawal mag wrap-down */
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }
 
 .approval-table tr:last-child td {
@@ -656,7 +666,7 @@ h1 {
 }
 
 .approval-table tr:hover {
-    background: #f9fafb; /* Subtle grey hover effect on white rows */
+    background: #f9fafb; 
 }
 
 .approval-day-name {
@@ -673,8 +683,8 @@ h1 {
 }
 
 .action-table-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 4px 10px; /* Binawasan ang padding ng inner action elements para pumasok sa mas maliit na row */
+    font-size: 11px;
     font-weight: 700;
     border: none;
     border-radius: 6px;
@@ -682,7 +692,7 @@ h1 {
     transition: background .2s, color .2s;
 }
 
-/* CHANGED: View button is now Green */
+/* View button style */
 .btn-view {
     background: #16a34a !important;
     color: #ffffff !important;
@@ -692,7 +702,7 @@ h1 {
     background: #15803d !important;
 }
 
-/* CHANGED: Approve button is now White/Light grey outline style */
+/* Approve button style */
 .btn-approve {
     background: #ffffff !important;
     color: #14532d !important;
@@ -709,7 +719,7 @@ h1 {
 ========================= */
 @media(max-width:600px){
     body {
-        padding-top: 175px; /* Increases body padding-top dynamically on small devices to manage stacked title heights */
+        padding-top: 175px; 
     }
     .admin-toolbar { justify-content: stretch; }
     .admin-btn { width: 100%; }
@@ -956,7 +966,7 @@ function showAdminDashboard() {
 
     sessionStorage.setItem("view", "admin");
     hideActionLoading();
-    window.scrollTo(0, 0); // Window auto scroll helper to keep navigation aligned on layout switches
+    window.scrollTo(0, 0); 
 }
 
 async function loadSubmittedAllowances() {
@@ -985,7 +995,6 @@ document.getElementById("allowanceParking").addEventListener("input", function (
 });
 
 function addReceipts(files) {
-    autoFocusWindowPosition();
     Array.from(files).forEach(file => { selectedReceipts.push(file); });
     refreshReceiptPreview();
 }
