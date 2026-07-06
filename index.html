@@ -1458,16 +1458,20 @@ window.onload = async function () {
         let pageHTML = "";
 
         const now = new Date();
-        const todayStr = now.toDateString(); 
+        // Clear time variables so we only compare the calendar dates
+        const coreToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         scheduleDates.forEach(date => {
             const scheduleDate = new Date(date);
             const status = (approvalDates[date] || "").toString().trim().toLowerCase();
             if (status !== "approved") return;
 
-            const isToday = scheduleDate.toDateString() === todayStr;
-            if (scheduleDate < now && !isToday) return;
-
+            // Accurate day boundary tracking
+            const isToday = scheduleDate.toDateString() === now.toDateString();
+            
+            // Fix: Only hide it if the schedule date is strictly older than today's calendar date
+            if (scheduleDate < coreToday) return;
+         
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             let tableRows = "";
 
