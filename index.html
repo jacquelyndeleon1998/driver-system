@@ -955,8 +955,20 @@ async function saveAllowance() {
 }
 
 document.getElementById("allowanceBtn").addEventListener("click", () => { alert("Allowance History will be available in the next phase."); });
-document.getElementById("adminBtn").addEventListener("click", () => { document.getElementById("adminLoginModal").style.display = "block"; });
 
+// INAYOS NA ADMIN BUTTON LOGIC
+document.getElementById("adminBtn").addEventListener("click", () => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    const expires = Number(localStorage.getItem("loginExpires"));
+
+    // Kung logged in na at hindi pa expired ang session, direkta nang papasok sa dashboard
+    if (loggedIn === "true" && Date.now() < expires) {
+        showAdminDashboard();
+    } else {
+        // Kung walang session o expired na, saka lang hihingi ng login
+        document.getElementById("adminLoginModal").style.display = "block";
+    }
+});
 document.getElementById("dashboardBtn").addEventListener("click", () => {
     // Show Driver Dashboard
     document.getElementById("driverDashboard").style.display = "block";
