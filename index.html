@@ -577,6 +577,142 @@ h1 {
     .app-description { font-size: 12px; }
     .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
 }
+
+   /* =========================================
+   Admin Schedule Approval Table Styles
+========================================= */
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #14532d;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(20,83,45,.15);
+}
+
+.schedule-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.month-selector label {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.month-selector select {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #14532d;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+}
+
+.approval-container h3 {
+    color: #14532d;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 25px 0 12px;
+    padding-left: 4px;
+    border-left: 4px solid #16a34a;
+}
+
+/* Approval Table UI */
+.approval-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.05);
+    margin-bottom: 15px;
+}
+
+.approval-table th {
+    background: #b7d58c;
+    color: #14532d;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid #16a34a;
+}
+
+.approval-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.approval-table tr:last-child td {
+    border-bottom: none;
+}
+
+.approval-table tr:hover {
+    background: #f6fff7;
+}
+
+.approval-day-name {
+    font-weight: 700;
+    color: #14532d;
+}
+
+.approval-date-val {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Compact Action Buttons inside Table */
+.action-btn-grp {
+    display: flex;
+    gap: 8px;
+}
+
+.action-table-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.btn-view {
+    background: #eef3ef;
+    color: #14532d;
+    border: 1px solid #b7d58c;
+}
+
+.btn-view:hover {
+    background: #b7d58c;
+}
+
+.btn-approve {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.btn-approve:hover {
+    background: #15803d;
+}
+   
 </style>
 </head>
 
@@ -618,11 +754,31 @@ h1 {
     </div>
 
     <div class="approval-container">
-        <h3 style="margin-top:15px;">Approved Schedules</h3>
-        <div id="approvedSchedules"></div>
+        <h3>Approved Schedules</h3>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Day</th>
+                    <th style="width: 45%;">Date</th>
+                    <th style="width: 25%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="approvedSchedules">
+                </tbody>
+        </table>
 
-        <h3 style="margin-top:15px;">Pending Schedules</h3>
-        <div id="pendingSchedules"></div>
+        <h3>Pending Schedules</h3>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Day</th>
+                    <th style="width: 45%;">Date</th>
+                    <th style="width: 25%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="pendingSchedules">
+                </tbody>
+        </table>
     </div>
 
     <div id="scheduleViewerPage" style="display:none;">
@@ -639,7 +795,6 @@ h1 {
     </div>
 
 </div>
-
 <div id="allowanceModal" class="modal">
     <div class="modal-content">
         <h3 class="modal-title">Meal Allowance Form</h3>
@@ -1039,30 +1194,51 @@ async function adminLogin() {
 function loadScheduleApprovalPage(){
     const approvedDiv = document.getElementById("approvedSchedules");
     const pendingDiv = document.getElementById("pendingSchedules");
-    approvedDiv.innerHTML = ""; pendingDiv.innerHTML = "";
+    approvedDiv.innerHTML = ""; 
+    pendingDiv.innerHTML = "";
 
-    const today = new Date(); today.setHours(0,0,0,0);
+    const today = new Date(); 
+    today.setHours(0,0,0,0);
+
+    // Flag to check if tables are empty
+    let hasApproved = false;
+    let hasPending = false;
 
     scheduleDates.forEach(date => {
-        const scheduleDate = new Date(date); scheduleDate.setHours(0,0,0,0);
+        const scheduleDate = new Date(date); 
+        scheduleDate.setHours(0,0,0,0);
         const status = (approvalDates[date] || "").trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
+        // INAYOS NA TABLE ROW AT THEME-BASED BUTTONS TEMPLATE
         const row = `
-        <div class="approval-row">
-            <div>
-                <div class="approval-day">${weekday}</div>
-                <div class="approval-date">${date}</div>
-            </div>
-            <div class="approval-actions">
-                <button class="approval-view-btn" onclick="viewSchedule('${date}')">View</button>
-                ${status === "approved" ? "" : `<button class="approval-approve-btn">Approve</button>`}
-            </div>
-        </div>`;
+        <tr>
+            <td class="approval-day-name">${weekday}</td>
+            <td class="approval-date-val">${date}</td>
+            <td>
+                <div class="action-btn-grp">
+                    <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
+                    ${status === "approved" ? "" : `<button class="action-table-btn btn-approve">Approve</button>`}
+                </div>
+            </td>
+        </tr>`;
 
-        if(status === "approved" && scheduleDate >= today) approvedDiv.innerHTML += row;
-        else if (scheduleDate >= today) pendingDiv.innerHTML += row;
+        if(status === "approved" && scheduleDate >= today) {
+            approvedDiv.innerHTML += row;
+            hasApproved = true;
+        } else if (scheduleDate >= today) {
+            pendingDiv.innerHTML += row;
+            hasPending = true;
+        }
     });
+
+    // Fallback message kung walang schedule na nag-match
+    if(!hasApproved) {
+        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#9ca3af; padding:20px;">No approved schedules found.</td></tr>`;
+    }
+    if(!hasPending) {
+        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#9ca3af; padding:20px;">No pending schedules found.</td></tr>`;
+    }
 }
 
 function viewSchedule(date){
