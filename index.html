@@ -1030,9 +1030,18 @@ function loadScheduleApprovalPage(){
 }
 
 function viewSchedule(date){
-    document.getElementById("scheduleApprovalPage").style.display = "none";
+
+    // Keep the admin page visible
+    document.querySelector(".schedule-header").style.display = "none";
+    document.querySelector(".approval-container").style.display = "none";
+    document.querySelector(".approval-footer").style.display = "none";
+
+    // Show the schedule viewer
     document.getElementById("scheduleViewerPage").style.display = "block";
-    document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
+
+    document.getElementById("viewerTitle").textContent =
+        "Driver Schedule • " + date;
+
     document.getElementById("scheduleViewerContent").innerHTML = `
         <div class="driver-card">
             <h3>${date}</h3>
