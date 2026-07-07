@@ -1637,11 +1637,7 @@ const hideSummaryTable = phNow.getHours() >= 16;
             </tr>`;
         });
 
-     const currentHour = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-).getHours();
-
-if (currentHour < 16) {
+     
 
 if (!hideSummaryTable) {
 
@@ -1776,7 +1772,7 @@ pageHTML += `
 
         return;
     }
-
+    }
 // ==========================
     // PREVIOUS DAYS
     // ==========================
