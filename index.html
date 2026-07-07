@@ -316,33 +316,26 @@ h1 {
 .cancel-btn:hover { background: #4b5563; }
 
 /* Form Fields inside Modal */
-.trip-info-card {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 15px;
-}
+.driver-header .info-value { color: #fff; }
+.trip-info-card .info-value { font-weight: 600; }
 
-.info-item {
+/* Nililinis ang info item structure para walang background blocks ang text rows sa malaking card */
+.driver-header .info-item {
+    background: transparent !important;
+    padding: 2px 0;
+    margin-top: 0;
     display: flex;
     align-items: flex-start;
-    gap: 4px;
-    padding: 2px 0;
 }
-
-.info-label {
-    width: 82px;
-    min-width: 82px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #6b7280;
-    white-space: nowrap;
+.driver-header .info-item .info-label {
+    color: rgba(255,255,255,.88) !important;
+    font-weight: 600 !important;
 }
-
-.driver-header .info-label { color: rgba(255,255,255,.88); }
-.trip-info-card .info-label { color: #166534; }
-
+.driver-header .info-item .info-value {
+    color: #fff !important;
+    font-weight: 500 !important;
+    padding-left: 0;
+}
 .info-value {
     flex: 1;
     font-size: 14px;
@@ -365,29 +358,8 @@ h1 {
     color: #16a34a;
 }
 
-.driver-header .info-value { color: #fff; }
+.driver-header .info-value { color: #fff; font-weight: normal !important; }
 .trip-info-card .info-value { font-weight: 600; }
-
-/* UPDATED CONFIG: Formatting background rows for labels inside the Green Header */
-.driver-header .info-item {
-    background: #ffffff; /* Sets white color back rows behind items */
-    padding: 6px 10px;
-    margin-top: 5px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-}
-
-.driver-header .info-item .info-label {
-    color: #14532d !important;
-    font-weight: bold !important; /* Bold targeted on label metadata */
-}
-
-.driver-header .info-item .info-value {
-    color: #111827 !important;
-    font-weight: normal !important; /* Forces right description strings plain */
-    padding-left: 6px;
-}
 
 .section-title {
     display: block;
@@ -555,30 +527,43 @@ h1 {
     table-layout: auto;
     border-collapse: collapse;
     font-size: 11px;
+    background: #ffffff !important; /* Pinipilit na maging malinis at purong puti ang panel background */
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .summary-table th, 
 .summary-table td {
-    padding: 7px 6px;
+    padding: 8px 6px;
     border-bottom: 1px solid #e5e7eb;
     white-space: nowrap; 
     word-break: normal;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #111827 !important; /* Tinitiyak na maitim at nababasang mabuti ang teksto sa puting background */
 }
-.summary-table tr:last-child td { border-bottom: none; }
 
+/* Binabalik ang malinis na table layout controls nang walang bold settings sa base cells */
 .summary-table th:nth-child(1), .summary-table td:first-child { text-align: left; width: 32%; }
 .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
 .summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; }
 .summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
 
+/* Ginagawang BOLD ang Column Headers (Driver Name, Time In, etc.) */
 .summary-table th {
     font-weight: bold !important;
-    color: #14532d;
+    color: #14532d !important;
 }
+
+/* Ginagawa nitong PLAIN (Hindi Bold) ang lahat ng regular values */
 .summary-table td {
     font-weight: normal !important;
+}
+
+/* MALAKING DAGDAG: Pinipili at ginagawang BOLD lamang ang Column 1 (Driver Name) at Column 3 (Unit) */
+.summary-table td:nth-child(1), 
+.summary-table td:nth-child(3) {
+    font-weight: bold !important; 
 }
 
 /* Footer */
@@ -1410,7 +1395,7 @@ function viewSchedule(date){
                     <h2>${d.driver}</h2>
                     <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                     <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                    <div class="info-item unit-row"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                    <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                     ${d.itinerary ? `<div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>` : ""}
                 </div>
                 ${tripsHTML}
@@ -1494,8 +1479,7 @@ window.onload = async function () {
             if (status !== "approved") return;
 
             const isToday = scheduleDate.toDateString() === now.toDateString();
-            if (scheduleDate < coreToday) return;
-
+          
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             let tableRows = "";
 
@@ -1529,9 +1513,6 @@ window.onload = async function () {
 
                 let tripsHTML = "";
                 
-                // CONDITIONAL SUMMARY SWITCH: Kung lagpas na sa araw na ito o sumapit ang 11:59 PM (23:59), burahin ang biyahe loops para maging Option B.
-                const isLateNightSummary = (isToday && now.getHours() === 23 && now.getMinutes() === 59) || (!isToday && scheduleDate < coreToday);
-
                 if (!isLateNightSummary) {
                     d.trips.forEach((trip, index) => {
                         tripsHTML += `
@@ -1557,7 +1538,7 @@ window.onload = async function () {
                             ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
                         </div>`;
                     });
-                }
+                
 
                 const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
@@ -1567,7 +1548,7 @@ window.onload = async function () {
                         <h2>${d.driver}</h2>
                         <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                         <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                        <div class="info-item unit-row"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                        <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                         ${d.itinerary ? `<div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>` : ""}
                     </div>
                     ${tripsHTML}
