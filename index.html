@@ -1623,8 +1623,14 @@ scheduleDates.forEach(date => {
             </tr>`;
         });
 
-        pageHTML += `
-        <div class="summary-card">
+     const currentHour = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+).getHours();
+
+if (currentHour < 16) {
+
+pageHTML += `
+<div class="summary-card">
 
             <div class="summary-header">
                 <h2>${dayName} | ${date}</h2>
@@ -1651,7 +1657,7 @@ scheduleDates.forEach(date => {
 
         </div>
         `;
-
+}
         Object.values(grouped)
         .filter(d=>d.date===date)
         .forEach(d=>{
