@@ -1615,9 +1615,6 @@ scheduleDates.forEach(date => {
 
     if(isToday){
 // Philippine time
-const phNow = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-);
 
 // Hide summary after 4:00 PM
 const hideSummaryTable = phNow.getHours() >= 16;
