@@ -1448,14 +1448,33 @@ window.onload = async function () {
 
         const now = new Date();
 
-        scheduleDates.forEach(date => {
-            const scheduleDate = new Date(date);
-            const status = (approvalDates[date] || "").toString().trim().toLowerCase();
-            if (status !== "approved") return;
+// Kunin ang kasalukuyang oras sa Manila/Philippine Time
+const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
+const phNow = new Date(phTimeStr);
 
-            const isToday = scheduleDate.toDateString() === now.toDateString();
-            const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
-            let tableRows = "";
+scheduleDates.forEach(date => {
+    const scheduleDate = new Date(date);
+    const status = (approvalDates[date] || "").toString().trim().toLowerCase();
+    if (status !== "approved") return;
+
+    // I-set pareho sa hatinggabi (midnight) para sa purong date comparison
+    const d1 = new Date(phNow.getFullYear(), phNow.getMonth(), phNow.getDate());
+    const d2 = new Date(scheduleDate.getFullYear(), scheduleDate.getMonth(), scheduleDate.getDate());
+
+    // Alamin kung Ngayong Araw (Today) o Nakaraang Araw (Past Date tulad ng July 6)
+    const isToday = d1.getTime() === d2.getTime();
+    const isPastDate = d2.getTime() < d1.getTime();
+
+    // LOGIC CONTROL: Itago kung ito ay Past Date, O kung Ngayong araw na lagpas 4 PM (16:00) na.
+    let hideSummaryCard = false;
+    if (isPastDate) {
+        hideSummaryCard = true; // Kusang tago na ang July 6 at mga nauna pa
+    } else if (isToday && phNow.getHours() >= 16) {
+        hideSummaryCard = true; // Tatago mamayang 4 PM ang July 7
+    }
+
+    const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
+    let tableRows = "";
 
             Object.values(summaryDrivers[date] || {}).forEach(driver => {
                 const isRestDay = driver.itinerary && driver.itinerary.toLowerCase().trim() === "rest day";
@@ -1468,16 +1487,16 @@ window.onload = async function () {
                   </tr>`;
             });
 
-            if (!(isToday && now.getHours() >= 16)) {
-                pageHTML += `
-                <div class="summary-card" id="summary-${date}">
-                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
-                    <table class="summary-table">
-                        <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                </div>`;
-            }
+            if (!hideSummaryCard) {
+    pageHTML += `
+    <div class="summary-card" id="summary-${date}">
+        <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+        <table class="summary-table">
+            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+    </div>`;
+}
 
             Object.values(grouped).filter(d => d.date === date).forEach(d => {
                 if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
