@@ -82,7 +82,7 @@ h1 {
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-       .pending-summary-card{
+    .pending-summary-card{
     background:#FEF3C7;
     border:1px solid #FCD34D;
     border-radius:14px;
@@ -1742,26 +1742,25 @@ scheduleDates.forEach(date => {
 
             pageHTML += `
 
-            <tr>
+          <tr>
 
-                <td>${d.driver}</td>
+    <td style="padding:8px;border-bottom:1px solid #ddd;">
+        ${d.driver}
+    </td>
 
-                <td style="text-align:center;">
+    <td style="padding:8px;border-bottom:1px solid #ddd;text-align:center;">
 
-                    <button
+        <button
+            class="action-table-btn btn-view"
+            onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
 
-                        class="action-table-btn btn-view"
+            Submit
 
-                        onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+        </button>
 
-                        Submit
+    </td>
 
-                    </button>
-
-                </td>
-
-            </tr>
-
+</tr>
             `;
 
         });
