@@ -507,27 +507,29 @@
     }
 
     /* Driver View Table Styles */
-    .summary-table {
-        width: 100%;
-        table-layout: auto;
-        border-collapse: collapse;
-        font-size: 11px;
-        background: #ffffff !important; 
-        border-radius: 8px;
-        overflow: hidden;
-    }
+   .summary-table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    font-size: 11px;
+    background-color: #ffffff !important;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Optional: para magkaroon ng banayad na lalim ang puting table */
+}
 
-    .summary-table th, 
-    .summary-table td {
-        padding: 8px 6px;
-        border-bottom: 1px solid #e5e7eb;
-        white-space: nowrap; 
-        word-break: normal;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: #111827 !important; 
-    }
-
+/* Tinitiyak na ang bawat row o cell sa loob ng table ay lilitaw na purong puti ang background */
+.summary-table th, 
+.summary-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap; 
+    word-break: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #111827 !important;
+    background-color: #ffffff; /* Pinipilit na maging puti ang base grid background */
+}
     .summary-table th:nth-child(1), .summary-table td:first-child { text-align: left; width: 32%; }
     .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
     .summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; }
@@ -538,9 +540,7 @@
         color: #14532d !important;
     }
 
-    .summary-table td {
-        font-weight: normal !important;
-    }
+    
 
     .summary-table td:nth-child(1), 
     .summary-table td:nth-child(3) {
