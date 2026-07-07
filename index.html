@@ -1565,8 +1565,52 @@ scheduleDates.forEach(date => {
 
                 const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
-                pageHTML += `
-                <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+              // Today's Philippine date
+const today = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+);
+
+today.setHours(0,0,0,0);
+
+// Schedule date
+const tripDate = new Date(d.date);
+tripDate.setHours(0,0,0,0);
+
+// Show compact card once the trip date has passed
+const showCompactCard = tripDate < today;
+
+if (showCompactCard) {
+
+pageHTML += `
+<div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+
+    <div class="driver-header">
+        <h2>${d.driver}</h2>
+
+        <div class="info-item">
+            <div class="info-label">Date</div>
+            <div class="info-value">${d.date}</div>
+        </div>
+
+        ${d.itinerary ? `
+        <div class="info-item">
+            <div class="info-label">Assignment</div>
+            <div class="info-value">${d.itinerary}</div>
+        </div>` : ""}
+
+    </div>
+
+    <button class="allowance-btn"
+        onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+        Submit Meal Allowance
+    </button>
+
+</div>`;
+
+} else {
+
+pageHTML += `
+<div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
                     <div class="driver-header">
                         <h2>${d.driver}</h2>
                         <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
@@ -1576,7 +1620,9 @@ scheduleDates.forEach(date => {
                     </div>
                     ${tripsHTML}
                     <button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">Submit Meal Allowance</button>
-                </div>`;
+               </div>`;
+
+}
             });
         });
 
