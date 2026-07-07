@@ -107,6 +107,35 @@ h1 {
     background:#FEF3C7;
 }
 
+       .pending-driver-list{
+    padding:0;
+}
+
+.pending-driver-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 14px;
+    border-top:1px solid #e5e7eb;
+    background:#fff;
+}
+
+.pending-driver-row:first-child{
+    border-top:none;
+}
+
+.pending-driver-name{
+    font-size:15px;
+    font-weight:600;
+    color:#111827;
+}
+
+.pending-submit-btn{
+    padding:7px 18px;
+    font-size:13px;
+    margin:0;
+}
+
 .summary-header {
     background: #14532d;
     color: #fff;
@@ -1714,27 +1743,19 @@ scheduleDates.forEach(date => {
 
         if(pendingDrivers.length===0) return;
 
-        pageHTML += `
+       pageHTML += `
+<div class="pending-summary-card">
 
-        <div class="pending-summary-card">
+    <div class="pending-summary-header">
+        ${dayName} | ${date}
+    </div>
 
-            <div class="pending-summary-header">
+    <div class="pending-summary-subtitle">
+        ${pendingDrivers.length} Pending Meal ${pendingDrivers.length === 1 ? "Allowance" : "Allowances"}
+    </div>
 
-                ${dayName} | ${date}
-
-            </div>
-
-            <div class="pending-summary-subtitle">
-
-                Pending Meal Allowances (${pendingDrivers.length})
-
-            </div>
-
-            <table class="summary-table">
-    <tbody>
-
-        `;
-
+    <div class="pending-driver-list">
+`;
         pendingDrivers.forEach(d=>{
 
             const passengers =
@@ -1742,39 +1763,32 @@ scheduleDates.forEach(date => {
 
             pageHTML += `
 
-          <tr>
+        <div class="pending-driver-row">
 
-    <td style="padding:8px;border-bottom:1px solid #ddd;">
+    <div class="pending-driver-name">
         ${d.driver}
-    </td>
+    </div>
 
-    <td style="padding:8px;border-bottom:1px solid #ddd;text-align:center;">
+    <button
+        class="allowance-btn pending-submit-btn"
+        onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
 
-        <button
-            class="action-table-btn btn-view"
-            onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+        Submit
 
-            Submit
+    </button>
 
-        </button>
-
-    </td>
-
-</tr>
+</div>
             `;
 
         });
 
         pageHTML += `
 
-                </tbody>
+    </div>
 
-            </table>
+</div>
 
-        </div>
-
-        `;
-
+`;
     }
 
 });
