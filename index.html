@@ -1,760 +1,752 @@
+Narito ang inayos, nilinis, at binuong muli na bersyon ng iyong code.
+
+Mga Inayos at Binago (Changelog)
+Inayos ang Sirang JavaScript Code: Sa huling bahagi ng iyong orihinal na window.onload, may variable na isLateNightSummary na biglang ginamit pero hindi naman nadeklara, at may mga kulang o sirang mga kulot na panaklong (}) na nagiging sanhi ng tuluyang pagkasira ng buong system dashboard.
+
+Tinanggal ang mga Duplicate na CSS: Nilinis ang mga paulit-ulit na deklarasyon ng .phone-link, .info-value, at .driver-header .info-value.
+
+Inayos ang Patong-patong na CSS: Pinasimple ang magulong istilo para sa custom tables (.summary-table at .approval-table).
+
+Consistency & Semantic Check: Tiniyak na maayos ang pagkakasunod-sunod ng mga event listeners at magkakatugma ang HTML structure sa JavaScript elements.
+
+Maaari mo itong i-copy at i-paste nang buo:
+
+HTML
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Schedule</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Schedule</title>
  
-<style>
-/* =========================
-   Universal & Base Styles
-========================= */
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #eef3ef;
-    margin: 0;
-    padding: 140px 20px 20px 20px; /* Dinagdagan ng space para sa fixed header navigation */
-    color: #111827;
-}
-
-a {
-    color: #000;
-    text-decoration: none;
-}
-
-h1 {
-    text-align: center;
-    color: #14532d;
-    font-size: 28px;
-    margin-bottom: 6px;
-    font-weight: 700;
-}
-
-/* =========================
-   Layout & Components
-========================= */
-.admin-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 18px;
-}
-
-.admin-btn {
-    background: #14532d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.admin-btn:hover {
-    background: #166534;
-}
-
-.phone-link {
-    color: #111827;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.phone-link:hover {
-    text-decoration: underline;
-}
-
-.driver-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,.08);
-    border: 1px solid #e5e7eb;
-}
-
-.summary-card {
-    background: #b7d58c;
-    border-radius: 14px;
-    padding: 8px;
-    margin-bottom: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-.summary-header {
-    background: #14532d;
-    color: #fff;
-    padding: 10px 12px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    text-align: center;
-}
-
-.summary-header h2 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.driver-header {
-    background: #14532d;
-    color: #fff;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 5px rgba(20,83,45,.15);
-}
-
-.driver-header h2 {
-    margin: 0 0 12px;
-    font-size: 17px;
-    font-weight: 700;
-    text-align: left;
-}
-
-.driver-header p {
-    margin: 0;
-    padding: 2px 0;
-    line-height: 1.2;
-    color: #fff;
-}
-
-.trip {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-left: 4px solid #14532d;
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-}
-
-.trip-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #14532d;
-    margin-bottom: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.trip p {
-    margin: 0;
-    padding: 2px 0;
-    line-height: 1.2;
-}
-
-.allowance-btn {
-    width: 100%;
-    height: 46px;
-    margin-top: 14px;
-    background: #16a34a;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .2s ease;
-}
-
-.allowance-btn:active {
-    transform: scale(.99);
-}
-
-.rest-day-row {
-    background: #f8d7da !important;
-    color: #721c24 !important;
-    font-weight: normal !important;
-}
-
-/* =========================
-   App Header & Navigation (Fixed Header Layout)
-========================= */
-.app-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 22px;
-    position: fixed;            
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;              
-    background: #eef3ef;        
-    padding: 20px 20px 10px 20px;
-    box-sizing: border-box;
-}
-
-.app-left {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.app-logo {
-    width: 72px;
-    height: 72px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.app-title h1 {
-    margin: 0;
-    font-size: 30px;
-    color: #14532d;
-    font-weight: 700;
-    text-align: left;
-    line-height: 1.1;
-}
-
-.app-subtitle {
-    margin-top: 4px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #374151;
-}
-
-.app-description {
-    margin-top: 6px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.top-nav {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    padding-right: 12px; 
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    color: #6b7280;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.nav-btn:hover {
-    color: #14532d;
-}
-
-.nav-btn.active {
-    color: #16a34a;
-}
-
-.nav-separator {
-    color: #9ca3af;
-    user-select: none;
-}
-
-/* =========================
-   Modals & Overlays
-========================= */
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 9999;
-    overflow-y: auto;
-    padding: 15px;
-    box-sizing: border-box;
-}
-
-.modal-content {
-    background: #fff;
-    width: 90%;
-    max-width: 450px;
-    max-height: 90vh;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 10px;
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-.modal-title {
-    margin-top: 0;
-    color: #111827;
-}
-
-.modal-content input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.modal-buttons .allowance-btn {
-    flex: 1;
-    margin-top: 0;
-    height: 48px;
-    border-radius: 8px;
-}
-
-.submit-btn { background: #16a34a; color: #fff; }
-.submit-btn:hover { background: #15803d; }
-.cancel-btn { background: #6b7280; color: #fff; }
-.cancel-btn:hover { background: #4b5563; }
-
-/* Form Fields inside Modal */
-.driver-header .info-value { color: #fff; }
-.trip-info-card .info-value { font-weight: 600; }
-
-/* Nililinis ang info item structure para walang background blocks ang text rows sa malaking card */
-.driver-header .info-item {
-    background: transparent !important;
-    padding: 2px 0;
-    margin-top: 0;
-    display: flex;
-    align-items: flex-start;
-}
-.driver-header .info-item .info-label {
-    color: rgba(255,255,255,.88) !important;
-    font-weight: 600 !important;
-}
-.driver-header .info-item .info-value {
-    color: #fff !important;
-    font-weight: 500 !important;
-    padding-left: 0;
-}
-.info-value {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 500;
-    color: #111827;
-    word-break: break-word;
-}
-
-.info-value a, 
-.phone-link {
-    font-size: 14px !important;
-    color: #111827;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.info-value a:hover, 
-.phone-link:hover {
-    text-decoration: underline;
-    color: #16a34a;
-}
-
-.driver-header .info-value { color: #fff; font-weight: normal !important; }
-.trip-info-card .info-value { font-weight: 600; }
-
-.section-title {
-    display: block;
-    margin: 12px 0 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #14532d;
-    border-bottom: 1px solid #d1fae5;
-    padding-bottom: 5px;
-}
-
-.duty-time-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.time-card {
-    flex: 1;
-}
-
-.time-card label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 2px;
-}
-
-.time-card input {
-    width: 100%;
-    height: 38px;
-    padding: 4px 8px;
-    font-size: 13px;
-    font-weight: 500;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: #fff;
-    box-sizing: border-box;
-}
-
-.time-card input:focus {
-    outline: none;
-    border-color: #1d4ed8;
-    box-shadow: 0 0 0 2px rgba(37,99,235,.12);
-}
-
-.meal-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-.meal-item label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
-
-.meal-item input {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Upload & Receipts */
-.receipt-section {
-    display: none;
-    margin-top: 10px;
-}
-
-.file-input-hidden {
-    display: none;
-}
-
-.upload-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.upload-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.camera-btn { background: #2563eb; }
-.gallery-btn { background: #6b7280; }
-.receipt-preview { margin-top: 10px; }
-
-/* Loading & Success Boxes */
-.success-overlay, .loading-overlay, .action-loading-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-    justify-content: center;
-    align-items: center;
-}
-.success-overlay { z-index: 100000; }
-.loading-overlay { z-index: 99999; }
-.action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
-
-.success-box, .loading-box, .action-loading-box {
-    background: #fff;
-    border-radius: 14px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 10px 35px rgba(0,0,0,.25);
-}
-.success-box { width: 290px; }
-.loading-box { width: 280px; }
-.loading-box-large { max-width: 340px; }
-.action-loading-box { width: 320px; padding: 28px 24px; }
-
-.success-icon { font-size: 55px; margin-bottom: 12px; }
-.success-box h2 { margin: 0 0 10px; color: #16a34a; }
-.success-box p, .loading-message, .action-loading-message { color: #4b5563; line-height: 1.5; font-size: 14px; }
-
-.loading-banner {
-    background: #16a34a;
-    color: #fff;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-    box-shadow: 0 4px 12px rgba(22,163,74,.25);
-}
-.loading-banner h2 { margin: 0; font-size: 20px; }
-.loading-banner-subtitle { margin-top: 4px; font-size: 13px; opacity: .9; }
-.loading-title, .action-loading-title { margin: 0 0 8px; color: #111827; }
-.action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
-
-.spinner, .action-loading-spinner {
-    margin: auto auto 18px;
-    border: 5px solid #e5e7eb;
-    border-radius: 50%;
-}
-.spinner {
-    width: 55px; height: 55px;
-    border-top: 5px solid #16a34a;
-    animation: spin 1s linear infinite;
-}
-.action-loading-spinner {
-    width: 46px; height: 46px; margin: auto;
-    border-width: 4px; border-top: 4px solid #15803d;
-    animation: spin .8s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Driver View Table Styles */
-.summary-table {
-    width: 100%;
-    table-layout: auto;
-    border-collapse: collapse;
-    font-size: 11px;
-    background: #ffffff !important; /* Pinipilit na maging malinis at purong puti ang panel background */
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.summary-table th, 
-.summary-table td {
-    padding: 8px 6px;
-    border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap; 
-    word-break: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #111827 !important; /* Tinitiyak na maitim at nababasang mabuti ang teksto sa puting background */
-}
-
-/* Binabalik ang malinis na table layout controls nang walang bold settings sa base cells */
-.summary-table th:nth-child(1), .summary-table td:first-child { text-align: left; width: 32%; }
-.summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
-.summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; }
-.summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
-
-/* Ginagawang BOLD ang Column Headers (Driver Name, Time In, etc.) */
-.summary-table th {
-    font-weight: bold !important;
-    color: #14532d !important;
-}
-
-/* Ginagawa nitong PLAIN (Hindi Bold) ang lahat ng regular values */
-.summary-table td {
-    font-weight: normal !important;
-}
-
-/* MALAKING DAGDAG: Pinipili at ginagawang BOLD lamang ang Column 1 (Driver Name) at Column 3 (Unit) */
-.summary-table td:nth-child(1), 
-.summary-table td:nth-child(3) {
-    font-weight: bold !important; 
-}
-
-/* Footer */
-.app-footer {
-    margin-top: 30px;
-    padding: 8px 10px;
-    text-align: center;
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-}
-
-.footer-content { display: flex; flex-direction: column; gap: 4px; }
-.footer-title { font-size: 12px; font-weight: 600; color: #065f46; line-height: 1.2; }
-.footer-sub { font-size: 11px; color: #6b7280; line-height: 1.2; }
-.footer-copy { font-size: 10px; color: #9ca3af; line-height: 1.2; }
-
-/* =========================================
-   Admin Panel Specific Layout Styles
-========================================= */
-.schedule-header {
-    background: #14532d;
-    color: #ffffff;
-    padding: 14px 18px;
-    border-radius: 10px;
-    margin-bottom: 18px;
-    box-shadow: 0 4px 10px rgba(20,83,45,.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.schedule-header h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.month-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.month-selector label {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.9);
-}
-
-.month-selector select {
-    padding: 5px 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #14532d;
-    background: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    outline: none;
-}
-
-.approval-container h3 {
-    color: #14532d;
-    font-size: 15px;
-    font-weight: 700;
-    margin: 22px 0 10px;
-    padding-left: 6px;
-    border-left: 4px solid #16a34a;
-}
-
-/* =========================================
-   UPDATED: Admin Panel Compact Table Row Heights
-========================================= */
-.approval-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff !important; 
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    margin-bottom: 15px;
-    border: 1px solid #e5e7eb;
-}
-
-.approval-table th {
-    background: #14532d !important; 
-    color: #ffffff !important;
-    font-weight: 700;
-    font-size: 12px;
-    text-align: left;
-    padding: 7px 8px; 
-}
-
-.approval-table td {
-    padding: 7px 8px; 
-    font-size: 12px;
-    color: #111827 !important; 
-    font-weight: 600;
-    border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis; 
-}
-
-.approval-table tr:last-child td {
-    border-bottom: none;
-}
-
-.approval-table tr:hover {
-    background: #f9fafb; 
-}
-
-.approval-day-name {
-    font-weight: 700;
-}
-
-.approval-date-val {
-    font-weight: 500;
-}
-
-.action-btn-grp {
-    display: flex;
-    gap: 6px;
-}
-
-.action-table-btn {
-    padding: 4px 10px; 
-    font-size: 11px;
-    font-weight: 700;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background .2s, color .2s;
-}
-
-.btn-view {
-    background: #16a34a !important;
-    color: #ffffff !important;
-}
-
-.btn-view:hover {
-    background: #15803d !important;
-}
-
-.btn-approve {
-    background: #ffffff !important;
-    color: #14532d !important;
-    border: 1px solid rgba(20, 83, 45, 0.4) !important;
-}
-
-.btn-approve:hover {
-    background: #eef3ef !important;
-}
- 
- /* =========================
-   Responsive Styles (Max 600px)
-========================= */
-@media(max-width:600px){
+    <style>
+    /* =========================================
+       Universal & Base Styles
+    ========================================= */
     body {
-        padding-top: 175px; 
+        font-family: Arial, Helvetica, sans-serif;
+        background: #eef3ef;
+        margin: 0;
+        padding: 140px 20px 20px 20px; /* Space para sa fixed header navigation */
+        color: #111827;
     }
-    .admin-toolbar { justify-content: stretch; }
-    .admin-btn { width: 100%; }
-    .meal-grid { gap: 10px; }
-    .meal-item label, .time-card label { font-size: 11px; }
-    .duty-time-row { gap: 8px; padding: 0 2px; }
-    .section-title { font-size: 14px; }
-    .time-card input { height: 38px; font-size: 13px; }
-    .upload-btn, .allowance-btn { font-size: 13px; padding: 10px; }
-    .driver-header p, .nav-btn { font-size: 12px; line-height: 1.2; }
-    
-    .trip .info-label,
-    .trip .info-value,
-    .trip .info-value a,
+
+    a {
+        color: #000;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        color: #14532d;
+        font-size: 28px;
+        margin-bottom: 6px;
+        font-weight: 700;
+    }
+
+    /* =========================================
+       Layout & Components
+    ========================================= */
+    .admin-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 18px;
+    }
+
+    .admin-btn {
+        background: #14532d;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .admin-btn:hover {
+        background: #166534;
+    }
+
+    .driver-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .summary-card {
+        background: #b7d58c;
+        border-radius: 14px;
+        padding: 8px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .summary-header {
+        background: #14532d;
+        color: #fff;
+        padding: 10px 12px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .summary-header h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .driver-header {
+        background: #14532d;
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 5px rgba(20,83,45,.15);
+    }
+
+    .driver-header h2 {
+        margin: 0 0 12px;
+        font-size: 17px;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .driver-header p {
+        margin: 0;
+        padding: 2px 0;
+        line-height: 1.2;
+        color: #fff;
+    }
+
+    .trip {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid #14532d;
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    .trip-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #14532d;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .trip p {
+        margin: 0;
+        padding: 2px 0;
+        line-height: 1.2;
+    }
+
+    .allowance-btn {
+        width: 100%;
+        height: 46px;
+        margin-top: 14px;
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .2s ease;
+    }
+
+    .allowance-btn:active {
+        transform: scale(.99);
+    }
+
+    .rest-day-row {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+        font-weight: normal !important;
+    }
+
+    /* =========================================
+       App Header & Navigation (Fixed Layout)
+    ========================================= */
+    .app-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 22px;
+        position: fixed;            
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;              
+        background: #eef3ef;        
+        padding: 20px 20px 10px 20px;
+        box-sizing: border-box;
+    }
+
+    .app-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .app-logo {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .app-title h1 {
+        margin: 0;
+        font-size: 30px;
+        color: #14532d;
+        font-weight: 700;
+        text-align: left;
+        line-height: 1.1;
+    }
+
+    .app-subtitle {
+        margin-top: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .app-description {
+        margin-top: 6px;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .top-nav {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        padding-right: 12px; 
+    }
+
+    .nav-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .nav-btn:hover {
+        color: #14532d;
+    }
+
+    .nav-btn.active {
+        color: #16a34a;
+    }
+
+    .nav-separator {
+        color: #9ca3af;
+        user-select: none;
+    }
+
+    /* =========================================
+       Modals & Overlays
+    ========================================= */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.5);
+        z-index: 9999;
+        overflow-y: auto;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .modal-content {
+        background: #fff;
+        width: 90%;
+        max-width: 450px;
+        max-height: 90vh;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .modal-title {
+        margin-top: 0;
+        color: #111827;
+    }
+
+    .modal-content input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .modal-buttons .allowance-btn {
+        flex: 1;
+        margin-top: 0;
+        height: 48px;
+        border-radius: 8px;
+    }
+
+    .submit-btn { background: #16a34a; color: #fff; }
+    .submit-btn:hover { background: #15803d; }
+    .cancel-btn { background: #6b7280; color: #fff; }
+    .cancel-btn:hover { background: #4b5563; }
+
+    /* Form Fields inside Info Layouts */
+    .trip-info-card .info-value { font-weight: 600; }
+
+    .driver-header .info-item {
+        background: transparent !important;
+        padding: 2px 0;
+        margin-top: 0;
+        display: flex;
+        align-items: flex-start;
+    }
+    .driver-header .info-item .info-label {
+        color: rgba(255,255,255,.88) !important;
+        font-weight: 600 !important;
+    }
+    .driver-header .info-item .info-value {
+        color: #fff !important;
+        font-weight: 500 !important;
+        padding-left: 0;
+    }
+    .info-value {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        color: #111827;
+        word-break: break-word;
+    }
+
+    .info-value a, 
     .phone-link {
-        font-size: 13px !important;
-        line-height: 1.3;
+        font-size: 14px !important;
+        color: #111827;
+        text-decoration: none;
+        font-weight: 500;
     }
-    
-    .trip-title { font-size: 12px; }
-    .driver-header h2 { font-size: 15px; }
-    .app-header { gap: 14px; padding: 15px 15px 10px 15px; }
-    .app-logo { width: 56px; height: 56px; }
-    .app-title h1 { font-size: 24px; }
-    .app-subtitle { font-size: 14px; }
-    .app-description { font-size: 12px; }
-    .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
-    .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .month-selector { width: 100%; justify-content: space-between; }
-}
-</style>
+
+    .info-value a:hover, 
+    .phone-link:hover {
+        text-decoration: underline;
+        color: #16a34a;
+    }
+
+    .section-title {
+        display: block;
+        margin: 12px 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #14532d;
+        border-bottom: 1px solid #d1fae5;
+        padding-bottom: 5px;
+    }
+
+    .duty-time-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .time-card {
+        flex: 1;
+    }
+
+    .time-card label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 2px;
+    }
+
+    .time-card input {
+        width: 100%;
+        height: 38px;
+        padding: 4px 8px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        box-sizing: border-box;
+    }
+
+    .time-card input:focus {
+        outline: none;
+        border-color: #1d4ed8;
+        box-shadow: 0 0 0 2px rgba(37,99,235,.12);
+    }
+
+    .meal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .meal-item label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 4px;
+    }
+
+    .meal-item input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Upload & Receipts */
+    .receipt-section {
+        display: none;
+        margin-top: 10px;
+    }
+
+    .file-input-hidden {
+        display: none;
+    }
+
+    .upload-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .upload-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .camera-btn { background: #2563eb; }
+    .gallery-btn { background: #6b7280; }
+    .receipt-preview { margin-top: 10px; }
+
+    /* Loading & Success Boxes */
+    .success-overlay, .loading-overlay, .action-loading-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        justify-content: center;
+        align-items: center;
+    }
+    .success-overlay { z-index: 100000; }
+    .loading-overlay { z-index: 99999; }
+    .action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
+
+    .success-box, .loading-box, .action-loading-box {
+        background: #fff;
+        border-radius: 14px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    }
+    .success-box { width: 290px; }
+    .loading-box { width: 280px; }
+    .loading-box-large { max-width: 340px; }
+    .action-loading-box { width: 320px; padding: 28px 24px; }
+
+    .success-icon { font-size: 55px; margin-bottom: 12px; }
+    .success-box h2 { margin: 0 0 10px; color: #16a34a; }
+    .success-box p, .loading-message, .action-loading-message { color: #4b5563; line-height: 1.5; font-size: 14px; }
+
+    .loading-banner {
+        background: #16a34a;
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 12px rgba(22,163,74,.25);
+    }
+    .loading-banner h2 { margin: 0; font-size: 20px; }
+    .loading-banner-subtitle { margin-top: 4px; font-size: 13px; opacity: .9; }
+    .loading-title, .action-loading-title { margin: 0 0 8px; color: #111827; }
+    .action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
+
+    .spinner, .action-loading-spinner {
+        margin: auto auto 18px;
+        border: 5px solid #e5e7eb;
+        border-radius: 50%;
+    }
+    .spinner {
+        width: 55px; height: 55px;
+        border-top: 5px solid #16a34a;
+        animation: spin 1s linear infinite;
+    }
+    .action-loading-spinner {
+        width: 46px; height: 46px; margin: auto;
+        border-width: 4px; border-top: 4px solid #15803d;
+        animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Driver View Table Styles */
+    .summary-table {
+        width: 100%;
+        table-layout: auto;
+        border-collapse: collapse;
+        font-size: 11px;
+        background: #ffffff !important; 
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .summary-table th, 
+    .summary-table td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap; 
+        word-break: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #111827 !important; 
+    }
+
+    .summary-table th:nth-child(1), .summary-table td:first-child { text-align: left; width: 32%; }
+    .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
+    .summary-table th:nth-child(3), .summary-table td:nth-child(3) { width: 18%; text-align: center; }
+    .summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
+
+    .summary-table th {
+        font-weight: bold !important;
+        color: #14532d !important;
+    }
+
+    .summary-table td {
+        font-weight: normal !important;
+    }
+
+    .summary-table td:nth-child(1), 
+    .summary-table td:nth-child(3) {
+        font-weight: bold !important; 
+    }
+
+    /* Footer */
+    .app-footer {
+        margin-top: 30px;
+        padding: 8px 10px;
+        text-align: center;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .footer-content { display: flex; flex-direction: column; gap: 4px; }
+    .footer-title { font-size: 12px; font-weight: 600; color: #065f46; line-height: 1.2; }
+    .footer-sub { font-size: 11px; color: #6b7280; line-height: 1.2; }
+    .footer-copy { font-size: 10px; color: #9ca3af; line-height: 1.2; }
+
+    /* =========================================
+       Admin Panel Specific Layout Styles
+    ========================================= */
+    .schedule-header {
+        background: #14532d;
+        color: #ffffff;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 10px rgba(20,83,45,.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .schedule-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .month-selector {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .month-selector label {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .month-selector select {
+        padding: 5px 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #14532d;
+        background: #ffffff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .approval-container h3 {
+        color: #14532d;
+        font-size: 15px;
+        font-weight: 700;
+        margin: 22px 0 10px;
+        padding-left: 6px;
+        border-left: 4px solid #16a34a;
+    }
+
+    .approval-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff !important; 
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        margin-bottom: 15px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .approval-table th {
+        background: #14532d !important; 
+        color: #ffffff !important;
+        font-weight: 700;
+        font-size: 12px;
+        text-align: left;
+        padding: 7px 8px; 
+    }
+
+    .approval-table td {
+        padding: 7px 8px; 
+        font-size: 12px;
+        color: #111827 !important; 
+        font-weight: 600;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+
+    .approval-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .approval-table tr:hover {
+        background: #f9fafb; 
+    }
+
+    .approval-day-name {
+        font-weight: 700;
+    }
+
+    .approval-date-val {
+        font-weight: 500;
+    }
+
+    .action-btn-grp {
+        display: flex;
+        gap: 6px;
+    }
+
+    .action-table-btn {
+        padding: 4px 10px; 
+        font-size: 11px;
+        font-weight: 700;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background .2s, color .2s;
+    }
+
+    .btn-view {
+        background: #16a34a !important;
+        color: #ffffff !important;
+    }
+
+    .btn-view:hover {
+        background: #15803d !important;
+    }
+
+    .btn-approve {
+        background: #ffffff !important;
+        color: #14532d !important;
+        border: 1px solid rgba(20, 83, 45, 0.4) !important;
+    }
+
+    .btn-approve:hover {
+        background: #eef3ef !important;
+    }
+     
+    /* =========================================
+       Responsive Styles (Max 600px)
+    ========================================= */
+    @media(max-width:600px){
+        body {
+            padding-top: 175px; 
+        }
+        .admin-toolbar { justify-content: stretch; }
+        .admin-btn { width: 100%; }
+        .meal-grid { gap: 10px; }
+        .meal-item label, .time-card label { font-size: 11px; }
+        .duty-time-row { gap: 8px; padding: 0 2px; }
+        .section-title { font-size: 14px; }
+        .time-card input { height: 38px; font-size: 13px; }
+        .upload-btn, .allowance-btn { font-size: 13px; padding: 10px; }
+        .driver-header p, .nav-btn { font-size: 12px; line-height: 1.2; }
+        
+        .trip .info-label,
+        .trip .info-value,
+        .trip .info-value a,
+        .phone-link {
+            font-size: 13px !important;
+            line-height: 1.3;
+        }
+        
+        .trip-title { font-size: 12px; }
+        .driver-header h2 { font-size: 15px; }
+        .app-header { gap: 14px; padding: 15px 15px 10px 15px; }
+        .app-logo { width: 56px; height: 56px; }
+        .app-title h1 { font-size: 24px; }
+        .app-subtitle { font-size: 14px; }
+        .app-description { font-size: 12px; }
+        .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
+        .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .month-selector { width: 100%; justify-content: space-between; }
+    }
+    </style>
 </head>
 
 <body>
@@ -783,7 +775,6 @@ h1 {
 </div>
 
 <div id="scheduleApprovalPage" style="display:none;">
-
     <div class="schedule-header">
         <h2>Driver Schedule Approval</h2>
         <div class="month-selector">
@@ -832,7 +823,6 @@ h1 {
             ← Driver Schedule
         </button>
     </div>
-
 </div>
 
 <div id="allowanceModal" class="modal">
@@ -960,7 +950,6 @@ function refreshLoginSession() {
     
 function showAdminDashboard() {
     refreshLoginSession();
-
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     
@@ -1225,6 +1214,7 @@ async function adminLogin() {
             localStorage.setItem("loginExpires", expires);
             showAdminDashboard();
         } else {
+            hideActionLoading();
             loginBtn.disabled = false;
             loginBtn.innerText = "Login";
             alert(result.message || "Invalid login");
@@ -1471,7 +1461,6 @@ window.onload = async function () {
         let pageHTML = "";
 
         const now = new Date();
-        const coreToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         scheduleDates.forEach(date => {
             const scheduleDate = new Date(date);
@@ -1479,7 +1468,6 @@ window.onload = async function () {
             if (status !== "approved") return;
 
             const isToday = scheduleDate.toDateString() === now.toDateString();
-          
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             let tableRows = "";
 
@@ -1494,7 +1482,6 @@ window.onload = async function () {
                   </tr>`;
             });
 
-            // IMPROVEMENT 1: Ang 4:00 PM (16:00) rule ay inilapat LAMANG sa Summary Card box.
             if (!(isToday && now.getHours() >= 16)) {
                 pageHTML += `
                 <div class="summary-card" id="summary-${date}">
@@ -1506,40 +1493,37 @@ window.onload = async function () {
                 </div>`;
             }
 
-            // IMPROVEMENT 2: Driver cards build configuration.
             Object.values(grouped).filter(d => d.date === date).forEach(d => {
                 if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
                 if (submittedDrivers[`${d.driver}|${d.date}`]) return;
 
                 let tripsHTML = "";
                 
-                if (!isLateNightSummary) {
-                    d.trips.forEach((trip, index) => {
-                        tripsHTML += `
-                        <div class="trip">
-                            <div class="trip-title">Pick-Up ${index + 1}</div>
-                            ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                            ${trip.requestedBy ? `
-                            <div class="info-item">
-                                <div class="info-label">Passenger</div>
-                                <div class="info-value">
-                                    ${trip.requestedBy} ${trip.contactNumber ? `<span style="color:#9ca3af;">|</span> <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                                </div>
-                            </div>` : ""}
-                            ${trip.origin ? `
-                            <div class="info-item">
-                                <div class="info-label">Origin</div>
-                                <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
+                d.trips.forEach((trip, index) => {
+                    tripsHTML += `
+                    <div class="trip">
+                        <div class="trip-title">Pick-Up ${index + 1}</div>
+                        ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
+                        ${trip.requestedBy ? `
+                        <div class="info-item">
+                            <div class="info-label">Passenger</div>
+                            <div class="info-value">
+                                ${trip.requestedBy} ${trip.contactNumber ? `<span style="color:#9ca3af;">|</span> <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                             </div>
-                            <div class="info-item">
-                                <div class="info-label">Destination</div>
-                                <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
-                            </div>` : ""}
-                            ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
-                        </div>`;
-                    });
-                
-}
+                        </div>` : ""}
+                        ${trip.origin ? `
+                        <div class="info-item">
+                            <div class="info-label">Origin</div>
+                            <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Destination</div>
+                            <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
+                        </div>` : ""}
+                        ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
+                    </div>`;
+                });
+
                 const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
                 pageHTML += `
