@@ -1606,7 +1606,13 @@ scheduleDates.forEach(date => {
     // ==========================
 
     if(isToday){
+// Philippine time
+const phNow = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+);
 
+// Hide summary after 4:00 PM
+const hideSummaryTable = phNow.getHours() >= 16;
         let tableRows="";
 
         Object.values(summaryDrivers[date] || {}).forEach(driver=>{
@@ -1629,34 +1635,37 @@ scheduleDates.forEach(date => {
 
 if (currentHour < 16) {
 
+if (!hideSummaryTable) {
+
 pageHTML += `
 <div class="summary-card">
 
-            <div class="summary-header">
-                <h2>${dayName} | ${date}</h2>
-            </div>
+    <div class="summary-header">
+        <h2>${dayName} | ${date}</h2>
+    </div>
 
-            <table class="summary-table">
+    <table class="summary-table">
 
-                <thead>
-                    <tr>
-                        <th>Driver Name</th>
-                        <th>Time In</th>
-                        <th>Unit</th>
-                        <th>Assignment</th>
-                    </tr>
-                </thead>
+        <thead>
+            <tr>
+                <th>Driver Name</th>
+                <th>Time In</th>
+                <th>Unit</th>
+                <th>Assignment</th>
+            </tr>
+        </thead>
 
-                <tbody>
+        <tbody>
 
-                    ${tableRows}
+            ${tableRows}
 
-                </tbody>
+        </tbody>
 
-            </table>
+    </table>
 
-        </div>
-        `;
+</div>
+`;
+
 }
         Object.values(grouped)
         .filter(d=>d.date===date)
