@@ -1396,6 +1396,8 @@ function loadScheduleApprovalPage(){
 }
 
 function viewSchedule(date){
+
+      
     document.querySelector(".schedule-header").style.display = "none";
     document.querySelector(".approval-container").style.display = "none";
 
@@ -1508,9 +1510,11 @@ window.onload = async function () {
 
         const [data, approvalData] = await Promise.all([scheduleResponse.text(), approvalResponse.text()]);
         const rows = data.trim().split("\n").slice(1);
-        const approvalRows = approvalData.trim().split("\n").slice(1);
 
-        grouped = {}; approvalDates = {};
+
+grouped = {};
+summaryDrivers = {};
+approvalDates = {};
 
         approvalRows.forEach(row => {
             const parts = row.split(",");
@@ -1583,8 +1587,14 @@ scheduleDates.sort((a, b) => {
     // Future: nearest first
     return da - db;
 });
-
+console.log("scheduleDates:", scheduleDates);
 scheduleDates.forEach(date => {
+    console.log({
+    date,
+    status: approvalDates[date],
+    summary: summaryDrivers[date],
+    grouped: Object.values(grouped).filter(d => d.date === date).length
+});
 
     const scheduleDate = new Date(date);
     const status = (approvalDates[date] || "").toLowerCase();
