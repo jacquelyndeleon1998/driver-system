@@ -1544,7 +1544,39 @@ window.onload = async function () {
 const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
 const phNow = new Date(phTimeStr);
 
-scheduleDates.sort((a,b)=>new Date(b)-new Date(a));
+const today = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+);
+today.setHours(0,0,0,0);
+
+scheduleDates.sort((a, b) => {
+
+    const da = new Date(a);
+    const db = new Date(b);
+
+    da.setHours(0,0,0,0);
+    db.setHours(0,0,0,0);
+
+    const aToday = da.getTime() === today.getTime();
+    const bToday = db.getTime() === today.getTime();
+
+    const aPast = da < today;
+    const bPast = db < today;
+
+    // Past dates first
+    if (aPast && !bPast) return -1;
+    if (!aPast && bPast) return 1;
+
+    // Today before future dates
+    if (aToday && !bToday) return -1;
+    if (!aToday && bToday) return 1;
+
+    // Past: newest first
+    if (aPast && bPast) return db - da;
+
+    // Future: nearest first
+    return da - db;
+});
 
 scheduleDates.forEach(date => {
 
