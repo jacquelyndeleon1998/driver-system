@@ -1198,6 +1198,7 @@ async function saveAllowance() {
 
         const response = await fetch(WEBAPP_URL, { method: "POST", body: formData });
         const text = await response.text();
+        console.log(text);
         let result = JSON.parse(text);
 
         if (result.success === false && result.message === "DUPLICATE_ENTRY") {
