@@ -684,7 +684,7 @@ h1 {
 }
 
 .month-selector select {
-    padding: 5px 10px;
+    padding: 6px 12px;
     font-size: 13px;
     font-weight: 600;
     color: #14532d;
@@ -884,36 +884,8 @@ h1 {
 </div>
 
 <div id="scheduleApprovalPage" style="display:none;">
-    <div class="schedule-header">
-        <h2>Driver Operations Admin</h2>
-        <div class="month-selector">
-            <label for="allowanceCutoff">Cut-off Period</label>
-            <select id="allowanceCutoff" onchange="renderAllowanceSummaryTable()">
-                <option value="1">June 1 - 15, 2026</option>
-                <option value="2">June 16 - 30, 2026</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- ALLOWANCE SUMMARY BLOCK -->
-    <div class="approval-container">
-        <h3>Driver Allowance Summary</h3>
-        <table class="approval-table">
-            <thead>
-                <tr>
-                    <th style="width: 40%;">Driver Name</th>
-                    <th style="width: 25%; text-align: right; padding-right: 15px;">Approved Total</th>
-                    <th style="width: 20%; text-align: right; padding-right: 15px;">Pending Approval</th>
-                    <th style="width: 15%; text-align: center;">Action</th>
-                </tr>
-            </thead>
-            <tbody id="allowanceSummaryBody">
-                <!-- Dynamically generated via script execution -->
-            </tbody>
-        </table>
-    </div>
-
-    <div class="approval-container">
+    <!-- INTERFACE LAYOUT 1: APPROVED AND PENDING SCHEDULES AT THE TOP -->
+    <div class="approval-container" style="margin-top: 0;">
         <h3>Approved Schedules</h3>
         <table class="approval-table">
             <thead>
@@ -939,6 +911,36 @@ h1 {
         </table>
     </div>
 
+    <!-- INTERFACE LAYOUT 2: CUT-OFF PERIOD CONTAINER BOX -->
+    <div class="schedule-header" style="margin-top: 30px;">
+        <h2>Driver Operations Admin</h2>
+        <div class="month-selector">
+            <label for="allowanceCutoff">Cut-off Period</label>
+            <select id="allowanceCutoff" onchange="processAllowanceSummaryTable()">
+                <option value="1">July 1 - 15, 2026</option>
+                <option value="2">July 16 - End of Month</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- INTERFACE LAYOUT 3: LIVE DRIVER ALLOWANCE SUMMARY TABLE -->
+    <div class="approval-container">
+        <h3>Driver Allowance Summary</h3>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Driver Name</th>
+                    <th style="width: 25%; text-align: right; padding-right: 25px;">Total Approved Allowance</th>
+                    <th style="width: 20%; text-align: right; padding-right: 25px;">Pending for approval</th>
+                    <th style="width: 15%; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="allowanceSummaryBody">
+                <!-- Data populated dynamically from the Allowances Sheet -->
+            </tbody>
+        </table>
+    </div>
+
     <div id="scheduleViewerPage" style="display:none;">
         <div class="summary-header">
             <h2 id="viewerTitle">Driver Schedule</h2>
@@ -953,7 +955,7 @@ h1 {
     </div>
 </div>
 
-<!-- DYNAMIC ADMIN VIEW MODAL -->
+<!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
 <div id="driverAllowanceDetailsModal" class="modal">
     <div class="modal-content" style="max-width: 500px;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
@@ -969,7 +971,7 @@ h1 {
                     </tr>
                 </thead>
                 <tbody id="driverDetailsModalBody">
-                    <!-- Loaded context dynamic data rows inside logic structure -->
+                    <!-- Extracted rows parsed seamlessly -->
                 </tbody>
             </table>
         </div>
@@ -1045,7 +1047,7 @@ h1 {
             <h2>Daily Dispatch Hub</h2>
             <div class="loading-banner-subtitle">Driver Schedule System</div>
         </div>
-        <div class="spinner"></div>
+        <div style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid #e5e7eb; border-top: 4px solid #16a34a; border-radius: 50%; animation: spin 1s linear infinite;"></div>
         <h3 class="loading-title">Getting Dispatch Schedule...</h3>
         <p class="loading-message">Preparing driver schedules, trips, and assignments.</p>
     </div>
@@ -1090,6 +1092,9 @@ const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 const approvalURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=441234750&single=true&output=csv";
 
+// Target published allowances sheet tab ID
+const allowancesSheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=1510464673&output=csv";
+
 let submittedDrivers = {};
 let selectedReceipts = [];
 let currentDriver = "", currentDate = "", currentPassengerCombined = "";
@@ -1098,36 +1103,7 @@ let grouped = {};
 let summaryDrivers = {};
 let approvalDates = {};
 let scheduleDates = [];
-
-// Static Mocked Master Dataset containing cutoff assignment distributions
-const masterAllowanceRecords = [
-    { name: "Jun Dela Pena", date: "June 1, 2026", amount: 300, status: "Approved" },
-    { name: "Jun Dela Pena", date: "June 2, 2026", amount: 400, status: "Pending" },
-    { name: "Jun Dela Pena", date: "June 3, 2026", amount: 100, status: "Approved" },
-    { name: "Jun Dela Pena", date: "June 4, 2026", amount: 500, status: "Approved" },
-    { name: "Jun Dela Pena", date: "June 12, 2026", amount: 300, status: "Pending" },
-    { name: "Jun Dela Pena", date: "June 20, 2026", amount: 600, status: "Approved" }, // Cut-off 2 item
-    
-    { name: "Jerome Natividad", date: "June 2, 2026", amount: 600, status: "Approved" },
-    { name: "Jerome Natividad", date: "June 5, 2026", amount: 300, status: "Pending" },
-    { name: "Jerome Natividad", date: "June 14, 2026", amount: 600, status: "Approved" },
-    
-    { name: "Julius Sta. Rita", date: "June 3, 2026", amount: 400, status: "Approved" },
-    { name: "Julius Sta. Rita", date: "June 4, 2026", amount: 300, status: "Approved" },
-    { name: "Julius Sta. Rita", date: "June 11, 2026", amount: 100, status: "Pending" },
-    
-    { name: "Oscar Pangilinan", date: "June 1, 2026", amount: 500, status: "Approved" },
-    { name: "Oscar Pangilinan", date: "June 8, 2026", amount: 300, status: "Approved" },
-    { name: "Oscar Pangilinan", date: "June 9, 2026", amount: 300, status: "Pending" },
-    
-    { name: "Michael Guanlao", date: "June 2, 2026", amount: 750, status: "Approved" },
-    { name: "Michael Guanlao", date: "June 7, 2026", amount: 500, status: "Approved" },
-    { name: "Michael Guanlao", date: "June 15, 2026", amount: 760, status: "Pending" },
-    
-    { name: "Melvin Fausto", date: "June 5, 2026", amount: 490, status: "Approved" },
-    { name: "Melvin Fausto", date: "June 6, 2026", amount: 400, status: "Approved" },
-    { name: "Melvin Fausto", date: "June 10, 2026", amount: 305, status: "Pending" }
-];
+let globalParsedAllowances = []; 
 
 function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
@@ -1139,7 +1115,6 @@ function showAdminDashboard() {
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     
-    document.querySelector(".schedule-header").style.display = "flex";
     document.querySelector(".approval-container").style.display = "block";
     document.querySelector(".approval-footer").style.display = "block";
     document.getElementById("scheduleViewerPage").style.display = "none";
@@ -1149,98 +1124,160 @@ function showAdminDashboard() {
     document.getElementById("allowanceBtn").classList.remove("active");
 
     sessionStorage.setItem("view", "admin");
-    renderAllowanceSummaryTable();
+    processAllowanceSummaryTable();
     hideActionLoading();
     window.scrollTo(0, 0); 
 }
 
-// RENDER SUMMARY ALLOWANCES IN TABLE
-function renderAllowanceSummaryTable() {
-    const selectorValue = document.getElementById("allowanceCutoff").value;
-    const bodyContainer = document.getElementById("allowanceSummaryBody");
-    bodyContainer.innerHTML = "";
-
-    // Group elements by Driver profiles
-    const aggregate = {};
-    
-    masterAllowanceRecords.forEach(record => {
-        const dayNumber = parseInt(record.date.split(" ")[1]);
+// FULLY RECALIBRATED EXPLICIT CORRECT COLUMN SNAPSHOT MAPPER
+async function fetchLiveAllowancesFromSheet() {
+    try {
+        const response = await fetch(allowancesSheetURL);
+        const csvText = await response.text();
+        const rows = csvText.trim().split("\n").slice(1);
         
-        // Match condition rules matching split intervals
+        globalParsedAllowances = [];
+        
+        rows.forEach(row => {
+            let cols = []; let current = ""; let insideQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') insideQuotes = !insideQuotes;
+                else if (char === ',' && !insideQuotes) { cols.push(current.trim()); current = ""; }
+                else current += char;
+            }
+            cols.push(current.trim());
+            
+            if (cols.length < 13) return; 
+            
+            const rawTripDate = cols[1].replace(/"/g, "").trim();    // Col B: Trip Date (e.g., "July 06, 2026")
+            const driverName = cols[2].replace(/"/g, "").trim();     // Col C: Driver Name
+            const totalAllowance = parseFloat(cols[11]) || 0;        // Col L: Total Column value directly
+            const rawStatus = cols[13] ? cols[13].replace(/"/g, "").trim() : ""; // Col N: Status Column
+            
+            // Check blank strings defaults to "Pending" condition profile matching parameters
+            const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
+
+            if (driverName && rawTripDate) {
+                globalParsedAllowances.push({
+                    name: driverName,
+                    date: rawTripDate,
+                    amount: totalAllowance,
+                    status: itemStatus
+                });
+            }
+        });
+    } catch (err) {
+        console.error("Error fetching allowances database tab: ", err);
+    }
+}
+
+// PROGRAMMATIC CONDITIONAL DYNAMIC WINDOW PERIOD FILTER 
+function processAllowanceSummaryTable() {
+    const selectorValue = document.getElementById("allowanceCutoff").value;
+    const tableBody = document.getElementById("allowanceSummaryBody");
+    tableBody.innerHTML = "";
+
+    const aggregateGroup = {};
+
+    globalParsedAllowances.forEach(record => {
+        // Extract the day number regardless of string format (e.g., handles "July 06, 2026")
+        const dateMatch = record.date.match(/\b\d{1,2}\b/);
+        if (!dateMatch) return;
+        const dayNumber = parseInt(dateMatch[0]);
+
         if (selectorValue === "1" && dayNumber > 15) return;
         if (selectorValue === "2" && dayNumber <= 15) return;
 
-        if (!aggregate[record.name]) {
-            aggregate[record.name] = { approved: 0, pending: 0 };
+        if (!aggregateGroup[record.name]) {
+            aggregateGroup[record.name] = { approved: 0, pending: 0 };
         }
         if (record.status === "Approved") {
-            aggregate[record.name].approved += record.amount;
+            aggregateGroup[record.name].approved += record.amount;
         } else {
-            aggregate[record.name].pending += record.amount;
+            aggregateGroup[record.name].pending += record.amount;
         }
     });
 
-    let cumulativeApproved = 0;
-    let cumulativePending = 0;
+    let overallApprovedTotal = 0;
+    let overallPendingTotal = 0;
+    const driverKeys = Object.keys(aggregateGroup);
 
-    Object.keys(aggregate).forEach(driver => {
-        cumulativeApproved += aggregate[driver].approved;
-        cumulativePending += aggregate[driver].pending;
+    if(driverKeys.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:#6b7280;">No allowance records found for this cut-off window.</td></tr>`;
+        return;
+    }
+
+    driverKeys.forEach(driver => {
+        overallApprovedTotal += aggregateGroup[driver].approved;
+        overallPendingTotal += aggregateGroup[driver].pending;
 
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${driver}</td>
-            <td style="text-align: right; padding-right: 15px; color: #14532d;">₱${aggregate[driver].approved.toLocaleString()}</td>
-            <td style="text-align: right; padding-right: 15px; color: #b45309;">₱${aggregate[driver].pending.toLocaleString()}</td>
+            <td style="text-align: right; padding-right: 25px; color: #14532d; font-weight:700;">₱${aggregateGroup[driver].approved.toLocaleString()}</td>
+            <td style="text-align: right; padding-right: 25px; color: #b45309; font-weight:700;">₱${aggregateGroup[driver].pending.toLocaleString()}</td>
             <td style="text-align: center;">
-                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
+                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">[view]</button>
             </td>
         `;
-        bodyContainer.appendChild(row);
+        tableBody.appendChild(row);
     });
 
-    // Append calculation summary footer metrics element line strip
-    const footerRow = document.createElement("tr");
-    footerRow.style.background = "#e5e7eb";
-    footerRow.style.fontWeight = "700";
-    footerRow.innerHTML = `
-        <td>TOTAL ALL DRIVERS</td>
-        <td style="text-align: right; padding-right: 15px; color: #14532d;">₱${cumulativeApproved.toLocaleString()}</td>
-        <td style="text-align: right; padding-right: 15px; color: #b45309;">₱${cumulativePending.toLocaleString()}</td>
+    const summaryFooterRow = document.createElement("tr");
+    summaryFooterRow.style.background = "#e5e7eb";
+    summaryFooterRow.style.fontWeight = "700";
+    summaryFooterRow.innerHTML = `
+        <td style="color:#14532d; font-size: 11px;">Total Approved (all drivers) | Total Pending (all drivers)</td>
+        <td style="text-align: right; padding-right: 25px; color: #14532d;">₱${overallApprovedTotal.toLocaleString()}</td>
+        <td style="text-align: right; padding-right: 25px; color: #b45309;">₱${overallPendingTotal.toLocaleString()}</td>
         <td></td>
     `;
-    bodyContainer.appendChild(footerRow);
+    tableBody.appendChild(summaryFooterRow);
 }
 
-// OPEN INDIVIDUAL BREAKDOWN DYNAMIC ELEMENT BOX
+// SYSTEM POPUP ENGINE MAPPER DISPLAY 
 function openDriverDetailsModal(driverName) {
     const cutoffId = document.getElementById("allowanceCutoff").value;
     document.getElementById("detailsModalDriverName").textContent = driverName;
-    document.getElementById("detailsModalRange").textContent = "Active Selection Period: " + (cutoffId === "1" ? "June 1 - 15, 2026" : "June 16 - 30, 2026");
+    document.getElementById("detailsModalRange").textContent = "Cut-off Range Selection: " + (cutoffId === "1" ? "July 1 - 15, 2026" : "July 16 - End of Month");
     
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
 
-    masterAllowanceRecords.forEach(record => {
-        if (record.name !== driverName) return;
-        const dayNumber = parseInt(record.date.split(" ")[1]);
+    let matchesFoundCount = 0;
+
+    globalParsedAllowances.forEach(record => {
+        if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return;
+        
+        const dateMatch = record.date.match(/\b\d{1,2}\b/);
+        if (!dateMatch) return;
+        const dayNumber = parseInt(dateMatch[0]);
+        
         if (cutoffId === "1" && dayNumber > 15) return;
         if (cutoffId === "2" && dayNumber <= 15) return;
 
+        matchesFoundCount++;
         const row = document.createElement("tr");
-        let actionCellElement = `<span class="status-badge status-approved">Approved</span>`;
+        let badgeDisplay = "";
         
-        if (record.status === "Pending") {
-            actionCellElement = `<button class="action-table-btn btn-view" style="padding: 3px 8px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Approve</button>`;
+        if (record.status === "Approved") {
+            badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
+        } else {
+            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">[approve]</button>`;
         }
 
         row.innerHTML = `
             <td>${record.date}</td>
-            <td style="text-align: right; font-weight:700;">₱${record.amount}</td>
-            <td style="text-align: center;">${actionCellElement}</td>
+            <td style="text-align: right; font-weight:700; color:#1f2937;">₱${record.amount.toLocaleString()}</td>
+            <td style="text-align: center;">${badgeDisplay}</td>
         `;
         targetBody.appendChild(row);
     });
+
+    if(matchesFoundCount === 0) {
+        targetBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:12px; color:#9ca3af;">No records found for this driver inside this window.</td></tr>`;
+    }
 
     document.getElementById("driverAllowanceDetailsModal").style.display = "block";
     document.body.style.overflow = "hidden";
@@ -1251,29 +1288,35 @@ function closeDetailsModal() {
     document.body.style.overflow = "";
 }
 
-function approveItemInline(name, date, element) {
+async function approveItemInline(name, date, element) {
     if (confirm(`Approve allowance request for ${name} on ${date}?`)) {
         element.disabled = true;
-        element.textContent = "Updating...";
+        element.textContent = "Processing...";
+        showActionLoading("Approving Entry...", "Updating status registry values on live spreadsheets.");
         
-        // Find configuration inside internal mock collection array structure rules context
-        const matched = masterAllowanceRecords.find(r => r.name === name && r.date === date);
-        if (matched) matched.status = "Approved";
-
-        // Re-render matrices data views seamlessly
-        renderAllowanceSummaryTable();
-        openDriverDetailsModal(name);
-    }
-}
-
-async function loadSubmittedAllowances() {
-    try {
-        const res = await fetch(WEBAPP_URL + "?action=submitted");
-        const data = await res.json();
-        submittedDrivers = {};
-        data.submitted.forEach(item => { submittedDrivers[item] = true; });
-    } catch (err) {
-        console.error(err);
+        try {
+            const targetUrl = `${WEBAPP_URL}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}`;
+            const response = await fetch(targetUrl);
+            const data = await response.json();
+            
+            if (data.success) {
+                alert("✅ Record updated successfully!");
+                await fetchLiveAllowancesFromSheet();
+                processAllowanceSummaryTable();
+                openDriverDetailsModal(name);
+            } else {
+                alert("❌ Error: " + data.message);
+                element.disabled = false;
+                element.textContent = "[approve]";
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Network transmission failure.");
+            element.disabled = false;
+            element.textContent = "[approve]";
+        } finally {
+            hideActionLoading();
+        }
     }
 }
 
@@ -1499,9 +1542,8 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
 
 document.getElementById("backToDriverBtn").addEventListener("click", () => {
     if (document.getElementById("scheduleViewerPage").style.display === "block") {
-        document.querySelector(".schedule-header").style.display = "flex";
-        document.querySelector(".approval-container").style.display = "block";
         document.getElementById("scheduleViewerPage").style.display = "none";
+        document.querySelector(".approval-container").style.display = "block";
     } else {
         document.getElementById("driverDashboard").style.display = "block";
         document.getElementById("scheduleApprovalPage").style.display = "none";
@@ -1643,7 +1685,6 @@ function loadScheduleApprovalPage(){
 }
 
 function viewSchedule(date){
-    document.querySelector(".schedule-header").style.display = "none";
     document.querySelector(".approval-container").style.display = "none";
 
     const viewerPage = document.getElementById("scheduleViewerPage");
@@ -1757,6 +1798,8 @@ window.onload = async function () {
             fetch(sheetURL),
             fetch(approvalURL)
         ]);
+
+        await fetchLiveAllowancesFromSheet();
 
         const [data, approvalData] = await Promise.all([scheduleResponse.text(), approvalResponse.text()]);
         const rows = data.trim().split("\n").slice(1);
