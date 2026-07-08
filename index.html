@@ -140,7 +140,7 @@ h1 {
 .pending-submit-btn:hover{
     background:#15803d;
 }
-       
+        
 .summary-header {
     background: #14532d;
     color: #fff;
@@ -1192,11 +1192,20 @@ async function saveAllowance() {
     for (const file of selectedReceipts) { receipts.push(await fileToBase64(file)); }
 
     try {
-        const formData = new FormData();
-        formData.append("data", JSON.stringify(payload));
-        formData.append("receipts", JSON.stringify(receipts));
+        // Combined into a clean standard JSON block instead of multipart FormData
+        const payloadData = {
+            data: payload,
+            receipts: receipts
+        };
 
-        const response = await fetch(WEBAPP_URL, { method: "POST", body: formData });
+        const response = await fetch(WEBAPP_URL, { 
+            method: "POST", 
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(payloadData) 
+        });
+        
         const text = await response.text();
         console.log(text);
         let result = JSON.parse(text);
@@ -1211,13 +1220,13 @@ async function saveAllowance() {
         }
 
         document.getElementById("successModal").style.display = "flex";
-      const driverId = "driver-" + currentDriver.replace(/\s+/g, "-");
-const driverCard = document.getElementById(driverId);
+        const driverId = "driver-" + currentDriver.replace(/\s+/g, "-");
+        const driverCard = document.getElementById(driverId);
 
-if (driverCard) {
-await loadSubmittedAllowances();
-location.reload();
-}
+        if (driverCard) {
+            await loadSubmittedAllowances();
+            location.reload();
+        }
         closeModal();
     } catch (err) {
         console.error(err);
@@ -1436,7 +1445,7 @@ function viewSchedule(date){
     Object.values(grouped)
         .filter(d => d.date === date)
         .forEach(d => {
-            if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
+            if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim().toLowerCase())) return;
 
             let tripsHTML = "";
             d.trips.forEach((trip, index) => {
