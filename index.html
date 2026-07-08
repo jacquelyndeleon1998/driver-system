@@ -100,13 +100,7 @@ h1 {
     text-align:center;
 }
 
-.pending-summary-subtitle{
-    padding:10px 14px;
-    font-size:13px;
-    font-weight:600;
-    color:#92400E;
-    background:#FEF3C7;
-}
+
 
        .pending-driver-list{
     padding:0;
@@ -114,33 +108,34 @@ h1 {
 
 .pending-driver-row{
     display:grid;
-    grid-template-columns: 1fr 80px;
-
+    grid-template-columns:1fr 80px;
     align-items:center;
 
-    padding:7px 6px;
+    padding:10px 14px;
 
     border-bottom:1px solid #e5e7eb;
     background:#fff;
 }
 
+.pending-driver-row:last-child{
+    border-bottom:none;
+}
+
 .pending-driver-name{
-    font-size:11px;
+    font-size:13px;
     color:#111827;
     font-weight:400;
-
-    padding-right:8px;
 }
 .pending-submit-btn{
-    width:70px !important;
-    height:28px !important;
+    width:72px !important;
+    height:32px !important;
 
-    min-width:70px;
-    max-width:70px;
+    min-width:72px;
+    max-width:72px;
 
     margin:0;
 
-    font-size:11px;
+    font-size:12px;
 
     justify-self:end;
 }
@@ -1914,19 +1909,15 @@ window.onload = async function () {
 
                 if(pendingDrivers.length===0) return;
 
-               pageHTML += `
-                <div class="pending-summary-card">
+              pageHTML += `
+<div class="pending-summary-card">
 
-                    <div class="pending-summary-header">
-                        ${dayName} | ${date}
-                    </div>
+    <div class="pending-summary-header">
+        ${dayName} | ${date}
+    </div>
 
-                    <div class="pending-summary-subtitle">
-                        ${pendingDrivers.length} Pending Meal ${pendingDrivers.length === 1 ? "Allowance" : "Allowances"}
-                    </div>
-
-                    <div class="pending-driver-list">
-                `;
+    <div class="pending-driver-list">
+`;
                 pendingDrivers.forEach(d=>{
 
                     const passengers =
