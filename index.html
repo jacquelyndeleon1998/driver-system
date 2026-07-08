@@ -1917,53 +1917,55 @@ window.onload = async function () {
 
                 if(pendingDrivers.length===0) return;
 
-             pageHTML += `
-<div class="pending-summary-card">
+               pageHTML += `
+                <div class="pending-summary-card">
 
-    <div class="pending-summary-header">
-        ${dayName} | ${date}
-    </div>
+                    <div class="pending-summary-header">
+                        ${dayName} | ${date}
+                    </div>
 
-    <table class="pending-table">
-        <tbody>
-`;
+                    <table class="pending-table">
+                        <tbody>
+                `;
 
-pendingDrivers.forEach(d => {
+                pendingDrivers.forEach(d => {
 
-    const passengers =
-        [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
+                    const passengers =
+                        [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
-    pageHTML += `
-        <tr>
+                    pageHTML += `
+                        <tr>
 
-            <td class="pending-driver-cell">
-                ${d.driver}
-            </td>
+                            <td class="pending-driver-cell">
+                                ${d.driver}
+                            </td>
 
-            <td class="pending-action-cell">
+                            <td class="pending-action-cell">
 
-                <button
-                    class="pending-submit-btn"
-                    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+                                <button
+                                    class="pending-submit-btn"
+                                    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
 
-                    Submit
+                                    Submit
 
-                </button>
+                                </button>
 
-            </td>
+                            </td>
 
-        </tr>
-    `;
-});
+                        </tr>
+                    `;
+                });
 
-pageHTML += `
+                pageHTML += `
 
-        </tbody>
+                        </tbody>
 
-    </table>
+                    </table>
 
-</div>
-`;
+                </div>
+                `;
+            }
+
         container.innerHTML = pageHTML;
         loadScheduleApprovalPage();
         if (autoLogin) showAdminDashboard();
