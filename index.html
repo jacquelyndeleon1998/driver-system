@@ -113,30 +113,36 @@ h1 {
 }
 
 .pending-driver-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+    display:grid;
+    grid-template-columns: 1fr 80px;
 
-    padding:7px 10px;
+    align-items:center;
+
+    padding:7px 6px;
+
     border-bottom:1px solid #e5e7eb;
     background:#fff;
 }
 
 .pending-driver-name{
-    flex:1;
-    display:block;
-
     font-size:11px;
     color:#111827;
     font-weight:400;
 
-    text-align:left;
+    padding-right:8px;
 }
-
 .pending-submit-btn{
-    width:70px;
-    height:28px;
-    flex-shrink:0;
+    width:70px !important;
+    height:28px !important;
+
+    min-width:70px;
+    max-width:70px;
+
+    margin:0;
+
+    font-size:11px;
+
+    justify-self:end;
 }
        
        .summary-header {
