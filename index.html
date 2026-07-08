@@ -1582,7 +1582,7 @@ scheduleDates.sort((a, b) => {
     if (!aToday && bToday) return 1;
 
     // Past: newest first
-    if (aPast && bPast) return db - da;
+   if (aPast && bPast) return da - db;
 
     // Future: nearest first
     return da - db;
