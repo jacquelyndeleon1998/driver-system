@@ -1800,14 +1800,7 @@ if (!isPast && !isToday) {
 
     if (tableRows !== "") {
 
-        // Create the section only once
-        if (!pageHTML.includes('id="futureSchedulesHeader"')) {
-            pageHTML += `
-            <div id="futureSchedulesHeader" class="summary-header" style="margin-top:20px;">
-                <h2>Upcoming Approved Schedules</h2>
-            </div>`;
-        }
-
+       
         pageHTML += `
         <div class="summary-card">
 
