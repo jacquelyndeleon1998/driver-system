@@ -1210,8 +1210,13 @@ async function saveAllowance() {
         }
 
         document.getElementById("successModal").style.display = "flex";
-        const driverCard = document.getElementById("driver-" + currentDriver.replace(/\s+/g, "-"));
-        if (driverCard) driverCard.remove();
+      const driverId = "driver-" + currentDriver.replace(/\s+/g, "-");
+const driverCard = document.getElementById(driverId);
+
+if (driverCard) {
+await loadSubmittedAllowances();
+location.reload();
+}
         closeModal();
     } catch (err) {
         console.error(err);
@@ -1690,8 +1695,8 @@ window.onload = async function () {
                         .filter(Boolean)
                         .join(", ");
 
-                    pageHTML += `
-                    <div class="driver-card">
+                pageHTML += `
+<div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
                         <div class="driver-header">
                             <h2>${d.driver}</h2>
 
