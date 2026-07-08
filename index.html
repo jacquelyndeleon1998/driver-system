@@ -1794,6 +1794,65 @@ pageHTML += `
 
         return;
     }
+
+    // ==========================
+// FUTURE APPROVED SCHEDULES
+// ==========================
+if (!isPast && !isToday) {
+
+    let tableRows = "";
+
+    Object.values(summaryDrivers[date] || {}).forEach(driver => {
+
+        const rest =
+            (driver.itinerary || "").toLowerCase().trim() === "rest day";
+
+        tableRows += `
+        <tr class="${rest ? "rest-day-row" : ""}">
+            <td>${driver.driver}</td>
+            <td>${driver.timeIn}</td>
+            <td>${driver.vehicle}</td>
+            <td>${driver.itinerary}</td>
+        </tr>`;
+    });
+
+    if (tableRows !== "") {
+
+        // Create the section only once
+        if (!pageHTML.includes('id="futureSchedulesHeader"')) {
+            pageHTML += `
+            <div id="futureSchedulesHeader" class="summary-header" style="margin-top:20px;">
+                <h2>Upcoming Approved Schedules</h2>
+            </div>`;
+        }
+
+        pageHTML += `
+        <div class="summary-card">
+
+            <div class="summary-header">
+                <h2>${dayName} | ${date}</h2>
+            </div>
+
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Driver Name</th>
+                        <th>Time In</th>
+                        <th>Unit</th>
+                        <th>Assignment</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+
+        </div>`;
+    }
+
+    return;
+}
     
 // ==========================
     // PREVIOUS DAYS
