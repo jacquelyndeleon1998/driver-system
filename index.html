@@ -93,8 +93,9 @@ h1 {
 .pending-summary-header{
     background:#D97706;
     color:#fff;
-    padding:12px;
-    font-size:18px;
+    padding:10px 12px;
+
+    font-size:16px;      /* same as summary header */
     font-weight:700;
     text-align:center;
 }
@@ -113,40 +114,43 @@ h1 {
 
 .pending-driver-row{
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    height:36px;
-    padding:0 12px;
-    border-top:1px solid #e5e7eb;
+    justify-content:space-between;
+
+    padding:7px 6px;              /* same as summary table */
+    min-height:34px;
+
     background:#fff;
+    border-bottom:1px solid #e5e7eb;
     box-sizing:border-box;
 }
 
+.pending-driver-row:last-child{
+    border-bottom:none;
+}
 .pending-driver-name{
     flex:1;
-    font-size:13px;
+    font-size:11px;       /* same as summary table */
     font-weight:400;
     color:#111827;
-    line-height:1;
+
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    padding-right:10px;
 }
 .pending-submit-btn{
-    width:72px !important;
-    min-width:72px;
-    max-width:72px;
+    width:64px;
+    min-width:64px;
+    height:28px;
 
-    height:26px;
-    padding:0;
+    margin-left:10px;
 
-    margin:0;
-    font-size:12px;
+    font-size:11px;
     font-weight:600;
+
     border-radius:6px;
 
-    flex:none;
+    flex-shrink:0;
 }
 .summary-header {
     background: #14532d;
