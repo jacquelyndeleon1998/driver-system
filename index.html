@@ -724,11 +724,11 @@ h1 {
     font-weight: 700;
     font-size: 12px;
     text-align: left;
-    padding: 7px 8px; 
+    padding: 10px 8px; 
 }
 
 .approval-table td {
-    padding: 7px 8px; 
+    padding: 10px 8px; 
     font-size: 12px;
     color: #111827 !important; 
     font-weight: 600;
@@ -760,7 +760,7 @@ h1 {
 }
 
 .action-table-btn {
-    padding: 4px 10px; 
+    padding: 6px 12px; 
     font-size: 11px;
     font-weight: 700;
     border: none;
@@ -787,6 +787,37 @@ h1 {
 .btn-approve:hover {
     background: #eef3ef !important;
 }
+
+/* Modal Internal List Structure */
+.modal-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+}
+.modal-list-table th {
+    text-align: left;
+    padding: 8px;
+    background: #f3f4f6;
+    color: #374151;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+}
+.modal-list-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.modal-list-table tr:last-child td {
+    border-bottom: none;
+}
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.status-approved { background: #d1fae5; color: #065f46; }
+.status-pending { background: #fef3c7; color: #92400e; }
  
 /* =========================
    Responsive Styles (Max 600px)
@@ -854,13 +885,32 @@ h1 {
 
 <div id="scheduleApprovalPage" style="display:none;">
     <div class="schedule-header">
-        <h2>Driver Schedule Approval</h2>
+        <h2>Driver Operations Admin</h2>
         <div class="month-selector">
-            <label for="approvalMonth">Month</label>
-            <select id="approvalMonth">
-                <option>July 2026</option>
+            <label for="allowanceCutoff">Cut-off Period</label>
+            <select id="allowanceCutoff" onchange="renderAllowanceSummaryTable()">
+                <option value="1">June 1 - 15, 2026</option>
+                <option value="2">June 16 - 30, 2026</option>
             </select>
         </div>
+    </div>
+
+    <!-- ALLOWANCE SUMMARY BLOCK -->
+    <div class="approval-container">
+        <h3>Driver Allowance Summary</h3>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Driver Name</th>
+                    <th style="width: 25%; text-align: right; padding-right: 15px;">Approved Total</th>
+                    <th style="width: 20%; text-align: right; padding-right: 15px;">Pending Approval</th>
+                    <th style="width: 15%; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="allowanceSummaryBody">
+                <!-- Dynamically generated via script execution -->
+            </tbody>
+        </table>
     </div>
 
     <div class="approval-container">
@@ -900,6 +950,33 @@ h1 {
         <button class="allowance-btn cancel-btn" id="backToDriverBtn">
             ← Driver Schedule
         </button>
+    </div>
+</div>
+
+<!-- DYNAMIC ADMIN VIEW MODAL -->
+<div id="driverAllowanceDetailsModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
+        <p style="font-size: 13px; color: #6b7280; margin-top: -8px;" id="detailsModalRange"></p>
+        
+        <div style="max-height: 50vh; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <table class="modal-list-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th style="text-align: right;">Amount</th>
+                        <th style="text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="driverDetailsModalBody">
+                    <!-- Loaded context dynamic data rows inside logic structure -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal-buttons">
+            <button class="allowance-btn cancel-btn" onclick="closeDetailsModal()">Close Window</button>
+        </div>
     </div>
 </div>
 
@@ -1022,6 +1099,36 @@ let summaryDrivers = {};
 let approvalDates = {};
 let scheduleDates = [];
 
+// Static Mocked Master Dataset containing cutoff assignment distributions
+const masterAllowanceRecords = [
+    { name: "Jun Dela Pena", date: "June 1, 2026", amount: 300, status: "Approved" },
+    { name: "Jun Dela Pena", date: "June 2, 2026", amount: 400, status: "Pending" },
+    { name: "Jun Dela Pena", date: "June 3, 2026", amount: 100, status: "Approved" },
+    { name: "Jun Dela Pena", date: "June 4, 2026", amount: 500, status: "Approved" },
+    { name: "Jun Dela Pena", date: "June 12, 2026", amount: 300, status: "Pending" },
+    { name: "Jun Dela Pena", date: "June 20, 2026", amount: 600, status: "Approved" }, // Cut-off 2 item
+    
+    { name: "Jerome Natividad", date: "June 2, 2026", amount: 600, status: "Approved" },
+    { name: "Jerome Natividad", date: "June 5, 2026", amount: 300, status: "Pending" },
+    { name: "Jerome Natividad", date: "June 14, 2026", amount: 600, status: "Approved" },
+    
+    { name: "Julius Sta. Rita", date: "June 3, 2026", amount: 400, status: "Approved" },
+    { name: "Julius Sta. Rita", date: "June 4, 2026", amount: 300, status: "Approved" },
+    { name: "Julius Sta. Rita", date: "June 11, 2026", amount: 100, status: "Pending" },
+    
+    { name: "Oscar Pangilinan", date: "June 1, 2026", amount: 500, status: "Approved" },
+    { name: "Oscar Pangilinan", date: "June 8, 2026", amount: 300, status: "Approved" },
+    { name: "Oscar Pangilinan", date: "June 9, 2026", amount: 300, status: "Pending" },
+    
+    { name: "Michael Guanlao", date: "June 2, 2026", amount: 750, status: "Approved" },
+    { name: "Michael Guanlao", date: "June 7, 2026", amount: 500, status: "Approved" },
+    { name: "Michael Guanlao", date: "June 15, 2026", amount: 760, status: "Pending" },
+    
+    { name: "Melvin Fausto", date: "June 5, 2026", amount: 490, status: "Approved" },
+    { name: "Melvin Fausto", date: "June 6, 2026", amount: 400, status: "Approved" },
+    { name: "Melvin Fausto", date: "June 10, 2026", amount: 305, status: "Pending" }
+];
+
 function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
     localStorage.setItem("loginExpires", expires);
@@ -1042,8 +1149,121 @@ function showAdminDashboard() {
     document.getElementById("allowanceBtn").classList.remove("active");
 
     sessionStorage.setItem("view", "admin");
+    renderAllowanceSummaryTable();
     hideActionLoading();
     window.scrollTo(0, 0); 
+}
+
+// RENDER SUMMARY ALLOWANCES IN TABLE
+function renderAllowanceSummaryTable() {
+    const selectorValue = document.getElementById("allowanceCutoff").value;
+    const bodyContainer = document.getElementById("allowanceSummaryBody");
+    bodyContainer.innerHTML = "";
+
+    // Group elements by Driver profiles
+    const aggregate = {};
+    
+    masterAllowanceRecords.forEach(record => {
+        const dayNumber = parseInt(record.date.split(" ")[1]);
+        
+        // Match condition rules matching split intervals
+        if (selectorValue === "1" && dayNumber > 15) return;
+        if (selectorValue === "2" && dayNumber <= 15) return;
+
+        if (!aggregate[record.name]) {
+            aggregate[record.name] = { approved: 0, pending: 0 };
+        }
+        if (record.status === "Approved") {
+            aggregate[record.name].approved += record.amount;
+        } else {
+            aggregate[record.name].pending += record.amount;
+        }
+    });
+
+    let cumulativeApproved = 0;
+    let cumulativePending = 0;
+
+    Object.keys(aggregate).forEach(driver => {
+        cumulativeApproved += aggregate[driver].approved;
+        cumulativePending += aggregate[driver].pending;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${driver}</td>
+            <td style="text-align: right; padding-right: 15px; color: #14532d;">₱${aggregate[driver].approved.toLocaleString()}</td>
+            <td style="text-align: right; padding-right: 15px; color: #b45309;">₱${aggregate[driver].pending.toLocaleString()}</td>
+            <td style="text-align: center;">
+                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
+            </td>
+        `;
+        bodyContainer.appendChild(row);
+    });
+
+    // Append calculation summary footer metrics element line strip
+    const footerRow = document.createElement("tr");
+    footerRow.style.background = "#e5e7eb";
+    footerRow.style.fontWeight = "700";
+    footerRow.innerHTML = `
+        <td>TOTAL ALL DRIVERS</td>
+        <td style="text-align: right; padding-right: 15px; color: #14532d;">₱${cumulativeApproved.toLocaleString()}</td>
+        <td style="text-align: right; padding-right: 15px; color: #b45309;">₱${cumulativePending.toLocaleString()}</td>
+        <td></td>
+    `;
+    bodyContainer.appendChild(footerRow);
+}
+
+// OPEN INDIVIDUAL BREAKDOWN DYNAMIC ELEMENT BOX
+function openDriverDetailsModal(driverName) {
+    const cutoffId = document.getElementById("allowanceCutoff").value;
+    document.getElementById("detailsModalDriverName").textContent = driverName;
+    document.getElementById("detailsModalRange").textContent = "Active Selection Period: " + (cutoffId === "1" ? "June 1 - 15, 2026" : "June 16 - 30, 2026");
+    
+    const targetBody = document.getElementById("driverDetailsModalBody");
+    targetBody.innerHTML = "";
+
+    masterAllowanceRecords.forEach(record => {
+        if (record.name !== driverName) return;
+        const dayNumber = parseInt(record.date.split(" ")[1]);
+        if (cutoffId === "1" && dayNumber > 15) return;
+        if (cutoffId === "2" && dayNumber <= 15) return;
+
+        const row = document.createElement("tr");
+        let actionCellElement = `<span class="status-badge status-approved">Approved</span>`;
+        
+        if (record.status === "Pending") {
+            actionCellElement = `<button class="action-table-btn btn-view" style="padding: 3px 8px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Approve</button>`;
+        }
+
+        row.innerHTML = `
+            <td>${record.date}</td>
+            <td style="text-align: right; font-weight:700;">₱${record.amount}</td>
+            <td style="text-align: center;">${actionCellElement}</td>
+        `;
+        targetBody.appendChild(row);
+    });
+
+    document.getElementById("driverAllowanceDetailsModal").style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+function closeDetailsModal() {
+    document.getElementById("driverAllowanceDetailsModal").style.display = "none";
+    document.body.style.overflow = "";
+}
+
+function approveItemInline(name, date, element) {
+    if (confirm(`Approve allowance request for ${name} on ${date}?`)) {
+        element.disabled = true;
+        element.textContent = "Updating...";
+        
+        // Find configuration inside internal mock collection array structure rules context
+        const matched = masterAllowanceRecords.find(r => r.name === name && r.date === date);
+        if (matched) matched.status = "Approved";
+
+        // Re-render matrices data views seamlessly
+        renderAllowanceSummaryTable();
+        openDriverDetailsModal(name);
+    }
 }
 
 async function loadSubmittedAllowances() {
@@ -1115,7 +1335,6 @@ function submitAllowance(driver, date, reqBy, pass){
     currentDriver = driver;
     currentDate = date;
     
-    // Fallback info value configuration to save on layout constraints
     let infoPieces = [];
     if(reqBy) infoPieces.push("Req: " + reqBy);
     if(pass) infoPieces.push("Pass: " + pass);
@@ -1563,9 +1782,8 @@ window.onload = async function () {
                 else current += char;
             }
             cols.push(current.trim());
-            if (cols.length < 12) return; // Column mapping validation check extended to 12 elements
+            if (cols.length < 12) return; 
 
-            // Updated structural breakdown array index mapping (Column G = requestedBy, Column H = passengerName)
             const [driver, date, timeIn, vehicle, itinerary, pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks] = cols.map(v => (v || "").replace(/"/g, "").trim());
             const key = driver + "_" + date;
 
@@ -1626,9 +1844,6 @@ window.onload = async function () {
             const isPast = scheduleDate.getTime() < today.getTime();
             const dayName = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
-            // ==========================
-            // TODAY
-            // ==========================
             if(isToday){
                 const hideSummaryTable = phNow.getHours() >= 16;
                 let tableRows="";
@@ -1710,7 +1925,6 @@ window.onload = async function () {
                         </div>`;
                     });
 
-                    // Flatten parameters unique list arrays matching submit operations
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
@@ -1741,9 +1955,6 @@ window.onload = async function () {
                 });
             }
             
-            // ==========================
-            // FUTURE APPROVED SCHEDULES
-            // ==========================
             if (!isPast && !isToday) {
                 let tableRows = "";
 
@@ -1820,9 +2031,6 @@ window.onload = async function () {
                 });
             }
 
-            // ==========================
-            // PREVIOUS DAYS
-            // ==========================
             if(isPast){
                 const pendingDrivers = Object.values(grouped).filter(d=>{
                     if(d.date !== date) return false;
