@@ -1575,7 +1575,7 @@ window.onload = async function () {
             if (!aToday && bToday) return 1;
 
             // Past: newest first
-           if (aPast && bPast) return da - db;
+            if (aPast && bPast) return da - db;
 
             // Future: nearest first
             return da - db;
@@ -1686,73 +1686,53 @@ window.onload = async function () {
                         </div>`;
                     });
 
+                    const passengers = [...new Set(d.trips.map(t => t.requestedBy))]
+                        .filter(Boolean)
+                        .join(", ");
+
                     pageHTML += `
                     <div class="driver-card">
                         <div class="driver-header">
                             <h2>${d.driver}</h2>
+
                             <div class="info-item">
                                 <div class="info-label">Date</div>
                                 <div class="info-value">${d.date}</div>
                             </div>
+
                             <div class="info-item">
                                 <div class="info-label">Time In</div>
                                 <div class="info-value">${d.timeIn}</div>
                             </div>
+
                             <div class="info-item">
                                 <div class="info-label">Unit</div>
                                 <div class="info-value">${d.vehicle}</div>
                             </div>
+
                             <div class="info-item">
                                 <div class="info-label">Assignment</div>
                                 <div class="info-value">${d.itinerary}</div>
                             </div>
-                       const passengers = [...new Set(d.trips.map(t => t.requestedBy))]
-    .filter(Boolean)
-    .join(", ");
+                        </div>
 
-pageHTML += `
-<div class="driver-card">
-    <div class="driver-header">
-        <h2>${d.driver}</h2>
+                        ${tripsHTML}
 
-        <div class="info-item">
-            <div class="info-label">Date</div>
-            <div class="info-value">${d.date}</div>
-        </div>
-
-        <div class="info-item">
-            <div class="info-label">Time In</div>
-            <div class="info-value">${d.timeIn}</div>
-        </div>
-
-        <div class="info-item">
-            <div class="info-label">Unit</div>
-            <div class="info-value">${d.vehicle}</div>
-        </div>
-
-        <div class="info-item">
-            <div class="info-label">Assignment</div>
-            <div class="info-value">${d.itinerary}</div>
-        </div>
-    </div>
-
-    ${tripsHTML}
-
-    ${
-        submittedDrivers[`${d.driver}|${d.date}`]
-        ? `
-        <button class="allowance-btn"
-            style="background:#9ca3af;cursor:default;"
-            disabled>
-            Allowance Submitted
-        </button>`
-        : `
-        <button class="allowance-btn"
-            onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-            Submit Meal Allowance
-        </button>`
-    }
-</div>`;
+                        ${
+                            submittedDrivers[`${d.driver}|${d.date}`]
+                            ? `
+                            <button class="allowance-btn"
+                                style="background:#9ca3af;cursor:default;"
+                                disabled>
+                                Allowance Submitted
+                            </button>`
+                            : `
+                            <button class="allowance-btn"
+                                onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+                                Submit Meal Allowance
+                            </button>`
+                        }
+                    </div>`;
                 });
             }
             
