@@ -100,44 +100,52 @@ h1 {
     text-align:center;
 }
 
-
-
-       .pending-driver-list{
-    padding:0;
-}
-
-.pending-driver-row{
-    display:grid;
-    grid-template-columns:1fr 80px;
-    align-items:center;
-
-    padding:10px 14px;
-
-    border-bottom:1px solid #e5e7eb;
+.pending-table{
+    width:100%;
+    border-collapse:collapse;
     background:#fff;
 }
 
-.pending-driver-row:last-child{
+.pending-table td{
+    padding:8px 12px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:12px;
+}
+
+.pending-table tr:last-child td{
     border-bottom:none;
 }
 
-.pending-driver-name{
-    font-size:13px;
+.pending-driver-cell{
+    width:85%;
     color:#111827;
-    font-weight:400;
 }
+
+.pending-action-cell{
+    width:15%;
+    text-align:right;
+}
+
 .pending-submit-btn{
-    width:72px !important;
-    height:32px !important;
 
-    min-width:72px;
-    max-width:72px;
+    background:#16a34a;
+    color:#fff;
 
-    margin:0;
+    border:none;
+
+    border-radius:6px;
+
+    width:72px;
+    height:30px;
+
+    cursor:pointer;
 
     font-size:12px;
+    font-weight:600;
+}
 
-    justify-self:end;
+.pending-submit-btn:hover{
+    background:#15803d;
 }
        
        .summary-header {
@@ -1909,52 +1917,53 @@ window.onload = async function () {
 
                 if(pendingDrivers.length===0) return;
 
-              pageHTML += `
+             pageHTML += `
 <div class="pending-summary-card">
 
     <div class="pending-summary-header">
         ${dayName} | ${date}
     </div>
 
-    <div class="pending-driver-list">
+    <table class="pending-table">
+        <tbody>
 `;
-                pendingDrivers.forEach(d=>{
 
-                    const passengers =
-                    [...new Set(d.trips.map(t=>t.requestedBy))].join(", ");
+pendingDrivers.forEach(d => {
 
-                    pageHTML += `
+    const passengers =
+        [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
 
-                        <div class="pending-driver-row">
+    pageHTML += `
+        <tr>
 
-                            <div class="pending-driver-name">
-                                ${d.driver}
-                            </div>
+            <td class="pending-driver-cell">
+                ${d.driver}
+            </td>
 
-                            <button
-                                class="allowance-btn pending-submit-btn"
-                                onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+            <td class="pending-action-cell">
 
-                                Submit
+                <button
+                    class="pending-submit-btn"
+                    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
 
-                            </button>
+                    Submit
 
-                        </div>
-                    `;
+                </button>
 
-                });
+            </td>
 
-                pageHTML += `
+        </tr>
+    `;
+});
 
-                    </div>
+pageHTML += `
 
-                </div>
+        </tbody>
 
-                `;
-            }
+    </table>
 
-        });
-
+</div>
+`;
         container.innerHTML = pageHTML;
         loadScheduleApprovalPage();
         if (autoLogin) showAdminDashboard();
