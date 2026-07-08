@@ -1510,7 +1510,7 @@ window.onload = async function () {
 
         const [data, approvalData] = await Promise.all([scheduleResponse.text(), approvalResponse.text()]);
         const rows = data.trim().split("\n").slice(1);
-
+const approvalRows = approvalData.trim().split("\n").slice(1);
 
 grouped = {};
 summaryDrivers = {};
