@@ -82,7 +82,7 @@ h1 {
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-    .pending-summary-card{
+.pending-summary-card{
     background:#FEF3C7;
     border:1px solid #FCD34D;
     border-radius:14px;
@@ -94,7 +94,6 @@ h1 {
     background:#D97706;
     color:#fff;
     padding:10px 12px;
-
     font-size:16px;      /* same as summary header */
     font-weight:700;
     text-align:center;
@@ -127,19 +126,13 @@ h1 {
 }
 
 .pending-submit-btn{
-
     background:#16a34a;
     color:#fff;
-
     border:none;
-
     border-radius:6px;
-
     width:72px;
     height:30px;
-
     cursor:pointer;
-
     font-size:12px;
     font-weight:600;
 }
@@ -148,7 +141,7 @@ h1 {
     background:#15803d;
 }
        
-       .summary-header {
+.summary-header {
     background: #14532d;
     color: #fff;
     padding: 10px 12px;
@@ -612,7 +605,7 @@ h1 {
     text-overflow: ellipsis;
 }
 
-       .summary-table th{
+.summary-table th{
     background:#ffffff;
     color:#14532d;
     font-weight:700;
@@ -1398,8 +1391,6 @@ function loadScheduleApprovalPage(){
 }
 
 function viewSchedule(date){
-
-      
     document.querySelector(".schedule-header").style.display = "none";
     document.querySelector(".approval-container").style.display = "none";
 
@@ -1443,7 +1434,8 @@ function viewSchedule(date){
 
             let tripsHTML = "";
             d.trips.forEach((trip, index) => {
-                `                <div class="trip">
+                tripsHTML += `
+                <div class="trip">
                     <div class="trip-title">Pick-Up ${index + 1}</div>
                     ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
                     ${trip.requestedBy ? `
@@ -1562,7 +1554,6 @@ window.onload = async function () {
         today.setHours(0,0,0,0);
 
         scheduleDates.sort((a, b) => {
-
             const da = new Date(a);
             const db = new Date(b);
 
@@ -1614,19 +1605,13 @@ window.onload = async function () {
             // ==========================
             // TODAY
             // ==========================
-
             if(isToday){
-                // Philippine time
-
                 // Hide summary after 4:00 PM
                 const hideSummaryTable = phNow.getHours() >= 16;
                 let tableRows="";
 
                 Object.values(summaryDrivers[date] || {}).forEach(driver=>{
-
-                    const rest =
-                    (driver.itinerary||"").toLowerCase().trim()==="rest day";
-
+                    const rest = (driver.itinerary||"").toLowerCase().trim()==="rest day";
                     tableRows += `
                     <tr class="${rest?"rest-day-row":""}">
                         <td>${driver.driver}</td>
@@ -1636,19 +1621,13 @@ window.onload = async function () {
                     </tr>`;
                 });
 
-             
-
                 if (!hideSummaryTable) {
-
                     pageHTML += `
                     <div class="summary-card">
-
                         <div class="summary-header">
                             <h2>${dayName} | ${date}</h2>
                         </div>
-
                         <table class="summary-table">
-
                             <thead>
                                 <tr>
                                     <th>Driver Name</th>
@@ -1657,23 +1636,16 @@ window.onload = async function () {
                                     <th>Assignment</th>
                                 </tr>
                             </thead>
-
                             <tbody>
-
                                 ${tableRows}
-
                             </tbody>
-
                         </table>
-
-                    </div>
-                    `;
-
+                    </div>`;
                 }
+
                 Object.values(grouped)
                 .filter(d => d.date === date)
                 .forEach(d => {
-
                     if ([
                         "rest day",
                         "am carpool",
@@ -1685,20 +1657,16 @@ window.onload = async function () {
                     let tripsHTML = "";
 
                     d.trips.forEach((trip, index) => {
-
                         tripsHTML += `
                         <div class="trip">
-
                             <div class="trip-title">
                                 Pick-Up ${index + 1}
                             </div>
-
                             ${trip.pickupTime ? `
                             <div class="info-item">
                                 <div class="info-label">Pick Up Time</div>
                                 <div class="info-value">${trip.pickupTime}</div>
                             </div>` : ""}
-
                             ${trip.requestedBy ? `
                             <div class="info-item">
                                 <div class="info-label">Passenger</div>
@@ -1706,52 +1674,40 @@ window.onload = async function () {
                                     ${trip.requestedBy}
                                 </div>
                             </div>` : ""}
-
                             ${trip.origin ? `
                             <div class="info-item">
                                 <div class="info-label">Origin</div>
                                 <div class="info-value">${trip.origin}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
                                 <div class="info-value">${trip.destination}</div>
                             </div>` : ""}
-
                         </div>`;
                     });
 
                     pageHTML += `
                     <div class="driver-card">
-
                         <div class="driver-header">
-
                             <h2>${d.driver}</h2>
-
                             <div class="info-item">
                                 <div class="info-label">Date</div>
                                 <div class="info-value">${d.date}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Time In</div>
                                 <div class="info-value">${d.timeIn}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Unit</div>
                                 <div class="info-value">${d.vehicle}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Assignment</div>
                                 <div class="info-value">${d.itinerary}</div>
                             </div>
-
                         </div>
-
                         ${tripsHTML}
-
                     </div>`;
                 });
             }
@@ -1760,14 +1716,10 @@ window.onload = async function () {
             // FUTURE APPROVED SCHEDULES
             // ==========================
             if (!isPast && !isToday) {
-
                 let tableRows = "";
 
                 Object.values(summaryDrivers[date] || {}).forEach(driver => {
-
-                    const rest =
-                        (driver.itinerary || "").toLowerCase().trim() === "rest day";
-
+                    const rest = (driver.itinerary || "").toLowerCase().trim() === "rest day";
                     tableRows += `
                     <tr class="${rest ? "rest-day-row" : ""}">
                         <td>${driver.driver}</td>
@@ -1778,15 +1730,11 @@ window.onload = async function () {
                 });
 
                 if (tableRows !== "") {
-
-                   
                     pageHTML += `
                     <div class="summary-card">
-
                         <div class="summary-header">
                             <h2>${dayName} | ${date}</h2>
                         </div>
-
                         <table class="summary-table">
                             <thead>
                                 <tr>
@@ -1796,19 +1744,16 @@ window.onload = async function () {
                                     <th>Assignment</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 ${tableRows}
                             </tbody>
                         </table>
-
                     </div>`;
                 }
 
                 Object.values(grouped)
                 .filter(d => d.date === date)
                 .forEach(d => {
-
                     if ([
                         "rest day",
                         "am carpool",
@@ -1820,20 +1765,16 @@ window.onload = async function () {
                     let tripsHTML = "";
 
                     d.trips.forEach((trip, index) => {
-
                         tripsHTML += `
                         <div class="trip">
-
                             <div class="trip-title">
                                 Pick-Up ${index + 1}
                             </div>
-
                             ${trip.pickupTime ? `
                             <div class="info-item">
                                 <div class="info-label">Pick Up Time</div>
                                 <div class="info-value">${trip.pickupTime}</div>
                             </div>` : ""}
-
                             ${trip.requestedBy ? `
                             <div class="info-item">
                                 <div class="info-label">Passenger</div>
@@ -1841,67 +1782,50 @@ window.onload = async function () {
                                     ${trip.requestedBy}
                                 </div>
                             </div>` : ""}
-
                             ${trip.origin ? `
                             <div class="info-item">
                                 <div class="info-label">Origin</div>
                                 <div class="info-value">${trip.origin}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
                                 <div class="info-value">${trip.destination}</div>
                             </div>` : ""}
-
                         </div>`;
                     });
 
                     pageHTML += `
                     <div class="driver-card">
-
                         <div class="driver-header">
-
                             <h2>${d.driver}</h2>
-
                             <div class="info-item">
                                 <div class="info-label">Date</div>
                                 <div class="info-value">${d.date}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Time In</div>
                                 <div class="info-value">${d.timeIn}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Unit</div>
                                 <div class="info-value">${d.vehicle}</div>
                             </div>
-
                             <div class="info-item">
                                 <div class="info-label">Assignment</div>
                                 <div class="info-value">${d.itinerary}</div>
                             </div>
-
                         </div>
-
                         ${tripsHTML}
-
                     </div>`;
                 });
             }
 
-                
             // ==========================
             // PREVIOUS DAYS
             // ==========================
-
             if(isPast){
-
                 const pendingDrivers = Object.values(grouped).filter(d=>{
-
                     if(d.date !== date) return false;
-
                     if([
                         "rest day",
                         "am carpool",
@@ -1912,59 +1836,39 @@ window.onload = async function () {
                         return false;
 
                     return !submittedDrivers[`${d.driver}|${d.date}`];
-
                 });
 
                 if(pendingDrivers.length===0) return;
 
-               pageHTML += `
+                pageHTML += `
                 <div class="pending-summary-card">
-
                     <div class="pending-summary-header">
                         ${dayName} | ${date}
                     </div>
-
                     <table class="pending-table">
-                        <tbody>
-                `;
+                        <tbody>`;
 
                 pendingDrivers.forEach(d => {
-
-                    const passengers =
-                        [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
-
+                    const passengers = [...new Set(d.trips.map(t => t.requestedBy))].join(", ");
                     pageHTML += `
                         <tr>
-
                             <td class="pending-driver-cell">
                                 ${d.driver}
                             </td>
-
                             <td class="pending-action-cell">
-
-                                <button
-                                    class="pending-submit-btn"
-                                    onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-
+                                <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
                                     Submit
-
                                 </button>
-
                             </td>
-
-                        </tr>
-                    `;
+                        </tr>`;
                 });
 
                 pageHTML += `
-
                         </tbody>
-
                     </table>
-
-                </div>
-                `;
+                </div>`;
             }
+        });
 
         container.innerHTML = pageHTML;
         loadScheduleApprovalPage();
