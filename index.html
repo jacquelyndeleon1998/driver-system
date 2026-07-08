@@ -1524,8 +1524,6 @@ approvalDates = {};
             approvalDates[date] = status;
         });
 
-        console.log("Approval Dates:", approvalDates);
-
         rows.forEach(row => {
             let cols = []; let current = ""; let insideQuotes = false;
             for (let i = 0; i < row.length; i++) {
@@ -1548,14 +1546,6 @@ approvalDates = {};
         });
 
         scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
-scheduleDates.forEach(date => {
-   console.log({
-    date,
-    status: approvalDates[date],
-    summary: summaryDrivers[date],
-    grouped: Object.values(grouped).filter(d => d.date === date).length
-});
-});
         
         const container = document.getElementById("driversContainer");
         let pageHTML = "";
@@ -1599,22 +1589,7 @@ scheduleDates.sort((a, b) => {
     // Future: nearest first
     return da - db;
 });
-console.log("scheduleDates:", scheduleDates);
-scheduleDates.forEach(date => {
-    console.log({
-    date,
-    status: approvalDates[date],
-    summary: summaryDrivers[date],
-    grouped: Object.values(grouped).filter(d => d.date === date).length
-});
 
-    const scheduleDate = new Date(date);
-    const status = (approvalDates[date] || "").toLowerCase();
-console.log({
-    scheduleDate: date,
-    approvalStatus: approvalDates[date],
-    computedStatus: status
-});
     if(status !== "approved") return;
 
     const today = new Date(
