@@ -117,42 +117,29 @@ h1 {
     align-items:center;
     justify-content:space-between;
 
-    padding:7px 6px;              /* same as summary table */
-    min-height:34px;
-
-    background:#fff;
+    padding:7px 10px;
     border-bottom:1px solid #e5e7eb;
-    box-sizing:border-box;
+    background:#fff;
 }
 
-.pending-driver-row:last-child{
-    border-bottom:none;
-}
 .pending-driver-name{
     flex:1;
-    font-size:11px;       /* same as summary table */
-    font-weight:400;
-    color:#111827;
-
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-.pending-submit-btn{
-    width:64px;
-    min-width:64px;
-    height:28px;
-
-    margin-left:10px;
+    display:block;
 
     font-size:11px;
-    font-weight:600;
+    color:#111827;
+    font-weight:400;
 
-    border-radius:6px;
+    text-align:left;
+}
 
+.pending-submit-btn{
+    width:70px;
+    height:28px;
     flex-shrink:0;
 }
-.summary-header {
+       
+       .summary-header {
     background: #14532d;
     color: #fff;
     padding: 10px 12px;
