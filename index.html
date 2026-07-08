@@ -1511,11 +1511,11 @@ window.onload = async function () {
 
         const [data, approvalData] = await Promise.all([scheduleResponse.text(), approvalResponse.text()]);
         const rows = data.trim().split("\n").slice(1);
-const approvalRows = approvalData.trim().split("\n").slice(1);
+        const approvalRows = approvalData.trim().split("\n").slice(1);
 
-grouped = {};
-summaryDrivers = {};
-approvalDates = {};
+        grouped = {};
+        summaryDrivers = {};
+        approvalDates = {};
 
         approvalRows.forEach(row => {
             const parts = row.split(",");
@@ -1552,333 +1552,420 @@ approvalDates = {};
 
         const now = new Date();
 
-// Kunin ang kasalukuyang oras sa Manila/Philippine Time
-const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
-const phNow = new Date(phTimeStr);
+        // Kunin ang kasalukuyang oras sa Manila/Philippine Time
+        const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
+        const phNow = new Date(phTimeStr);
 
-const today = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-);
-today.setHours(0,0,0,0);
+        const today = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+        today.setHours(0,0,0,0);
 
-scheduleDates.sort((a, b) => {
+        scheduleDates.sort((a, b) => {
 
-    const da = new Date(a);
-    const db = new Date(b);
+            const da = new Date(a);
+            const db = new Date(b);
 
-    da.setHours(0,0,0,0);
-    db.setHours(0,0,0,0);
+            da.setHours(0,0,0,0);
+            db.setHours(0,0,0,0);
 
-    const aToday = da.getTime() === today.getTime();
-    const bToday = db.getTime() === today.getTime();
+            const aToday = da.getTime() === today.getTime();
+            const bToday = db.getTime() === today.getTime();
 
-    const aPast = da < today;
-    const bPast = db < today;
+            const aPast = da < today;
+            const bPast = db < today;
 
-    // Past dates first
-    if (aPast && !bPast) return -1;
-    if (!aPast && bPast) return 1;
+            // Past dates first
+            if (aPast && !bPast) return -1;
+            if (!aPast && bPast) return 1;
 
-    // Today before future dates
-    if (aToday && !bToday) return -1;
-    if (!aToday && bToday) return 1;
+            // Today before future dates
+            if (aToday && !bToday) return -1;
+            if (!aToday && bToday) return 1;
 
-    // Past: newest first
-   if (aPast && bPast) return da - db;
+            // Past: newest first
+           if (aPast && bPast) return da - db;
 
-    // Future: nearest first
-    return da - db;
-});
-
-    if(status !== "approved") return;
-
-    const today = new Date(
-        new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"})
-    );
-
-    today.setHours(0,0,0,0);
-
-    scheduleDate.setHours(0,0,0,0);
-
-    const isToday = scheduleDate.getTime() === today.getTime();
-    const isPast = scheduleDate.getTime() < today.getTime();
-
-    const dayName = scheduleDate.toLocaleDateString(
-        "en-US",
-        {weekday:"long"}
-    );
-
-    // ==========================
-    // TODAY
-    // ==========================
-
-    if(isToday){
-// Philippine time
-
-// Hide summary after 4:00 PM
-const hideSummaryTable = phNow.getHours() >= 16;
-        let tableRows="";
-
-        Object.values(summaryDrivers[date] || {}).forEach(driver=>{
-
-            const rest =
-            (driver.itinerary||"").toLowerCase().trim()==="rest day";
-
-            tableRows += `
-            <tr class="${rest?"rest-day-row":""}">
-                <td>${driver.driver}</td>
-                <td>${driver.timeIn}</td>
-                <td>${driver.vehicle}</td>
-                <td>${driver.itinerary}</td>
-            </tr>`;
+            // Future: nearest first
+            return da - db;
         });
 
-     
+        scheduleDates.forEach(date => {
+            const scheduleDate = new Date(date);
+            const status = (approvalDates[date] || "").toLowerCase();
 
-if (!hideSummaryTable) {
+            if(status !== "approved") return;
 
-pageHTML += `
-<div class="summary-card">
+            const today = new Date(
+                new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"})
+            );
 
-    <div class="summary-header">
-        <h2>${dayName} | ${date}</h2>
-    </div>
+            today.setHours(0,0,0,0);
+            scheduleDate.setHours(0,0,0,0);
 
-    <table class="summary-table">
+            const isToday = scheduleDate.getTime() === today.getTime();
+            const isPast = scheduleDate.getTime() < today.getTime();
 
-        <thead>
-            <tr>
-                <th>Driver Name</th>
-                <th>Time In</th>
-                <th>Unit</th>
-                <th>Assignment</th>
-            </tr>
-        </thead>
+            const dayName = scheduleDate.toLocaleDateString(
+                "en-US",
+                {weekday:"long"}
+            );
 
-        <tbody>
+            // ==========================
+            // TODAY
+            // ==========================
 
-            ${tableRows}
+            if(isToday){
+                // Philippine time
 
-        </tbody>
+                // Hide summary after 4:00 PM
+                const hideSummaryTable = phNow.getHours() >= 16;
+                let tableRows="";
 
-    </table>
+                Object.values(summaryDrivers[date] || {}).forEach(driver=>{
 
-</div>
-`;
+                    const rest =
+                    (driver.itinerary||"").toLowerCase().trim()==="rest day";
 
-}
-        Object.values(grouped)
-    .filter(d => d.date === date)
-    .forEach(d => {
+                    tableRows += `
+                    <tr class="${rest?"rest-day-row":""}">
+                        <td>${driver.driver}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>${driver.vehicle}</td>
+                        <td>${driver.itinerary}</td>
+                    </tr>`;
+                });
 
-        if ([
-            "rest day",
-            "am carpool",
-            "standby",
-            "banking",
-            "pm carpool"
-        ].includes((d.itinerary || "").toLowerCase().trim())) return;
+             
 
-        let tripsHTML = "";
+                if (!hideSummaryTable) {
 
-        d.trips.forEach((trip, index) => {
+                    pageHTML += `
+                    <div class="summary-card">
 
-            tripsHTML += `
-            <div class="trip">
+                        <div class="summary-header">
+                            <h2>${dayName} | ${date}</h2>
+                        </div>
 
-                <div class="trip-title">
-                    Pick-Up ${index + 1}
-                </div>
+                        <table class="summary-table">
 
-                ${trip.pickupTime ? `
-                <div class="info-item">
-                    <div class="info-label">Pick Up Time</div>
-                    <div class="info-value">${trip.pickupTime}</div>
-                </div>` : ""}
+                            <thead>
+                                <tr>
+                                    <th>Driver Name</th>
+                                    <th>Time In</th>
+                                    <th>Unit</th>
+                                    <th>Assignment</th>
+                                </tr>
+                            </thead>
 
-                ${trip.requestedBy ? `
-                <div class="info-item">
-                    <div class="info-label">Passenger</div>
-                    <div class="info-value">
-                        ${trip.requestedBy}
+                            <tbody>
+
+                                ${tableRows}
+
+                            </tbody>
+
+                        </table>
+
                     </div>
-                </div>` : ""}
+                    `;
 
-                ${trip.origin ? `
-                <div class="info-item">
-                    <div class="info-label">Origin</div>
-                    <div class="info-value">${trip.origin}</div>
+                }
+                Object.values(grouped)
+                .filter(d => d.date === date)
+                .forEach(d => {
+
+                    if ([
+                        "rest day",
+                        "am carpool",
+                        "standby",
+                        "banking",
+                        "pm carpool"
+                    ].includes((d.itinerary || "").toLowerCase().trim())) return;
+
+                    let tripsHTML = "";
+
+                    d.trips.forEach((trip, index) => {
+
+                        tripsHTML += `
+                        <div class="trip">
+
+                            <div class="trip-title">
+                                Pick-Up ${index + 1}
+                            </div>
+
+                            ${trip.pickupTime ? `
+                            <div class="info-item">
+                                <div class="info-label">Pick Up Time</div>
+                                <div class="info-value">${trip.pickupTime}</div>
+                            </div>` : ""}
+
+                            ${trip.requestedBy ? `
+                            <div class="info-item">
+                                <div class="info-label">Passenger</div>
+                                <div class="info-value">
+                                    ${trip.requestedBy}
+                                </div>
+                            </div>` : ""}
+
+                            ${trip.origin ? `
+                            <div class="info-item">
+                                <div class="info-label">Origin</div>
+                                <div class="info-value">${trip.origin}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Destination</div>
+                                <div class="info-value">${trip.destination}</div>
+                            </div>` : ""}
+
+                        </div>`;
+                    });
+
+                    pageHTML += `
+                    <div class="driver-card">
+
+                        <div class="driver-header">
+
+                            <h2>${d.driver}</h2>
+
+                            <div class="info-item">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">${d.date}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Time In</div>
+                                <div class="info-value">${d.timeIn}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Unit</div>
+                                <div class="info-value">${d.vehicle}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Assignment</div>
+                                <div class="info-value">${d.itinerary}</div>
+                            </div>
+
+                        </div>
+
+                        ${tripsHTML}
+
+                    </div>`;
+                });
+            }
+            
+            // ==========================
+            // FUTURE APPROVED SCHEDULES
+            // ==========================
+            if (!isPast && !isToday) {
+
+                let tableRows = "";
+
+                Object.values(summaryDrivers[date] || {}).forEach(driver => {
+
+                    const rest =
+                        (driver.itinerary || "").toLowerCase().trim() === "rest day";
+
+                    tableRows += `
+                    <tr class="${rest ? "rest-day-row" : ""}">
+                        <td>${driver.driver}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>${driver.vehicle}</td>
+                        <td>${driver.itinerary}</td>
+                    </tr>`;
+                });
+
+                if (tableRows !== "") {
+
+                   
+                    pageHTML += `
+                    <div class="summary-card">
+
+                        <div class="summary-header">
+                            <h2>${dayName} | ${date}</h2>
+                        </div>
+
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Driver Name</th>
+                                    <th>Time In</th>
+                                    <th>Unit</th>
+                                    <th>Assignment</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+
+                    </div>`;
+                }
+
+                Object.values(grouped)
+                .filter(d => d.date === date)
+                .forEach(d => {
+
+                    if ([
+                        "rest day",
+                        "am carpool",
+                        "standby",
+                        "banking",
+                        "pm carpool"
+                    ].includes((d.itinerary || "").toLowerCase().trim())) return;
+
+                    let tripsHTML = "";
+
+                    d.trips.forEach((trip, index) => {
+
+                        tripsHTML += `
+                        <div class="trip">
+
+                            <div class="trip-title">
+                                Pick-Up ${index + 1}
+                            </div>
+
+                            ${trip.pickupTime ? `
+                            <div class="info-item">
+                                <div class="info-label">Pick Up Time</div>
+                                <div class="info-value">${trip.pickupTime}</div>
+                            </div>` : ""}
+
+                            ${trip.requestedBy ? `
+                            <div class="info-item">
+                                <div class="info-label">Passenger</div>
+                                <div class="info-value">
+                                    ${trip.requestedBy}
+                                </div>
+                            </div>` : ""}
+
+                            ${trip.origin ? `
+                            <div class="info-item">
+                                <div class="info-label">Origin</div>
+                                <div class="info-value">${trip.origin}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Destination</div>
+                                <div class="info-value">${trip.destination}</div>
+                            </div>` : ""}
+
+                        </div>`;
+                    });
+
+                    pageHTML += `
+                    <div class="driver-card">
+
+                        <div class="driver-header">
+
+                            <h2>${d.driver}</h2>
+
+                            <div class="info-item">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">${d.date}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Time In</div>
+                                <div class="info-value">${d.timeIn}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Unit</div>
+                                <div class="info-value">${d.vehicle}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Assignment</div>
+                                <div class="info-value">${d.itinerary}</div>
+                            </div>
+
+                        </div>
+
+                        ${tripsHTML}
+
+                    </div>`;
+                });
+            }
+
+                
+            // ==========================
+            // PREVIOUS DAYS
+            // ==========================
+
+            if(isPast){
+
+                const pendingDrivers = Object.values(grouped).filter(d=>{
+
+                    if(d.date !== date) return false;
+
+                    if([
+                        "rest day",
+                        "am carpool",
+                        "standby",
+                        "banking",
+                        "pm carpool"
+                    ].includes((d.itinerary||"").toLowerCase().trim()))
+                        return false;
+
+                    return !submittedDrivers[`${d.driver}|${d.date}`];
+
+                });
+
+                if(pendingDrivers.length===0) return;
+
+               pageHTML += `
+                <div class="pending-summary-card">
+
+                    <div class="pending-summary-header">
+                        ${dayName} | ${date}
+                    </div>
+
+                    <div class="pending-summary-subtitle">
+                        ${pendingDrivers.length} Pending Meal ${pendingDrivers.length === 1 ? "Allowance" : "Allowances"}
+                    </div>
+
+                    <div class="pending-driver-list">
+                `;
+                pendingDrivers.forEach(d=>{
+
+                    const passengers =
+                    [...new Set(d.trips.map(t=>t.requestedBy))].join(", ");
+
+                    pageHTML += `
+
+                        <div class="pending-driver-row">
+
+                            <div class="pending-driver-name">
+                                ${d.driver}
+                            </div>
+
+                            <button
+                                class="allowance-btn pending-submit-btn"
+                                onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
+
+                                Submit
+
+                            </button>
+
+                        </div>
+                    `;
+
+                });
+
+                pageHTML += `
+
+                    </div>
+
                 </div>
 
-                <div class="info-item">
-                    <div class="info-label">Destination</div>
-                    <div class="info-value">${trip.destination}</div>
-                </div>` : ""}
+                `;
+            }
 
-            </div>`;
         });
-
-        pageHTML += `
-        <div class="driver-card">
-
-            <div class="driver-header">
-
-                <h2>${d.driver}</h2>
-
-                <div class="info-item">
-                    <div class="info-label">Date</div>
-                    <div class="info-value">${d.date}</div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-label">Time In</div>
-                    <div class="info-value">${d.timeIn}</div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-label">Unit</div>
-                    <div class="info-value">${d.vehicle}</div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-label">Assignment</div>
-                    <div class="info-value">${d.itinerary}</div>
-                </div>
-
-            </div>
-
-            ${tripsHTML}
-
-        </div>`;
-    });
-}
-    // ==========================
-// FUTURE APPROVED SCHEDULES
-// ==========================
-if (!isPast && !isToday) {
-
-    let tableRows = "";
-
-    Object.values(summaryDrivers[date] || {}).forEach(driver => {
-
-        const rest =
-            (driver.itinerary || "").toLowerCase().trim() === "rest day";
-
-        tableRows += `
-        <tr class="${rest ? "rest-day-row" : ""}">
-            <td>${driver.driver}</td>
-            <td>${driver.timeIn}</td>
-            <td>${driver.vehicle}</td>
-            <td>${driver.itinerary}</td>
-        </tr>`;
-    });
-
-    if (tableRows !== "") {
-
-       
-        pageHTML += `
-        <div class="summary-card">
-
-            <div class="summary-header">
-                <h2>${dayName} | ${date}</h2>
-            </div>
-
-            <table class="summary-table">
-                <thead>
-                    <tr>
-                        <th>Driver Name</th>
-                        <th>Time In</th>
-                        <th>Unit</th>
-                        <th>Assignment</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    ${tableRows}
-                </tbody>
-            </table>
-
-        </div>`;
-    }
-
-  
-}
-
-    
-// ==========================
-    // PREVIOUS DAYS
-    // ==========================
-
-    if(isPast){
-
-        const pendingDrivers = Object.values(grouped).filter(d=>{
-
-            if(d.date !== date) return false;
-
-            if([
-                "rest day",
-                "am carpool",
-                "standby",
-                "banking",
-                "pm carpool"
-            ].includes((d.itinerary||"").toLowerCase().trim()))
-                return false;
-
-            return !submittedDrivers[`${d.driver}|${d.date}`];
-
-        });
-
-        if(pendingDrivers.length===0) return;
-
-       pageHTML += `
-<div class="pending-summary-card">
-
-    <div class="pending-summary-header">
-        ${dayName} | ${date}
-    </div>
-
-    <div class="pending-summary-subtitle">
-        ${pendingDrivers.length} Pending Meal ${pendingDrivers.length === 1 ? "Allowance" : "Allowances"}
-    </div>
-
-    <div class="pending-driver-list">
-`;
-        pendingDrivers.forEach(d=>{
-
-            const passengers =
-            [...new Set(d.trips.map(t=>t.requestedBy))].join(", ");
-
-            pageHTML += `
-
-        <div class="pending-driver-row">
-
-    <div class="pending-driver-name">
-        ${d.driver}
-    </div>
-
-    <button
-        class="allowance-btn pending-submit-btn"
-        onclick="submitAllowance('${d.driver}','${d.date}','${passengers}')">
-
-        Submit
-
-    </button>
-
-</div>
-            `;
-
-        });
-
-        pageHTML += `
-
-    </div>
-
-</div>
-
-`;
-    }
-
-});
 
         container.innerHTML = pageHTML;
         loadScheduleApprovalPage();
