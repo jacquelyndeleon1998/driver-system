@@ -1550,11 +1550,12 @@ approvalDates = {};
 
         scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
 scheduleDates.forEach(date => {
-    console.log({
-        date,
-        approved: approvalDates[date],
-        summary: summaryDrivers[date]
-    });
+   console.log({
+    date,
+    status: approvalDates[date],
+    summary: summaryDrivers[date],
+    grouped: Object.values(grouped).filter(d => d.date === date).length
+});
 });
         
         const container = document.getElementById("driversContainer");
