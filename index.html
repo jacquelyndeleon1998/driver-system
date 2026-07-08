@@ -884,7 +884,7 @@ h1 {
 </div>
 
 <div id="scheduleApprovalPage" style="display:none;">
-    <!-- INTERFACE LAYOUT 1: APPROVED AND PENDING SCHEDULES AT THE TOP -->
+    <!-- LAYOUT 1: APPROVED AND PENDING SCHEDULES AT THE TOP -->
     <div class="approval-container" style="margin-top: 0;">
         <h3>Approved Schedules</h3>
         <table class="approval-table">
@@ -911,7 +911,7 @@ h1 {
         </table>
     </div>
 
-    <!-- INTERFACE LAYOUT 2: CUT-OFF PERIOD CONTAINER BOX -->
+    <!-- LAYOUT 2: CUT-OFF PERIOD CONTAINER BOX -->
     <div class="schedule-header" style="margin-top: 30px;">
         <h2>Driver Operations Admin</h2>
         <div class="month-selector">
@@ -923,7 +923,7 @@ h1 {
         </div>
     </div>
 
-    <!-- INTERFACE LAYOUT 3: LIVE DRIVER ALLOWANCE SUMMARY TABLE -->
+    <!-- LAYOUT 3: LIVE DRIVER ALLOWANCE SUMMARY TABLE -->
     <div class="approval-container">
         <h3>Driver Allowance Summary</h3>
         <table class="approval-table">
@@ -936,7 +936,7 @@ h1 {
                 </tr>
             </thead>
             <tbody id="allowanceSummaryBody">
-                <!-- Data populated dynamically from the Allowances Sheet -->
+                <!-- Data populated dynamically from Google Sheets via Apps Script proxy -->
             </tbody>
         </table>
     </div>
@@ -1092,9 +1092,6 @@ const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
 const approvalURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=441234750&single=true&output=csv";
 
-// Target published allowances sheet tab ID
-const allowancesSheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=1510464673&output=csv";
-
 let submittedDrivers = {};
 let selectedReceipts = [];
 let currentDriver = "", currentDate = "", currentPassengerCombined = "";
@@ -1129,7 +1126,6 @@ function showAdminDashboard() {
     window.scrollTo(0, 0); 
 }
 
-// RESTORED MISSING METHOD CONTAINER BLOCK
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(WEBAPP_URL + "?action=submitted");
@@ -1141,50 +1137,39 @@ async function loadSubmittedAllowances() {
     }
 }
 
-// EXPLICIT CORRECT COLUMN SNAPSHOT MAPPER
+// Bypasses CORS by querying your Apps Script Macro proxy instead of a private direct spreadsheet connection
 async function fetchLiveAllowancesFromSheet() {
     try {
-        const response = await fetch(allowancesSheetURL);
-        const csvText = await response.text();
-        const rows = csvText.trim().split("\n").slice(1);
+        // Querying the existing web app URL endpoint for seamless compatibility
+        const response = await fetch(WEBAPP_URL + "?action=getAllowancesData");
+        const jsonResult = await response.json();
         
         globalParsedAllowances = [];
         
-        rows.forEach(row => {
-            let cols = []; let current = ""; let insideQuotes = false;
-            for (let i = 0; i < row.length; i++) {
-                const char = row[i];
-                if (char === '"') insideQuotes = !insideQuotes;
-                else if (char === ',' && !insideQuotes) { cols.push(current.trim()); current = ""; }
-                else current += char;
-            }
-            cols.push(current.trim());
-            
-            if (cols.length < 14) return; 
-            
-            const rawTripDate = cols[1].replace(/"/g, "").trim();    // Col B: Trip Date (e.g., "July 06, 2026")
-            const driverName = cols[2].replace(/"/g, "").trim();     // Col C: Driver Name
-            const totalAllowance = parseFloat(cols[11]) || 0;        // Col L: Total Column value directly
-            const rawStatus = cols[13] ? cols[13].replace(/"/g, "").trim() : ""; // Col N: Status Column
-            
-            // Check blank strings defaults to "Pending" condition profile matching parameters
-            const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
+        if (jsonResult && jsonResult.success && jsonResult.data) {
+            jsonResult.data.forEach(row => {
+                const rawTripDate = row.date || "";      // Maps out Trip Date (Col B)
+                const driverName = row.driver || "";    // Maps out Driver Name (Col C)
+                const totalAllowance = parseFloat(row.total) || 0; // Maps out Total (Col L)
+                const rawStatus = row.status || "";     // Maps out Status Tracking Flag (Col N)
+                
+                const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
 
-            if (driverName && rawTripDate) {
-                globalParsedAllowances.push({
-                    name: driverName,
-                    date: rawTripDate,
-                    amount: totalAllowance,
-                    status: itemStatus
-                });
-            }
-        });
+                if (driverName && rawTripDate) {
+                    globalParsedAllowances.push({
+                        name: driverName,
+                        date: rawTripDate,
+                        amount: totalAllowance,
+                        status: itemStatus
+                    });
+                }
+            });
+        }
     } catch (err) {
-        console.error("Error fetching allowances database tab: ", err);
+        console.error("Error pulling database items via Apps Script proxy: ", err);
     }
 }
 
-// PROGRAMMATIC CONDITIONAL DIAL WINDOW PERIOD FILTER
 function processAllowanceSummaryTable() {
     const selectorValue = document.getElementById("allowanceCutoff").value;
     const tableBody = document.getElementById("allowanceSummaryBody");
@@ -1247,7 +1232,6 @@ function processAllowanceSummaryTable() {
     tableBody.appendChild(summaryFooterRow);
 }
 
-// SYSTEM POPUP ENGINE MAPPER DISPLAY
 function openDriverDetailsModal(driverName) {
     const cutoffId = document.getElementById("allowanceCutoff").value;
     document.getElementById("detailsModalDriverName").textContent = driverName;
@@ -2046,6 +2030,7 @@ window.onload = async function () {
                 }
 
                 Object.values(grouped)
+                .sort()
                 .filter(d => d.date === date)
                 .forEach(d => {
                     if (["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
