@@ -1129,7 +1129,19 @@ function showAdminDashboard() {
     window.scrollTo(0, 0); 
 }
 
-// FULLY RECALIBRATED EXPLICIT CORRECT COLUMN SNAPSHOT MAPPER
+// RESTORED MISSING METHOD CONTAINER BLOCK
+async function loadSubmittedAllowances() {
+    try {
+        const res = await fetch(WEBAPP_URL + "?action=submitted");
+        const data = await res.json();
+        submittedDrivers = {};
+        data.submitted.forEach(item => { submittedDrivers[item] = true; });
+    } catch (err) {
+        console.error("Error loading submitted allowances: ", err);
+    }
+}
+
+// EXPLICIT CORRECT COLUMN SNAPSHOT MAPPER
 async function fetchLiveAllowancesFromSheet() {
     try {
         const response = await fetch(allowancesSheetURL);
@@ -1148,7 +1160,7 @@ async function fetchLiveAllowancesFromSheet() {
             }
             cols.push(current.trim());
             
-            if (cols.length < 13) return; 
+            if (cols.length < 14) return; 
             
             const rawTripDate = cols[1].replace(/"/g, "").trim();    // Col B: Trip Date (e.g., "July 06, 2026")
             const driverName = cols[2].replace(/"/g, "").trim();     // Col C: Driver Name
@@ -1172,7 +1184,7 @@ async function fetchLiveAllowancesFromSheet() {
     }
 }
 
-// PROGRAMMATIC CONDITIONAL DYNAMIC WINDOW PERIOD FILTER 
+// PROGRAMMATIC CONDITIONAL DIAL WINDOW PERIOD FILTER
 function processAllowanceSummaryTable() {
     const selectorValue = document.getElementById("allowanceCutoff").value;
     const tableBody = document.getElementById("allowanceSummaryBody");
@@ -1181,7 +1193,6 @@ function processAllowanceSummaryTable() {
     const aggregateGroup = {};
 
     globalParsedAllowances.forEach(record => {
-        // Extract the day number regardless of string format (e.g., handles "July 06, 2026")
         const dateMatch = record.date.match(/\b\d{1,2}\b/);
         if (!dateMatch) return;
         const dayNumber = parseInt(dateMatch[0]);
@@ -1236,7 +1247,7 @@ function processAllowanceSummaryTable() {
     tableBody.appendChild(summaryFooterRow);
 }
 
-// SYSTEM POPUP ENGINE MAPPER DISPLAY 
+// SYSTEM POPUP ENGINE MAPPER DISPLAY
 function openDriverDetailsModal(driverName) {
     const cutoffId = document.getElementById("allowanceCutoff").value;
     document.getElementById("detailsModalDriverName").textContent = driverName;
