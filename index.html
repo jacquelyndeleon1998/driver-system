@@ -1443,8 +1443,7 @@ function viewSchedule(date){
 
             let tripsHTML = "";
             d.trips.forEach((trip, index) => {
-                tripsHTML += `
-                <div class="trip">
+                `                <div class="trip">
                     <div class="trip-title">Pick-Up ${index + 1}</div>
                     ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
                     ${trip.requestedBy ? `
@@ -1777,6 +1776,7 @@ pageHTML += `
 
         </div>`;
     });
+}
     // ==========================
 // FUTURE APPROVED SCHEDULES
 // ==========================
@@ -1827,6 +1827,7 @@ if (!isPast && !isToday) {
     }
 
     return;
+}
 
     
 // ==========================
