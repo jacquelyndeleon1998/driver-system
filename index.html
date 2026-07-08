@@ -884,8 +884,17 @@ h1 {
 </div>
 
 <div id="scheduleApprovalPage" style="display:none;">
-    <!-- LAYOUT 1: APPROVED AND PENDING SCHEDULES AT THE TOP -->
-    <div class="approval-container" style="margin-top: 0;">
+    
+    <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN (RESTRUCTURED) -->
+    <div class="schedule-header" style="margin-top: 0;">
+        <h2>Driver Schedule Admin</h2>
+        <!-- Empty placeholder or custom utility can go here if needed -->
+        <div style="font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9);">
+            Manage Approvals
+        </div>
+    </div>
+
+    <div class="approval-container" style="margin-top: 15px;">
         <h3>Approved Schedules</h3>
         <table class="approval-table">
             <thead>
@@ -911,9 +920,9 @@ h1 {
         </table>
     </div>
 
-    <!-- LAYOUT 2: CUT-OFF PERIOD CONTAINER BOX -->
+    <!-- LAYOUT 2: RENAMED TO DRIVER ALLOWANCE WITH CUT-OFF SELECTION -->
     <div class="schedule-header" style="margin-top: 30px;">
-        <h2>Driver Operations Admin</h2>
+        <h2>Driver Allowance</h2>
         <div class="month-selector">
             <label for="allowanceCutoff">Cut-off Period</label>
             <select id="allowanceCutoff" onchange="processAllowanceSummaryTable()">
