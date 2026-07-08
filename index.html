@@ -115,33 +115,35 @@ h1 {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:4px 12px;
+    height:36px;
+    padding:0 12px;
     border-top:1px solid #e5e7eb;
     background:#fff;
-    min-height:34px;
+    box-sizing:border-box;
 }
 
 .pending-driver-name{
+    flex:1;
     font-size:13px;
     font-weight:400;
     color:#111827;
-    flex:1;
+    line-height:1;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
     padding-right:10px;
 }
 .pending-submit-btn{
-    width:80px !important;
-    min-width:80px;
-    max-width:80px;
+    width:72px !important;
+    min-width:72px;
+    max-width:72px;
 
-    height:28px;
+    height:26px;
+    padding:0;
 
-    padding:0 10px !important;
     margin:0;
-
     font-size:12px;
+    font-weight:600;
     border-radius:6px;
 
     flex:none;
