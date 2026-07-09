@@ -919,15 +919,12 @@ h1 {
 <div id="scheduleApprovalPage" style="display:none;">
     
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
-    <!-- CHANGED: Added bg-schedule-admin class here -->
     <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
         <h2>Driver Schedule Admin</h2>
        
         <div class="month-selector">
             <label for="scheduleCutoff">Cut-off Period</label>
             <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
-                <option value="1">July 1 - 15, 2026</option>
-                <option value="2">July 16 - End of Month</option>
             </select>
         </div>
     </div>
@@ -959,14 +956,11 @@ h1 {
     </div>
 
     <!-- LAYOUT 2: DRIVER ALLOWANCE -->
-    <!-- CHANGED: Added bg-driver-allowance class here -->
     <div class="schedule-header bg-driver-allowance" style="margin-top: 30px;">
         <h2>Driver Allowance</h2>
         <div class="month-selector">
             <label for="allowanceCutoff">Cut-off Period</label>
             <select id="allowanceCutoff" onchange="processAllowanceSummaryTable()">
-                <option value="1">July 1 - 15, 2026</option>
-                <option value="2">July 16 - End of Month</option>
             </select>
         </div>
     </div>
@@ -1218,6 +1212,56 @@ async function fetchLiveAllowancesFromSheet() {
     }
 }
 
+function updateCutoffDropdownsDynamically() {
+    const scheduleSelect = document.getElementById("scheduleCutoff");
+    const allowanceSelect = document.getElementById("allowanceCutoff");
+    
+    if (!scheduleSelect || !allowanceSelect) return;
+
+    let hasCutoff1 = false; 
+    let hasCutoff2 = false; 
+
+    scheduleDates.forEach(date => {
+        const dateMatch = date.match(/\b\d{1,2}\b/);
+        if (!dateMatch) return;
+        const dayNumber = parseInt(dateMatch[0]);
+        if (dayNumber <= 15) hasCutoff1 = true;
+        if (dayNumber > 15) hasCutoff2 = true;
+    });
+
+    globalParsedAllowances.forEach(record => {
+        const dateMatch = record.date.match(/\b\d{1,2}\b/);
+        if (!dateMatch) return;
+        const dayNumber = parseInt(dateMatch[0]);
+        if (dayNumber <= 15) hasCutoff1 = true;
+        if (dayNumber > 15) hasCutoff2 = true;
+    });
+
+    const currentScheduleVal = scheduleSelect.value;
+    const currentAllowanceVal = allowanceSelect.value;
+
+    scheduleSelect.innerHTML = "";
+    allowanceSelect.innerHTML = "";
+
+    const optionsToRender = [];
+    if (hasCutoff1) optionsToRender.push({ value: "1", text: "July 1 - 15, 2026" });
+    if (hasCutoff2) optionsToRender.push({ value: "2", text: "July 16 - End of Month" });
+
+    if (optionsToRender.length === 0) {
+        optionsToRender.push({ value: "1", text: "July 1 - 15, 2026" });
+    }
+
+    optionsToRender.forEach(opt => {
+        const optionElement1 = new Option(opt.text, opt.value);
+        const optionElement2 = new Option(opt.text, opt.value);
+        scheduleSelect.add(optionElement1);
+        allowanceSelect.add(optionElement2);
+    });
+
+    if (currentScheduleVal && scheduleSelect.querySelector(`option[value="${currentScheduleVal}"]`)) scheduleSelect.value = currentScheduleVal;
+    if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
+}
+
 function processAllowanceSummaryTable() {
    const selectorElement = document.querySelectorAll("#allowanceCutoff")[0]; 
     const selectorValue = selectorElement ? selectorElement.value : "1";
@@ -1309,12 +1353,7 @@ function openDriverDetailsModal(driverName) {
             badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
         } else {
             badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Approve</button>`;
-            
-            // HIGHLIGHT OPTION 1: Super duper light green (Recommended for theme consistency)
             row.style.backgroundColor = "#f0fdf4"; 
-            
-            // HIGHLIGHT OPTION 2: Light pink (Uncomment below if you want it to pop like an alert)
-            // row.style.backgroundColor = "#fff1f2"; 
         }
 
         row.innerHTML = `
@@ -2176,6 +2215,10 @@ window.onload = async function () {
         });
 
         container.innerHTML = pageHTML;
+
+        // IDINAGDAG: Awtomatikong i-update ang dropdown bago i-render ang mga table sheets
+        updateCutoffDropdownsDynamically();
+
         loadScheduleApprovalPage();
         if (autoLogin) showAdminDashboard();
 
