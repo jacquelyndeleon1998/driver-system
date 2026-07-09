@@ -1301,7 +1301,7 @@ function openDriverDetailsModal(driverName) {
         if (cutoffId === "1" && dayNumber > 15) return;
         if (cutoffId === "2" && dayNumber <= 15) return;
 
-        matchesFoundCount++;
+      matchesFoundCount++;
         const row = document.createElement("tr");
         let badgeDisplay = "";
         
@@ -1309,6 +1309,12 @@ function openDriverDetailsModal(driverName) {
             badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
         } else {
             badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Approve</button>`;
+            
+            // HIGHLIGHT OPTION 1: Super duper light green (Recommended for theme consistency)
+            row.style.backgroundColor = "#f0fdf4"; 
+            
+            // HIGHLIGHT OPTION 2: Light pink (Uncomment below if you want it to pop like an alert)
+            // row.style.backgroundColor = "#fff1f2"; 
         }
 
         row.innerHTML = `
