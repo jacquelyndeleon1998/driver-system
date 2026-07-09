@@ -742,7 +742,7 @@ h1 {
 ========================================= */
 .approval-table {
     width: 100%;
-    table-layout: fixed; /* FIXED THE TABLE WIDTH ALIGNMENT HERE */
+    table-layout: fixed;
     border-collapse: collapse;
     background: #ffffff !important; 
     border-radius: 12px;
@@ -917,6 +917,37 @@ h1 {
     <div id="driversContainer"></div>
 </div>
 
+<!-- DRIVER ALLOWANCE SUMMARY VIEW CONTAINER -->
+<div id="driverAllowancePage" style="display:none;">
+    <div class="schedule-header bg-driver-allowance" style="margin-top: 0;">
+        <h2 id="driverViewNameHeader">Driver Name</h2>
+        <div class="month-selector">
+            <label for="driverViewCutoff">Cut-off Period</label>
+            <select id="driverViewCutoff" onchange="renderDriverViewTable()">
+            </select>
+        </div>
+    </div>
+    <div class="approval-container" style="margin-top: 15px;">
+        <h3>My Allowance Summary</h3>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Date</th>
+                    <th style="width: 30%;">Amount</th>
+                    <th style="width: 30%;">Status</th>
+                </tr>
+            </thead>
+            <tbody id="driverViewTableBody">
+            </tbody>
+        </table>
+    </div>
+    <div class="approval-footer">
+        <button class="allowance-btn cancel-btn" id="driverViewBackBtn">
+            ← Back to Dashboard
+        </button>
+    </div>
+</div>
+
 <div id="scheduleApprovalPage" style="display:none;">
     
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
@@ -1084,6 +1115,19 @@ h1 {
     </div>
 </div>
 
+<!-- NEW DRIVER LOGIN MODAL -->
+<div id="driverLoginModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-title">Driver Login</h3>
+        <input id="driverUsername" type="text" placeholder="First Name">
+        <input id="driverPin" type="password" maxlength="4" pattern="\d*" placeholder="4-Digit PIN">
+        <div class="modal-buttons">
+            <button class="allowance-btn submit-btn" onclick="driverLogin()">Login</button>
+            <button class="allowance-btn cancel-btn" onclick="closeDriverLogin()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <div id="pageLoadingOverlay" class="loading-overlay" style="display:flex;">
     <div class="loading-box loading-box-large">
         <div class="loading-banner">
@@ -1144,6 +1188,7 @@ let summaryDrivers = {};
 let approvalDates = {};
 let scheduleDates = [];
 let globalParsedAllowances = []; 
+let loggedInDriverName = ""; // Storage for driver portal identification
 
 function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
@@ -1154,6 +1199,7 @@ function showAdminDashboard() {
     refreshLoginSession();
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
+    document.getElementById("driverAllowancePage").style.display = "none";
     
     document.querySelector(".approval-container").style.display = "block";
     document.querySelector(".approval-footer").style.display = "block";
@@ -1216,8 +1262,9 @@ async function fetchLiveAllowancesFromSheet() {
 function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
     const allowanceSelect = document.getElementById("allowanceCutoff");
+    const driverViewSelect = document.getElementById("driverViewCutoff");
     
-    if (!scheduleSelect || !allowanceSelect) return;
+    if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
 
     let hasCutoff1 = false; 
     let hasCutoff2 = false; 
@@ -1240,9 +1287,11 @@ function updateCutoffDropdownsDynamically() {
 
     const currentScheduleVal = scheduleSelect.value;
     const currentAllowanceVal = allowanceSelect.value;
+    const currentDriverViewVal = driverViewSelect.value;
 
     scheduleSelect.innerHTML = "";
     allowanceSelect.innerHTML = "";
+    driverViewSelect.innerHTML = "";
 
     const optionsToRender = [];
     if (hasCutoff1) optionsToRender.push({ value: "1", text: "July 1 - 15, 2026" });
@@ -1255,12 +1304,15 @@ function updateCutoffDropdownsDynamically() {
     optionsToRender.forEach(opt => {
         const optionElement1 = new Option(opt.text, opt.value);
         const optionElement2 = new Option(opt.text, opt.value);
+        const optionElement3 = new Option(opt.text, opt.value);
         scheduleSelect.add(optionElement1);
         allowanceSelect.add(optionElement2);
+        driverViewSelect.add(optionElement3);
     });
 
     if (currentScheduleVal && scheduleSelect.querySelector(`option[value="${currentScheduleVal}"]`)) scheduleSelect.value = currentScheduleVal;
     if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
+    if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
 }
 
 function processAllowanceSummaryTable() {
@@ -1607,7 +1659,125 @@ async function saveAllowance() {
     }
 }
 
-document.getElementById("allowanceBtn").addEventListener("click", () => { alert("Allowance History will be available in the next phase."); });
+/* =========================================
+   DRIVER ALLLOWANCE PORTAL IMPLEMENTATION
+========================================= */
+document.getElementById("allowanceBtn").addEventListener("click", () => { 
+    if (loggedInDriverName) {
+        showDriverAllowanceSummary();
+    } else {
+        document.getElementById("driverLoginModal").style.display = "block";
+    }
+});
+
+function closeDriverLogin() { 
+    document.getElementById("driverLoginModal").style.display = "none"; 
+}
+
+function showDriverAllowanceSummary() {
+    document.getElementById("driverDashboard").style.display = "none";
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+    document.getElementById("driverAllowancePage").style.display = "block";
+
+    document.getElementById("dashboardBtn").classList.remove("active");
+    document.getElementById("adminBtn").classList.remove("active");
+    document.getElementById("allowanceBtn").classList.add("active");
+
+    document.getElementById("driverViewNameHeader").textContent = loggedInDriverName;
+    renderDriverViewTable();
+    window.scrollTo(0, 0);
+}
+
+function renderDriverViewTable() {
+    const selectorValue = document.getElementById("driverViewCutoff").value || "1";
+    const tableBody = document.getElementById("driverViewTableBody");
+    tableBody.innerHTML = "";
+
+    let matchCount = 0;
+
+    globalParsedAllowances.forEach(record => {
+        // Validate matching system case-insensitive
+        if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return;
+
+        const dateMatch = record.date.match(/\b\d{1,2}\b/);
+        if (!dateMatch) return;
+        const dayNumber = parseInt(dateMatch[0]);
+
+        if (selectorValue === "1" && dayNumber > 15) return;
+        if (selectorValue === "2" && dayNumber <= 15) return;
+
+        matchCount++;
+        const row = document.createElement("tr");
+        
+        let statusBadge = "";
+        if (record.status === "Approved") {
+            statusBadge = `<span class="status-badge status-approved">Approved</span>`;
+        } else {
+            statusBadge = `<span class="status-badge status-pending">Pending</span>`;
+            row.style.backgroundColor = "#fef3c7"; // Highlighted pending row style 
+        }
+
+        row.innerHTML = `
+            <td>${record.date}</td>
+            <td style="font-weight:700;">₱${record.amount.toLocaleString()}</td>
+            <td>${statusBadge}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    if (matchCount === 0) {
+        tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#6b7280;">No allowance entries recorded for you in this cut-off window.</td></tr>`;
+    }
+}
+
+function driverLogin() {
+    const firstName = document.getElementById("driverUsername").value.trim();
+    const pin = document.getElementById("driverPin").value.trim();
+    const loginBtn = document.querySelector("#driverLoginModal .submit-btn");
+
+    if (!firstName || pin.length !== 4) {
+        alert("❌ Enter a valid First Name and a 4-Digit Security PIN.");
+        return;
+    }
+
+    loginBtn.disabled = true;
+    loginBtn.innerText = "Verifying...";
+    showActionLoading("Verifying Driver Credential...", "Checking your workspace dashboard properties.");
+    closeDriverLogin();
+
+    setTimeout(() => {
+        // Search and verify matches inside the parsed sheets data
+        const driverExists = Object.values(grouped).find(item => 
+            item.driver.toLowerCase().includes(firstName.toLowerCase())
+        );
+
+        hideActionLoading();
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login";
+
+        if (driverExists) {
+            loggedInDriverName = driverExists.driver;
+            
+            // Clean credentials form fields
+            document.getElementById("driverUsername").value = "";
+            document.getElementById("driverPin").value = "";
+
+            alert(`Hi ${loggedInDriverName},\nThis is just a reminder to always submit your allowance immediately after your trip!`);
+            showDriverAllowanceSummary();
+        } else {
+            alert("❌ Driver record not found. Please try again.");
+            document.getElementById("driverLoginModal").style.display = "block";
+        }
+    }, 1200);
+}
+
+document.getElementById("driverViewBackBtn").addEventListener("click", () => {
+    document.getElementById("driverDashboard").style.display = "block";
+    document.getElementById("driverAllowancePage").style.display = "none";
+    document.getElementById("dashboardBtn").classList.add("active");
+    document.getElementById("allowanceBtn").classList.remove("active");
+    window.scrollTo(0, 0);
+});
 
 document.getElementById("adminBtn").addEventListener("click", () => {
     const loggedIn = localStorage.getItem("loggedIn");
@@ -1623,6 +1793,7 @@ document.getElementById("adminBtn").addEventListener("click", () => {
 document.getElementById("dashboardBtn").addEventListener("click", () => {
     document.getElementById("driverDashboard").style.display = "block";
     document.getElementById("scheduleApprovalPage").style.display = "none";
+    document.getElementById("driverAllowancePage").style.display = "none";
 
     document.getElementById("dashboardBtn").classList.add("active");
     document.getElementById("adminBtn").classList.remove("active");
@@ -2217,7 +2388,7 @@ window.onload = async function () {
 
         container.innerHTML = pageHTML;
 
-        // IDINAGDAG: Awtomatikong i-update ang dropdown bago i-render ang mga table sheets
+        // Awtomatikong i-update ang dropdown bago i-render ang mga table sheets
         updateCutoffDropdownsDynamically();
 
         loadScheduleApprovalPage();
