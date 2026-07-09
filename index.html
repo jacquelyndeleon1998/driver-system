@@ -2052,19 +2052,40 @@ function viewSchedule(date){
                     ${trip.passengerName ? `
                     <div class="info-item">
                         <div class="info-label">Passenger</div>
+                        <div class="info-value">${trip.passengerName}</div>
+                    </div>` : ""}
+                    
+                    <!-- RESTORED CLICK-TO-CALL LINK -->
+                    ${trip.contactNumber ? `
+                    <div class="info-item">
+                        <div class="info-label">Contact</div>
                         <div class="info-value">
-                            ${trip.passengerName} ${trip.contactNumber ? `<span style="color:#9ca3af;">|</span> <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
+                            <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>
                         </div>
                     </div>` : ""}
+                    
+                    <!-- RESTORED GOOGLE MAPS ROUTING FOR ORIGIN -->
                     ${trip.origin ? `
                     <div class="info-item">
                         <div class="info-label">Origin</div>
-                        <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.origin)}">${trip.origin}</a></div>
-                    </div>
+                        <div class="info-value">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank" class="phone-link">
+                                ${trip.origin}
+                            </a>
+                        </div>
+                    </div>` : ""}
+                    
+                    <!-- RESTORED GOOGLE MAPS ROUTING FOR DESTINATION -->
+                    ${trip.destination ? `
                     <div class="info-item">
                         <div class="info-label">Destination</div>
-                        <div class="info-value"><a target="_blank" href="http://googleusercontent.com/maps.google.com/?q=${encodeURIComponent(trip.destination)}">${trip.destination}</a></div>
+                        <div class="info-value">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank" class="phone-link">
+                                ${trip.destination}
+                            </a>
+                        </div>
                     </div>` : ""}
+                    
                     ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
                 </div>`;
             });
