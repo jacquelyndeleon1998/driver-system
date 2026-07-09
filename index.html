@@ -572,11 +572,10 @@ h1 {
     width: 100vw;
     height: 100vh;
     background: rgba(0,0,0,.45);
-    display: flex;
+    display: flex;         /* Forces children boxes to flex center */
     justify-content: center;
     align-items: center;
-}
-        
+}        
 .success-overlay { z-index: 100000; }
 .loading-overlay { z-index: 99999; }
 .action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
@@ -611,9 +610,10 @@ h1 {
 .action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
 
 .spinner, .action-loading-spinner {
-    margin: auto auto 18px;
+    margin: 0 auto 18px auto; /* Centers horizontally inside the box */
     border: 5px solid #e5e7eb;
     border-radius: 50%;
+    display: block;           /* Enforces block alignment properties */
 }
 .spinner {
     width: 55px; height: 55px;
