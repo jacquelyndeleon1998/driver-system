@@ -96,6 +96,7 @@ h1 {
 
 .phone-link:hover {
     text-decoration: underline;
+    color: #16a34a !important;
 }
 
 .driver-card {
@@ -2044,23 +2045,22 @@ function viewSchedule(date){
                 <div class="trip">
                     <div class="trip-title">Pick-Up ${index + 1}</div>
                     ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
+                    
+                    <!-- REQUESTED BY INLINE PHONE FORMAT (ADMIN VIEWER) -->
                     ${trip.requestedBy ? `
                     <div class="info-item">
                         <div class="info-label">Requested By</div>
-                        <div class="info-value">${trip.requestedBy}</div>
+                        <div class="info-value">
+                            ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
+                        </div>
                     </div>` : ""}
+                    
+                    <!-- PASSENGER INLINE PHONE FORMAT (ADMIN VIEWER) -->
                     ${trip.passengerName ? `
                     <div class="info-item">
                         <div class="info-label">Passenger</div>
-                        <div class="info-value">${trip.passengerName}</div>
-                    </div>` : ""}
-                    
-                    <!-- RESTORED CLICK-TO-CALL LINK inside Admin viewer -->
-                    ${trip.contactNumber ? `
-                    <div class="info-item">
-                        <div class="info-label">Contact</div>
                         <div class="info-value">
-                            <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>
+                            ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                         </div>
                     </div>` : ""}
                     
@@ -2280,23 +2280,22 @@ window.onload = async function () {
                                 <div class="info-label">Pick Up Time</div>
                                 <div class="info-value">${trip.pickupTime}</div>
                             </div>` : ""}
+                            
+                            <!-- REQUESTED BY INLINE PHONE FORMAT (TODAY DASHBOARD) -->
                             ${trip.requestedBy ? `
                             <div class="info-item">
                                 <div class="info-label">Requested By</div>
-                                <div class="info-value">${trip.requestedBy}</div>
+                                <div class="info-value">
+                                    ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
+                                </div>
                             </div>` : ""}
+                            
+                            <!-- PASSENGER INLINE PHONE FORMAT (TODAY DASHBOARD) -->
                             ${trip.passengerName ? `
                             <div class="info-item">
                                 <div class="info-label">Passenger</div>
-                                <div class="info-value">${trip.passengerName}</div>
-                            </div>` : ""}
-                            
-                            <!-- RESTORED CLICK-TO-CALL LINK (TODAY BLOCK) -->
-                            ${trip.contactNumber ? `
-                            <div class="info-item">
-                                <div class="info-label">Contact</div>
                                 <div class="info-value">
-                                    <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>
+                                    ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                                 </div>
                             </div>` : ""}
 
@@ -2409,18 +2408,25 @@ window.onload = async function () {
                         <div class="trip">
                             <div class="trip-title">Pick-Up ${index + 1}</div>
                             ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                            ${trip.requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${trip.requestedBy}</div></div>` : ""}
-                            ${trip.passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${trip.passengerName}</div></div>` : ""}
                             
-                            <!-- RESTORED CLICK-TO-CALL LINK (FUTURE BLOCKS) -->
-                            ${trip.contactNumber ? `
+                            <!-- REQUESTED BY INLINE PHONE FORMAT (FUTURE DASHBOARD) -->
+                            ${trip.requestedBy ? `
                             <div class="info-item">
-                                <div class="info-label">Contact</div>
+                                <div class="info-label">Requested By</div>
                                 <div class="info-value">
-                                    <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>
+                                    ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                                 </div>
                             </div>` : ""}
-
+                            
+                            <!-- PASSENGER INLINE PHONE FORMAT (FUTURE DASHBOARD) -->
+                            ${trip.passengerName ? `
+                            <div class="info-item">
+                                <div class="info-label">Passenger</div>
+                                <div class="info-value">
+                                    ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
+                                </div>
+                            </div>` : ""}
+                            
                             <!-- RESTORED MAPS LINK FOR ORIGIN (FUTURE BLOCKS) -->
                             ${trip.origin ? `
                             <div class="info-item">
