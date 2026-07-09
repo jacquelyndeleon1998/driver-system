@@ -38,7 +38,7 @@
 .header-allowance .month-selector select {
     color: #14532d;
 }
-       
+        
 /* =========================
    Universal & Base Styles
 ========================= */
@@ -1216,13 +1216,13 @@ function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
     localStorage.setItem("loginExpires", expires);
 }
-   
+    
 function showAdminDashboard() {
     refreshLoginSession();
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("driverAllowancePage").style.display = "none";
-   
+    
     document.querySelector(".approval-container").style.display = "block";
     document.querySelector(".approval-footer").style.display = "block";
     document.getElementById("scheduleViewerPage").style.display = "none";
@@ -1254,16 +1254,16 @@ async function fetchLiveAllowancesFromSheet() {
         // Querying the existing web app URL endpoint for seamless compatibility
         const response = await fetch(WEBAPP_URL + "?action=getAllowancesData");
         const jsonResult = await response.json();
-       
+        
         globalParsedAllowances = [];
-       
+        
         if (jsonResult && jsonResult.success && jsonResult.data) {
             jsonResult.data.forEach(row => {
                 const rawTripDate = row.date || "";      // Maps out Trip Date (Col B)
                 const driverName = row.driver || "";    // Maps out Driver Name (Col C)
                 const totalAllowance = parseFloat(row.total) || 0; // Maps out Total (Col L)
                 const rawStatus = row.status || "";     // Maps out Status Tracking Flag (Col N)
-               
+                
                 const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
 
                 if (driverName && rawTripDate) {
@@ -1410,18 +1410,18 @@ function openDriverDetailsModal(driverName) {
     const cutoffId = document.getElementById("allowanceCutoff").value;
     document.getElementById("detailsModalDriverName").textContent = driverName;
     document.getElementById("detailsModalRange").textContent = "Cut-off Range Selection: " + (cutoffId === "1" ? "July 1 - 15, 2026" : "July 16 - End of Month");
-   
+    
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
 
     // 1. Filter out the matching rows first
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return false;
-       
+        
         const dateMatch = record.date.match(/\b\d{1,2}\b/);
         if (!dateMatch) return false;
         const dayNumber = parseInt(dateMatch[0]);
-       
+        
         if (cutoffId === "1" && dayNumber > 15) return false;
         if (cutoffId === "2" && dayNumber <= 15) return false;
 
@@ -1440,7 +1440,7 @@ function openDriverDetailsModal(driverName) {
     filteredRecords.forEach(record => {
         const row = document.createElement("tr");
         let badgeDisplay = "";
-       
+        
         if (record.status === "Approved") {
             badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
         } else {
@@ -1470,12 +1470,12 @@ async function approveItemInline(name, date, element) {
         element.disabled = true;
         element.textContent = "Processing...";
         showActionLoading("Approving Entry...", "Updating status registry values on live spreadsheets.");
-       
+        
         try {
             const targetUrl = `${WEBAPP_URL}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}`;
             const response = await fetch(targetUrl);
             const data = await response.json();
-           
+            
             if (data.success) {
                 alert("✅ Record updated successfully!");
                 await fetchLiveAllowancesFromSheet();
@@ -1555,7 +1555,7 @@ function resetSubmitButton(btn) {
 function submitAllowance(driver, date, reqBy, pass){
     currentDriver = driver;
     currentDate = date;
-   
+    
     let infoPieces = [];
     if(reqBy) infoPieces.push("Req: " + reqBy);
     if(pass) infoPieces.push("Pass: " + pass);
@@ -1563,7 +1563,7 @@ function submitAllowance(driver, date, reqBy, pass){
 
     document.getElementById("modalDriver").textContent = driver;
     document.getElementById("modalDate").textContent = date;
-   
+    
     if (reqBy) {
         document.getElementById("modalRequestedByRow").style.display = "flex";
         document.getElementById("modalRequestedBy").textContent = reqBy;
@@ -1664,7 +1664,7 @@ async function saveAllowance() {
             },
             body: JSON.stringify(payloadData)
         });
-       
+        
         const text = await response.text();
         let result = JSON.parse(text);
 
@@ -2055,7 +2055,7 @@ function viewSchedule(date){
                         <div class="info-value">${trip.passengerName}</div>
                     </div>` : ""}
                     
-                    <!-- RESTORED CLICK-TO-CALL LINK -->
+                    <!-- RESTORED CLICK-TO-CALL LINK inside Admin viewer -->
                     ${trip.contactNumber ? `
                     <div class="info-item">
                         <div class="info-label">Contact</div>
@@ -2064,7 +2064,7 @@ function viewSchedule(date){
                         </div>
                     </div>` : ""}
                     
-                    <!-- RESTORED GOOGLE MAPS ROUTING FOR ORIGIN -->
+                    <!-- RESTORED GOOGLE MAPS ROUTING FOR ORIGIN inside Admin viewer -->
                     ${trip.origin ? `
                     <div class="info-item">
                         <div class="info-label">Origin</div>
@@ -2075,7 +2075,7 @@ function viewSchedule(date){
                         </div>
                     </div>` : ""}
                     
-                    <!-- RESTORED GOOGLE MAPS ROUTING FOR DESTINATION -->
+                    <!-- RESTORED GOOGLE MAPS ROUTING FOR DESTINATION inside Admin viewer -->
                     ${trip.destination ? `
                     <div class="info-item">
                         <div class="info-label">Destination</div>
@@ -2290,15 +2290,38 @@ window.onload = async function () {
                                 <div class="info-label">Passenger</div>
                                 <div class="info-value">${trip.passengerName}</div>
                             </div>` : ""}
+                            
+                            <!-- RESTORED CLICK-TO-CALL LINK (TODAY BLOCK) -->
+                            ${trip.contactNumber ? `
+                            <div class="info-item">
+                                <div class="info-label">Contact</div>
+                                <div class="info-value">
+                                    <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>
+                                </div>
+                            </div>` : ""}
+
+                            <!-- RESTORED MAPS LINK FOR ORIGIN (TODAY BLOCK) -->
                             ${trip.origin ? `
                             <div class="info-item">
                                 <div class="info-label">Origin</div>
-                                <div class="info-value">${trip.origin}</div>
-                            </div>
+                                <div class="info-value">
+                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank" class="phone-link">
+                                        ${trip.origin}
+                                    </a>
+                                </div>
+                            </div>` : ""}
+
+                            <!-- RESTORED MAPS LINK FOR DESTINATION (TODAY BLOCK) -->
+                            ${trip.destination ? `
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
-                                <div class="info-value">${trip.destination}</div>
+                                <div class="info-value">
+                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank" class="phone-link">
+                                        ${trip.destination}
+                                    </a>
+                                </div>
                             </div>` : ""}
+
                             ${trip.remarks ? `
                             <div class="info-item">
                                 <div class="info-label">Remarks</div>
@@ -2336,7 +2359,7 @@ window.onload = async function () {
                     </div>`;
                 });
             }
-           
+            
             if (!isPast && !isToday) {
                 let tableRows = "";
 
@@ -2388,15 +2411,38 @@ window.onload = async function () {
                             ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
                             ${trip.requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${trip.requestedBy}</div></div>` : ""}
                             ${trip.passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${trip.passengerName}</div></div>` : ""}
+                            
+                            <!-- RESTORED CLICK-TO-CALL LINK (FUTURE BLOCKS) -->
+                            ${trip.contactNumber ? `
+                            <div class="info-item">
+                                <div class="info-label">Contact</div>
+                                <div class="info-value">
+                                    <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>
+                                </div>
+                            </div>` : ""}
+
+                            <!-- RESTORED MAPS LINK FOR ORIGIN (FUTURE BLOCKS) -->
                             ${trip.origin ? `
                             <div class="info-item">
                                 <div class="info-label">Origin</div>
-                                <div class="info-value">${trip.origin}</div>
-                            </div>
+                                <div class="info-value">
+                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank" class="phone-link">
+                                        ${trip.origin}
+                                    </a>
+                                </div>
+                            </div>` : ""}
+
+                            <!-- RESTORED MAPS LINK FOR DESTINATION (FUTURE BLOCKS) -->
+                            ${trip.destination ? `
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
-                                <div class="info-value">${trip.destination}</div>
+                                <div class="info-value">
+                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank" class="phone-link">
+                                        ${trip.destination}
+                                    </a>
+                                </div>
                             </div>` : ""}
+                            
                             ${trip.remarks ? `
                             <div class="info-item">
                                 <div class="info-label">Remarks</div>
