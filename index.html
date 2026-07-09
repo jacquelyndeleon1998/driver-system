@@ -1710,20 +1710,30 @@ function renderDriverViewTable() {
     const tableBody = document.getElementById("driverViewTableBody");
     tableBody.innerHTML = "";
 
-    let matchCount = 0;
-
-    globalParsedAllowances.forEach(record => {
-        // Validate matching system case-insensitive
-        if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return;
+    // 1. Filter out the matching rows first
+    const filteredRecords = globalParsedAllowances.filter(record => {
+        if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return false;
 
         const dateMatch = record.date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return;
+        if (!dateMatch) return false;
         const dayNumber = parseInt(dateMatch[0]);
 
-        if (selectorValue === "1" && dayNumber > 15) return;
-        if (selectorValue === "2" && dayNumber <= 15) return;
+        if (selectorValue === "1" && dayNumber > 15) return false;
+        if (selectorValue === "2" && dayNumber <= 15) return false;
 
-        matchCount++;
+        return true;
+    });
+
+    // 2. Sort the filtered records chronologically (Oldest to Newest)
+    filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // 3. Render the sorted rows onto the table
+    if (filteredRecords.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#6b7280;">No allowance entries recorded for you in this cut-off window.</td></tr>`;
+        return;
+    }
+
+    filteredRecords.forEach(record => {
         const row = document.createElement("tr");
         
         let statusBadge = "";
@@ -1731,7 +1741,7 @@ function renderDriverViewTable() {
             statusBadge = `<span class="status-badge status-approved">Approved</span>`;
         } else {
             statusBadge = `<span class="status-badge status-pending">Pending</span>`;
-            row.style.backgroundColor = "#fef3c7"; // Highlighted pending row style 
+            row.style.backgroundColor = "#fef3c7"; 
         }
 
         row.innerHTML = `
@@ -1741,10 +1751,6 @@ function renderDriverViewTable() {
         `;
         tableBody.appendChild(row);
     });
-
-    if (matchCount === 0) {
-        tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#6b7280;">No allowance entries recorded for you in this cut-off window.</td></tr>`;
-    }
 }
 
 function driverLogin() {
