@@ -961,10 +961,12 @@ h1 {
 
 <div id="scheduleApprovalPage" style="display:none;">
    
+   <div id="scheduleApprovalPage" style="display:none;">
+    
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
     <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
         <h2>Driver Schedule Admin</h2>
-       
+        
         <div class="month-selector">
             <label for="scheduleCutoff">Cut-off Period</label>
             <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
@@ -973,18 +975,7 @@ h1 {
     </div>
 
     <div class="approval-container" style="margin-top: 15px;">
-        <h3>Approved Schedules</h3>
-        <table class="approval-table">
-            <thead>
-                <tr>
-                    <th style="width: 30%;">Day</th>
-                    <th style="width: 45%;">Date</th>
-                    <th style="width: 25%;">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="approvedSchedules"></tbody>
-        </table>
-
+        <!-- PENDING SCHEDULES MOVED TO FIRST -->
         <h3>Pending Schedules</h3>
         <table class="approval-table">
             <thead>
@@ -995,6 +986,19 @@ h1 {
                 </tr>
             </thead>
             <tbody id="pendingSchedules"></tbody>
+        </table>
+
+        <!-- APPROVED SCHEDULES MOVED TO SECOND -->
+        <h3>Approved Schedules</h3>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Day</th>
+                    <th style="width: 45%;">Date</th>
+                    <th style="width: 25%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="approvedSchedules"></tbody>
         </table>
     </div>
 
