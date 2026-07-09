@@ -38,7 +38,7 @@
 .header-allowance .month-selector select {
     color: #14532d;
 }
-       
+        
 /* =========================
    Universal & Base Styles
 ========================= */
@@ -1263,7 +1263,7 @@ function processAllowanceSummaryTable() {
             <td style="text-align: right; padding-right: 25px; color: #14532d; font-weight:700;">₱${aggregateGroup[driver].approved.toLocaleString()}</td>
             <td style="text-align: right; padding-right: 25px; color: #b45309; font-weight:700;">₱${aggregateGroup[driver].pending.toLocaleString()}</td>
             <td style="text-align: center;">
-                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">[view]</button>
+                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -1308,7 +1308,7 @@ function openDriverDetailsModal(driverName) {
         if (record.status === "Approved") {
             badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
         } else {
-            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">[approve]</button>`;
+            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Approve</button>`;
         }
 
         row.innerHTML = `
@@ -1351,13 +1351,13 @@ async function approveItemInline(name, date, element) {
             } else {
                 alert("❌ Error: " + data.message);
                 element.disabled = false;
-                element.textContent = "[approve]";
+                element.textContent = "Approve";
             }
         } catch(e) {
             console.error(e);
             alert("Network transmission failure.");
             element.disabled = false;
-            element.textContent = "[approve]";
+            element.textContent = "Approve";
         } finally {
             hideActionLoading();
         }
