@@ -6,6 +6,26 @@
     <title>Daily Schedule</title>
  
    <style>
+
+/* Color Variants for Headers */
+.header-schedule {
+    background: #064e3b !important; /* Deep Emerald Green */
+    box-shadow: 0 4px 10px rgba(6, 78, 59, 0.2) !important;
+}
+
+.header-allowance {
+    background: #14532d !important; /* Original Rich Forest Green */
+    box-shadow: 0 4px 10px rgba(20, 83, 45, 0.2) !important;
+}
+
+/* Subtle accent matching updates */
+.header-schedule .month-selector select {
+    color: #064e3b;
+}
+.header-allowance .month-selector select {
+    color: #14532d;
+}
+       
 /* =========================
    Universal & Base Styles
 ========================= */
@@ -885,46 +905,47 @@ h1 {
 
 <div id="scheduleApprovalPage" style="display:none;">
     
-    <div class="schedule-header" style="margin-top: 0;">
-    <h2>Driver Schedule Admin</h2>
-    <div class="month-selector">
-        <label for="scheduleCutoff">Cut-off Period</label>
-        <!-- CHANGED: ID to scheduleCutoff and onchange to loadScheduleApprovalPage() -->
-        <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
-            <option value="1">July 1 - 15, 2026</option>
-            <option value="2">July 16 - End of Month</option>
-        </select>
+    <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN (EMERALD GREEN THEME) -->
+    <div class="schedule-header header-schedule" style="margin-top: 0;">
+        <h2>Driver Schedule Admin</h2>
+        
+        <div class="month-selector">
+            <label for="scheduleCutoff">Cut-off Period</label>
+            <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
+                <option value="1">July 1 - 15, 2026</option>
+                <option value="2">July 16 - End of Month</option>
+            </select>
+        </div>
     </div>
-</div>
 
     <div class="approval-container" style="margin-top: 15px;">
-        <h3>Approved Schedules</h3>
+        <h3 style="color: #064e3b; border-left-color: #059669;">Approved Schedules</h3>
         <table class="approval-table">
             <thead>
                 <tr>
-                    <th style="width: 30%;">Day</th>
-                    <th style="width: 45%;">Date</th>
-                    <th style="width: 25%;">Actions</th>
+                    <th style="width: 30%; background: #064e3b !important;">Day</th>
+                    <th style="width: 45%; background: #064e3b !important;">Date</th>
+                    <th style="width: 25%; background: #064e3b !important;">Actions</th>
                 </tr>
             </thead>
             <tbody id="approvedSchedules"></tbody>
         </table>
 
-        <h3>Pending Schedules</h3>
+        <h3 style="color: #064e3b; border-left-color: #059669;">Pending Schedules</h3>
         <table class="approval-table">
             <thead>
                 <tr>
-                    <th style="width: 30%;">Day</th>
-                    <th style="width: 45%;">Date</th>
-                    <th style="width: 25%;">Actions</th>
+                    <th style="width: 30%; background: #064e3b !important;">Day</th>
+                    <th style="width: 45%; background: #064e3b !important;">Date</th>
+                    <th style="width: 25%; background: #064e3b !important;">Actions</th>
                 </tr>
             </thead>
             <tbody id="pendingSchedules"></tbody>
         </table>
     </div>
 
-    <!-- LAYOUT 2: RENAMED TO DRIVER ALLOWANCE WITH CUT-OFF SELECTION -->
-    <div class="schedule-header" style="margin-top: 30px;">
+    <!-- LAYOUT 2: DRIVER ALLOWANCE PANEL (FOREST GREEN THEME) -->
+    <div class="schedule-header header-allowance" style="margin-top: 40px;">
         <h2>Driver Allowance</h2>
         <div class="month-selector">
             <label for="allowanceCutoff">Cut-off Period</label>
@@ -966,7 +987,6 @@ h1 {
         </button>
     </div>
 </div>
-
 <!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
 <div id="driverAllowanceDetailsModal" class="modal">
     <div class="modal-content" style="max-width: 500px;">
