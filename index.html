@@ -1120,11 +1120,13 @@ summary-header {
     </div>
 </div>
 
-<!-- NEW DRIVER LOGIN MODAL (UPDATED WITH DROPDOWN SELECTION) -->
+<!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
     <div class="modal-content">
         <h3 class="modal-title">Driver Login</h3>
-        <select id="driverUsername">
+        
+        <!-- This must be a select element, not an input element -->
+        <select id="driverUsername" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; font-size: 14px; box-sizing: border-box;">
             <option value="" disabled selected>Select Your Name</option>
             <option value="Jun Dela Pena">Jun Dela Pena</option>
             <option value="Jerome Natividad">Jerome Natividad</option>
@@ -1133,7 +1135,9 @@ summary-header {
             <option value="Michael Guanlao">Michael Guanlao</option>
             <option value="Melvin Fausto">Melvin Fausto</option>
         </select>
+
         <input id="driverPin" type="password" maxlength="5" pattern="\d*" placeholder="5-Digit PIN">
+        
         <div class="modal-buttons">
             <button class="allowance-btn submit-btn" onclick="driverLogin()">Login</button>
             <button class="allowance-btn cancel-btn" onclick="closeDriverLogin()">Cancel</button>
