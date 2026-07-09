@@ -576,7 +576,7 @@ h1 {
     justify-content: center;
     align-items: center;
 }
-       
+        
 .success-overlay { z-index: 100000; }
 .loading-overlay { z-index: 99999; }
 .action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
@@ -1504,6 +1504,7 @@ document.getElementById("allowanceParking").addEventListener("input", function (
         document.getElementById("cameraInput").value = "";
         document.getElementById("galleryInput").value = "";
         document.getElementById("receiptPreview").innerHTML = "";
+        document.getElementById("receiptSection").style.display = "none";
     }
 });
 
@@ -2242,26 +2243,41 @@ window.onload = async function () {
 
                     let tripsHTML = "";
 
-                   d.trips.forEach((trip, index) => {
-    tripsHTML += `
-    <div class="trip">
-        <div class="trip-title">Pick-Up ${index + 1}</div>
-        ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-        ${trip.requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${trip.requestedBy}</div></div>` : ""}
-        ${trip.passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${trip.passengerName}</div></div>` : ""}
-        ${trip.origin ? `
-        <div class="info-item">
-            <div class="info-label">Origin</div>
-            <div class="info-value">${trip.origin}</div>
-        </div>
-        <div class="info-item">
-            <div class="info-label">Destination</div>
-            <div class="info-value">${trip.destination}</div>
-        </div>` : ""}
-        <!-- ADD THIS REMARKS LINE BELOW -->
-        ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
-    </div>`;
-});
+                    d.trips.forEach((trip, index) => {
+                        tripsHTML += `
+                        <div class="trip">
+                            <div class="trip-title">Pick-Up ${index + 1}</div>
+                            ${trip.pickupTime ? `
+                            <div class="info-item">
+                                <div class="info-label">Pick Up Time</div>
+                                <div class="info-value">${trip.pickupTime}</div>
+                            </div>` : ""}
+                            ${trip.requestedBy ? `
+                            <div class="info-item">
+                                <div class="info-label">Requested By</div>
+                                <div class="info-value">${trip.requestedBy}</div>
+                            </div>` : ""}
+                            ${trip.passengerName ? `
+                            <div class="info-item">
+                                <div class="info-label">Passenger</div>
+                                <div class="info-value">${trip.passengerName}</div>
+                            </div>` : ""}
+                            ${trip.origin ? `
+                            <div class="info-item">
+                                <div class="info-label">Origin</div>
+                                <div class="info-value">${trip.origin}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Destination</div>
+                                <div class="info-value">${trip.destination}</div>
+                            </div>` : ""}
+                            ${trip.remarks ? `
+                            <div class="info-item">
+                                <div class="info-label">Remarks</div>
+                                <div class="info-value">${trip.remarks}</div>
+                            </div>` : ""}
+                        </div>`;
+                    });
 
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
@@ -2352,6 +2368,11 @@ window.onload = async function () {
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
                                 <div class="info-value">${trip.destination}</div>
+                            </div>` : ""}
+                            ${trip.remarks ? `
+                            <div class="info-item">
+                                <div class="info-label">Remarks</div>
+                                <div class="info-value">${trip.remarks}</div>
                             </div>` : ""}
                         </div>`;
                     });
