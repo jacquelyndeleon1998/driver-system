@@ -885,19 +885,17 @@ h1 {
 
 <div id="scheduleApprovalPage" style="display:none;">
     
-    <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN (RESTRUCTURED) -->
     <div class="schedule-header" style="margin-top: 0;">
-        <h2>Driver Schedule Admin</h2>
-        <!-- Empty placeholder or custom utility can go here if needed -->
-       
-<div class="month-selector">
-            <label for="allowanceCutoff">Cut-off Period</label>
-            <select id="allowanceCutoff" onchange="processAllowanceSummaryTable()">
-                <option value="1">July 1 - 15, 2026</option>
-                <option value="2">July 16 - End of Month</option>
-            </select>
-        </div>
-        </div>
+    <h2>Driver Schedule Admin</h2>
+    <div class="month-selector">
+        <label for="scheduleCutoff">Cut-off Period</label>
+        <!-- CHANGED: ID to scheduleCutoff and onchange to loadScheduleApprovalPage() -->
+        <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
+            <option value="1">July 1 - 15, 2026</option>
+            <option value="2">July 16 - End of Month</option>
+        </select>
+    </div>
+</div>
 
     <div class="approval-container" style="margin-top: 15px;">
         <h3>Approved Schedules</h3>
@@ -1185,7 +1183,8 @@ async function fetchLiveAllowancesFromSheet() {
 }
 
 function processAllowanceSummaryTable() {
-    const selectorValue = document.getElementById("allowanceCutoff").value;
+   const selectorElement = document.querySelectorAll("#allowanceCutoff")[0]; 
+    const selectorValue = selectorElement ? selectorElement.value : "1";
     const tableBody = document.getElementById("allowanceSummaryBody");
     tableBody.innerHTML = "";
 
@@ -1651,6 +1650,9 @@ function loadScheduleApprovalPage(){
     approvedDiv.innerHTML = ""; 
     pendingDiv.innerHTML = "";
 
+    // Get the selected cut-off value for schedules
+    const selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "1";
+
     const today = new Date(); 
     today.setHours(0,0,0,0);
 
@@ -1658,6 +1660,15 @@ function loadScheduleApprovalPage(){
     let hasPending = false;
 
     scheduleDates.forEach(date => {
+        // Extract day number to check cut-off range
+        const dateMatch = date.match(/\b\d{1,2}\b/);
+        if (!dateMatch) return;
+        const dayNumber = parseInt(dateMatch[0]);
+
+        // Filter out dates outside the selected cut-off scope
+        if (selectorValue === "1" && dayNumber > 15) return;
+        if (selectorValue === "2" && dayNumber <= 15) return;
+
         const scheduleDate = new Date(date); 
         scheduleDate.setHours(0,0,0,0);
         
@@ -1686,10 +1697,10 @@ function loadScheduleApprovalPage(){
     });
 
     if(!hasApproved) {
-        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found.</td></tr>`;
+        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
     if(!hasPending) {
-        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found.</td></tr>`;
+        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
 
