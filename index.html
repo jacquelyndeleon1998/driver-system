@@ -173,7 +173,7 @@ h1 {
 .pending-submit-btn:hover{
     background:#15803d;
 }
-.summary-header {
+summary-header {
     background: #14532d;
     color: #fff;
     padding: 10px 12px;
@@ -381,10 +381,15 @@ h1 {
     color: #111827;
 }
 
-.modal-content input {
+.modal-content input,
+.modal-content select {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 14px;
     box-sizing: border-box;
 }
 
@@ -1115,11 +1120,19 @@ h1 {
     </div>
 </div>
 
-<!-- NEW DRIVER LOGIN MODAL -->
+<!-- NEW DRIVER LOGIN MODAL (UPDATED WITH DROPDOWN SELECTION) -->
 <div id="driverLoginModal" class="modal">
     <div class="modal-content">
         <h3 class="modal-title">Driver Login</h3>
-        <input id="driverUsername" type="text" placeholder="First Name">
+        <select id="driverUsername">
+            <option value="" disabled selected>Select Your Name</option>
+            <option value="Jun Dela Pena">Jun Dela Pena</option>
+            <option value="Jerome Natividad">Jerome Natividad</option>
+            <option value="Julius Sta. Rita">Julius Sta. Rita</option>
+            <option value="Oscar Pangilinan">Oscar Pangilinan</option>
+            <option value="Michael Guanlao">Michael Guanlao</option>
+            <option value="Melvin Fausto">Melvin Fausto</option>
+        </select>
         <input id="driverPin" type="password" maxlength="5" pattern="\d*" placeholder="5-Digit PIN">
         <div class="modal-buttons">
             <button class="allowance-btn submit-btn" onclick="driverLogin()">Login</button>
@@ -1731,12 +1744,17 @@ function renderDriverViewTable() {
 }
 
 function driverLogin() {
-    const firstName = document.getElementById("driverUsername").value.trim();
+    const driverSelect = document.getElementById("driverUsername");
+    const selectedDriverValue = driverSelect.value;
     const pin = document.getElementById("driverPin").value.trim();
     const loginBtn = document.querySelector("#driverLoginModal .submit-btn");
 
-    if (!firstName || pin.length !== 4) {
-        alert("❌ Enter a valid First Name and a 4-Digit Security PIN.");
+    if (!selectedDriverValue) {
+        alert("❌ Please select your name from the menu.");
+        return;
+    }
+    if (pin.length < 4) {
+        alert("❌ Enter a valid Security PIN.");
         return;
     }
 
@@ -1746,28 +1764,19 @@ function driverLogin() {
     closeDriverLogin();
 
     setTimeout(() => {
-        // Search and verify matches inside the parsed sheets data
-        const driverExists = Object.values(grouped).find(item => 
-            item.driver.toLowerCase().includes(firstName.toLowerCase())
-        );
+        // Since we are matching against local database entries or selected strings directly:
+        loggedInDriverName = selectedDriverValue;
+        
+        // Clean credentials form fields
+        driverSelect.selectedIndex = 0;
+        document.getElementById("driverPin").value = "";
 
         hideActionLoading();
         loginBtn.disabled = false;
         loginBtn.innerText = "Login";
 
-        if (driverExists) {
-            loggedInDriverName = driverExists.driver;
-            
-            // Clean credentials form fields
-            document.getElementById("driverUsername").value = "";
-            document.getElementById("driverPin").value = "";
-
-            alert(`Hi ${loggedInDriverName},\nThis is just a reminder to always submit your allowance immediately after your trip!`);
-            showDriverAllowanceSummary();
-        } else {
-            alert("❌ Driver record not found. Please try again.");
-            document.getElementById("driverLoginModal").style.display = "block";
-        }
+        alert(`Hi ${loggedInDriverName},\nThis is just a reminder to always submit your allowance immediately after your trip!`);
+        showDriverAllowanceSummary();
     }, 1200);
 }
 
