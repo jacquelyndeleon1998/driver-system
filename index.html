@@ -593,7 +593,6 @@ h1 {
     box-shadow: 0 4px 12px rgba(22,163,74,.25);
 }
 .loading-banner h2 { margin: 0; font-size: 20px; }
-.loading-banner-subtitle { margin-top: 4px; font-size: 13px; opacity: .9; }
 .loading-title, .action-loading-title { margin: 0 0 8px; color: #111827; }
 .action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
 
@@ -1011,14 +1010,7 @@ h1 {
             <tbody id="allowanceSummaryBody">
                 <!-- Data populated dynamically from Google Sheets via Apps Script proxy -->
             </tbody>
-        </table>
-    </div>
-
-    <div id="scheduleViewerPage" style="display:none;">
-        <div class="summary-header">
-            <h2 id="viewerTitle">Driver Schedule</h2>
-        </div>
-        <div id="scheduleViewerContent"></div>
+       </table>
     </div>
 
     <div class="approval-footer">
@@ -1026,6 +1018,14 @@ h1 {
             ← Driver Schedule
         </button>
     </div>
+</div> <!-- This safely closes scheduleApprovalPage first -->
+
+<!-- Now scheduleViewerPage stands perfectly on its own -->
+<div id="scheduleViewerPage" style="display:none;">
+    <div class="summary-header">
+        <h2 id="viewerTitle">Driver Schedule</h2>
+    </div>
+    <div id="scheduleViewerContent"></div>
 </div>
    
     <!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
@@ -1199,7 +1199,7 @@ let summaryDrivers = {};
 let approvalDates = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
-let loggedInDriverName = ""; // Storage for driver portal identification
+let loggedInDriverName = ""; 
 
 function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
@@ -1674,7 +1674,6 @@ async function saveAllowance() {
            await loadSubmittedAllowances();
 await loadSchedule();
 
-document.getElementById("successModal").style.display = "flex";
         }
         closeModal();
     } catch (err) {
@@ -1934,12 +1933,6 @@ function loadScheduleApprovalPage(){
     // Get the selected cut-off value for schedules
     const selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "1";
 
-    // Synchronize 'today' with Asia/Manila time execution properties
-    const today = new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-    );
-    today.setHours(0,0,0,0);
-
     let hasApproved = false;
     let hasPending = false;
 
@@ -2168,11 +2161,6 @@ window.onload = async function () {
         const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
         const phNow = new Date(phTimeStr);
 
-        const today = new Date(
-            new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-        );
-        today.setHours(0,0,0,0);
-
         scheduleDates.sort((a, b) => {
             const da = new Date(a);
             const db = new Date(b);
@@ -2188,7 +2176,6 @@ window.onload = async function () {
             if (!aPast && bPast) return 1;
             if (aToday && !bToday) return -1;
             if (!aToday && bToday) return 1;
-            if (aPast && bPast) return da - db;
             return da - db;
         });
 
