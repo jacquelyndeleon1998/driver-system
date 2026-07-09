@@ -1285,24 +1285,31 @@ function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
     const allowanceSelect = document.getElementById("allowanceCutoff");
     const driverViewSelect = document.getElementById("driverViewCutoff");
-   
+    
     if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
 
     let hasCutoff1 = false;
     let hasCutoff2 = false;
 
+    // Helper function to safely extract the day number regardless of date format
+    const getDayFromDateString = (dateStr) => {
+        const parsedDate = new Date(dateStr);
+        if (!isNaN(parsedDate.getTime())) {
+            return parsedDate.getDate(); // Returns the day of the month (1-31)
+        }
+        // Fallback to your regex if native parsing fails
+        const dateMatch = dateStr.match(/\b\d{1,2}\b/);
+        return dateMatch ? parseInt(dateMatch[0]) : 1;
+    };
+
     scheduleDates.forEach(date => {
-        const dateMatch = date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return;
-        const dayNumber = parseInt(dateMatch[0]);
+        const dayNumber = getDayFromDateString(date);
         if (dayNumber <= 15) hasCutoff1 = true;
         if (dayNumber > 15) hasCutoff2 = true;
     });
 
     globalParsedAllowances.forEach(record => {
-        const dateMatch = record.date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return;
-        const dayNumber = parseInt(dateMatch[0]);
+        const dayNumber = getDayFromDateString(record.date);
         if (dayNumber <= 15) hasCutoff1 = true;
         if (dayNumber > 15) hasCutoff2 = true;
     });
@@ -1336,7 +1343,6 @@ function updateCutoffDropdownsDynamically() {
     if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
     if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
 }
-
 function processAllowanceSummaryTable() {
    const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
     const selectorValue = selectorElement ? selectorElement.value : "1";
@@ -1939,25 +1945,27 @@ function loadScheduleApprovalPage(){
     // Get the selected cut-off value for schedules
     const selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "1";
 
-    const today = new Date();
+    // Synchronize 'today' with Asia/Manila time execution properties
+    const today = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+    );
     today.setHours(0,0,0,0);
 
     let hasApproved = false;
     let hasPending = false;
 
     scheduleDates.forEach(date => {
-        // Extract day number to check cut-off range
-        const dateMatch = date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return;
-        const dayNumber = parseInt(dateMatch[0]);
+        const scheduleDate = new Date(date);
+        if (isNaN(scheduleDate.getTime())) return;
+        
+        const dayNumber = scheduleDate.getDate();
 
         // Filter out dates outside the selected cut-off scope
         if (selectorValue === "1" && dayNumber > 15) return;
         if (selectorValue === "2" && dayNumber <= 15) return;
 
-        const scheduleDate = new Date(date);
         scheduleDate.setHours(0,0,0,0);
-       
+        
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
@@ -1973,10 +1981,10 @@ function loadScheduleApprovalPage(){
             </td>
         </tr>`;
 
-        if(status === "approved" && scheduleDate >= today) {
+        if (status === "approved") {
             approvedDiv.innerHTML += row;
             hasApproved = true;
-        } else if (scheduleDate >= today) {
+        } else {
             pendingDiv.innerHTML += row;
             hasPending = true;
         }
@@ -1989,7 +1997,6 @@ function loadScheduleApprovalPage(){
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
-
 function viewSchedule(date){
     document.querySelector(".approval-container").style.display = "none";
 
