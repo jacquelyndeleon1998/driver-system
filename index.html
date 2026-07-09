@@ -7,6 +7,22 @@
  
    <style>
 
+       /* Unique Header Backgrounds */
+.bg-schedule-admin {
+    background: #064e3b !important; /* Deep Emerald Green */
+}
+.bg-driver-allowance {
+    background: #14532d !important; /* Rich Forest Green */
+}
+
+/* Keeps the dropdown text color matching its parent banner background */
+.bg-schedule-admin .month-selector select {
+    color: #064e3b !important;
+}
+.bg-driver-allowance .month-selector select {
+    color: #14532d !important;
+}
+
 /* Color Variants for Headers */
 .header-schedule {
     background: #064e3b !important; /* Deep Emerald Green */
@@ -905,10 +921,11 @@ h1 {
 
 <div id="scheduleApprovalPage" style="display:none;">
     
-    <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN (EMERALD GREEN THEME) -->
-    <div class="schedule-header header-schedule" style="margin-top: 0;">
+    <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
+    <!-- CHANGED: Added bg-schedule-admin class here -->
+    <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
         <h2>Driver Schedule Admin</h2>
-        
+       
         <div class="month-selector">
             <label for="scheduleCutoff">Cut-off Period</label>
             <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
@@ -919,33 +936,34 @@ h1 {
     </div>
 
     <div class="approval-container" style="margin-top: 15px;">
-        <h3 style="color: #064e3b; border-left-color: #059669;">Approved Schedules</h3>
+        <h3>Approved Schedules</h3>
         <table class="approval-table">
             <thead>
                 <tr>
-                    <th style="width: 30%; background: #064e3b !important;">Day</th>
-                    <th style="width: 45%; background: #064e3b !important;">Date</th>
-                    <th style="width: 25%; background: #064e3b !important;">Actions</th>
+                    <th style="width: 30%;">Day</th>
+                    <th style="width: 45%;">Date</th>
+                    <th style="width: 25%;">Actions</th>
                 </tr>
             </thead>
             <tbody id="approvedSchedules"></tbody>
         </table>
 
-        <h3 style="color: #064e3b; border-left-color: #059669;">Pending Schedules</h3>
+        <h3>Pending Schedules</h3>
         <table class="approval-table">
             <thead>
                 <tr>
-                    <th style="width: 30%; background: #064e3b !important;">Day</th>
-                    <th style="width: 45%; background: #064e3b !important;">Date</th>
-                    <th style="width: 25%; background: #064e3b !important;">Actions</th>
+                    <th style="width: 30%;">Day</th>
+                    <th style="width: 45%;">Date</th>
+                    <th style="width: 25%;">Actions</th>
                 </tr>
             </thead>
             <tbody id="pendingSchedules"></tbody>
         </table>
     </div>
 
-    <!-- LAYOUT 2: DRIVER ALLOWANCE PANEL (FOREST GREEN THEME) -->
-    <div class="schedule-header header-allowance" style="margin-top: 40px;">
+    <!-- LAYOUT 2: DRIVER ALLOWANCE -->
+    <!-- CHANGED: Added bg-driver-allowance class here -->
+    <div class="schedule-header bg-driver-allowance" style="margin-top: 30px;">
         <h2>Driver Allowance</h2>
         <div class="month-selector">
             <label for="allowanceCutoff">Cut-off Period</label>
@@ -987,7 +1005,8 @@ h1 {
         </button>
     </div>
 </div>
-<!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
+    
+    <!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
 <div id="driverAllowanceDetailsModal" class="modal">
     <div class="modal-content" style="max-width: 500px;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
