@@ -889,10 +889,15 @@ h1 {
     <div class="schedule-header" style="margin-top: 0;">
         <h2>Driver Schedule Admin</h2>
         <!-- Empty placeholder or custom utility can go here if needed -->
-        <div style="font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9);">
-            Manage Approvals
+       
+<div class="month-selector">
+            <label for="allowanceCutoff">Cut-off Period</label>
+            <select id="allowanceCutoff" onchange="processAllowanceSummaryTable()">
+                <option value="1">July 1 - 15, 2026</option>
+                <option value="2">July 16 - End of Month</option>
+            </select>
         </div>
-    </div>
+        </div>
 
     <div class="approval-container" style="margin-top: 15px;">
         <h3>Approved Schedules</h3>
