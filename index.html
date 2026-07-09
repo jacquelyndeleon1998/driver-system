@@ -1403,19 +1403,30 @@ function openDriverDetailsModal(driverName) {
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
 
-    let matchesFoundCount = 0;
-
-    globalParsedAllowances.forEach(record => {
-        if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return;
+    // 1. Filter out the matching rows first
+    const filteredRecords = globalParsedAllowances.filter(record => {
+        if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return false;
         
         const dateMatch = record.date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return;
+        if (!dateMatch) return false;
         const dayNumber = parseInt(dateMatch[0]);
         
-        if (cutoffId === "1" && dayNumber > 15) return;
-        if (cutoffId === "2" && dayNumber <= 15) return;
+        if (cutoffId === "1" && dayNumber > 15) return false;
+        if (cutoffId === "2" && dayNumber <= 15) return false;
 
-      matchesFoundCount++;
+        return true;
+    });
+
+    // 2. Sort chronologically (Oldest to Newest)
+    filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // 3. Render the sorted rows
+    if (filteredRecords.length === 0) {
+        targetBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:12px; color:#9ca3af;">No records found for this driver inside this window.</td></tr>`;
+        return;
+    }
+
+    filteredRecords.forEach(record => {
         const row = document.createElement("tr");
         let badgeDisplay = "";
         
@@ -1433,10 +1444,6 @@ function openDriverDetailsModal(driverName) {
         `;
         targetBody.appendChild(row);
     });
-
-    if(matchesFoundCount === 0) {
-        targetBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:12px; color:#9ca3af;">No records found for this driver inside this window.</td></tr>`;
-    }
 
     document.getElementById("driverAllowanceDetailsModal").style.display = "block";
     document.body.style.overflow = "hidden";
