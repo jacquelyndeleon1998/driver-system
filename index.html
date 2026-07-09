@@ -564,18 +564,16 @@ h1 {
 .receipt-preview { margin-top: 10px; }
 
 /* Loading & Success Boxes */
-.success-overlay, .loading-overlay, .action-loading-overlay {
+.success-overlay,
+.loading-overlay,
+.action-loading-overlay {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     background: rgba(0,0,0,.45);
-    display: flex;         /* Forces children boxes to flex center */
     justify-content: center;
     align-items: center;
-}        
+}
 .success-overlay { z-index: 100000; }
 .loading-overlay { z-index: 99999; }
 .action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
@@ -1678,8 +1676,10 @@ async function saveAllowance() {
         const driverCard = document.getElementById(driverId);
 
         if (driverCard) {
-            await loadSubmittedAllowances();
-            location.reload();
+           await loadSubmittedAllowances();
+await loadSchedule();
+
+document.getElementById("successModal").style.display = "flex";
         }
         closeModal();
     } catch (err) {
