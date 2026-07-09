@@ -1768,10 +1768,9 @@ function driverLogin() {
     closeDriverLogin();
 
     setTimeout(() => {
-        // Since we are matching against local database entries or selected strings directly:
         loggedInDriverName = selectedDriverValue;
         
-        // Clean credentials form fields
+        // Reset fields for next use
         driverSelect.selectedIndex = 0;
         document.getElementById("driverPin").value = "";
 
