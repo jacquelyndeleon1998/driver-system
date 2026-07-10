@@ -844,7 +844,7 @@
     }
     .status-approved { background: #d1fae5; color: #065f46; }
     .status-pending { background: #fef3c7; color: #92400e; }
-     
+         
     /* =========================
        Responsive Styles (Max 600px)
     ========================= */
@@ -1217,9 +1217,16 @@
 </footer>
 
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIR8MUgDhWxBA0AeWe9WjpYyGONUHDQfZpmPxJBODzNHN1cQUPtK4lP-lxx3gt3Aa-/exec";
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=0&single=true&output=csv";
-const approvalURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKU6d7IdZnlDr6HJxNFqipfhoGiqJ11Z_GOiaiiS8-h2yQyP82frWKKCg3r3YW-VC4bemRomYmz2E8/pub?gid=441234750&single=true&output=csv";
+// ==========================================
+// SECURED APPS SCRIPT SYSTEM HOOKS
+// ==========================================
+const WEBAPP_BASE = "https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec"; // Put your web app URL here
+const SECRET_TOKEN = "VIP-Secure-2026-Dispatch"; // Must match App Script exactly!
+// Appends the validation token securely to your execution requests
+const WEBAPP_URL = `${WEBAPP_BASE}?token=${encodeURIComponent(SECRET_TOKEN)}`;
+// Diverts direct data fetching safely through the authenticated proxy loop
+const sheetURL = `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
+const approvalURL = `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
 
 let submittedDrivers = {};
 let selectedReceipts = [];
@@ -1712,6 +1719,7 @@ async function saveAllowance() {
 
     try {
         const payloadData = {
+            token: SECRET_TOKEN, // Pass token through post body container
             data: payload,
             receipts: receipts
         };
@@ -1759,7 +1767,7 @@ async function saveAllowance() {
 }
 
 /* =========================================
-   DRIVER ALLOWANCE PORTAL IMPLEMENTATION
+    DRIVER ALLOWANCE PORTAL IMPLEMENTATION
 ========================================= */
 document.getElementById("allowanceBtn").addEventListener("click", () => {
     if (loggedInDriverName) {
@@ -2234,44 +2242,46 @@ function viewSchedule(date){
 
             let tripsHTML = "";
             d.trips.forEach((trip, index) => {
-                tripsHTML += `
-                <div class="trip">
-                    <div class="trip-title">Pick-Up ${index + 1}</div>
-                    ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                    ${trip.requestedBy ? `
-                    <div class="info-item">
-                        <div class="info-label">Requested By</div>
-                        <div class="info-value">
-                            ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                        </div>
-                    </div>` : ""}
-                    ${trip.passengerName ? `
-                    <div class="info-item">
-                        <div class="info-label">Passenger</div>
-                        <div class="info-value">
-                            ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                        </div>
-                    </div>` : ""}
-                    ${trip.origin ? `
-                    <div class="info-item">
-                        <div class="info-label">Origin</div>
-                        <div class="info-value">
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank" class="phone-link">
-                                ${trip.origin}
-                            </a>
-                        </div>
-                    </div>` : ""}
-                    ${trip.destination ? `
-                    <div class="info-item">
-                        <div class="info-label">Destination</div>
-                        <div class="info-value">
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank" class="phone-link">
-                                ${trip.destination}
-                            </a>
-                        </div>
-                    </div>` : ""}
-                    ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
-                </div>`;
+                with (trip) {
+                    tripsHTML += `
+                    <div class="trip">
+                        <div class="trip-title">Pick-Up ${index + 1}</div>
+                        ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                        ${requestedBy ? `
+                        <div class="info-item">
+                            <div class="info-label">Requested By</div>
+                            <div class="info-value">
+                                ${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
+                            </div>
+                        </div>` : ""}
+                        ${passengerName ? `
+                        <div class="info-item">
+                            <div class="info-label">Passenger</div>
+                            <div class="info-value">
+                                ${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
+                            </div>
+                        </div>` : ""}
+                        ${origin ? `
+                        <div class="info-item">
+                            <div class="info-label">Origin</div>
+                            <div class="info-value">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">
+                                    ${origin}
+                                </a>
+                            </div>
+                        </div>` : ""}
+                        ${destination ? `
+                        <div class="info-item">
+                            <div class="info-label">Destination</div>
+                            <div class="info-value">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">
+                                    ${destination}
+                                </a>
+                            </div>
+                        </div>` : ""}
+                        ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                    </div>`;
+                }
             });
 
             viewerHTML += `
@@ -2452,52 +2462,54 @@ window.onload = async function () {
 
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
-                        tripsHTML += `
-                        <div class="trip">
-                            <div class="trip-title">Pick-Up ${index + 1}</div>
-                            ${trip.pickupTime ? `
-                            <div class="info-item">
-                                <div class="info-label">Pick Up Time</div>
-                                <div class="info-value">${trip.pickupTime}</div>
-                            </div>` : ""}
-                            ${trip.requestedBy ? `
-                            <div class="info-item">
-                                <div class="info-label">Requested By</div>
-                                <div class="info-value">
-                                    ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                                </div>
-                            </div>` : ""}
-                            ${trip.passengerName ? `
-                            <div class="info-item">
-                                <div class="info-label">Passenger</div>
-                                <div class="info-value">
-                                    ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                                </div>
-                            </div>` : ""}
-                            ${trip.origin ? `
-                            <div class="info-item">
-                                <div class="info-label">Origin</div>
-                                <div class="info-value">
-                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank" class="phone-link">
-                                        ${trip.origin}
-                                    </a>
-                                </div>
-                            </div>` : ""}
-                            ${trip.destination ? `
-                            <div class="info-item">
-                                <div class="info-label">Destination</div>
-                                <div class="info-value">
-                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank" class="phone-link">
-                                        ${trip.destination}
-                                    </a>
-                                </div>
-                            </div>` : ""}
-                            ${trip.remarks ? `
-                            <div class="info-item">
-                                <div class="info-label">Remarks</div>
-                                <div class="info-value">${trip.remarks}</div>
-                            </div>` : ""}
-                        </div>`;
+                        with (trip) {
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                ${pickupTime ? `
+                                <div class="info-item">
+                                    <div class="info-label">Pick Up Time</div>
+                                    <div class="info-value">${pickupTime}</div>
+                                </div>` : ""}
+                                ${requestedBy ? `
+                                <div class="info-item">
+                                    <div class="info-label">Requested By</div>
+                                    <div class="info-value">
+                                        ${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
+                                    </div>
+                                </div>` : ""}
+                                ${passengerName ? `
+                                <div class="info-item">
+                                    <div class="info-label">Passenger</div>
+                                    <div class="info-value">
+                                        ${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
+                                    </div>
+                                </div>` : ""}
+                                ${origin ? `
+                                <div class="info-item">
+                                    <div class="info-label">Origin</div>
+                                    <div class="info-value">
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">
+                                            ${origin}
+                                        </a>
+                                    </div>
+                                </div>` : ""}
+                                ${destination ? `
+                                <div class="info-item">
+                                    <div class="info-label">Destination</div>
+                                    <div class="info-value">
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">
+                                            ${destination}
+                                        </a>
+                                    </div>
+                                </div>` : ""}
+                                ${remarks ? `
+                                <div class="info-item">
+                                    <div class="info-label">Remarks</div>
+                                    <div class="info-value">${remarks}</div>
+                                </div>` : ""}
+                            </div>`;
+                        }
                     });
 
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
@@ -2576,48 +2588,50 @@ window.onload = async function () {
 
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
-                        tripsHTML += `
-                        <div class="trip">
-                            <div class="trip-title">Pick-Up ${index + 1}</div>
-                            ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                            ${trip.requestedBy ? `
-                            <div class="info-item">
-                                <div class="info-label">Requested By</div>
-                                <div class="info-value">
-                                    ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                                </div>
-                            </div>` : ""}
-                            ${trip.passengerName ? `
-                            <div class="info-item">
-                                <div class="info-label">Passenger</div>
-                                <div class="info-value">
-                                    ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
-                                </div>
-                            </div>` : ""}
-                            ${trip.origin ? `
-                            <div class="info-item">
-                                <div class="info-label">Origin</div>
-                                <div class="info-value">
-                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.origin)}" target="_blank" class="phone-link">
-                                        ${trip.origin}
-                                    </a>
-                                </div>
-                            </div>` : ""}
-                            ${trip.destination ? `
-                            <div class="info-item">
-                                <div class="info-label">Destination</div>
-                                <div class="info-value">
-                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.destination)}" target="_blank" class="phone-link">
-                                        ${trip.destination}
-                                    </a>
-                                </div>
-                            </div>` : ""}
-                            ${trip.remarks ? `
-                            <div class="info-item">
-                                <div class="info-label">Remarks</div>
-                                <div class="info-value">${trip.remarks}</div>
-                            </div>` : ""}
-                        </div>`;
+                        with (trip) {
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `
+                                <div class="info-item">
+                                    <div class="info-label">Requested By</div>
+                                    <div class="info-value">
+                                        ${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
+                                    </div>
+                                </div>` : ""}
+                                ${passengerName ? `
+                                <div class="info-item">
+                                    <div class="info-label">Passenger</div>
+                                    <div class="info-value">
+                                        ${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
+                                    </div>
+                                </div>` : ""}
+                                ${origin ? `
+                                <div class="info-item">
+                                    <div class="info-label">Origin</div>
+                                    <div class="info-value">
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">
+                                            ${origin}
+                                        </a>
+                                    </div>
+                                </div>` : ""}
+                                ${destination ? `
+                                <div class="info-item">
+                                    <div class="info-label">Destination</div>
+                                    <div class="info-value">
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">
+                                            ${destination}
+                                        </a>
+                                    </div>
+                                </div>` : ""}
+                                ${remarks ? `
+                                <div class="info-item">
+                                    <div class="info-label">Remarks</div>
+                                    <div class="info-value">${remarks}</div>
+                                </div>` : ""}
+                            </div>`;
+                        }
                     });
 
                     pageHTML += `
