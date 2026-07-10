@@ -1171,6 +1171,20 @@
     </div>
 </div>
 
+    <div id="confirmApprovalModal" class="modal" style="display: none; background: rgba(0,0,0,.5); z-index: 99999;">
+    <div class="modal-content" style="max-width: 380px; text-align: center; padding: 25px;">
+        <div style="font-size: 45px; margin-bottom: 10px;">📋</div>
+        <h3 style="color: #14532d; font-size: 18px; margin-top: 0;">Approve Schedule</h3>
+        <p style="font-size: 13.5px; color: #4b5563; line-height: 1.5; margin: 15px 0; text-align: center;">
+            Are you sure you want to approve this schedule? Once approved, this will immediately be reflected on the driver's dashboard.
+        </p>
+        <div class="modal-buttons" style="margin-top: 20px; display: flex; gap: 10px;">
+            <button id="confirmApprovalOK" class="allowance-btn submit-btn" style="flex: 1; margin: 0; height: 40px; border-radius: 6px;">OK</button>
+            <button id="confirmApprovalCancel" class="allowance-btn cancel-btn" style="flex: 1; margin: 0; height: 40px; border-radius: 6px;">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <footer class="app-footer">
     <div class="footer-content">
         <div class="footer-title">Dispatch Hub v1.0</div>
@@ -1886,38 +1900,50 @@ async function adminLogin() {
     }
 }
 
-async function approveSchedule(date, buttonElement) {
-    const message = "Are you sure you want to approve this schedule? Once approved, this will immediately be reflected on the driver's dashboard.";
-    if (!confirm(message)) return;
+function approveSchedule(date, buttonElement) {
+   
+    const confirmModal = document.getElementById("confirmApprovalModal");
+    confirmModal.style.display = "flex";
+    document.body.style.overflow = "hidden";
 
-    buttonElement.disabled = true;
-    buttonElement.innerText = "Processing...";
-    showActionLoading("Approving Schedule...", "Updating system database. Please wait.");
+    document.getElementById("confirmApprovalOK").onclick = async function () {
+        confirmModal.style.display = "none";
+        document.body.style.overflow = "";
 
-    try {
-        const res = await fetch(`${WEBAPP_URL}?action=approve&date=${encodeURIComponent(date)}`, {
-            method: "GET",
-            mode: "cors"
-        });
-        const result = await res.json();
+        buttonElement.disabled = true;
+        buttonElement.innerText = "Processing...";
+        showActionLoading("Approving Schedule...", "Updating system database. Please wait.");
 
-        if (result.success === true) {
-            alert(`✅ Schedule for ${date} has been approved successfully!`);
-            approvalDates[date] = "approved";
-            loadScheduleApprovalPage();
-        } else {
+        try {
+            const res = await fetch(`${WEBAPP_URL}?action=approve&date=${encodeURIComponent(date)}`, {
+                method: "GET",
+                mode: "cors"
+            });
+            const result = await res.json();
+
+            if (result.success === true) {
+                alert(`✅ Schedule for ${date} has been approved successfully!`);
+                approvalDates[date] = "approved";
+                loadScheduleApprovalPage();
+            } else {
+                buttonElement.disabled = false;
+                buttonElement.innerText = "Approve";
+                alert("❌ Failed to approve: " + (result.message || "Unknown error"));
+            }
+        } catch (err) {
             buttonElement.disabled = false;
             buttonElement.innerText = "Approve";
-            alert("&times; Failed to approve: " + (result.message || "Unknown error"));
+            console.error(err);
+            alert("❌ Network error while approving. Please try again.");
+        } finally {
+            hideActionLoading();
         }
-    } catch (err) {
-        buttonElement.disabled = false;
-        buttonElement.innerText = "Approve";
-        console.error(err);
-        alert("&times; Network error while approving. Please try again.");
-    } finally {
-        hideActionLoading();
-    }
+    };
+
+    document.getElementById("confirmApprovalCancel").onclick = function () {
+        confirmModal.style.display = "none";
+        document.body.style.overflow = "";
+    };
 }
 
 function loadScheduleApprovalPage(){
