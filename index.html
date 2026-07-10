@@ -881,6 +881,16 @@
         .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
         .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
         .month-selector { width: 100%; justify-content: space-between; }
+
+        .approval-table {
+        table-layout: auto !important; 
+        width: 100% !important;
+    }
+    .approval-table th, .approval-table td {
+        padding: 8px 4px !important; 
+        font-size: 11px !important;  
+        white-space: normal !important; 
+    }
     }
     </style>
 </head>
@@ -993,15 +1003,15 @@
     <div class="approval-container">
         <h3>Driver Allowance Summary</h3>
         <table class="approval-table">
-            <thead>
-                <tr>
-                    <th style="width: 40%;">Driver Name</th>
-                    <th style="width: 25%; text-align: right; padding-right: 25px;">Total Approved</th>
-                    <th style="width: 20%; text-align: right; padding-right: 25px;">Pending</th>
-                    <th style="width: 15%; text-align: center;">Action</th>
-                </tr>
-            </thead>
-            <tbody id="allowanceSummaryBody"></tbody>
+    <thead>
+        <tr>
+            <th style="width: 34%; text-align: left;">Driver Name</th>
+            <th style="width: 24%; text-align: center;">Total Approved</th>
+            <th style="width: 24%; text-align: center;">Pending</th>
+            <th style="width: 18%; text-align: center;">Action</th>
+        </tr>
+    </thead>
+    <tbody id="allowanceSummaryBody">
         </table>
     </div>
 
@@ -1375,13 +1385,13 @@ function processAllowanceSummaryTable() {
 
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${driver}</td>
-            <td style="text-align: right; padding-right: 25px; color: #14532d; font-weight:700;">&#8369;${aggregateGroup[driver].approved.toLocaleString()}</td>
-            <td style="text-align: right; padding-right: 25px; color: #b45309; font-weight:700;">&#8369;${aggregateGroup[driver].pending.toLocaleString()}</td>
-            <td style="text-align: center;">
-                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
-            </td>
-        `;
+    <td>${driver}</td>
+    <td style="text-align: center; color: #14532d; font-weight:700;">₱${aggregateGroup[driver].approved.toLocaleString()}</td>
+    <td style="text-align: center; color: #b45309; font-weight:700;">₱${aggregateGroup[driver].pending.toLocaleString()}</td>
+    <td style="text-align: center;">
+        <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
+    </td>
+`;
         tableBody.appendChild(row);
     });
 
@@ -1389,11 +1399,11 @@ function processAllowanceSummaryTable() {
     summaryFooterRow.style.background = "#e5e7eb";
     summaryFooterRow.style.fontWeight = "700";
     summaryFooterRow.innerHTML = `
-        <td style="color:#14532d; font-size: 11px;">Grand Total</td>
-        <td style="text-align: right; padding-right: 25px; color: #14532d;">&#8369;${overallApprovedTotal.toLocaleString()}</td>
-        <td style="text-align: right; padding-right: 25px; color: #b45309;">&#8369;${overallPendingTotal.toLocaleString()}</td>
-        <td></td>
-    `;
+    <td style="color:#14532d; font-size: 11px; text-align: left;">Grand Total</td>
+    <td style="text-align: center; color: #14532d;">₱${overallApprovedTotal.toLocaleString()}</td>
+    <td style="text-align: center; color: #b45309;">₱${overallPendingTotal.toLocaleString()}</td>
+    <td></td>
+`;
     tableBody.appendChild(summaryFooterRow);
 }
 
