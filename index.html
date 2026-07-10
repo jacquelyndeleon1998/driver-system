@@ -260,18 +260,6 @@
         font-weight: bold;
     }
 
-    .am-highlight-row {
-        background: #fef08a !important; /* Banayad na Dilaw para sa AM */
-        color: #854d0e !important;
-        font-weight: bold;
-    }
-
-    .pm-highlight-row {
-        background: #bfdbfe !important; /* Banayad na Asul para sa PM */
-        color: #1e40af !important;
-        font-weight: bold;
-    }
-
     /* =========================
        App Header & Navigation Layout
     ========================= */
@@ -741,9 +729,9 @@
         border-left: 4px solid #16a34a;
     }
 
-    /* =========================
+    /* =========================================
        Admin Panel Compact Table Rows
-    ========================= */
+    ========================================= */
     .approval-table {
         width: 100%;
         table-layout: fixed;
@@ -1200,7 +1188,7 @@
 <div id="loginSuccessModal" class="success-overlay">
     <div class="success-box" style="width: 320px;">
         <div class="success-icon">🔔</div>
-        <h2 id="loginSuccessTitle" style="color: #14532d; font-size: 20px;">Driver Login</h2>
+        <h2 id="loginSuccessTitle" style="color: #14532d; font-size: 20px; text-align: center;">Driver Login</h2>
         <p id="loginSuccessMessage" style="margin-top: 10px; font-size: 13.5px; color: #4b5563; text-align: center; padding: 0 5px;"></p>
         <button id="loginSuccessOK" class="allowance-btn" style="margin-top: 15px;">OK</button>
     </div>
@@ -1835,20 +1823,17 @@ function driverLogin() {
         loginBtn.disabled = false;
         loginBtn.innerText = "Login";
 
-        // --- DITO MANGYAYARI ANG PAGBUKAS NG CUSTOM MODAL ---
         const loginTitle = document.getElementById("loginSuccessTitle");
         const loginMsg = document.getElementById("loginSuccessMessage");
         
         loginTitle.innerHTML = `Hi ${loggedInDriverName}!`;
         loginMsg.innerHTML = `This is just a reminder to always submit your allowance immediately after your trip!`;
         
-        // Ipakita ang bagong gawang custom alert modal
         document.getElementById("loginSuccessModal").style.display = "flex";
 
-        // Kapag pinindot ang OK button ng bagong modal
         document.getElementById("loginSuccessOK").onclick = () => {
             document.getElementById("loginSuccessModal").style.display = "none";
-            showDriverAllowanceSummary(); // Tumuloy sa dashboard summary pagka-OK
+            showDriverAllowanceSummary(); 
         };
 
     }, 1200);
@@ -1886,7 +1871,7 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
 
 document.getElementById("closeViewerBtn").addEventListener("click", () => {
     document.getElementById("scheduleViewerPage").style.display = "none";
-    document.body.style.overflow = ""; // Ibalik ang normal scroll ng site
+    document.body.style.overflow = ""; 
 });
     
 function showActionLoading(title, message){
@@ -1936,7 +1921,6 @@ async function adminLogin() {
 }
 
 function approveSchedule(date, buttonElement) {
-    
     const confirmModal = document.getElementById("confirmApprovalModal");
     confirmModal.style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -2053,26 +2037,17 @@ function viewSchedule(date){
     let tableRows = "";
 
     Object.values(summaryDrivers[date] || {}).forEach(driver => {
-        const itineraryText = (driver.itinerary || "").toLowerCase().trim();
-        const isRestDay = itineraryText === "rest day";
+        let itineraryDisplay = (driver.itinerary || "").trim();
+        const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
         
-        let rowClass = "";
-        if (isRestDay) {
-            rowClass = "rest-day-row";
-        } else if (itineraryText.includes("am")) {
-            rowClass = "am-highlight-row";
-        } else if (itineraryText.includes("pm")) {
-            rowClass = "pm-highlight-row";
-        }
+        let rowClass = isRestDay ? "rest-day-row" : ""; 
 
-        // DITO NAGBABAGO ANG KULAY NG TEXT NG AM AT PM MISMO SA ASSIGNMENT COLUMN (ADMIN MODAL)
-        let itineraryDisplay = driver.itinerary || "";
-        const lowerItinerary = itineraryDisplay.toLowerCase().trim();
-        
-        if (lowerItinerary.includes("am")) {
-            itineraryDisplay = itineraryDisplay.replace(/am/i, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-        } else if (lowerItinerary.includes("pm")) {
-            itineraryDisplay = itineraryDisplay.replace(/pm/i, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+        // Gumagamit ng word boundary (\b) para maiwasan ang "Pampanga"
+        if (/\bam\b/i.test(itineraryDisplay)) {
+            itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+        }
+        if (/\bpm\b/i.test(itineraryDisplay)) {
+            itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
         }
 
         tableRows += `
@@ -2270,26 +2245,16 @@ window.onload = async function () {
                 let tableRows="";
 
                 Object.values(summaryDrivers[date] || {}).forEach(driver=>{
-                    const itineraryText = (driver.itinerary || "").toLowerCase().trim();
-                    const rest = itineraryText === "rest day";
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
                     
-                    let rowClass = "";
-                    if (rest) {
-                        rowClass = "rest-day-row";
-                    } else if (itineraryText.includes("am")) {
-                        rowClass = "am-highlight-row";
-                    } else if (itineraryText.includes("pm")) {
-                        rowClass = "pm-highlight-row";
-                    }
+                    let rowClass = isRestDay ? "rest-day-row" : ""; 
 
-                    // DITO NAGBABAGO ANG KULAY NG TEXT NG AM AT PM (TODAY TABLE VIEW)
-                    let itineraryDisplay = driver.itinerary || "";
-                    const lowerItinerary = itineraryDisplay.toLowerCase().trim();
-                    
-                    if (lowerItinerary.includes("am")) {
-                        itineraryDisplay = itineraryDisplay.replace(/am/i, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    } else if (lowerItinerary.includes("pm")) {
-                        itineraryDisplay = itineraryDisplay.replace(/pm/i, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+                    if (/\bam\b/i.test(itineraryDisplay)) {
+                        itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    }
+                    if (/\bpm\b/i.test(itineraryDisplay)) {
+                        itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
                     }
 
                     tableRows += `
@@ -2403,25 +2368,16 @@ window.onload = async function () {
             if (!isPast && !isToday) {
                 let tableRows = "";
                 Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                    const rest = (driver.itinerary || "").toLowerCase().trim() === "rest day";
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
                     
-                    let rowClass = "";
-                    if (rest) {
-                        rowClass = "rest-day-row";
-                    } else if ((driver.itinerary || "").toLowerCase().trim().includes("am")) {
-                        rowClass = "am-highlight-row";
-                    } else if ((driver.itinerary || "").toLowerCase().trim().includes("pm")) {
-                        rowClass = "pm-highlight-row";
-                    }
+                    let rowClass = isRestDay ? "rest-day-row" : ""; 
 
-                    // DITO NAGBABAGO ANG KULAY NG TEXT NG AM AT PM (FUTURE TABLE VIEW)
-                    let itineraryDisplay = driver.itinerary || "";
-                    const lowerItinerary = itineraryDisplay.toLowerCase().trim();
-                    
-                    if (lowerItinerary.includes("am")) {
-                        itineraryDisplay = itineraryDisplay.replace(/am/i, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    } else if (lowerItinerary.includes("pm")) {
-                        itineraryDisplay = itineraryDisplay.replace(/pm/i, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+                    if (/\bam\b/i.test(itineraryDisplay)) {
+                        itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    }
+                    if (/\bpm\b/i.test(itineraryDisplay)) {
+                        itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
                     }
 
                     tableRows += `
