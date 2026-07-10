@@ -1950,7 +1950,7 @@ function approveSchedule(date, buttonElement) {
             });
             const result = await res.json();
 
-             if (result.success === true) {
+            if (result.success === true) {
                 // Change modal text dynamically to match schedule approval
                 document.getElementById("successModalTitle").textContent = "Schedule Approved";
                 document.getElementById("successModalText").textContent = `Schedule for ${date} has been approved successfully!`;
@@ -1965,12 +1965,7 @@ function approveSchedule(date, buttonElement) {
                     // Triggers your main window.onload function to fetch data and refresh everything cleanly
                     window.onload(); 
                 };
-            }
-                approvalDates[date] = "approved";
-                loadScheduleApprovalPage();
-            }
-            
-            else {
+            } else {
                 buttonElement.disabled = false;
                 buttonElement.innerText = "Approve";
                 alert("❌ Failed to approve: " + (result.message || "Unknown error"));
@@ -1991,6 +1986,7 @@ function approveSchedule(date, buttonElement) {
     };
 }
 
+    
 function loadScheduleApprovalPage(){
     const approvedDiv = document.getElementById("approvedSchedules");
     const pendingDiv = document.getElementById("pendingSchedules");
