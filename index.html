@@ -2283,16 +2283,33 @@ window.onload = async function () {
         });
 
         scheduleDates.forEach(date => {
-            const scheduleDate = new Date(date);
-            const status = (approvalDates[date] || "").toLowerCase();
+    const scheduleDate = new Date(date);
+    const status = (approvalDates[date] || "").toLowerCase();
 
-            if(status !== "approved") return;
+    if(status !== "approved") return;
 
-            const today = new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"}));
-            today.setHours(0,0,0,0);
-            scheduleDate.setHours(0,0,0,0);
+    // Set up Date reference windows in the Manila timezone
+    const today = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+    today.setHours(0, 0, 0, 0);
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
 
-            const isToday = scheduleDate.getTime() === today.getTime();
+    scheduleDate.setHours(0, 0, 0, 0);
+
+    // CRITICAL FILTER: Hide any approved schedules that are strictly older than yesterday
+    if (scheduleDate.getTime() < yesterday.getTime()) {
+        return;
+    }
+
+    const isToday = scheduleDate.getTime() === today.getTime();
+    const isYesterday = scheduleDate.getTime() === yesterday.getTime();
+    
+    // We can also flag yesterday as part of past/pending rendering contexts if needed
+    const isPast = scheduleDate.getTime() < today.getTime(); 
+    const dayName = scheduleDate.toLocaleDateString("en-US", {weekday: "long"});
+            
             const isPast = scheduleDate.getTime() < today.getTime();
             const dayName = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
