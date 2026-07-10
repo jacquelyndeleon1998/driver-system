@@ -2095,7 +2095,7 @@ function viewSchedule(date){
     Object.values(grouped)
         .filter(d => d.date === date)
         .forEach(d => {
-            if (["rest day", "am carpool", "standby", "banking", "pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
+            if (["rest day", "am", "standby", "banking", "pm"].includes((d.itinerary || "").toLowerCase().trim())) return;
 
             let tripsHTML = "";
             d.trips.forEach((trip, index) => {
@@ -2313,7 +2313,7 @@ window.onload = async function () {
                 Object.values(grouped)
                 .filter(d => d.date === date)
                 .forEach(d => {
-                    if (["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
+                    if (["rest day","am","standby","banking","pm"].includes((d.itinerary || "").toLowerCase().trim())) return;
 
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
@@ -2437,7 +2437,7 @@ window.onload = async function () {
                 .sort()
                 .filter(d => d.date === date)
                 .forEach(d => {
-                    if (["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
+                    
 
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
@@ -2502,7 +2502,7 @@ window.onload = async function () {
             if(isPast){
                 const pendingDrivers = Object.values(grouped).filter(d=>{
                     if(d.date !== date) return false;
-                    if(["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary||"").toLowerCase().trim())) return false;
+                    if(["rest day","am","standby","banking","pm"].includes((d.itinerary||"").toLowerCase().trim())) return false;
                     return !submittedDrivers[`${d.driver}|${d.date}`];
                 });
 
