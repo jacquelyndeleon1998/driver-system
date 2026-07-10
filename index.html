@@ -2003,11 +2003,22 @@ function loadScheduleApprovalPage(){
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday.setHours(0,0,0,0);
 
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0,0,0,0);
+
+    // Check if tomorrow's schedule is in the array and already approved
+    const isTomorrowApproved = scheduleDates.some(date => {
+        const d = new Date(date);
+        d.setHours(0,0,0,0);
+        const status = (approvalDates[date] || "").toString().trim().toLowerCase();
+        return d.getTime() === tomorrow.getTime() && status === "approved";
+    });
+
+    let approvedMainRowsHtml = "";
+    let approvedDropdownItems = [];
     let hasApproved = false;
     let hasPending = false;
-    
-    // Array to temporarily hold approved items so we can slice them
-    let approvedItems = [];
 
     scheduleDates.forEach(date => {
         const scheduleDate = new Date(date);
@@ -2023,51 +2034,75 @@ function loadScheduleApprovalPage(){
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
-        const row = `
-        <tr>
-            <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-            <td class="approval-date-val" style="text-align: center;">${date}</td>
-            <td>
-                <div class="action-btn-grp" style="justify-content: center;">
-                    <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                    ${status === "approved" ? "" : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`}
-                </div>
-            </td>
-        </tr>`;
-
-      if (status === "approved") {
-            // Only allow today and yesterday. Hide schedules older than yesterday.
-            if (scheduleDate.getTime() < yesterday.getTime()) {
-                return; 
-            }
-            approvedItems.push({ date: date, html: row });
+        if (status === "approved") {
             hasApproved = true;
+            
+            const row = `
+            <tr>
+                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
+                <td class="approval-date-val" style="text-align: center;">${date}</td>
+                <td>
+                    <div class="action-btn-grp" style="justify-content: center;">
+                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
+                    </div>
+                </td>
+            </tr>`;
+
+            const scheduleTime = scheduleDate.getTime();
+            let showUpfront = false;
+
+            if (isTomorrowApproved) {
+                // If tomorrow is approved: show Today and Tomorrow upfront, Yesterday goes to folder
+                if (scheduleTime === today.getTime() || scheduleTime === tomorrow.getTime()) {
+                    showUpfront = true;
+                }
+            } else {
+                // Default: show Yesterday and Today upfront
+                if (scheduleTime === yesterday.getTime() || scheduleTime === today.getTime()) {
+                    showUpfront = true;
+                }
+            }
+
+            if (showUpfront) {
+                approvedMainRowsHtml += row;
+            } else {
+                approvedDropdownItems.push({ date: date, html: row });
+            }
         } else {
-            pendingDiv.innerHTML += row;
+            const pendingRow = `
+            <tr>
+                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
+                <td class="approval-date-val" style="text-align: center;">${date}</td>
+                <td>
+                    <div class="action-btn-grp" style="justify-content: center;">
+                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
+                        <button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>
+                    </div>
+                </td>
+            </tr>`;
+            pendingDiv.innerHTML += pendingRow;
             hasPending = true;
         }
     });
 
-    // Render logic for Approved Schedules (Limit to 2, remaining goes to dropdown)
+    // Render logic for Approved Schedules
     if (hasApproved) {
-        // 1. Show the first 2 visible rows instantly
-        const visibleItems = approvedItems.slice(0, 2);
-        visibleItems.forEach(item => {
-            approvedDiv.innerHTML += item.html;
-        });
+        // Output the upfront visible rows first
+        approvedDiv.innerHTML = approvedMainRowsHtml;
 
-        // 2. If there are more than 2 items, place them in a select dropdown element row
-        if (approvedItems.length > 2) {
-            const hiddenItems = approvedItems.slice(2);
+        // If there are any other approved items in this cut-off, bundle them inside the select folder
+        if (approvedDropdownItems.length > 0) {
+            // Keep them ordered chronologically inside the folder drop-down
+            approvedDropdownItems.sort((a, b) => new Date(a.date) - new Date(b.date));
             
             let dropdownRow = `
             <tr>
                 <td colspan="3" style="text-align: center; padding: 10px;">
                     <select onchange="if(this.value) { viewSchedule(this.value); this.selectedIndex=0; }" style="width: 90%; padding: 6px; font-size: 12px; font-weight: 600; border: 1px solid #14532d; border-radius: 6px; color: #14532d; background: #fff; cursor: pointer;">
-                        <option value="" selected disabled>📂 View More Approved Schedules (${hiddenItems.length})</option>
+                        <option value="" selected disabled>📂 View More Approved Schedules (${approvedDropdownItems.length})</option>
             `;
             
-            hiddenItems.forEach(item => {
+            approvedDropdownItems.forEach(item => {
                 dropdownRow += `<option value="${item.date}">${item.date}</option>`;
             });
             
