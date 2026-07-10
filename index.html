@@ -1278,8 +1278,10 @@ function showAdminDashboard() {
 
 async function loadSubmittedAllowances() {
     try {
-        const res = await fetch(WEBAPP_URL + "?action=submitted");
+       const res = await fetch(WEBAPP_URL + "&action=submitted");
         const data = await res.json();
+console.log("Submitted response:", data);
+        
         submittedDrivers = {};
         data.submitted.forEach(item => { 
             const [driver, rawDate] = item.split("|");
@@ -1293,7 +1295,7 @@ async function loadSubmittedAllowances() {
 
 async function fetchLiveAllowancesFromSheet() {
     try {
-        const response = await fetch(WEBAPP_URL + "?action=getAllowancesData");
+        const response = await fetch(WEBAPP_URL + "&action=getAllowancesData");
         const jsonResult = await response.json();
         
         globalParsedAllowances = [];
