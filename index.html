@@ -1302,7 +1302,9 @@ data.submitted.forEach(item => {
 
 async function fetchLiveAllowancesFromSheet() {
     try {
-        const response = await fetch(WEBAPP_URL + "&action=getAllowancesData");
+        const response = await fetch(
+`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`
+);
         const jsonResult = await response.json();
         
         globalParsedAllowances = [];
@@ -1976,7 +1978,9 @@ async function adminLogin() {
     closeAdminLogin();
 
     try {
-        const res = await fetch(WEBAPP_URL + `?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const res = await fetch(
+`${WEBAPP_BASE}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&token=${encodeURIComponent(SECRET_TOKEN)}`
+);
         const text = await res.text();
         let result = JSON.parse(text);
 
