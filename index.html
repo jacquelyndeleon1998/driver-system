@@ -5,902 +5,884 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Schedule</title>
  
-   <style>
-
-     /* Matching Lighter Green Headers (Different from the dark tables) */
-.bg-schedule-admin,
-.bg-driver-allowance {
-    background: #15803d !important; /* Lighter, vibrant green */
-    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2) !important;
-}
-
-/* Syncs dropdown text color to match the new header look */
-.bg-schedule-admin .month-selector select,
-.bg-driver-allowance .month-selector select {
-    color: #15803d !important;
-}
-
-/* Color Variants for Headers */
-.header-schedule {
-    background: #064e3b !important; /* Deep Emerald Green */
-    box-shadow: 0 4px 10px rgba(6, 78, 59, 0.2) !important;
-}
-
-.header-allowance {
-    background: #14532d !important; /* Original Rich Forest Green */
-    box-shadow: 0 4px 10px rgba(20, 83, 45, 0.2) !important;
-}
-
-/* Subtle accent matching updates */
-.header-schedule .month-selector select {
-    color: #064e3b;
-}
-.header-allowance .month-selector select {
-    color: #14532d;
-}
-        
-/* =========================
-   Universal & Base Styles
-========================= */
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #eef3ef;
-    margin: 0;
-    padding: 140px 20px 20px 20px;
-    color: #111827;
-}
-
-a {
-    color: #000;
-    text-decoration: none;
-}
-
-h1 {
-    text-align: center;
-    color: #14532d;
-    font-size: 28px;
-    margin-bottom: 6px;
-    font-weight: 700;
-}
-
-/* =========================
-   Layout & Components
-========================= */
-.admin-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 18px;
-}
-
-.admin-btn {
-    background: #14532d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.admin-btn:hover {
-    background: #166534;
-}
-
-.phone-link {
-    color: #111827;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.phone-link:hover {
-    text-decoration: underline;
-    color: #16a34a !important;
-}
-
-.driver-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,.08);
-    border: 1px solid #e5e7eb;
-}
-
-.summary-card {
-    background: #b7d58c;
-    border-radius: 14px;
-    padding: 8px;
-    margin-bottom: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-.pending-summary-card{
-    background:#ECFDF5;
-    border:1px solid #86EFAC;
-    border-radius:14px;
-    margin-bottom:18px;
-    overflow:hidden;
-}
-
-.pending-summary-header{
-    background:#15803D;
-    color:#fff;
-    padding:10px 12px;
-    font-size:16px;
-    font-weight:700;
-    text-align:center;
-}
-
-.pending-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#fff;
-}
-
-.pending-table td{
-    padding:8px 12px;
-    border-bottom:1px solid #e5e7eb;
-    font-size:12px;
-}
-
-.pending-table tr:last-child td{
-    border-bottom:none;
-}
-
-.pending-driver-cell{
-    width:85%;
-    color:#111827;
-}
-
-.pending-action-cell{
-    width:15%;
-    text-align:right;
-}
-
-.pending-submit-btn{
-    background:#16a34a;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    width:72px;
-    height:30px;
-    cursor:pointer;
-    font-size:12px;
-    font-weight:600;
-}
-
-.pending-submit-btn:hover{
-    background:#15803d;
-}
-
-/* FIXED HEADER STYLING TO MATCH YOUR PREFERRED BANNER LOOK */
-.summary-header {
-    background: #14532d;
-    color: #ffffff;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    text-align: center;
-}
-
-.summary-header h2 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.driver-header {
-    background: #14532d;
-    color: #fff;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 5px rgba(20,83,45,.15);
-}
-
-.driver-header h2 {
-    margin: 0 0 12px;
-    font-size: 17px;
-    font-weight: 700;
-    text-align: left;
-}
-
-.driver-header p {
-    margin: 0;
-    padding: 2px 0;
-    line-height: 1.2;
-    color: #fff;
-}
-
-.trip {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-left: 4px solid #14532d;
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-}
-
-.trip-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #14532d;
-    margin-bottom: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.trip p {
-    margin: 0;
-    padding: 2px 0;
-    line-height: 1.2;
-}
-
-.allowance-btn {
-    width: 100%;
-    height: 46px;
-    margin-top: 14px;
-    background: #16a34a;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .2s ease;
-}
-
-.allowance-btn:active {
-    transform: scale(.99);
-}
-
-.rest-day-row {
-    background: #f8d7da;
-    color: #721c24;
-    font-weight: bold;
-}
-
-/* =========================
-   App Header & Navigation Layout
-========================= */
-.app-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 22px;
-    position: fixed;            
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;              
-    background: #eef3ef;        
-    padding: 20px 20px 10px 20px;
-    box-sizing: border-box;
-}
-
-.app-left {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.app-logo {
-    width: 72px;
-    height: 72px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.app-title h1 {
-    margin: 0;
-    font-size: 30px;
-    color: #14532d;
-    font-weight: 700;
-    text-align: left;
-    line-height: 1.1;
-}
-
-.app-subtitle {
-    margin-top: 4px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #374151;
-}
-
-.app-description {
-    margin-top: 6px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.top-nav {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    padding-right: 12px;
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    color: #6b7280;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.nav-btn:hover {
-    color: #14532d;
-}
-
-.nav-btn.active {
-    color: #16a34a;
-}
-
-.nav-separator {
-    color: #9ca3af;
-    user-select: none;
-}
-
-/* =========================
-   Modals & Overlays
-========================= */
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 9999;
-    overflow-y: auto;
-    padding: 15px;
-    box-sizing: border-box;
-}
-
-.modal-content {
-    background: #fff;
-    width: 90%;
-    max-width: 450px;
-    max-height: 90vh;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 10px;
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-.modal-title {
-    margin-top: 0;
-    color: #111827;
-}
-
-.modal-content input,
-.modal-content select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: #fff;
-    font-size: 14px;
-    box-sizing: border-box;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.modal-buttons .allowance-btn {
-    flex: 1;
-    margin-top: 0;
-    height: 48px;
-    border-radius: 8px;
-}
-
-.submit-btn { background: #16a34a; color: #fff; }
-.submit-btn:hover { background: #15803d; }
-.cancel-btn { background: #6b7280; color: #fff; }
-.cancel-btn:hover { background: #4b5563; }
-
-/* Form Fields inside Modal */
-.trip-info-card {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 15px;
-}
-
-.info-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 2px 0;
-}
-
-.info-label {
-    width: 95px;
-    min-width: 95px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #6b7280;
-    white-space: nowrap;
-}
-
-.driver-header .info-label { color: rgba(255,255,255,.88); }
-.trip-info-card .info-label { color: #166534; }
-
-.info-value {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 500;
-    color: #111827;
-    word-break: break-word;
-}
-
-.info-value a,
-.phone-link {
-    font-size: 14px !important;
-    color: #111827;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.info-value a:hover,
-.phone-link:hover {
-    text-decoration: underline;
-    color: #16a34a;
-}
-
-.driver-header .info-value { color: #fff; }
-.trip-info-card .info-value { font-weight: 600; }
-
-.section-title {
-    display: block;
-    margin: 12px 0 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #14532d;
-    border-bottom: 1px solid #d1fae5;
-    padding-bottom: 5px;
-}
-
-.duty-time-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.time-card {
-    flex: 1;
-}
-
-.time-card label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 2px;
-}
-
-.time-card input {
-    width: 100%;
-    height: 38px;
-    padding: 4px 8px;
-    font-size: 13px;
-    font-weight: 500;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: #fff;
-    box-sizing: border-box;
-}
-
-.time-card input:focus {
-    outline: none;
-    border-color: #1d4ed8;
-    box-shadow: 0 0 0 2px rgba(37,99,235,.12);
-}
-
-.meal-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-.meal-item label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
-
-.meal-item input {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Upload & Receipts */
-.receipt-section {
-    display: none;
-    margin-top: 10px;
-}
-
-.file-input-hidden {
-    display: none;
-}
-
-.upload-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.upload-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.camera-btn { background: #2563eb; }
-.gallery-btn { background: #6b7280; }
-.receipt-preview { margin-top: 10px; }
-
-/* Loading & Success Boxes */
-.success-overlay,
-.loading-overlay,
-.action-loading-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-    justify-content: center;
-    align-items: center;
-}
-.success-overlay { z-index: 100000; }
-.loading-overlay { z-index: 99999; }
-.action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
-
-.success-box, .loading-box, .action-loading-box {
-    background: #fff;
-    border-radius: 14px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 10px 35px rgba(0,0,0,.25);
-}
-.success-box { width: 290px; }
-.loading-box { width: 280px; }
-.loading-box-large { max-width: 340px; }
-.action-loading-box { width: 320px; padding: 28px 24px; }
-
-.success-icon { font-size: 55px; margin-bottom: 12px; }
-.success-box h2 { margin: 0 0 10px; color: #16a34a; }
-.success-box p, .loading-message, .action-loading-message { color: #4b5563; line-height: 1.5; font-size: 14px; }
-
-.loading-banner {
-    background: #16a34a;
-    color: #fff;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-    box-shadow: 0 4px 12px rgba(22,163,74,.25);
-}
-.loading-banner h2 { margin: 0; font-size: 20px; }
-.loading-banner-subtitle { margin-top: 4px; font-size: 13px; opacity: .9; }
-.loading-title, .action-loading-title { margin: 0 0 8px; color: #111827; }
-.action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
-
-.spinner, .action-loading-spinner {
-    margin: 0 auto 18px auto; /* Centers horizontally inside the box */
-    border: 5px solid #e5e7eb;
-    border-radius: 50%;
-    display: block;           /* Enforces block alignment properties */
-}
-.spinner {
-    width: 55px; height: 55px;
-    border-top: 5px solid #16a34a;
-    animation: spin 1s linear infinite;
-}
-.action-loading-spinner {
-    width: 46px; height: 46px; margin: auto;
-    border-width: 4px; border-top: 4px solid #15803d;
-    animation: spin .8s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Driver View Table Styles */
-.summary-table {
-    width: 100%;
-    table-layout: auto;
-    border-collapse: collapse;
-    font-size: 11px;
-}
-
-.summary-table th,
-.summary-table td {
-    padding: 7px 6px;
-    border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap;
-    word-break: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.summary-table th{
-    background:#ffffff;
-    color:#14532d;
-    font-weight:700;
-}
-.summary-table tr:last-child td { border-bottom: none; }
-
-.summary-table th:nth-child(1){
-    width:32%;
-    text-align:left;
-    font-weight:700;
-}
-
-.summary-table td:first-child{
-    width:32%;
-    text-align:left;
-    font-weight:400;
-}
-.summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
-.summary-table th:nth-child(3){
-    width:18%;
-    text-align:center;
-    font-weight:700;
-}
-
-.summary-table td:nth-child(3){
-    width:18%;
-    text-align:center;
-    font-weight:400;
-}
-.summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
-
-/* Footer */
-.app-footer {
-    margin-top: 30px;
-    padding: 8px 10px;
-    text-align: center;
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-}
-
-.footer-content { display: flex; flex-direction: column; gap: 4px; }
-.footer-title { font-size: 12px; font-weight: 600; color: #065f46; line-height: 1.2; }
-.footer-sub { font-size: 11px; color: #6b7280; line-height: 1.2; }
-.footer-copy { font-size: 10px; color: #9ca3af; line-height: 1.2; }
-
-/* =========================================
-   Admin Panel Specific Layout Styles
-========================================= */
-.schedule-header {
-    background: #14532d;
-    color: #ffffff;
-    padding: 14px 18px;
-    border-radius: 10px;
-    margin-bottom: 18px;
-    box-shadow: 0 4px 10px rgba(20,83,45,.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.schedule-header h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.month-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.month-selector label {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.9);
-}
-
-.month-selector select {
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #14532d;
-    background: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    outline: none;
-}
-
-.approval-container h3 {
-    color: #14532d;
-    font-size: 15px;
-    font-weight: 700;
-    margin: 22px 0 10px;
-    padding-left: 6px;
-    border-left: 4px solid #16a34a;
-}
-
-/* =========================================
-   Admin Panel Compact Table Rows
-========================================= */
-.approval-table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    background: #ffffff !important;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    margin-bottom: 15px;
-    border: 1px solid #e5e7eb;
-}
-
-.approval-table th {
-    background: #14532d !important;
-    color: #ffffff !important;
-    font-weight: 700;
-    font-size: 12px;
-    text-align: left;
-    padding: 10px 8px;
-}
-
-.approval-table td {
-    padding: 10px 8px;
-    font-size: 12px;
-    color: #111827 !important;
-    font-weight: 600;
-    border-bottom: 1px solid #e5e7eb;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.approval-table tr:last-child td {
-    border-bottom: none;
-}
-
-.approval-table tr:hover {
-    background: #f9fafb;
-}
-
-.approval-day-name {
-    font-weight: 700;
-}
-
-.approval-date-val {
-    font-weight: 500;
-}
-
-.action-btn-grp {
-    display: flex;
-    gap: 6px;
-}
-
-.action-table-btn {
-    padding: 6px 12px;
-    font-size: 11px;
-    font-weight: 700;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background .2s, color .2s;
-}
-
-.btn-view {
-    background: #16a34a !important;
-    color: #ffffff !important;
-}
-
-.btn-view:hover {
-    background: #15803d !important;
-}
-
-.btn-approve {
-    background: #ffffff !important;
-    color: #14532d !important;
-    border: 1px solid rgba(20, 83, 45, 0.4) !important;
-}
-
-.btn-approve:hover {
-    background: #eef3ef !important;
-}
-
-/* Modal Internal List Structure */
-.modal-list-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 13px;
-}
-.modal-list-table th {
-    text-align: left;
-    padding: 8px;
-    background: #f3f4f6;
-    color: #374151;
-    font-weight: 600;
-    border-bottom: 2px solid #e5e7eb;
-}
-.modal-list-table td {
-    padding: 10px 8px;
-    border-bottom: 1px solid #e5e7eb;
-}
-.modal-list-table tr:last-child td {
-    border-bottom: none;
-}
-.status-badge {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 700;
-}
-.status-approved { background: #d1fae5; color: #065f46; }
-.status-pending { background: #fef3c7; color: #92400e; }
- 
-/* =========================
-   Responsive Styles (Max 600px)
-========================= */
-@media(max-width:600px){
+    <style>
+    /* Matching Lighter Green Headers (Different from the dark tables) */
+    .bg-schedule-admin,
+    .bg-driver-allowance {
+        background: #15803d !important; /* Lighter, vibrant green */
+        box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2) !important;
+    }
+
+    /* Syncs dropdown text color to match the new header look */
+    .bg-schedule-admin .month-selector select,
+    .bg-driver-allowance .month-selector select {
+        color: #15803d !important;
+    }
+
+    /* Color Variants for Headers */
+    .header-schedule {
+        background: #064e3b !important; /* Deep Emerald Green */
+        box-shadow: 0 4px 10px rgba(6, 78, 59, 0.2) !important;
+    }
+
+    .header-allowance {
+        background: #14532d !important; /* Original Rich Forest Green */
+        box-shadow: 0 4px 10px rgba(20, 83, 45, 0.2) !important;
+    }
+
+    /* Subtle accent matching updates */
+    .header-schedule .month-selector select {
+        color: #064e3b;
+    }
+    .header-allowance .month-selector select {
+        color: #14532d;
+    }
+            
+    /* =========================
+       Universal & Base Styles
+    ========================= */
     body {
-        padding-top: 175px;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #eef3ef;
+        margin: 0;
+        padding: 140px 20px 20px 20px;
+        color: #111827;
     }
-    .admin-toolbar { justify-content: stretch; }
-    .admin-btn { width: 100%; }
-    .meal-grid { gap: 10px; }
-    .meal-item label, .time-card label { font-size: 11px; }
-    .duty-time-row { gap: 8px; padding: 0 2px; }
-    .section-title { font-size: 14px; }
-    .time-card input { height: 38px; font-size: 13px; }
-    .upload-btn, .allowance-btn { font-size: 13px; padding: 10px; }
-    .driver-header p, .nav-btn { font-size: 12px; line-height: 1.2; }
-   
-    .trip .info-label,
-    .trip .info-value,
-    .trip .info-value a,
+
+    a {
+        color: #000;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        color: #14532d;
+        font-size: 28px;
+        margin-bottom: 6px;
+        font-weight: 700;
+    }
+
+    /* =========================
+       Layout & Components
+    ========================= */
+    .admin-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 18px;
+    }
+
+    .admin-btn {
+        background: #14532d;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .admin-btn:hover {
+        background: #166534;
+    }
+
     .phone-link {
-        font-size: 13px !important;
-        line-height: 1.3;
+        color: #111827;
+        text-decoration: none;
+        font-weight: 500;
     }
-   
-    .trip-title { font-size: 12px; }
-    .driver-header h2 { font-size: 15px; }
-    .app-header { gap: 14px; padding: 15px 15px 10px 15px; }
-    .app-logo { width: 56px; height: 56px; }
-    .app-title h1 { font-size: 24px; }
-    .app-subtitle { font-size: 14px; }
-    .app-description { font-size: 12px; }
-    .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
-    .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .month-selector { width: 100%; justify-content: space-between; }
-}
-</style>
+
+    .phone-link:hover,
+    .info-value a:hover {
+        text-decoration: underline;
+        color: #16a34a !important;
+    }
+
+    .driver-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .summary-card {
+        background: #b7d58c;
+        border-radius: 14px;
+        padding: 8px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .pending-summary-card {
+        background:#ECFDF5;
+        border:1px solid #86EFAC;
+        border-radius:14px;
+        margin-bottom:18px;
+        overflow:hidden;
+    }
+
+    .pending-summary-header {
+        background:#15803D;
+        color:#fff;
+        padding:10px 12px;
+        font-size:16px;
+        font-weight:700;
+        text-align:center;
+    }
+
+    .pending-table {
+        width:100%;
+        border-collapse:collapse;
+        background:#fff;
+    }
+
+    .pending-table td {
+        padding:8px 12px;
+        border-bottom:1px solid #e5e7eb;
+        font-size:12px;
+    }
+
+    .pending-table tr:last-child td {
+        border-bottom:none;
+    }
+
+    .pending-driver-cell {
+        width:85%;
+        color:#111827;
+    }
+
+    .pending-action-cell {
+        width:15%;
+        text-align:right;
+    }
+
+    .pending-submit-btn {
+        background:#16a34a;
+        color:#fff;
+        border:none;
+        border-radius:6px;
+        width:72px;
+        height:30px;
+        cursor:pointer;
+        font-size:12px;
+        font-weight:600;
+    }
+
+    .pending-submit-btn:hover {
+        background:#15803d;
+    }
+
+    .summary-header {
+        background: #14532d;
+        color: #ffffff;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+
+    .summary-header h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .driver-header {
+        background: #14532d;
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 5px rgba(20,83,45,.15);
+    }
+
+    .driver-header h2 {
+        margin: 0 0 12px;
+        font-size: 17px;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .driver-header p {
+        margin: 0;
+        padding: 2px 0;
+        line-height: 1.2;
+        color: #fff;
+    }
+
+    .trip {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid #14532d;
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    .trip-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #14532d;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .trip p {
+        margin: 0;
+        padding: 2px 0;
+        line-height: 1.2;
+    }
+
+    .allowance-btn {
+        width: 100%;
+        height: 46px;
+        margin-top: 14px;
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .2s ease;
+    }
+
+    .allowance-btn:active {
+        transform: scale(.99);
+    }
+
+    .rest-day-row {
+        background: #f8d7da;
+        color: #721c24;
+        font-weight: bold;
+    }
+
+    /* =========================
+       App Header & Navigation Layout
+    ========================= */
+    .app-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 22px;
+        position: fixed;            
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;              
+        background: #eef3ef;        
+        padding: 20px 20px 10px 20px;
+        box-sizing: border-box;
+    }
+
+    .app-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .app-logo {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .app-title h1 {
+        margin: 0;
+        font-size: 30px;
+        color: #14532d;
+        font-weight: 700;
+        text-align: left;
+        line-height: 1.1;
+    }
+
+    .app-subtitle {
+        margin-top: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .app-description {
+        margin-top: 6px;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .top-nav {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        padding-right: 12px;
+    }
+
+    .nav-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .nav-btn:hover {
+        color: #14532d;
+    }
+
+    .nav-btn.active {
+        color: #16a34a;
+    }
+
+    .nav-separator {
+        color: #9ca3af;
+        user-select: none;
+    }
+
+    /* =========================
+       Modals & Overlays
+    ========================= */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.5);
+        z-index: 9999;
+        overflow-y: auto;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .modal-content {
+        background: #fff;
+        width: 90%;
+        max-width: 450px;
+        max-height: 90vh;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .modal-title {
+        margin-top: 0;
+        color: #111827;
+    }
+
+    .modal-content input,
+    .modal-content select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .modal-buttons .allowance-btn {
+        flex: 1;
+        margin-top: 0;
+        height: 48px;
+        border-radius: 8px;
+    }
+
+    .submit-btn { background: #16a34a; color: #fff; }
+    .submit-btn:hover { background: #15803d; }
+    .cancel-btn { background: #6b7280; color: #fff; }
+    .cancel-btn:hover { background: #4b5563; }
+
+    /* Form Fields inside Modal */
+    .trip-info-card {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 15px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 2px 0;
+    }
+
+    .info-label {
+        width: 95px;
+        min-width: 95px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
+        white-space: nowrap;
+    }
+
+    .driver-header .info-label { color: rgba(255,255,255,.88); }
+    .trip-info-card .info-label { color: #166534; }
+
+    .info-value {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        color: #111827;
+        word-break: break-word;
+    }
+
+    .info-value a {
+        font-size: 14px !important;
+        color: #111827;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .driver-header .info-value { color: #fff; }
+    .trip-info-card .info-value { font-weight: 600; }
+
+    .section-title {
+        display: block;
+        margin: 12px 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #14532d;
+        border-bottom: 1px solid #d1fae5;
+        padding-bottom: 5px;
+    }
+
+    .duty-time-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .time-card {
+        flex: 1;
+    }
+
+    .time-card label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 2px;
+    }
+
+    .time-card input {
+        width: 100%;
+        height: 38px;
+        padding: 4px 8px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        box-sizing: border-box;
+    }
+
+    .time-card input:focus {
+        outline: none;
+        border-color: #1d4ed8;
+        box-shadow: 0 0 0 2px rgba(37,99,235,.12);
+    }
+
+    .meal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .meal-item label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 4px;
+    }
+
+    .meal-item input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Upload & Receipts */
+    .receipt-section {
+        display: none;
+        margin-top: 10px;
+    }
+
+    .file-input-hidden {
+        display: none;
+    }
+
+    .upload-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .upload-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .camera-btn { background: #2563eb; }
+    .gallery-btn { background: #6b7280; }
+    .receipt-preview { margin-top: 10px; }
+
+    /* Loading & Success Boxes */
+    .success-overlay,
+    .loading-overlay,
+    .action-overlay,
+    .action-loading-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        justify-content: center;
+        align-items: center;
+    }
+    .success-overlay { z-index: 100000; }
+    .loading-overlay { z-index: 99999; }
+    .action-loading-overlay { z-index: 999999; backdrop-filter: blur(2px); }
+
+    .success-box, .loading-box, .action-loading-box {
+        background: #fff;
+        border-radius: 14px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    }
+    .success-box { width: 290px; }
+    .loading-box { width: 280px; }
+    .loading-box-large { max-width: 340px; }
+    .action-loading-box { width: 320px; padding: 28px 24px; }
+
+    .success-icon { font-size: 55px; margin-bottom: 12px; }
+    .success-box h2 { margin: 0 0 10px; color: #16a34a; }
+    .success-box p, .loading-message, .action-loading-message { color: #4b5563; line-height: 1.5; font-size: 14px; }
+
+    .loading-banner {
+        background: #16a34a;
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 12px rgba(22,163,74,.25);
+    }
+    .loading-banner h2 { margin: 0; font-size: 20px; }
+    .loading-banner-subtitle { margin-top: 4px; font-size: 13px; opacity: .9; }
+    .loading-title, .action-loading-title { margin: 0 0 8px; color: #111827; }
+    .action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
+
+    .spinner, .action-loading-spinner {
+        margin: 0 auto 18px auto; 
+        border: 5px solid #e5e7eb;
+        border-radius: 50%;
+        display: block;           
+    }
+    .spinner {
+        width: 55px; height: 55px;
+        border-top: 5px solid #16a34a;
+        animation: spin 1s linear infinite;
+    }
+    .action-loading-spinner {
+        width: 46px; height: 46px; margin: auto;
+        border-width: 4px; border-top: 4px solid #15803d;
+        animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Driver View Table Styles */
+    .summary-table {
+        width: 100%;
+        table-layout: auto;
+        border-collapse: collapse;
+        font-size: 11px;
+    }
+
+    .summary-table th,
+    .summary-table td {
+        padding: 7px 6px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .summary-table th {
+        background:#ffffff;
+        color:#14532d;
+        font-weight:700;
+    }
+    .summary-table tr:last-child td { border-bottom: none; }
+
+    .summary-table th:nth-child(1),
+    .summary-table td:first-child {
+        width:32%;
+        text-align:left;
+    }
+    .summary-table td:first-child { font-weight:400; }
+    .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
+    
+    .summary-table th:nth-child(3),
+    .summary-table td:nth-child(3) {
+        width:18%;
+        text-align:center;
+    }
+    .summary-table td:nth-child(3) { font-weight:400; }
+    .summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
+
+    /* Footer */
+    .app-footer {
+        margin-top: 30px;
+        padding: 8px 10px;
+        text-align: center;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .footer-content { display: flex; flex-direction: column; gap: 4px; }
+    .footer-title { font-size: 12px; font-weight: 600; color: #065f46; line-height: 1.2; }
+    .footer-sub { font-size: 11px; color: #6b7280; line-height: 1.2; }
+    .footer-copy { font-size: 10px; color: #9ca3af; line-height: 1.2; }
+
+    /* =========================================
+       Admin Panel Specific Layout Styles
+    ========================================= */
+    .schedule-header {
+        background: #14532d;
+        color: #ffffff;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 10px rgba(20,83,45,.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .schedule-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .month-selector {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .month-selector label {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .month-selector select {
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #14532d;
+        background: #ffffff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .approval-container h3 {
+        color: #14532d;
+        font-size: 15px;
+        font-weight: 700;
+        margin: 22px 0 10px;
+        padding-left: 6px;
+        border-left: 4px solid #16a34a;
+    }
+
+    /* =========================================
+       Admin Panel Compact Table Rows
+    ========================================= */
+    .approval-table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        background: #ffffff !important;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        margin-bottom: 15px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .approval-table th {
+        background: #14532d !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        font-size: 12px;
+        text-align: left;
+        padding: 10px 8px;
+    }
+
+    .approval-table td {
+        padding: 10px 8px;
+        font-size: 12px;
+        color: #111827 !important;
+        font-weight: 600;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .approval-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .approval-table tr:hover {
+        background: #f9fafb;
+    }
+
+    .approval-day-name {
+        font-weight: 700;
+    }
+
+    .approval-date-val {
+        font-weight: 500;
+    }
+
+    .action-btn-grp {
+        display: flex;
+        gap: 6px;
+    }
+
+    .action-table-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background .2s, color .2s;
+    }
+
+    .btn-view {
+        background: #16a34a !important;
+        color: #ffffff !important;
+    }
+
+    .btn-view:hover {
+        background: #15803d !important;
+    }
+
+    .btn-approve {
+        background: #ffffff !important;
+        color: #14532d !important;
+        border: 1px solid rgba(20, 83, 45, 0.4) !important;
+    }
+
+    .btn-approve:hover {
+        background: #eef3ef !important;
+    }
+
+    /* Modal Internal List Structure */
+    .modal-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 13px;
+    }
+    .modal-list-table th {
+        text-align: left;
+        padding: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-weight: 600;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    .modal-list-table td {
+        padding: 10px 8px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .modal-list-table tr:last-child td {
+        border-bottom: none;
+    }
+    .status-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .status-approved { background: #d1fae5; color: #065f46; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+     
+    /* =========================
+       Responsive Styles (Max 600px)
+    ========================= */
+    @media(max-width:600px){
+        body {
+            padding-top: 175px;
+        }
+        .admin-toolbar { justify-content: stretch; }
+        .admin-btn { width: 100%; }
+        .meal-grid { gap: 10px; }
+        .meal-item label, .time-card label { font-size: 11px; }
+        .duty-time-row { gap: 8px; padding: 0 2px; }
+        .time-card input { height: 38px; font-size: 13px; }
+        .upload-btn, .allowance-btn { font-size: 13px; padding: 10px; }
+        .driver-header p, .nav-btn { font-size: 12px; line-height: 1.2; }
+       
+        .trip .info-label,
+        .trip .info-value,
+        .trip .info-value a,
+        .phone-link {
+            font-size: 13px !important;
+            line-height: 1.3;
+        }
+       
+        .trip-title { font-size: 12px; }
+        .driver-header h2 { font-size: 15px; }
+        .app-header { gap: 14px; padding: 15px 15px 10px 15px; }
+        .app-logo { width: 56px; height: 56px; }
+        .app-title h1 { font-size: 24px; }
+        .app-subtitle { font-size: 14px; }
+        .app-description { font-size: 12px; }
+        .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
+        .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .month-selector { width: 100%; justify-content: space-between; }
+    }
+    </style>
 </head>
 
 <body>
@@ -924,7 +906,6 @@ h1 {
 </div>
 
 <div id="driverDashboard">
-    <div id="adminContainer" style="display:none;"></div>
     <div id="driversContainer"></div>
 </div>
 
@@ -954,17 +935,15 @@ h1 {
     </div>
     <div class="approval-footer">
         <button class="allowance-btn cancel-btn" id="driverViewBackBtn">
-            ← Back to Dashboard
+            &larr; Back to Dashboard
         </button>
     </div>
 </div>
 
 <div id="scheduleApprovalPage" style="display:none;">
-    
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
     <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
         <h2>Driver Schedule Admin</h2>
-        
         <div class="month-selector">
             <label for="scheduleCutoff">Cut-off Period</label>
             <select id="scheduleCutoff" onchange="loadScheduleApprovalPage()">
@@ -1022,9 +1001,7 @@ h1 {
                     <th style="width: 15%; text-align: center;">Action</th>
                 </tr>
             </thead>
-            <tbody id="allowanceSummaryBody">
-                <!-- Data populated dynamically from Google Sheets via Apps Script proxy -->
-            </tbody>
+            <tbody id="allowanceSummaryBody"></tbody>
         </table>
     </div>
 
@@ -1037,17 +1014,17 @@ h1 {
 
     <div class="approval-footer">
         <button class="allowance-btn cancel-btn" id="backToDriverBtn">
-            ← Driver Schedule
+            &larr; Driver Schedule
         </button>
     </div>
 </div>
    
-    <!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
+<!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
 <div id="driverAllowanceDetailsModal" class="modal">
     <div class="modal-content" style="max-width: 500px;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
         <p style="font-size: 13px; color: #6b7280; margin-top: -8px;" id="detailsModalRange"></p>
-       
+        
         <div style="max-height: 50vh; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
             <table class="modal-list-table">
                 <thead>
@@ -1057,9 +1034,7 @@ h1 {
                         <th style="text-align: center;">Status</th>
                     </tr>
                 </thead>
-                <tbody id="driverDetailsModalBody">
-                    <!-- Extracted rows parsed seamlessly -->
-                </tbody>
+                <tbody id="driverDetailsModalBody"></tbody>
             </table>
         </div>
 
@@ -1087,10 +1062,10 @@ h1 {
 
         <h4 class="section-title">Meal Allowance</h4>
         <div class="meal-grid">
-            <div class="meal-item"><label>Breakfast</label><input id="allowanceBreakfast" type="number" placeholder="₱0"></div>
-            <div class="meal-item"><label>Lunch</label><input id="allowanceLunch" type="number" placeholder="₱0"></div>
-            <div class="meal-item"><label>Dinner</label><input id="allowanceDinner" type="number" placeholder="₱0"></div>
-            <div class="meal-item"><label>Parking Fee</label><input id="allowanceParking" type="number" placeholder="₱0"></div>
+            <div class="meal-item"><label>Breakfast</label><input id="allowanceBreakfast" type="number" placeholder="&#8369;0"></div>
+            <div class="meal-item"><label>Lunch</label><input id="allowanceLunch" type="number" placeholder="&#8369;0"></div>
+            <div class="meal-item"><label>Dinner</label><input id="allowanceDinner" type="number" placeholder="&#8369;0"></div>
+            <div class="meal-item"><label>Parking Fee</label><input id="allowanceParking" type="number" placeholder="&#8369;0"></div>
         </div>
 
         <div class="meal-item" style="margin-bottom: 15px;">
@@ -1132,8 +1107,6 @@ h1 {
 <div id="driverLoginModal" class="modal">
     <div class="modal-content">
         <h3 class="modal-title">Driver Login</h3>
-       
-        <!-- This must be a select element, not an input element -->
         <select id="driverUsername" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; font-size: 14px; box-sizing: border-box;">
             <option value="" disabled selected>Select Your Name</option>
             <option value="Jun Dela Pena">Jun Dela Pena</option>
@@ -1143,9 +1116,7 @@ h1 {
             <option value="Michael Guanlao">Michael Guanlao</option>
             <option value="Melvin Fausto">Melvin Fausto</option>
         </select>
-
         <input id="driverPin" type="password" maxlength="5" pattern="\d*" placeholder="5-Digit PIN">
-       
         <div class="modal-buttons">
             <button class="allowance-btn submit-btn" onclick="driverLogin()">Login</button>
             <button class="allowance-btn cancel-btn" onclick="closeDriverLogin()">Cancel</button>
@@ -1195,7 +1166,7 @@ h1 {
     <div class="footer-content">
         <div class="footer-title">Dispatch Hub v1.0</div>
         <div class="footer-sub">Developed by JCD-A</div>
-        <div class="footer-copy">© 2026</div>
+        <div class="footer-copy">&copy; 2026</div>
     </div>
 </footer>
 
@@ -1213,7 +1184,7 @@ let summaryDrivers = {};
 let approvalDates = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
-let loggedInDriverName = ""; // Storage for driver portal identification
+let loggedInDriverName = "";
 
 function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
@@ -1251,10 +1222,8 @@ async function loadSubmittedAllowances() {
     }
 }
 
-// Bypasses CORS by querying your Apps Script Macro proxy instead of a private direct spreadsheet connection
 async function fetchLiveAllowancesFromSheet() {
     try {
-        // Querying the existing web app URL endpoint for seamless compatibility
         const response = await fetch(WEBAPP_URL + "?action=getAllowancesData");
         const jsonResult = await response.json();
         
@@ -1262,10 +1231,10 @@ async function fetchLiveAllowancesFromSheet() {
         
         if (jsonResult && jsonResult.success && jsonResult.data) {
             jsonResult.data.forEach(row => {
-                const rawTripDate = row.date || "";      // Maps out Trip Date (Col B)
-                const driverName = row.driver || "";    // Maps out Driver Name (Col C)
-                const totalAllowance = parseFloat(row.total) || 0; // Maps out Total (Col L)
-                const rawStatus = row.status || "";     // Maps out Status Tracking Flag (Col N)
+                const rawTripDate = row.date || "";      
+                const driverName = row.driver || "";    
+                const totalAllowance = parseFloat(row.total) || 0; 
+                const rawStatus = row.status || "";     
                 
                 const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
 
@@ -1294,13 +1263,11 @@ function updateCutoffDropdownsDynamically() {
     let hasCutoff1 = false;
     let hasCutoff2 = false;
 
-    // Helper function to safely extract the day number regardless of date format
     const getDayFromDateString = (dateStr) => {
         const parsedDate = new Date(dateStr);
         if (!isNaN(parsedDate.getTime())) {
-            return parsedDate.getDate(); // Returns the day of the month (1-31)
+            return parsedDate.getDate(); 
         }
-        // Fallback to your regex if native parsing fails
         const dateMatch = dateStr.match(/\b\d{1,2}\b/);
         return dateMatch ? parseInt(dateMatch[0]) : 1;
     };
@@ -1334,20 +1301,18 @@ function updateCutoffDropdownsDynamically() {
     }
 
     optionsToRender.forEach(opt => {
-        const optionElement1 = new Option(opt.text, opt.value);
-        const optionElement2 = new Option(opt.text, opt.value);
-        const optionElement3 = new Option(opt.text, opt.value);
-        scheduleSelect.add(optionElement1);
-        allowanceSelect.add(optionElement2);
-        driverViewSelect.add(optionElement3);
+        scheduleSelect.add(new Option(opt.text, opt.value));
+        allowanceSelect.add(new Option(opt.text, opt.value));
+        driverViewSelect.add(new Option(opt.text, opt.value));
     });
 
     if (currentScheduleVal && scheduleSelect.querySelector(`option[value="${currentScheduleVal}"]`)) scheduleSelect.value = currentScheduleVal;
     if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
     if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
 }
+
 function processAllowanceSummaryTable() {
-   const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
+    const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
     const selectorValue = selectorElement ? selectorElement.value : "1";
     const tableBody = document.getElementById("allowanceSummaryBody");
     tableBody.innerHTML = "";
@@ -1388,8 +1353,8 @@ function processAllowanceSummaryTable() {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${driver}</td>
-            <td style="text-align: right; padding-right: 25px; color: #14532d; font-weight:700;">₱${aggregateGroup[driver].approved.toLocaleString()}</td>
-            <td style="text-align: right; padding-right: 25px; color: #b45309; font-weight:700;">₱${aggregateGroup[driver].pending.toLocaleString()}</td>
+            <td style="text-align: right; padding-right: 25px; color: #14532d; font-weight:700;">&#8369;${aggregateGroup[driver].approved.toLocaleString()}</td>
+            <td style="text-align: right; padding-right: 25px; color: #b45309; font-weight:700;">&#8369;${aggregateGroup[driver].pending.toLocaleString()}</td>
             <td style="text-align: center;">
                 <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
             </td>
@@ -1402,8 +1367,8 @@ function processAllowanceSummaryTable() {
     summaryFooterRow.style.fontWeight = "700";
     summaryFooterRow.innerHTML = `
         <td style="color:#14532d; font-size: 11px;">Total Approved (all drivers) | Total Pending (all drivers)</td>
-        <td style="text-align: right; padding-right: 25px; color: #14532d;">₱${overallApprovedTotal.toLocaleString()}</td>
-        <td style="text-align: right; padding-right: 25px; color: #b45309;">₱${overallPendingTotal.toLocaleString()}</td>
+        <td style="text-align: right; padding-right: 25px; color: #14532d;">&#8369;${overallApprovedTotal.toLocaleString()}</td>
+        <td style="text-align: right; padding-right: 25px; color: #b45309;">&#8369;${overallPendingTotal.toLocaleString()}</td>
         <td></td>
     `;
     tableBody.appendChild(summaryFooterRow);
@@ -1417,7 +1382,6 @@ function openDriverDetailsModal(driverName) {
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
 
-    // 1. Filter out the matching rows first
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return false;
         
@@ -1431,10 +1395,8 @@ function openDriverDetailsModal(driverName) {
         return true;
     });
 
-    // 2. Sort chronologically (Oldest to Newest)
     filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // 3. Render the sorted rows
     if (filteredRecords.length === 0) {
         targetBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:12px; color:#9ca3af;">No records found for this driver inside this window.</td></tr>`;
         return;
@@ -1453,7 +1415,7 @@ function openDriverDetailsModal(driverName) {
 
         row.innerHTML = `
             <td>${record.date}</td>
-            <td style="text-align: right; font-weight:700; color:#1f2937;">₱${record.amount.toLocaleString()}</td>
+            <td style="text-align: right; font-weight:700; color:#1f2937;">&#8369;${record.amount.toLocaleString()}</td>
             <td style="text-align: center;">${badgeDisplay}</td>
         `;
         targetBody.appendChild(row);
@@ -1511,7 +1473,6 @@ document.getElementById("allowanceParking").addEventListener("input", function (
         document.getElementById("cameraInput").value = "";
         document.getElementById("galleryInput").value = "";
         document.getElementById("receiptPreview").innerHTML = "";
-        document.getElementById("receiptSection").style.display = "none";
     }
 });
 
@@ -1535,7 +1496,7 @@ function refreshReceiptPreview() {
         img.style.cssText = "width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #ccc;";
 
         const removeBtn = document.createElement("button");
-        removeBtn.innerHTML = "✕";
+        removeBtn.innerHTML = "&#x2715;";
         removeBtn.type = "button";
         removeBtn.style.cssText = "position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border: none; border-radius: 50%; background: #dc2626; color: #fff; cursor: pointer; font-weight: bold;";
         removeBtn.onclick = function () {
@@ -1624,14 +1585,14 @@ async function saveAllowance() {
     btn.innerText = "Submitting...";
 
     if (!document.getElementById("allowanceTimeIn").value || !document.getElementById("allowanceTimeOut").value) {
-        alert("❌ Please enter both Time In and Time Out.");
+        alert("&times; Please enter both Time In and Time Out.");
         resetSubmitButton(btn);
         return;
     }
 
     const parking = Number(document.getElementById("allowanceParking").value || 0);
     if (parking > 0 && selectedReceipts.length === 0) {
-        alert("❌ Please upload at least one parking receipt.");
+        alert("&times; Please upload at least one parking receipt.");
         resetSubmitButton(btn);
         return;
     }
@@ -1672,24 +1633,16 @@ async function saveAllowance() {
         let result = JSON.parse(text);
 
         if (result.success === false && result.message === "DUPLICATE_ENTRY") {
-            alert("❌ Already submitted for this trip.");
+            alert("&times; Already submitted for this trip.");
             return;
         }
         if (!result.success) {
-            alert("❌ Error: " + result.message);
+            alert("&times; Error: " + result.message);
             return;
         }
 
         document.getElementById("successModal").style.display = "flex";
-        const driverId = "driver-" + currentDriver.replace(/\s+/g, "-");
-        const driverCard = document.getElementById(driverId);
-
-        if (driverCard) {
-           await loadSubmittedAllowances();
-await loadSchedule();
-
-document.getElementById("successModal").style.display = "flex";
-        }
+        await loadSubmittedAllowances();
         closeModal();
     } catch (err) {
         console.error(err);
@@ -1701,7 +1654,7 @@ document.getElementById("successModal").style.display = "flex";
 }
 
 /* =========================================
-   DRIVER ALLLOWANCE PORTAL IMPLEMENTATION
+   DRIVER ALLOWANCE PORTAL IMPLEMENTATION
 ========================================= */
 document.getElementById("allowanceBtn").addEventListener("click", () => {
     if (loggedInDriverName) {
@@ -1734,7 +1687,6 @@ function renderDriverViewTable() {
     const tableBody = document.getElementById("driverViewTableBody");
     tableBody.innerHTML = "";
 
-    // 1. Filter out the matching rows first
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return false;
 
@@ -1748,10 +1700,8 @@ function renderDriverViewTable() {
         return true;
     });
 
-    // 2. Sort the filtered records chronologically (Oldest to Newest)
     filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // 3. Render the sorted rows onto the table
     if (filteredRecords.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#6b7280;">No allowance entries recorded for you in this cut-off window.</td></tr>`;
         return;
@@ -1759,7 +1709,7 @@ function renderDriverViewTable() {
 
     filteredRecords.forEach(record => {
         const row = document.createElement("tr");
-       
+        
         let statusBadge = "";
         if (record.status === "Approved") {
             statusBadge = `<span class="status-badge status-approved">Approved</span>`;
@@ -1770,7 +1720,7 @@ function renderDriverViewTable() {
 
         row.innerHTML = `
             <td>${record.date}</td>
-            <td style="font-weight:700;">₱${record.amount.toLocaleString()}</td>
+            <td style="font-weight:700;">&#8369;${record.amount.toLocaleString()}</td>
             <td>${statusBadge}</td>
         `;
         tableBody.appendChild(row);
@@ -1784,11 +1734,11 @@ function driverLogin() {
     const loginBtn = document.querySelector("#driverLoginModal .submit-btn");
 
     if (!selectedDriverValue) {
-        alert("❌ Please select your name from the menu.");
+        alert("&times; Please select your name from the menu.");
         return;
     }
     if (pin.length < 4) {
-        alert("❌ Enter a valid Security PIN.");
+        alert("&times; Enter a valid Security PIN.");
         return;
     }
 
@@ -1799,8 +1749,7 @@ function driverLogin() {
 
     setTimeout(() => {
         loggedInDriverName = selectedDriverValue;
-       
-        // Reset fields for next use
+        
         driverSelect.selectedIndex = 0;
         document.getElementById("driverPin").value = "";
 
@@ -1856,7 +1805,7 @@ document.getElementById("backToDriverBtn").addEventListener("click", () => {
     }
     window.scrollTo(0, 0);
 });
-   
+    
 function showActionLoading(title, message){
     const t = document.getElementById("actionLoadingTitle");
     const m = document.getElementById("actionLoadingMessage");
@@ -1905,9 +1854,7 @@ async function adminLogin() {
 
 async function approveSchedule(date, buttonElement) {
     const message = "Are you sure you want to approve this schedule? Once approved, this will immediately be reflected on the driver's dashboard.";
-    const confirmed = confirm(message);
-   
-    if (!confirmed) return;
+    if (!confirm(message)) return;
 
     buttonElement.disabled = true;
     buttonElement.innerText = "Processing...";
@@ -1927,13 +1874,13 @@ async function approveSchedule(date, buttonElement) {
         } else {
             buttonElement.disabled = false;
             buttonElement.innerText = "Approve";
-            alert("❌ Failed to approve: " + (result.message || "Unknown error"));
+            alert("&times; Failed to approve: " + (result.message || "Unknown error"));
         }
     } catch (err) {
         buttonElement.disabled = false;
         buttonElement.innerText = "Approve";
         console.error(err);
-        alert("❌ Network error while approving. Please try again.");
+        alert("&times; Network error while approving. Please try again.");
     } finally {
         hideActionLoading();
     }
@@ -1945,13 +1892,9 @@ function loadScheduleApprovalPage(){
     approvedDiv.innerHTML = "";
     pendingDiv.innerHTML = "";
 
-    // Get the selected cut-off value for schedules
     const selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "1";
 
-    // Synchronize 'today' with Asia/Manila time execution properties
-    const today = new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-    );
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
     today.setHours(0,0,0,0);
 
     let hasApproved = false;
@@ -1963,7 +1906,6 @@ function loadScheduleApprovalPage(){
         
         const dayNumber = scheduleDate.getDate();
 
-        // Filter out dates outside the selected cut-off scope
         if (selectorValue === "1" && dayNumber > 15) return;
         if (selectorValue === "2" && dayNumber <= 15) return;
 
@@ -2000,12 +1942,13 @@ function loadScheduleApprovalPage(){
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
+
 function viewSchedule(date){
     document.querySelector(".approval-container").style.display = "none";
 
     const viewerPage = document.getElementById("scheduleViewerPage");
     viewerPage.style.display = "block";
-    document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
+    document.getElementById("viewerTitle").textContent = "Driver Schedule &bull; " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
     let viewerHTML = "";
@@ -2047,8 +1990,6 @@ function viewSchedule(date){
                 <div class="trip">
                     <div class="trip-title">Pick-Up ${index + 1}</div>
                     ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                    
-                    <!-- REQUESTED BY INLINE PHONE FORMAT (ADMIN VIEWER) -->
                     ${trip.requestedBy ? `
                     <div class="info-item">
                         <div class="info-label">Requested By</div>
@@ -2056,8 +1997,6 @@ function viewSchedule(date){
                             ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                         </div>
                     </div>` : ""}
-                    
-                    <!-- PASSENGER INLINE PHONE FORMAT (ADMIN VIEWER) -->
                     ${trip.passengerName ? `
                     <div class="info-item">
                         <div class="info-label">Passenger</div>
@@ -2065,8 +2004,6 @@ function viewSchedule(date){
                             ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                         </div>
                     </div>` : ""}
-                    
-                    <!-- RESTORED GOOGLE MAPS ROUTING FOR ORIGIN inside Admin viewer -->
                     ${trip.origin ? `
                     <div class="info-item">
                         <div class="info-label">Origin</div>
@@ -2076,8 +2013,6 @@ function viewSchedule(date){
                             </a>
                         </div>
                     </div>` : ""}
-                    
-                    <!-- RESTORED GOOGLE MAPS ROUTING FOR DESTINATION inside Admin viewer -->
                     ${trip.destination ? `
                     <div class="info-item">
                         <div class="info-label">Destination</div>
@@ -2087,7 +2022,6 @@ function viewSchedule(date){
                             </a>
                         </div>
                     </div>` : ""}
-                    
                     ${trip.remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${trip.remarks}</div></div>` : ""}
                 </div>`;
             });
@@ -2182,9 +2116,7 @@ window.onload = async function () {
         const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
         const phNow = new Date(phTimeStr);
 
-        const today = new Date(
-            new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-        );
+        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
         today.setHours(0,0,0,0);
 
         scheduleDates.sort((a, b) => {
@@ -2202,7 +2134,6 @@ window.onload = async function () {
             if (!aPast && bPast) return 1;
             if (aToday && !bToday) return -1;
             if (!aToday && bToday) return 1;
-            if (aPast && bPast) return da - db;
             return da - db;
         });
 
@@ -2212,9 +2143,7 @@ window.onload = async function () {
 
             if(status !== "approved") return;
 
-            const today = new Date(
-                new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"})
-            );
+            const today = new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"}));
 
             today.setHours(0,0,0,0);
             scheduleDate.setHours(0,0,0,0);
@@ -2263,13 +2192,7 @@ window.onload = async function () {
                 Object.values(grouped)
                 .filter(d => d.date === date)
                 .forEach(d => {
-                    if ([
-                        "rest day",
-                        "am carpool",
-                        "standby",
-                        "banking",
-                        "pm carpool"
-                    ].includes((d.itinerary || "").toLowerCase().trim())) return;
+                    if (["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
 
                     let tripsHTML = "";
 
@@ -2282,8 +2205,6 @@ window.onload = async function () {
                                 <div class="info-label">Pick Up Time</div>
                                 <div class="info-value">${trip.pickupTime}</div>
                             </div>` : ""}
-                            
-                            <!-- REQUESTED BY INLINE PHONE FORMAT (TODAY DASHBOARD) -->
                             ${trip.requestedBy ? `
                             <div class="info-item">
                                 <div class="info-label">Requested By</div>
@@ -2291,8 +2212,6 @@ window.onload = async function () {
                                     ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                                 </div>
                             </div>` : ""}
-                            
-                            <!-- PASSENGER INLINE PHONE FORMAT (TODAY DASHBOARD) -->
                             ${trip.passengerName ? `
                             <div class="info-item">
                                 <div class="info-label">Passenger</div>
@@ -2300,8 +2219,6 @@ window.onload = async function () {
                                     ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                                 </div>
                             </div>` : ""}
-
-                            <!-- RESTORED MAPS LINK FOR ORIGIN (TODAY BLOCK) -->
                             ${trip.origin ? `
                             <div class="info-item">
                                 <div class="info-label">Origin</div>
@@ -2311,8 +2228,6 @@ window.onload = async function () {
                                     </a>
                                 </div>
                             </div>` : ""}
-
-                            <!-- RESTORED MAPS LINK FOR DESTINATION (TODAY BLOCK) -->
                             ${trip.destination ? `
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
@@ -2322,7 +2237,6 @@ window.onload = async function () {
                                     </a>
                                 </div>
                             </div>` : ""}
-
                             ${trip.remarks ? `
                             <div class="info-item">
                                 <div class="info-label">Remarks</div>
@@ -2335,7 +2249,7 @@ window.onload = async function () {
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
                 pageHTML += `
-<div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+                <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
                         <div class="driver-header">
                             <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
@@ -2343,19 +2257,11 @@ window.onload = async function () {
                             <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                             <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                         </div>
-
                         ${tripsHTML}
-
                         ${
                             submittedDrivers[`${d.driver}|${d.date}`]
-                            ? `
-                            <button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>
-                                Allowance Submitted
-                            </button>`
-                            : `
-                            <button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}')">
-                                Submit Meal Allowance
-                            </button>`
+                            ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
+                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}')">Submit Meal Allowance</button>`
                         }
                     </div>`;
                 });
@@ -2410,8 +2316,6 @@ window.onload = async function () {
                         <div class="trip">
                             <div class="trip-title">Pick-Up ${index + 1}</div>
                             ${trip.pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${trip.pickupTime}</div></div>` : ""}
-                            
-                            <!-- REQUESTED BY INLINE PHONE FORMAT (FUTURE DASHBOARD) -->
                             ${trip.requestedBy ? `
                             <div class="info-item">
                                 <div class="info-label">Requested By</div>
@@ -2419,8 +2323,6 @@ window.onload = async function () {
                                     ${trip.requestedBy} ${!trip.passengerName && trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                                 </div>
                             </div>` : ""}
-                            
-                            <!-- PASSENGER INLINE PHONE FORMAT (FUTURE DASHBOARD) -->
                             ${trip.passengerName ? `
                             <div class="info-item">
                                 <div class="info-label">Passenger</div>
@@ -2428,8 +2330,6 @@ window.onload = async function () {
                                     ${trip.passengerName} ${trip.contactNumber ? ` | <a href="tel:${trip.contactNumber}" class="phone-link">${trip.contactNumber}</a>` : ""}
                                 </div>
                             </div>` : ""}
-                            
-                            <!-- RESTORED MAPS LINK FOR ORIGIN (FUTURE BLOCKS) -->
                             ${trip.origin ? `
                             <div class="info-item">
                                 <div class="info-label">Origin</div>
@@ -2439,8 +2339,6 @@ window.onload = async function () {
                                     </a>
                                 </div>
                             </div>` : ""}
-
-                            <!-- RESTORED MAPS LINK FOR DESTINATION (FUTURE BLOCKS) -->
                             ${trip.destination ? `
                             <div class="info-item">
                                 <div class="info-label">Destination</div>
@@ -2450,7 +2348,6 @@ window.onload = async function () {
                                     </a>
                                 </div>
                             </div>` : ""}
-                            
                             ${trip.remarks ? `
                             <div class="info-item">
                                 <div class="info-label">Remarks</div>
@@ -2513,9 +2410,7 @@ window.onload = async function () {
 
         container.innerHTML = pageHTML;
 
-        // Awtomatikong i-update ang dropdown bago i-render ang mga table sheets
         updateCutoffDropdownsDynamically();
-
         loadScheduleApprovalPage();
         if (autoLogin) showAdminDashboard();
 
@@ -2526,9 +2421,6 @@ window.onload = async function () {
         document.getElementById("pageLoadingOverlay").style.display = "none";
     }
 };
-   
 </script>
-   
 </body>
-   
 </html>
