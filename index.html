@@ -260,6 +260,18 @@
         font-weight: bold;
     }
 
+        .am-highlight-row {
+    background: #fef08a !important; /* Banayad na Dilaw para sa AM */
+    color: #854d0e !important;
+    font-weight: bold;
+}
+
+.pm-highlight-row {
+    background: #bfdbfe !important; /* Banayad na Asul para sa PM */
+    color: #1e40af !important;
+    font-weight: bold;
+}
+
     /* =========================
        App Header & Navigation Layout
     ========================= */
@@ -2037,9 +2049,21 @@ function viewSchedule(date){
     let tableRows = "";
 
     Object.values(summaryDrivers[date] || {}).forEach(driver => {
-        const isRestDay = driver.itinerary && driver.itinerary.toLowerCase().trim() === "rest day";
+        const itineraryText = (driver.itinerary || "").toLowerCase().trim();
+        const isRestDay = itineraryText === "rest day";
+        
+        // Pagsusuri kung may "am" o "pm" sa assignment text
+        let rowClass = "";
+        if (isRestDay) {
+            rowClass = "rest-day-row";
+        } else if (itineraryText.includes("am")) {
+            rowClass = "am-highlight-row";
+        } else if (itineraryText.includes("pm")) {
+            rowClass = "pm-highlight-row";
+        }
+
         tableRows += `
-          <tr class="${isRestDay ? "rest-day-row" : ""}">
+          <tr class="${rowClass}">
             <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
             <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
             <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
@@ -2233,9 +2257,20 @@ window.onload = async function () {
                 let tableRows="";
 
                 Object.values(summaryDrivers[date] || {}).forEach(driver=>{
-                    const rest = (driver.itinerary||"").toLowerCase().trim()==="rest day";
+                    const itineraryText = (driver.itinerary || "").toLowerCase().trim();
+                    const rest = itineraryText === "rest day";
+                    
+                    let rowClass = "";
+                    if (rest) {
+                        rowClass = "rest-day-row";
+                    } else if (itineraryText.includes("am")) {
+                        rowClass = "am-highlight-row";
+                    } else if (itineraryText.includes("pm")) {
+                        rowClass = "pm-highlight-row";
+                    }
+
                     tableRows += `
-                    <tr class="${rest?"rest-day-row":""}">
+                    <tr class="${rowClass}">
                         <td>${driver.driver}</td>
                         <td>${driver.timeIn}</td>
                         <td>${driver.vehicle}</td>
