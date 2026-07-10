@@ -853,6 +853,13 @@
        Responsive Styles (Max 600px)
     ========================= */
     @media(max-width:600px){
+
+#scheduleViewerPage .modal-content {
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+        
         body {
             padding-top: 175px;
         }
@@ -1017,12 +1024,22 @@
         </table>
     </div>
 
-    <div id="scheduleViewerPage" style="display:none;">
-        <div class="summary-header">
+    <div id="scheduleViewerPage" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px; padding: 20px;">
+        <div class="summary-header" style="margin-top: 0;">
             <h2 id="viewerTitle">Driver Schedule</h2>
         </div>
-        <div id="scheduleViewerContent"></div>
+        
+        <!-- Dito papasok ang scrollable content ng mga biyahe -->
+        <div id="scheduleViewerContent" style="max-height: 60vh; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
+        
+        <div class="modal-buttons">
+            <button class="allowance-btn cancel-btn" id="closeViewerBtn" style="margin: 0; height: 44px; border-radius: 8px;">
+                Close Window
+            </button>
+        </div>
     </div>
+</div>
 
     <div class="approval-footer">
         <button class="allowance-btn cancel-btn" id="backToDriverBtn">
@@ -1866,18 +1883,9 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
     window.scrollTo(0, 0);
 });
 
-document.getElementById("backToDriverBtn").addEventListener("click", () => {
-    if (document.getElementById("scheduleViewerPage").style.display === "block") {
-        document.getElementById("scheduleViewerPage").style.display = "none";
-        document.querySelector(".approval-container").style.display = "block";
-    } else {
-        document.getElementById("driverDashboard").style.display = "block";
-        document.getElementById("scheduleApprovalPage").style.display = "none";
-
-        document.getElementById("dashboardBtn").classList.add("active");
-        document.getElementById("adminBtn").classList.remove("active");
-    }
-    window.scrollTo(0, 0);
+document.getElementById("closeViewerBtn").addEventListener("click", () => {
+    document.getElementById("scheduleViewerPage").style.display = "none";
+    document.body.style.overflow = ""; // Ibalik ang normal scroll ng site
 });
     
 function showActionLoading(title, message){
@@ -2125,12 +2133,15 @@ function viewSchedule(date){
             </div>`;
         });
 
-    if (viewerHTML === "") {
+   if (viewerHTML === "") {
         viewerHTML = `<div class="driver-card" style="text-align:center; padding:30px; color:#6b7280;">Walang nakatalagang biyahe o active schedule para sa petsang ito.</div>`;
     }
 
     viewerContent.innerHTML = viewerHTML;
-    window.scrollTo(0, 0);
+    
+ 
+    document.getElementById("scheduleViewerPage").style.display = "block";
+    document.body.style.overflow = "hidden"; 
 }
    
 window.onload = async function () {
