@@ -8,19 +8,16 @@
     <link rel="icon" type="image/png" href="assets/dispatch-hub-logo.png">
  
     <style>
-    
     .bg-schedule-admin,
     .bg-driver-allowance {
         background: #15803d !important; 
         box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2) !important;
     }
 
-
     .bg-schedule-admin .month-selector select,
     .bg-driver-allowance .month-selector select {
         color: #15803d !important;
     }
-
   
     .header-schedule {
         background: #064e3b !important; 
@@ -31,7 +28,6 @@
         background: #14532d !important; 
         box-shadow: 0 4px 10px rgba(20, 83, 45, 0.2) !important;
     }
-
   
     .header-schedule .month-selector select {
         color: #064e3b;
@@ -853,12 +849,11 @@
        Responsive Styles (Max 600px)
     ========================= */
     @media(max-width:600px){
-
-#scheduleViewerPage .modal-content {
-    max-height: 80vh !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-}
+        #scheduleViewerPage .modal-content {
+            max-height: 80vh !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
         
         body {
             padding-top: 175px;
@@ -892,14 +887,14 @@
         .month-selector { width: 100%; justify-content: space-between; }
 
         .approval-table {
-        table-layout: auto !important; 
-        width: 100% !important;
-    }
-    .approval-table th, .approval-table td {
-        padding: 8px 4px !important; 
-        font-size: 11px !important;  
-        white-space: normal !important; 
-    }
+            table-layout: auto !important; 
+            width: 100% !important;
+        }
+        .approval-table th, .approval-table td {
+            padding: 8px 4px !important; 
+            font-size: 11px !important;  
+            white-space: normal !important; 
+        }
     }
     </style>
 </head>
@@ -940,16 +935,15 @@
     </div>
     <div class="approval-container" style="margin-top: 15px;">
         <h3>My Allowance Summary</h3>
-       <table class="approval-table">
-    <thead>
-        <tr>
-            <th style="width: 40%; text-align: left;">Date</th>
-            <th style="width: 30%; text-align: center;">Amount</th>
-            <th style="width: 30%; text-align: center;">Status</th>
-        </tr>
-    </thead>
-            <tbody id="driverViewTableBody">
-            </tbody>
+        <table class="approval-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%; text-align: left;">Date</th>
+                    <th style="width: 30%; text-align: center;">Amount</th>
+                    <th style="width: 30%; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody id="driverViewTableBody"></tbody>
         </table>
     </div>
     <div class="approval-footer">
@@ -974,26 +968,26 @@
         <!-- PENDING SCHEDULES MOVED TO FIRST -->
         <h3>Pending Schedules</h3>
         <table class="approval-table">
-           <thead>
-    <tr>
-        <th style="width: 25%; text-align: left;">Day</th>
-        <th style="width: 45%; text-align: center;">Date</th>
-        <th style="width: 30%; text-align: center;">Actions</th>
-    </tr>
-</thead>
+            <thead>
+                <tr>
+                    <th style="width: 25%; text-align: left;">Day</th>
+                    <th style="width: 45%; text-align: center;">Date</th>
+                    <th style="width: 30%; text-align: center;">Actions</th>
+                </tr>
+            </thead>
             <tbody id="pendingSchedules"></tbody>
         </table>
 
         <!-- APPROVED SCHEDULES MOVED TO SECOND -->
         <h3>Approved Schedules</h3>
         <table class="approval-table">
-           <thead>
-    <tr>
-        <th style="width: 25%; text-align: left;">Day</th>
-        <th style="width: 45%; text-align: center;">Date</th>
-        <th style="width: 30%; text-align: center;">Actions</th>
-    </tr>
-</thead>
+            <thead>
+                <tr>
+                    <th style="width: 25%; text-align: left;">Day</th>
+                    <th style="width: 45%; text-align: center;">Date</th>
+                    <th style="width: 30%; text-align: center;">Actions</th>
+                </tr>
+            </thead>
             <tbody id="approvedSchedules"></tbody>
         </table>
     </div>
@@ -1012,34 +1006,34 @@
     <div class="approval-container">
         <h3>Driver Allowance Summary</h3>
         <table class="approval-table">
-    <thead>
-        <tr>
-            <th style="width: 34%; text-align: left;">Driver Name</th>
-            <th style="width: 24%; text-align: center;">Approved</th>
-            <th style="width: 24%; text-align: center;">Pending</th>
-            <th style="width: 18%; text-align: center;">Action</th>
-        </tr>
-    </thead>
-    <tbody id="allowanceSummaryBody">
+            <thead>
+                <tr>
+                    <th style="width: 34%; text-align: left;">Driver Name</th>
+                    <th style="width: 24%; text-align: center;">Approved</th>
+                    <th style="width: 24%; text-align: center;">Pending</th>
+                    <th style="width: 18%; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="allowanceSummaryBody"></tbody>
         </table>
     </div>
 
     <div id="scheduleViewerPage" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 500px; padding: 20px;">
-        <div class="summary-header" style="margin-top: 0;">
-            <h2 id="viewerTitle">Driver Schedule</h2>
-        </div>
-        
-        <!-- Dito papasok ang scrollable content ng mga biyahe -->
-        <div id="scheduleViewerContent" style="max-height: 60vh; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
-        
-        <div class="modal-buttons">
-            <button class="allowance-btn cancel-btn" id="closeViewerBtn" style="margin: 0; height: 44px; border-radius: 8px;">
-                Close Window
-            </button>
+        <div class="modal-content" style="max-width: 500px; padding: 20px;">
+            <div class="summary-header" style="margin-top: 0;">
+                <h2 id="viewerTitle">Driver Schedule</h2>
+            </div>
+            
+            <!-- Dito papasok ang scrollable content ng mga biyahe -->
+            <div id="scheduleViewerContent" style="max-height: 60vh; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
+            
+            <div class="modal-buttons">
+                <button class="allowance-btn cancel-btn" id="closeViewerBtn" style="margin: 0; height: 44px; border-radius: 8px;">
+                    Close Window
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="approval-footer">
         <button class="allowance-btn cancel-btn" id="backToDriverBtn">
@@ -1191,7 +1185,7 @@
     </div>
 </div>
 
-    <div id="loginSuccessModal" class="success-overlay">
+<div id="loginSuccessModal" class="success-overlay">
     <div class="success-box" style="width: 320px;">
         <div class="success-icon">🔔</div>
         <h2 id="loginSuccessTitle" style="color: #14532d; font-size: 20px;">Driver Login</h2>
@@ -1200,7 +1194,7 @@
     </div>
 </div>
 
-    <div id="confirmApprovalModal" class="success-overlay" style="display: none;">
+<div id="confirmApprovalModal" class="success-overlay" style="display: none;">
     <div class="success-box" style="width: 340px; padding: 20px; box-sizing: border-box;">
         <div style="font-size: 40px; margin-bottom: 8px;">📋</div>
         <h3 style="color: #14532d; font-size: 18px; margin: 0 0 10px 0; font-weight: 700;">Approve Schedule</h3>
@@ -1404,13 +1398,13 @@ function processAllowanceSummaryTable() {
 
         const row = document.createElement("tr");
         row.innerHTML = `
-    <td>${driver}</td>
-    <td style="text-align: center; color: #14532d; font-weight:700;">₱${aggregateGroup[driver].approved.toLocaleString()}</td>
-    <td style="text-align: center; color: #b45309; font-weight:700;">₱${aggregateGroup[driver].pending.toLocaleString()}</td>
-    <td style="text-align: center;">
-        <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
-    </td>
-`;
+            <td>${driver}</td>
+            <td style="text-align: center; color: #14532d; font-weight:700;">₱${aggregateGroup[driver].approved.toLocaleString()}</td>
+            <td style="text-align: center; color: #b45309; font-weight:700;">₱${aggregateGroup[driver].pending.toLocaleString()}</td>
+            <td style="text-align: center;">
+                <button class="action-table-btn btn-view" onclick="openDriverDetailsModal('${driver}')">View</button>
+            </td>
+        `;
         tableBody.appendChild(row);
     });
 
@@ -1418,11 +1412,11 @@ function processAllowanceSummaryTable() {
     summaryFooterRow.style.background = "#e5e7eb";
     summaryFooterRow.style.fontWeight = "700";
     summaryFooterRow.innerHTML = `
-    <td style="color:#14532d; font-size: 11px; text-align: left;">Grand Total</td>
-    <td style="text-align: center; color: #14532d;">₱${overallApprovedTotal.toLocaleString()}</td>
-    <td style="text-align: center; color: #b45309;">₱${overallPendingTotal.toLocaleString()}</td>
-    <td></td>
-`;
+        <td style="color:#14532d; font-size: 11px; text-align: left;">Grand Total</td>
+        <td style="text-align: center; color: #14532d;">₱${overallApprovedTotal.toLocaleString()}</td>
+        <td style="text-align: center; color: #b45309;">₱${overallPendingTotal.toLocaleString()}</td>
+        <td></td>
+    `;
     tableBody.appendChild(summaryFooterRow);
 }
 
@@ -1694,19 +1688,14 @@ async function saveAllowance() {
         }
 
         document.getElementById("successModal").style.display = "flex";
-await loadSubmittedAllowances();
-closeModal();
+        await loadSubmittedAllowances();
+        closeModal();
 
-// I-setup ang OK button para mag-loading muli ang buong site
-document.getElementById("successOK").onclick = function() {
-    document.getElementById("successModal").style.display = "none";
-    
-    // Ipakita muli ang "Getting Dispatch Schedule..." loading overlay
-    document.getElementById("pageLoadingOverlay").style.display = "flex";
-    
-    // Patakbuhin muli ang main window.onload function para mag-refresh ang data at mawala ang spinner pagkatapos
-    window.onload();
-};
+        document.getElementById("successOK").onclick = function() {
+            document.getElementById("successModal").style.display = "none";
+            document.getElementById("pageLoadingOverlay").style.display = "flex";
+            window.onload();
+        };
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -1834,20 +1823,17 @@ function driverLogin() {
         loginBtn.disabled = false;
         loginBtn.innerText = "Login";
 
-        // --- DITO MANGYAYARI ANG PAGBUKAS NG CUSTOM MODAL ---
         const loginTitle = document.getElementById("loginSuccessTitle");
         const loginMsg = document.getElementById("loginSuccessMessage");
         
         loginTitle.innerHTML = `Hi ${loggedInDriverName}!`;
         loginMsg.innerHTML = `This is just a reminder to always submit your allowance immediately after your trip!`;
         
-        // Ipakita ang bagong gawang custom alert modal
         document.getElementById("loginSuccessModal").style.display = "flex";
 
-        // Kapag pinindot ang OK button ng bagong modal
         document.getElementById("loginSuccessOK").onclick = () => {
             document.getElementById("loginSuccessModal").style.display = "none";
-            showDriverAllowanceSummary(); // Tumuloy sa dashboard summary pagka-OK
+            showDriverAllowanceSummary(); 
         };
 
     }, 1200);
@@ -1885,7 +1871,7 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
 
 document.getElementById("closeViewerBtn").addEventListener("click", () => {
     document.getElementById("scheduleViewerPage").style.display = "none";
-    document.body.style.overflow = ""; // Ibalik ang normal scroll ng site
+    document.body.style.overflow = ""; 
 });
     
 function showActionLoading(title, message){
@@ -1935,7 +1921,6 @@ async function adminLogin() {
 }
 
 function approveSchedule(date, buttonElement) {
-   
     const confirmModal = document.getElementById("confirmApprovalModal");
     confirmModal.style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -2008,17 +1993,17 @@ function loadScheduleApprovalPage(){
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
-       const row = `
-<tr>
-    <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-    <td class="approval-date-val" style="text-align: center;">${date}</td>
-    <td>
-        <div class="action-btn-grp" style="justify-content: center;">
-            <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-            ${status === "approved" ? "" : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`}
-        </div>
-    </td>
-</tr>`;
+        const row = `
+        <tr>
+            <td class="approval-day-name" style="text-align: left;">${weekday}</td>
+            <td class="approval-date-val" style="text-align: center;">${date}</td>
+            <td>
+                <div class="action-btn-grp" style="justify-content: center;">
+                    <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
+                    ${status === "approved" ? "" : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`}
+                </div>
+            </td>
+        </tr>`;
 
         if (status === "approved") {
             approvedDiv.innerHTML += row;
@@ -2042,7 +2027,7 @@ function viewSchedule(date){
 
     const viewerPage = document.getElementById("scheduleViewerPage");
     viewerPage.style.display = "block";
-   document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
+    document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
     let viewerHTML = "";
@@ -2133,20 +2118,17 @@ function viewSchedule(date){
             </div>`;
         });
 
-   if (viewerHTML === "") {
+    if (viewerHTML === "") {
         viewerHTML = `<div class="driver-card" style="text-align:center; padding:30px; color:#6b7280;">Walang nakatalagang biyahe o active schedule para sa petsang ito.</div>`;
     }
 
     viewerContent.innerHTML = viewerHTML;
     
- 
     document.getElementById("scheduleViewerPage").style.display = "block";
     document.body.style.overflow = "hidden"; 
 }
    
 window.onload = async function () {
-    
-   
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
     let autoLogin = (loggedIn === "true" && Date.now() < expires);
@@ -2239,7 +2221,6 @@ window.onload = async function () {
             if(status !== "approved") return;
 
             const today = new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"}));
-
             today.setHours(0,0,0,0);
             scheduleDate.setHours(0,0,0,0);
 
@@ -2290,7 +2271,6 @@ window.onload = async function () {
                     if (["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
 
                     let tripsHTML = "";
-
                     d.trips.forEach((trip, index) => {
                         tripsHTML += `
                         <div class="trip">
@@ -2364,7 +2344,6 @@ window.onload = async function () {
             
             if (!isPast && !isToday) {
                 let tableRows = "";
-
                 Object.values(summaryDrivers[date] || {}).forEach(driver => {
                     const rest = (driver.itinerary || "").toLowerCase().trim() === "rest day";
                     tableRows += `
@@ -2405,7 +2384,6 @@ window.onload = async function () {
                     if (["rest day","am carpool","standby","banking","pm carpool"].includes((d.itinerary || "").toLowerCase().trim())) return;
 
                     let tripsHTML = "";
-
                     d.trips.forEach((trip, index) => {
                         tripsHTML += `
                         <div class="trip">
