@@ -1651,8 +1651,19 @@ async function saveAllowance() {
         }
 
         document.getElementById("successModal").style.display = "flex";
-        await loadSubmittedAllowances();
-        closeModal();
+await loadSubmittedAllowances();
+closeModal();
+
+// I-setup ang OK button para mag-loading muli ang buong site
+document.getElementById("successOK").onclick = function() {
+    document.getElementById("successModal").style.display = "none";
+    
+    // Ipakita muli ang "Getting Dispatch Schedule..." loading overlay
+    document.getElementById("pageLoadingOverlay").style.display = "flex";
+    
+    // Patakbuhin muli ang main window.onload function para mag-refresh ang data at mawala ang spinner pagkatapos
+    window.onload();
+};
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -2071,9 +2082,7 @@ function viewSchedule(date){
 }
    
 window.onload = async function () {
-    document.getElementById("successOK").onclick = () => {
-        document.getElementById("successModal").style.display = "none";
-    };
+    
    
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
