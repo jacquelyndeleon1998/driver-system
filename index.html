@@ -1748,12 +1748,16 @@ function renderDriverViewTable() {
 
     filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    let totalAmount = 0;
+
     if (filteredRecords.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#6b7280;">No allowance entries recorded for you in this cut-off window.</td></tr>`;
         return;
     }
 
     filteredRecords.forEach(record => {
+        totalAmount += record.amount;
+
         const row = document.createElement("tr");
         
         let statusBadge = "";
@@ -1764,13 +1768,23 @@ function renderDriverViewTable() {
             row.style.backgroundColor = "#fef3c7";
         }
 
-       row.innerHTML = `
-    <td style="text-align: left;">${record.date}</td>
-    <td style="text-align: center; font-weight:700;">₱${record.amount.toLocaleString()}</td>
-    <td style="text-align: center;">${statusBadge}</td>
-`;
+        row.innerHTML = `
+            <td style="text-align: left;">${record.date}</td>
+            <td style="text-align: center; font-weight:700;">₱${record.amount.toLocaleString()}</td>
+            <td style="text-align: center;">${statusBadge}</td>
+        `;
         tableBody.appendChild(row);
     });
+
+    const totalRow = document.createElement("tr");
+    totalRow.style.background = "#e5e7eb";
+    totalRow.style.fontWeight = "700";
+    totalRow.innerHTML = `
+        <td style="color:#14532d; font-size: 11px; text-align: left;">Grand Total</td>
+        <td style="text-align: center; color: #14532d;">₱${totalAmount.toLocaleString()}</td>
+        <td></td>
+    `;
+    tableBody.appendChild(totalRow);
 }
 
 function driverLogin() {
