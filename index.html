@@ -996,8 +996,8 @@
             <thead>
                 <tr>
                     <th style="width: 40%;">Driver Name</th>
-                    <th style="width: 25%; text-align: right; padding-right: 25px;">Total Approved Allowance</th>
-                    <th style="width: 20%; text-align: right; padding-right: 25px;">Pending for approval</th>
+                    <th style="width: 25%; text-align: right; padding-right: 25px;">Total Approved</th>
+                    <th style="width: 20%; text-align: right; padding-right: 25px;">Pending</th>
                     <th style="width: 15%; text-align: center;">Action</th>
                 </tr>
             </thead>
@@ -1366,7 +1366,7 @@ function processAllowanceSummaryTable() {
     summaryFooterRow.style.background = "#e5e7eb";
     summaryFooterRow.style.fontWeight = "700";
     summaryFooterRow.innerHTML = `
-        <td style="color:#14532d; font-size: 11px;">Total Approved (all drivers) | Total Pending (all drivers)</td>
+        <td style="color:#14532d; font-size: 11px;">Grand Total</td>
         <td style="text-align: right; padding-right: 25px; color: #14532d;">&#8369;${overallApprovedTotal.toLocaleString()}</td>
         <td style="text-align: right; padding-right: 25px; color: #b45309;">&#8369;${overallPendingTotal.toLocaleString()}</td>
         <td></td>
@@ -1521,8 +1521,8 @@ function submitAllowance(driver, date, reqBy, pass){
     currentDate = date;
     
     let infoPieces = [];
-    if(reqBy) infoPieces.push("Req: " + reqBy);
-    if(pass) infoPieces.push("Pass: " + pass);
+    if(reqBy) infoPieces.push(reqBy);
+    if(pass) infoPieces.push(pass);
     currentPassengerCombined = infoPieces.join(" | ") || "None";
 
     document.getElementById("modalDriver").textContent = driver;
