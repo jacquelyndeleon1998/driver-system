@@ -1170,8 +1170,8 @@
 <div id="successModal" class="success-overlay">
     <div class="success-box">
         <div class="success-icon">✅</div>
-        <h2>Submitted Successfully</h2>
-        <p>Your meal allowance has been recorded for review and approval.</p>
+        <h2 id="successModalTitle">Submitted Successfully</h2>
+        <p id="successModalText">Your meal allowance has been recorded for review and approval.</p>
         <button id="successOK" class="allowance-btn">OK</button>
     </div>
 </div>
@@ -1488,7 +1488,19 @@ async function approveItemInline(name, date, element) {
             const data = await response.json();
             
             if (data.success) {
-                alert("✅ Record updated successfully!");
+               if (data.success) {
+                // Change modal text dynamically to match allowance approval
+                document.getElementById("successModalTitle").textContent = "Item Approved";
+                document.getElementById("successModalText").textContent = "Record updated successfully!";
+                document.getElementById("successModal").style.display = "flex";
+
+                document.getElementById("successOK").onclick = async function() {
+                    document.getElementById("successModal").style.display = "none";
+                    await fetchLiveAllowancesFromSheet();
+                    processAllowanceSummaryTable();
+                    openDriverDetailsModal(name);
+                };
+            }
                 await fetchLiveAllowancesFromSheet();
                 processAllowanceSummaryTable();
                 openDriverDetailsModal(name);
@@ -1687,6 +1699,9 @@ async function saveAllowance() {
             return;
         }
 
+       document.getElementById("successModalTitle").textContent = "Submitted Successfully";
+        document.getElementById("successModalText").textContent = "Your meal allowance has been recorded for review and approval.";
+        
         document.getElementById("successModal").style.display = "flex";
         await loadSubmittedAllowances();
         closeModal();
@@ -1696,6 +1711,7 @@ async function saveAllowance() {
             document.getElementById("pageLoadingOverlay").style.display = "flex";
             window.onload();
         };
+        
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -1941,7 +1957,18 @@ function approveSchedule(date, buttonElement) {
             const result = await res.json();
 
             if (result.success === true) {
-                alert(`✅ Schedule for ${date} has been approved successfully!`);
+               if (result.success === true) {
+                // Change modal text dynamically to match schedule approval
+                document.getElementById("successModalTitle").textContent = "Schedule Approved";
+                document.getElementById("successModalText").textContent = `Schedule for ${date} has been approved successfully!`;
+                document.getElementById("successModal").style.display = "flex";
+
+                document.getElementById("successOK").onclick = function() {
+                    document.getElementById("successModal").style.display = "none";
+                    approvalDates[date] = "approved";
+                    loadScheduleApprovalPage();
+                };
+            }
                 approvalDates[date] = "approved";
                 loadScheduleApprovalPage();
             } else {
