@@ -1488,7 +1488,6 @@ async function approveItemInline(name, date, element) {
             const data = await response.json();
             
             if (data.success) {
-               if (data.success) {
                 // Change modal text dynamically to match allowance approval
                 document.getElementById("successModalTitle").textContent = "Item Approved";
                 document.getElementById("successModalText").textContent = "Record updated successfully!";
@@ -1496,14 +1495,9 @@ async function approveItemInline(name, date, element) {
 
                 document.getElementById("successOK").onclick = async function() {
                     document.getElementById("successModal").style.display = "none";
-                    await fetchLiveAllowancesFromSheet();
-                    processAllowanceSummaryTable();
-                    openDriverDetailsModal(name);
+                    document.getElementById("pageLoadingOverlay").style.display = "flex";
+                    window.onload(); // Reload everything cleanly after approving an inline item
                 };
-            }
-                await fetchLiveAllowancesFromSheet();
-                processAllowanceSummaryTable();
-                openDriverDetailsModal(name);
             } else {
                 alert("❌ Error: " + data.message);
                 element.disabled = false;
