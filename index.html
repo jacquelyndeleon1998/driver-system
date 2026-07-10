@@ -1381,22 +1381,30 @@ function updateCutoffDropdownsDynamically() {
     if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
     if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
 }
-    
+
 function processAllowanceSummaryTable() {
     const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
-    const selectorValue = selectorElement ? selectorElement.value : "1";
+    let selectorValue = selectorElement ? selectorElement.value : "07-1";
+    if(!selectorValue.includes("-")) selectorValue = "07-1";
+
+    const [targetMonthStr, targetBucket] = selectorValue.split("-");
+    const targetMonth = parseInt(targetMonthStr);
+
     const tableBody = document.getElementById("allowanceSummaryBody");
     tableBody.innerHTML = "";
 
     const aggregateGroup = {};
 
     globalParsedAllowances.forEach(record => {
-        const dateMatch = record.date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return;
-        const dayNumber = parseInt(dateMatch[0]);
+        const parsedDate = new Date(record.date);
+        if(isNaN(parsedDate.getTime())) return;
 
-        if (selectorValue === "1" && dayNumber > 15) return;
-        if (selectorValue === "2" && dayNumber <= 15) return;
+        const dayNumber = parsedDate.getDate();
+        const monthNumber = parsedDate.getMonth() + 1;
+
+        if (monthNumber !== targetMonth) return;
+        if (targetBucket === "1" && dayNumber > 15) return;
+        if (targetBucket === "2" && dayNumber <= 15) return;
 
         if (!aggregateGroup[record.name]) {
             aggregateGroup[record.name] = { approved: 0, pending: 0 };
@@ -1446,9 +1454,16 @@ function processAllowanceSummaryTable() {
 }
 
 function openDriverDetailsModal(driverName) {
-    const cutoffId = document.getElementById("allowanceCutoff").value;
+    let cutoffId = document.getElementById("allowanceCutoff").value;
+    if(!cutoffId.includes("-")) cutoffId = "07-1";
+    const [targetMonthStr, targetBucket] = cutoffId.split("-");
+    const targetMonth = parseInt(targetMonthStr);
+
     document.getElementById("detailsModalDriverName").textContent = driverName;
-    document.getElementById("detailsModalRange").textContent = "Cut-off Range Selection: " + (cutoffId === "1" ? "July 1 - 15, 2026" : "July 16 - End of Month");
+    
+    // Dynamically format detailed text label to look nice
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById("detailsModalRange").textContent = "Selected Window: " + monthNames[targetMonth - 1] + (targetBucket === "1" ? " 1 - 15" : " 16 - End of Month");
     
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
@@ -1456,12 +1471,15 @@ function openDriverDetailsModal(driverName) {
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return false;
         
-        const dateMatch = record.date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return false;
-        const dayNumber = parseInt(dateMatch[0]);
+        const parsedDate = new Date(record.date);
+        if(isNaN(parsedDate.getTime())) return false;
+
+        const dayNumber = parsedDate.getDate();
+        const monthNumber = parsedDate.getMonth() + 1;
         
-        if (cutoffId === "1" && dayNumber > 15) return false;
-        if (cutoffId === "2" && dayNumber <= 15) return false;
+        if (monthNumber !== targetMonth) return false;
+        if (targetBucket === "1" && dayNumber > 15) return false;
+        if (targetBucket === "2" && dayNumber <= 15) return false;
 
         return true;
     });
@@ -1770,19 +1788,27 @@ function showDriverAllowanceSummary() {
 }
 
 function renderDriverViewTable() {
-    const selectorValue = document.getElementById("driverViewCutoff").value || "1";
+    let selectorValue = document.getElementById("driverViewCutoff").value || "07-1";
+    if(!selectorValue.includes("-")) selectorValue = "07-1";
+
+    const [targetMonthStr, targetBucket] = selectorValue.split("-");
+    const targetMonth = parseInt(targetMonthStr);
+
     const tableBody = document.getElementById("driverViewTableBody");
     tableBody.innerHTML = "";
 
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return false;
 
-        const dateMatch = record.date.match(/\b\d{1,2}\b/);
-        if (!dateMatch) return false;
-        const dayNumber = parseInt(dateMatch[0]);
+        const parsedDate = new Date(record.date);
+        if(isNaN(parsedDate.getTime())) return false;
 
-        if (selectorValue === "1" && dayNumber > 15) return false;
-        if (selectorValue === "2" && dayNumber <= 15) return false;
+        const dayNumber = parsedDate.getDate();
+        const monthNumber = parsedDate.getMonth() + 1;
+
+        if (monthNumber !== targetMonth) return false;
+        if (targetBucket === "1" && dayNumber > 15) return false;
+        if (targetBucket === "2" && dayNumber <= 15) return false;
 
         return true;
     });
@@ -2018,7 +2044,12 @@ function loadScheduleApprovalPage(){
     approvedDiv.innerHTML = "";
     pendingDiv.innerHTML = "";
 
-    const selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "1";
+    // Grab new unified value: "MM-Bucket" (e.g. "07-1")
+    let selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "07-1";
+    if(!selectorValue.includes("-")) selectorValue = "07-1";
+
+    const [targetMonthStr, targetBucket] = selectorValue.split("-");
+    const targetMonth = parseInt(targetMonthStr);
 
     // Establish time baselines in Manila Timezone
     const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
@@ -2032,7 +2063,6 @@ function loadScheduleApprovalPage(){
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0,0,0,0);
 
-    // Check if tomorrow's schedule is in the array and already approved
     const isTomorrowApproved = scheduleDates.some(date => {
         const d = new Date(date);
         d.setHours(0,0,0,0);
@@ -2050,9 +2080,12 @@ function loadScheduleApprovalPage(){
         if (isNaN(scheduleDate.getTime())) return;
         
         const dayNumber = scheduleDate.getDate();
+        const monthNumber = scheduleDate.getMonth() + 1;
 
-        if (selectorValue === "1" && dayNumber > 15) return;
-        if (selectorValue === "2" && dayNumber <= 15) return;
+        // STRICT MONTH & PERIOD VALIDATION FILTER
+        if (monthNumber !== targetMonth) return;
+        if (targetBucket === "1" && dayNumber > 15) return;
+        if (targetBucket === "2" && dayNumber <= 15) return;
 
         scheduleDate.setHours(0,0,0,0);
         
@@ -2112,12 +2145,11 @@ function loadScheduleApprovalPage(){
 
     // Render logic for Approved Schedules
     if (hasApproved) {
-        // Output the upfront visible rows first
+        // Output upfront rows
         approvedDiv.innerHTML = approvedMainRowsHtml;
 
-        // If there are any other approved items in this cut-off, bundle them inside the select folder
+        // Populate dropdown folder safely with any hidden items matching current active cutoff context
         if (approvedDropdownItems.length > 0) {
-            // Keep them ordered chronologically inside the folder drop-down
             approvedDropdownItems.sort((a, b) => new Date(a.date) - new Date(b.date));
             
             let dropdownRow = `
@@ -2363,7 +2395,9 @@ window.onload = async function () {
 
             const isToday = scheduleDate.getTime() === today.getTime();
             const isPast = scheduleDate.getTime() < today.getTime();
-            const dayName = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});            if(isToday){
+            const dayName = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
+
+            if(isToday){
                 const hideSummaryTable = phNow.getHours() >= 16;
                 let tableRows="";
 
