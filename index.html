@@ -1162,6 +1162,15 @@
     </div>
 </div>
 
+    <div id="loginSuccessModal" class="success-overlay">
+    <div class="success-box" style="width: 320px;">
+        <div class="success-icon">🔔</div>
+        <h2 id="loginSuccessTitle" style="color: #14532d; font-size: 20px;">Driver Login</h2>
+        <p id="loginSuccessMessage" style="margin-top: 10px; font-size: 13.5px; color: #4b5563; text-align: left; padding: 0 5px;"></p>
+        <button id="loginSuccessOK" class="allowance-btn" style="margin-top: 15px;">OK</button>
+    </div>
+</div>
+
 <footer class="app-footer">
     <div class="footer-content">
         <div class="footer-title">Dispatch Hub v1.0</div>
@@ -1734,11 +1743,11 @@ function driverLogin() {
     const loginBtn = document.querySelector("#driverLoginModal .submit-btn");
 
     if (!selectedDriverValue) {
-        alert("&times; Please select your name from the menu.");
+        alert("❌ Please select your name from the menu.");
         return;
     }
     if (pin.length < 4) {
-        alert("&times; Enter a valid Security PIN.");
+        alert("❌ Enter a valid Security PIN.");
         return;
     }
 
@@ -1757,8 +1766,22 @@ function driverLogin() {
         loginBtn.disabled = false;
         loginBtn.innerText = "Login";
 
-        alert(`Hi ${loggedInDriverName},\nThis is just a reminder to always submit your allowance immediately after your trip!`);
-        showDriverAllowanceSummary();
+        // --- DITO MANGYAYARI ANG PAGBUKAS NG CUSTOM MODAL ---
+        const loginTitle = document.getElementById("loginSuccessTitle");
+        const loginMsg = document.getElementById("loginSuccessMessage");
+        
+        loginTitle.innerHTML = `Hi ${loggedInDriverName}!`;
+        loginMsg.innerHTML = `This is just a reminder to always submit your allowance immediately after your trip!`;
+        
+        // Ipakita ang bagong gawang custom alert modal
+        document.getElementById("loginSuccessModal").style.display = "flex";
+
+        // Kapag pinindot ang OK button ng bagong modal
+        document.getElementById("loginSuccessOK").onclick = () => {
+            document.getElementById("loginSuccessModal").style.display = "none";
+            showDriverAllowanceSummary(); // Tumuloy sa dashboard summary pagka-OK
+        };
+
     }, 1200);
 }
 
