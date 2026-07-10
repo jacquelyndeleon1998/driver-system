@@ -2000,6 +2000,9 @@ function loadScheduleApprovalPage(){
 
     let hasApproved = false;
     let hasPending = false;
+    
+    // Array to temporarily hold approved items so we can slice them
+    let approvedItems = [];
 
     scheduleDates.forEach(date => {
         const scheduleDate = new Date(date);
@@ -2028,7 +2031,7 @@ function loadScheduleApprovalPage(){
         </tr>`;
 
         if (status === "approved") {
-            approvedDiv.innerHTML += row;
+            approvedItems.push({ date: date, html: row });
             hasApproved = true;
         } else {
             pendingDiv.innerHTML += row;
@@ -2036,9 +2039,40 @@ function loadScheduleApprovalPage(){
         }
     });
 
-    if(!hasApproved) {
+    // Render logic for Approved Schedules (Limit to 2, remaining goes to dropdown)
+    if (hasApproved) {
+        // 1. Show the first 2 visible rows instantly
+        const visibleItems = approvedItems.slice(0, 2);
+        visibleItems.forEach(item => {
+            approvedDiv.innerHTML += item.html;
+        });
+
+        // 2. If there are more than 2 items, place them in a select dropdown element row
+        if (approvedItems.length > 2) {
+            const hiddenItems = approvedItems.slice(2);
+            
+            let dropdownRow = `
+            <tr>
+                <td colspan="3" style="text-align: center; padding: 10px;">
+                    <select onchange="if(this.value) { viewSchedule(this.value); this.selectedIndex=0; }" style="width: 90%; padding: 6px; font-size: 12px; font-weight: 600; border: 1px solid #14532d; border-radius: 6px; color: #14532d; background: #fff; cursor: pointer;">
+                        <option value="" selected disabled>📂 View More Approved Schedules (${hiddenItems.length})</option>
+            `;
+            
+            hiddenItems.forEach(item => {
+                dropdownRow += `<option value="${item.date}">${item.date}</option>`;
+            });
+            
+            dropdownRow += `
+                    </select>
+                </td>
+            </tr>`;
+            
+            approvedDiv.innerHTML += dropdownRow;
+        }
+    } else {
         approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
+
     if(!hasPending) {
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
