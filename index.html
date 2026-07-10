@@ -2014,7 +2014,7 @@ function approveSchedule(date, buttonElement) {
         showActionLoading("Approving Schedule...", "Updating system database. Please wait.");
 
         try {
-            const res = await fetch(`${WEBAPP_URL}?action=approve&date=${encodeURIComponent(date)}`, {
+            const res = await fetch(`${WEBAPP_BASE}?action=approve&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`, {
                 method: "GET",
                 mode: "cors"
             });
