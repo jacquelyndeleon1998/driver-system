@@ -1239,6 +1239,18 @@ let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
 
+// HELPER FUNCTION: Standardizes date strings to ensure reliable matching
+function standardizeDateStr(dateStr) {
+    if (!dateStr) return "";
+    const parsed = new Date(dateStr);
+    if (isNaN(parsed.getTime())) return dateStr.trim().toLowerCase(); // fallback
+    
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 function refreshLoginSession() {
     const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
     localStorage.setItem("loginExpires", expires);
@@ -1269,7 +1281,11 @@ async function loadSubmittedAllowances() {
         const res = await fetch(WEBAPP_URL + "?action=submitted");
         const data = await res.json();
         submittedDrivers = {};
-        data.submitted.forEach(item => { submittedDrivers[item] = true; });
+        data.submitted.forEach(item => { 
+            const [driver, rawDate] = item.split("|");
+            const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
+            submittedDrivers[cleanKey] = true; 
+        });
     } catch (err) {
         console.error("Error loading submitted allowances: ", err);
     }
@@ -1313,7 +1329,6 @@ function updateCutoffDropdownsDynamically() {
     
     if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
 
-    // Track active cutoff buckets (e.g., "2026-07-1" or "2026-06-2")
     const activeCutoffs = new Set();
 
     const processDateString = (dateStr) => {
@@ -1322,19 +1337,16 @@ function updateCutoffDropdownsDynamically() {
         if (isNaN(parsedDate.getTime())) return;
 
         const year = parsedDate.getFullYear();
-        const monthNum = parsedDate.getMonth(); // 0-11
+        const monthNum = parsedDate.getMonth(); 
         const day = parsedDate.getDate();
         
-        // Bucket 1: Days 1 to 15, Bucket 2: Days 16 to end of month
         const bucket = day <= 15 ? "1" : "2";
         activeCutoffs.add(`${year}-${monthNum}-${bucket}`);
     };
 
-    // Scan all real data arrays for populated months/days
     scheduleDates.forEach(date => processDateString(date));
     globalParsedAllowances.forEach(record => processDateString(record.date));
 
-    // Save previous selections to avoid jumping selections when refreshing lists
     const currentScheduleVal = scheduleSelect.value;
     const currentAllowanceVal = allowanceSelect.value;
     const currentDriverViewVal = driverViewSelect.value;
@@ -1343,7 +1355,6 @@ function updateCutoffDropdownsDynamically() {
     allowanceSelect.innerHTML = "";
     driverViewSelect.innerHTML = "";
 
-    // Sort buckets chronologically so older months appear at the top
     const sortedBuckets = Array.from(activeCutoffs).sort((a, b) => {
         const [yA, mA, bA] = a.split("-").map(Number);
         const [yB, mB, bB] = b.split("-").map(Number);
@@ -1361,10 +1372,8 @@ function updateCutoffDropdownsDynamically() {
 
         if (bucket === "1") {
             labelText = `${monthName} 1 - 15, ${year}`;
-            // Value payload retains Month indicator (e.g. "07-1")
             optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-1`; 
         } else {
-            // Find total days in this specific month dynamically
             const totalDays = new Date(Number(year), Number(monthNum) + 1, 0).getDate();
             labelText = `${monthName} 16 - ${totalDays}, ${year}`;
             optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-2`;
@@ -1375,7 +1384,6 @@ function updateCutoffDropdownsDynamically() {
         driverViewSelect.add(new Option(labelText, optionValue));
     });
 
-    // Fallback default safe state if arrays were entirely blank
     if (scheduleSelect.options.length === 0) {
         const fallback = new Option("July 1 - 15, 2026", "07-1");
         scheduleSelect.add(fallback);
@@ -1383,7 +1391,6 @@ function updateCutoffDropdownsDynamically() {
         driverViewSelect.add(fallback.cloneNode(true));
     }
 
-    // Restore previous inputs safely if available
     if (currentScheduleVal && scheduleSelect.querySelector(`option[value="${currentScheduleVal}"]`)) scheduleSelect.value = currentScheduleVal;
     if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
     if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
@@ -1468,7 +1475,6 @@ function openDriverDetailsModal(driverName) {
 
     document.getElementById("detailsModalDriverName").textContent = driverName;
     
-    // Dynamically format detailed text label to look nice
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     document.getElementById("detailsModalRange").textContent = "Selected Window: " + monthNames[targetMonth - 1] + (targetBucket === "1" ? " 1 - 15" : " 16 - End of Month");
     
@@ -1538,15 +1544,14 @@ async function approveItemInline(name, date, element) {
             const data = await response.json();
             
             if (data.success) {
-                // Change modal text dynamically to match allowance approval
                 document.getElementById("successModalTitle").textContent = "Item Approved";
                 document.getElementById("successModalText").textContent = "Record updated successfully!";
                 document.getElementById("successModal").style.display = "flex";
 
-                document.getElementById("successOK").onclick = async function() {
+                document.getElementById("successOK").onclick = function() {
                     document.getElementById("successModal").style.display = "none";
                     document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    window.onload(); // Reload everything cleanly after approving an inline item
+                    window.location.reload(); 
                 };
             } else {
                 alert("❌ Error: " + data.message);
@@ -1719,7 +1724,7 @@ async function saveAllowance() {
 
     try {
         const payloadData = {
-            token: SECRET_TOKEN, // Pass token through post body container
+            token: SECRET_TOKEN, 
             data: payload,
             receipts: receipts
         };
@@ -1744,7 +1749,7 @@ async function saveAllowance() {
             return;
         }
 
-       document.getElementById("successModalTitle").textContent = "Submitted Successfully";
+        document.getElementById("successModalTitle").textContent = "Submitted Successfully";
         document.getElementById("successModalText").textContent = "Your meal allowance has been recorded for review and approval.";
         
         document.getElementById("successModal").style.display = "flex";
@@ -1754,7 +1759,7 @@ async function saveAllowance() {
         document.getElementById("successOK").onclick = function() {
             document.getElementById("successModal").style.display = "none";
             document.getElementById("pageLoadingOverlay").style.display = "flex";
-            window.onload();
+            window.location.reload();
         };
         
     } catch (err) {
@@ -1766,9 +1771,6 @@ async function saveAllowance() {
     }
 }
 
-/* =========================================
-    DRIVER ALLOWANCE PORTAL IMPLEMENTATION
-========================================= */
 document.getElementById("allowanceBtn").addEventListener("click", () => {
     if (loggedInDriverName) {
         showDriverAllowanceSummary();
@@ -2010,19 +2012,14 @@ function approveSchedule(date, buttonElement) {
             const result = await res.json();
 
             if (result.success === true) {
-                // Change modal text dynamically to match schedule approval
                 document.getElementById("successModalTitle").textContent = "Schedule Approved";
                 document.getElementById("successModalText").textContent = `Schedule for ${date} has been approved successfully!`;
                 document.getElementById("successModal").style.display = "flex";
 
                 document.getElementById("successOK").onclick = function() {
                     document.getElementById("successModal").style.display = "none";
-                    
-                    // Show the main loading overlay while reloading the script data
                     document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    
-                    // Triggers your main window.onload function to fetch data and refresh everything cleanly
-                    window.onload(); 
+                    window.location.reload(); 
                 };
             } else {
                 buttonElement.disabled = false;
@@ -2045,21 +2042,18 @@ function approveSchedule(date, buttonElement) {
     };
 }
 
-    
 function loadScheduleApprovalPage(){
     const approvedDiv = document.getElementById("approvedSchedules");
     const pendingDiv = document.getElementById("pendingSchedules");
     approvedDiv.innerHTML = "";
     pendingDiv.innerHTML = "";
 
-    // Grab new unified value: "MM-Bucket" (e.g. "07-1")
     let selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
 
     const [targetMonthStr, targetBucket] = selectorValue.split("-");
     const targetMonth = parseInt(targetMonthStr);
 
-    // Establish time baselines in Manila Timezone
     const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
     today.setHours(0,0,0,0);
 
@@ -2090,7 +2084,6 @@ function loadScheduleApprovalPage(){
         const dayNumber = scheduleDate.getDate();
         const monthNumber = scheduleDate.getMonth() + 1;
 
-        // STRICT MONTH & PERIOD VALIDATION FILTER
         if (monthNumber !== targetMonth) return;
         if (targetBucket === "1" && dayNumber > 15) return;
         if (targetBucket === "2" && dayNumber <= 15) return;
@@ -2118,12 +2111,10 @@ function loadScheduleApprovalPage(){
             let showUpfront = false;
 
             if (isTomorrowApproved) {
-                // If tomorrow is approved: show Today and Tomorrow upfront, Yesterday goes to folder
                 if (scheduleTime === today.getTime() || scheduleTime === tomorrow.getTime()) {
                     showUpfront = true;
                 }
             } else {
-                // Default: show Yesterday and Today upfront
                 if (scheduleTime === yesterday.getTime() || scheduleTime === today.getTime()) {
                     showUpfront = true;
                 }
@@ -2151,12 +2142,9 @@ function loadScheduleApprovalPage(){
         }
     });
 
-    // Render logic for Approved Schedules
     if (hasApproved) {
-        // Output upfront rows
         approvedDiv.innerHTML = approvedMainRowsHtml;
 
-        // Populate dropdown folder safely with any hidden items matching current active cutoff context
         if (approvedDropdownItems.length > 0) {
             approvedDropdownItems.sort((a, b) => new Date(a.date) - new Date(b.date));
             
@@ -2207,7 +2195,6 @@ function viewSchedule(date){
         
         let rowClass = isRestDay ? "rest-day-row" : ""; 
 
-        // Gumagamit ng word boundary (\b) para maiwasan ang "Pampanga"
         if (/\bam\b/i.test(itineraryDisplay)) {
             itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
         }
@@ -2515,22 +2502,26 @@ window.onload = async function () {
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
-                pageHTML += `
-                <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
-                        <div class="driver-header">
-                            <h2>${d.driver}</h2>
-                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                        </div>
-                        ${tripsHTML}
-                        ${
-                            submittedDrivers[`${d.driver}|${d.date}`]
-                            ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}')">Submit Meal Allowance</button>`
-                        }
-                    </div>`;
+                    // FIXED: Standardized matching parameters to cross reference submission history properties
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
+
+                    pageHTML += `
+                    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
+                            <div class="driver-header">
+                                <h2>${d.driver}</h2>
+                                <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                                <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                                <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                                <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+                            </div>
+                            ${tripsHTML}
+                            ${
+                                isAlreadySubmitted
+                                ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
+                                : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}')">Submit Meal Allowance</button>`
+                            }
+                        </div>`;
                 });
             }
             
@@ -2584,8 +2575,6 @@ window.onload = async function () {
                 .sort()
                 .filter(d => d.date === date)
                 .forEach(d => {
-                    
-
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
                         with (trip) {
@@ -2652,7 +2641,10 @@ window.onload = async function () {
                 const pendingDrivers = Object.values(grouped).filter(d=>{
                     if(d.date !== date) return false;
                     if(["rest day","am","standby","banking","pm"].includes((d.itinerary||"").toLowerCase().trim())) return false;
-                    return !submittedDrivers[`${d.driver}|${d.date}`];
+                    
+                    // FIXED: Standardized matching parameters for historical pending validations
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    return !submittedDrivers[lookupKey];
                 });
 
                 if(pendingDrivers.length===0) return;
