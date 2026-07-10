@@ -1523,7 +1523,7 @@ function submitAllowance(driver, date, reqBy, pass){
     let infoPieces = [];
     if(reqBy) infoPieces.push(reqBy);
     if(pass) infoPieces.push(pass);
-    currentPassengerCombined = infoPieces.join(" | ") || "None";
+    currentPassengerCombined = infoPieces.join(" , ") || "None";
 
     document.getElementById("modalDriver").textContent = driver;
     document.getElementById("modalDate").textContent = date;
