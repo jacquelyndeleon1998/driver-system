@@ -1687,14 +1687,14 @@ async function saveAllowance() {
     btn.innerText = "Submitting...";
 
     if (!document.getElementById("allowanceTimeIn").value || !document.getElementById("allowanceTimeOut").value) {
-        alert("&times; Please enter both Time In and Time Out.");
+        alert("Please enter both Time In and Time Out.");
         resetSubmitButton(btn);
         return;
     }
 
     const parking = Number(document.getElementById("allowanceParking").value || 0);
     if (parking > 0 && selectedReceipts.length === 0) {
-        alert("&times; Please upload at least one parking receipt.");
+        alert("Please upload at least one parking receipt.");
         resetSubmitButton(btn);
         return;
     }
@@ -1736,11 +1736,11 @@ async function saveAllowance() {
         let result = JSON.parse(text);
 
         if (result.success === false && result.message === "DUPLICATE_ENTRY") {
-            alert("&times; Already submitted for this trip.");
+            alert("Already submitted for this trip.");
             return;
         }
         if (!result.success) {
-            alert("&times; Error: " + result.message);
+            alert("Error: " + result.message);
             return;
         }
 
