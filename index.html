@@ -1306,30 +1306,28 @@ function updateCutoffDropdownsDynamically() {
     
     if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
 
-    let hasCutoff1 = false;
-    let hasCutoff2 = false;
+    // Track active cutoff buckets (e.g., "2026-07-1" or "2026-06-2")
+    const activeCutoffs = new Set();
 
-    const getDayFromDateString = (dateStr) => {
+    const processDateString = (dateStr) => {
+        if (!dateStr) return;
         const parsedDate = new Date(dateStr);
-        if (!isNaN(parsedDate.getTime())) {
-            return parsedDate.getDate(); 
-        }
-        const dateMatch = dateStr.match(/\b\d{1,2}\b/);
-        return dateMatch ? parseInt(dateMatch[0]) : 1;
+        if (isNaN(parsedDate.getTime())) return;
+
+        const year = parsedDate.getFullYear();
+        const monthNum = parsedDate.getMonth(); // 0-11
+        const day = parsedDate.getDate();
+        
+        // Bucket 1: Days 1 to 15, Bucket 2: Days 16 to end of month
+        const bucket = day <= 15 ? "1" : "2";
+        activeCutoffs.add(`${year}-${monthNum}-${bucket}`);
     };
 
-    scheduleDates.forEach(date => {
-        const dayNumber = getDayFromDateString(date);
-        if (dayNumber <= 15) hasCutoff1 = true;
-        if (dayNumber > 15) hasCutoff2 = true;
-    });
+    // Scan all real data arrays for populated months/days
+    scheduleDates.forEach(date => processDateString(date));
+    globalParsedAllowances.forEach(record => processDateString(record.date));
 
-    globalParsedAllowances.forEach(record => {
-        const dayNumber = getDayFromDateString(record.date);
-        if (dayNumber <= 15) hasCutoff1 = true;
-        if (dayNumber > 15) hasCutoff2 = true;
-    });
-
+    // Save previous selections to avoid jumping selections when refreshing lists
     const currentScheduleVal = scheduleSelect.value;
     const currentAllowanceVal = allowanceSelect.value;
     const currentDriverViewVal = driverViewSelect.value;
@@ -1338,25 +1336,52 @@ function updateCutoffDropdownsDynamically() {
     allowanceSelect.innerHTML = "";
     driverViewSelect.innerHTML = "";
 
-    const optionsToRender = [];
-    if (hasCutoff1) optionsToRender.push({ value: "1", text: "July 1 - 15, 2026" });
-    if (hasCutoff2) optionsToRender.push({ value: "2", text: "July 16 - End of Month" });
-
-    if (optionsToRender.length === 0) {
-        optionsToRender.push({ value: "1", text: "July 1 - 15, 2026" });
-    }
-
-    optionsToRender.forEach(opt => {
-        scheduleSelect.add(new Option(opt.text, opt.value));
-        allowanceSelect.add(new Option(opt.text, opt.value));
-        driverViewSelect.add(new Option(opt.text, opt.value));
+    // Sort buckets chronologically so older months appear at the top
+    const sortedBuckets = Array.from(activeCutoffs).sort((a, b) => {
+        const [yA, mA, bA] = a.split("-").map(Number);
+        const [yB, mB, bB] = b.split("-").map(Number);
+        return yA - yB || mA - mB || bA - bB;
     });
 
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    sortedBuckets.forEach(bucketKey => {
+        const [year, monthNum, bucket] = bucketKey.split("-");
+        const monthName = monthNames[Number(monthNum)];
+        
+        let labelText = "";
+        let optionValue = "";
+
+        if (bucket === "1") {
+            labelText = `${monthName} 1 - 15, ${year}`;
+            // Value payload retains Month indicator (e.g. "07-1")
+            optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-1`; 
+        } else {
+            // Find total days in this specific month dynamically
+            const totalDays = new Date(Number(year), Number(monthNum) + 1, 0).getDate();
+            labelText = `${monthName} 16 - ${totalDays}, ${year}`;
+            optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-2`;
+        }
+
+        scheduleSelect.add(new Option(labelText, optionValue));
+        allowanceSelect.add(new Option(labelText, optionValue));
+        driverViewSelect.add(new Option(labelText, optionValue));
+    });
+
+    // Fallback default safe state if arrays were entirely blank
+    if (scheduleSelect.options.length === 0) {
+        const fallback = new Option("July 1 - 15, 2026", "07-1");
+        scheduleSelect.add(fallback);
+        allowanceSelect.add(fallback.cloneNode(true));
+        driverViewSelect.add(fallback.cloneNode(true));
+    }
+
+    // Restore previous inputs safely if available
     if (currentScheduleVal && scheduleSelect.querySelector(`option[value="${currentScheduleVal}"]`)) scheduleSelect.value = currentScheduleVal;
     if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
     if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
 }
-
+    
 function processAllowanceSummaryTable() {
     const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
     const selectorValue = selectorElement ? selectorElement.value : "1";
