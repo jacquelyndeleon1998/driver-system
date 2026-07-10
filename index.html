@@ -1995,8 +1995,13 @@ function loadScheduleApprovalPage(){
 
     const selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "1";
 
+    // Establish time baselines in Manila Timezone
     const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
     today.setHours(0,0,0,0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0,0,0,0);
 
     let hasApproved = false;
     let hasPending = false;
@@ -2031,6 +2036,10 @@ function loadScheduleApprovalPage(){
         </tr>`;
 
         if (status === "approved") {
+            // FILTER: For approved items, only allow today and yesterday. Hide anything older.
+            if (scheduleDate.getTime() < yesterday.getTime()) {
+                return; 
+            }
             approvedItems.push({ date: date, html: row });
             hasApproved = true;
         } else {
@@ -2077,7 +2086,7 @@ function loadScheduleApprovalPage(){
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
-
+    
 function viewSchedule(date){
     document.querySelector(".approval-container").style.display = "none";
 
