@@ -2458,7 +2458,25 @@ window.onload = async function () {
                 Object.values(grouped)
                 .filter(d => d.date === date)
                 .forEach(d => {
-                    if (["rest day","am","standby","banking","pm"].includes((d.itinerary || "").toLowerCase().trim())) return;
+                   const itinerary = (d.itinerary || "").trim();
+
+const noAllowanceItineraries = [
+    "AM",
+    "PM",
+    "AM / Banking",
+    "Banking / PM",
+    "Restday",
+    "Standby",
+    "ED",
+    "AM / ED",
+    "ED / PM",
+    "ED / Banking",
+    "Banking"
+];
+
+if (noAllowanceItineraries.includes(itinerary)) {
+    return;
+}
 
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
@@ -2653,7 +2671,25 @@ window.onload = async function () {
             if(isPast){
                 const pendingDrivers = Object.values(grouped).filter(d=>{
                     if(d.date !== date) return false;
-                    if(["rest day","am","standby","banking","pm"].includes((d.itinerary||"").toLowerCase().trim())) return false;
+                  const itinerary = (d.itinerary || "").trim();
+
+const noAllowanceItineraries = [
+    "AM",
+    "PM",
+    "AM / Banking",
+    "Banking / PM",
+    "Restday",
+    "Standby",
+    "ED",
+    "AM / ED",
+    "ED / PM",
+    "ED / Banking",
+    "Banking"
+];
+
+if (noAllowanceItineraries.includes(itinerary)) {
+    return false;
+}
                     
                     // FIXED: Standardized matching parameters for historical pending validations
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
