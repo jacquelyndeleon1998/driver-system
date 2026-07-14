@@ -2471,7 +2471,7 @@ window.onload = async function () {
                 else current += char;
             }
             cols.push(current.trim());
-            if (cols.length < 12) return;
+            if (cols.length < 13) return;
 
           const [
     driver,
@@ -2509,6 +2509,8 @@ window.onload = async function () {
         tripType,
         trips: []
     };
+console.log("Grouped:", grouped[key].driver, grouped[key].tripType);
+            
             grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
         });
 
