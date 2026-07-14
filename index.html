@@ -2460,6 +2460,8 @@ window.onload = async function () {
                 .forEach(d => {
                    const itinerary = (d.itinerary || "").trim();
 
+                     console.log("Itinerary:", "[" + itinerary + "]");
+
 const noAllowanceItineraries = [
     "AM",
     "PM",
@@ -2672,6 +2674,8 @@ if (noAllowanceItineraries.includes(itinerary)) {
                 const pendingDrivers = Object.values(grouped).filter(d=>{
                     if(d.date !== date) return false;
                   const itinerary = (d.itinerary || "").trim();
+
+                     console.log("Pending Itinerary:", "[" + itinerary + "]"); 
 
 const noAllowanceItineraries = [
     "AM",
