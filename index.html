@@ -1739,42 +1739,45 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
 
 
 
-    /*
-    ==========================
+ /*
+==========================
         LUNCH
-    ==========================
-    */
+==========================
+*/
 
-    // 11AM start, must reach 1PM
+// Lunch window:
+// Start 11:00 AM
+// Must reach 1:00 PM
 
-    if (
-        inTime <= 660 &&
-        outTime >= 780
-    ) {
+if (
+    inTime <= 660 &&
+    outTime >= 780
+) {
 
-        result.lunch = isProvince ? 75 : 125;
+    result.lunch = isProvince ? 75 : 125;
 
-    }
+}
 
 
 
-    /*
-    ==========================
+/*
+==========================
         DINNER
-    ==========================
-    */
+==========================
+*/
 
-    // 5PM start, must reach 7PM
+// Dinner window:
+// Start 5:00 PM
+// Must reach 7:00 PM
 
-    if (
-        inTime <= 1020 &&
-        outTime >= 1140
-    ) {
+if (
+    inTime <= 1020 &&
+    outTime >= 1140
+) {
 
-        result.dinner = isProvince ? 75 : 125;
+    result.dinner = isProvince ? 75 : 125;
 
-    }
-
+}
 
     return result;
 }
