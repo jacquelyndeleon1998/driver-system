@@ -1657,80 +1657,85 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
     };
 
     const inTime = convertTimeToMinutes(timeIn);
-    const outTime = convertTimeToMinutes(timeOut);
+    let outTime = convertTimeToMinutes(timeOut);
 
-    // Handle overnight trips
-    let adjustedOut = outTime;
-    if (adjustedOut < inTime) {
-        adjustedOut += 24 * 60;
+    // Handle overnight trip
+    if (outTime < inTime) {
+        outTime += 24 * 60;
     }
 
-    if (tripType.toLowerCase() === "province") {
+    // Function to check overlap
+    function hasOverlap(start, end) {
 
-        // BREAKFAST
-        if (
-            (inTime >= 0 && inTime <= 300) ||
-            (outTime >= 60 && outTime <= 240)
-        ) {
+        // Normal time range
+        if (start <= end) {
+            return inTime < end && outTime > start;
+        }
+
+        // Overnight allowance window
+        return (
+            inTime < end ||
+            outTime > start
+        );
+    }
+
+
+    const isProvince = tripType.toLowerCase() === "province";
+
+
+    if (isProvince) {
+
+        // =====================
+        // PROVINCE
+        // =====================
+
+        // Breakfast 12AM - 5AM
+        if (hasOverlap(0, 300)) {
             result.breakfast = 75;
         }
 
-        // LUNCH
-        if (
-            (inTime >= 660 && inTime <= 780) ||
-            (outTime >= 840 && outTime <= 1020)
-        ) {
+
+        // Lunch 11AM - 1PM
+        if (hasOverlap(660, 780)) {
             result.lunch = 75;
         }
 
-        // DINNER
-        if (
-            (outTime >= 1020) ||
-            (outTime <= 300)
-        ) {
+
+        // Dinner 5PM - 7PM
+        if (hasOverlap(1020, 1140)) {
             result.dinner = 75;
         }
 
+
     } else {
 
-        // ===================
-        // MANILA
-        // ===================
 
-        // BREAKFAST
-        if (
-            (inTime >= 0 && inTime <= 180) ||
-            (outTime >= 60 && outTime <= 120)
-        ) {
+        // =====================
+        // MANILA
+        // =====================
+
+        // Breakfast 12AM - 3AM
+        if (hasOverlap(0, 180)) {
             result.breakfast = 125;
         }
-        else if (
-            (inTime >= 240 && inTime <= 300)
-        ) {
-            result.breakfast = 75;
-        }
 
-        // LUNCH
-        if (
-            (inTime >= 660 && inTime <= 780) ||
-            (outTime >= 840 && outTime <= 1020)
-        ) {
+
+        // Lunch 11AM - 1PM
+        if (hasOverlap(660, 780)) {
             result.lunch = 125;
         }
 
-        // DINNER
-        if (
-            (outTime >= 1020) ||
-            (outTime <= 300)
-        ) {
+
+        // Dinner 5PM - 7PM
+        if (hasOverlap(1020, 1140)) {
             result.dinner = 125;
         }
 
     }
 
+
     return result;
 }
-
     function autoComputeMeals() {
 
         console.log("Trip Type:", currentTripType);
