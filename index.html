@@ -1748,15 +1748,22 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
         timeOut
     );
 
-    document.getElementById("allowanceBreakfast").value = meal.breakfast;
-    document.getElementById("allowanceLunch").value = meal.lunch;
-    document.getElementById("allowanceDinner").value = meal.dinner;
+   document.getElementById("allowanceBreakfast").value = meal.breakfast;
+document.getElementById("allowanceLunch").value = meal.lunch;
+document.getElementById("allowanceDinner").value = meal.dinner;
+
+// Lock the computed values
+document.getElementById("allowanceBreakfast").readOnly = true;
+document.getElementById("allowanceLunch").readOnly = true;
+document.getElementById("allowanceDinner").readOnly = true;
 }
     
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
     currentTripType = tripType;
+
+    console.log("submitAllowance tripType:", tripType);
     
     let infoPieces = [];
     if(reqBy) infoPieces.push(reqBy);
