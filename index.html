@@ -1736,27 +1736,42 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
         }
 
     }
-
-
-
- /*
+/*
 ==========================
         LUNCH
 ==========================
 */
 
-// Lunch window:
-// Start 11:00 AM
-// Must reach 1:00 PM
+let lunchTime = 660; // 11:00 AM
+let lunchEnd = 780;  // 1:00 PM
 
-if (
-    inTime <= 660 &&
-    outTime >= 780
-) {
+
+// Normal duty
+if (inTime <= lunchTime && outTime >= lunchEnd) {
 
     result.lunch = isProvince ? 75 : 125;
 
 }
+
+
+// Overnight duty
+else if (outTime > 1440) {
+
+    let nextDayOut = outTime - 1440;
+
+    // nagsimula ng gabi
+    // kailangan umabot ng 1 PM next day
+    if (
+        inTime >= 1080 &&  // 6 PM onwards
+        nextDayOut >= lunchEnd
+    ) {
+
+        result.lunch = isProvince ? 75 : 125;
+
+    }
+
+}
+
 
 
 
@@ -1766,16 +1781,31 @@ if (
 ==========================
 */
 
-// Dinner window:
-// Start 5:00 PM
-// Must reach 7:00 PM
+let dinnerStart = 1020; // 5 PM
+let dinnerEnd = 1140;   // 7 PM
 
-if (
-    inTime <= 1020 &&
-    outTime >= 1140
-) {
+
+// Normal duty
+if (inTime <= dinnerStart && outTime >= dinnerEnd) {
 
     result.dinner = isProvince ? 75 : 125;
+
+}
+
+
+// Overnight duty
+else if (outTime > 1440) {
+
+    let nextDayOut = outTime - 1440;
+
+    if (
+        inTime >= 1080 && // 6 PM onwards
+        nextDayOut >= dinnerEnd
+    ) {
+
+        result.dinner = isProvince ? 75 : 125;
+
+    }
 
 }
 
