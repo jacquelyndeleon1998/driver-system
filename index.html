@@ -1665,20 +1665,18 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
     }
 
 
-    // Check if duty overlaps a time window
-    function overlap(start, end) {
+    // Check if duty overlaps window
+    function hasOverlap(start, end) {
 
-        let adjustedStart = start;
-        let adjustedEnd = end;
-
-        // For midnight crossing windows
-        if (adjustedEnd <= adjustedStart) {
-            adjustedEnd += 1440;
+        // normal window
+        if (outTime <= 1440) {
+            return inTime < end && outTime > start;
         }
 
+        // overnight duty
         return (
-            inTime < adjustedEnd &&
-            outTime > adjustedStart
+            (inTime < end) ||
+            (outTime > start + 1440)
         );
     }
 
@@ -1693,51 +1691,63 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
         // =====================
 
         // Breakfast 12AM - 5AM
-        if (overlap(0, 300)) {
+        if (hasOverlap(0,300)) {
             result.breakfast = 75;
         }
 
 
         // Lunch 11AM - 1PM
-        if (overlap(660, 780)) {
+        // Must reach 1PM
+        if (
+            inTime <= 780 &&
+            outTime >= 780
+        ) {
             result.lunch = 75;
         }
 
 
         // Dinner 5PM - 7PM
-        if (overlap(1020, 1140)) {
+        if (
+            inTime <= 1140 &&
+            outTime >= 1140
+        ) {
             result.dinner = 75;
         }
 
 
     } else {
 
+
         // =====================
         // MANILA
         // =====================
 
-
         // Breakfast 12AM - 3AM
-        if (overlap(0, 180)) {
+        if (hasOverlap(0,180)) {
             result.breakfast = 125;
         }
 
 
-        // Special Manila rule:
-        // 4AM - 5AM = Province breakfast rate
-        if (overlap(240, 300)) {
+        // Manila 4AM - 5AM rule
+        if (hasOverlap(240,300)) {
             result.breakfast = 75;
         }
 
 
         // Lunch 11AM - 1PM
-        if (overlap(660, 780)) {
+        if (
+            inTime <= 780 &&
+            outTime >= 780
+        ) {
             result.lunch = 125;
         }
 
 
         // Dinner 5PM - 7PM
-        if (overlap(1020, 1140)) {
+        if (
+            inTime <= 1140 &&
+            outTime >= 1140
+        ) {
             result.dinner = 125;
         }
 
@@ -1746,7 +1756,6 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
 
     return result;
 }
-
     
     function autoComputeMeals() {
 
