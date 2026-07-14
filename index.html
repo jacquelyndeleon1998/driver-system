@@ -1694,14 +1694,13 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
         // Province Breakfast
         // 1 AM - 5 AM
         if (
-            dutyPassed(60) ||
-            dutyPassed(120) ||
-            dutyPassed(180) ||
-            dutyPassed(240) ||
-            dutyPassed(300)
-        ) {
-            result.breakfast = 75;
-        }
+    dutyPassed(60) ||
+    dutyPassed(120) ||
+    dutyPassed(180) ||
+    dutyPassed(240)
+) {
+    result.breakfast = 75;
+}
 
 
     } else {
