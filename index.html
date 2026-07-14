@@ -2605,11 +2605,33 @@ if (noAllowanceItineraries.includes(itinerary)) {
                     </div>`;
                 }
 
-                Object.values(grouped)
-                .sort()
-                .filter(d => d.date === date)
-                .forEach(d => {
-                    let tripsHTML = "";
+              Object.values(grouped)
+.sort()
+.filter(d => d.date === date)
+.forEach(d => {
+
+    const itinerary = (d.itinerary || "").trim();
+
+    const noAllowanceItineraries = [
+        "AM",
+        "PM",
+        "AM / Banking",
+        "Banking / PM",
+        "Rest Day",
+        "Standby",
+        "ED",
+        "AM / ED",
+        "ED / PM",
+        "ED / Banking",
+        "Banking"
+    ];
+
+    if (noAllowanceItineraries.includes(itinerary)) {
+        console.log("FUTURE DRIVER CARD HIDDEN:", itinerary);
+        return;
+    }
+
+    let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
                         with (trip) {
                             tripsHTML += `
