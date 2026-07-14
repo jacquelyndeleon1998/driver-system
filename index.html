@@ -1550,7 +1550,7 @@ async function approveItemInline(name, date, element) {
         showActionLoading("Approving Entry...", "Updating status registry values on live spreadsheets.");
         
         try {
-            const targetUrl = `${WEBAPP_URL}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}`;
+           const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
             const response = await fetch(targetUrl);
             const data = await response.json();
             
