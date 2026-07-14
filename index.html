@@ -1403,10 +1403,38 @@ function updateCutoffDropdownsDynamically() {
         driverViewSelect.add(fallback.cloneNode(true));
     }
 
-    if (currentScheduleVal && scheduleSelect.querySelector(`option[value="${currentScheduleVal}"]`)) scheduleSelect.value = currentScheduleVal;
-    if (currentAllowanceVal && allowanceSelect.querySelector(`option[value="${currentAllowanceVal}"]`)) allowanceSelect.value = currentAllowanceVal;
-    if (currentDriverViewVal && driverViewSelect.querySelector(`option[value="${currentDriverViewVal}"]`)) driverViewSelect.value = currentDriverViewVal;
+const currentCutoff = getCurrentCutoffValue();
+
+if(scheduleSelect.querySelector(`option[value="${currentCutoff}"]`)){
+    scheduleSelect.value = currentCutoff;
 }
+
+if(allowanceSelect.querySelector(`option[value="${currentCutoff}"]`)){
+    allowanceSelect.value = currentCutoff;
+}
+
+if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)){
+    driverViewSelect.value = currentCutoff;
+}
+
+}
+
+    function getCurrentCutoffValue(){
+
+    const today = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone:"Asia/Manila"
+        })
+    );
+
+    const month = String(today.getMonth() + 1).padStart(2,"0");
+    const day = today.getDate();
+
+    const bucket = day <= 15 ? "1" : "2";
+
+    return `${month}-${bucket}`;
+}
+    
 
 function processAllowanceSummaryTable() {
     const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
