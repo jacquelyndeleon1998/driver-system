@@ -1733,6 +1733,8 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
 
     function autoComputeMeals() {
 
+        console.log("Trip Type:", currentTripType);
+
     if (!currentTripType) return;
 
     const timeIn = document.getElementById("allowanceTimeIn").value;
@@ -2700,7 +2702,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
                             ${
                                 isAlreadySubmitted
                                 ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                                : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}')">Submit Meal Allowance</button>`
+                                : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
                             }
                         </div>`;
                 });
@@ -2888,7 +2890,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
                         <tr>
                             <td class="pending-driver-cell">${d.driver}</td>
                             <td class="pending-action-cell">
-                                <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}')">
+                                <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">
                                     Submit
                                 </button>
                             </td>
