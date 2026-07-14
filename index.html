@@ -1763,7 +1763,13 @@ function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDate = date;
     currentTripType = tripType;
 
-    console.log("submitAllowance tripType:", tripType);
+      document.getElementById("allowanceBreakfast").readOnly = false;
+    document.getElementById("allowanceLunch").readOnly = false;
+    document.getElementById("allowanceDinner").readOnly = false;
+
+    document.getElementById("allowanceBreakfast").value = "";
+    document.getElementById("allowanceLunch").value = "";
+    document.getElementById("allowanceDinner").value = "";
     
     let infoPieces = [];
     if(reqBy) infoPieces.push(reqBy);
@@ -2628,7 +2634,6 @@ console.log(
                 .forEach(d => {
                    const itinerary = (d.itinerary || "").trim();
 
-                     console.log("Itinerary:", "[" + itinerary + "]");
 
 const noAllowanceItineraries = [
     "AM",
