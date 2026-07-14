@@ -1789,8 +1789,14 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
     const timeIn = document.getElementById("allowanceTimeIn").value;
     const timeOut = document.getElementById("allowanceTimeOut").value;
 
-    if (!timeIn || !timeOut) return;
+if (!timeIn || !timeOut) {
 
+    document.getElementById("allowanceBreakfast").value = "";
+    document.getElementById("allowanceLunch").value = "";
+    document.getElementById("allowanceDinner").value = "";
+
+    return;
+}
     const meal = calculateMealAllowance(
         currentTripType,
         timeIn,
@@ -1806,6 +1812,21 @@ document.getElementById("allowanceBreakfast").readOnly = true;
 document.getElementById("allowanceLunch").readOnly = true;
 document.getElementById("allowanceDinner").readOnly = true;
 }
+
+    document.addEventListener("DOMContentLoaded", function(){
+
+    const timeInField = document.getElementById("allowanceTimeIn");
+    const timeOutField = document.getElementById("allowanceTimeOut");
+
+    if(timeInField){
+        timeInField.addEventListener("input", autoComputeMeals);
+    }
+
+    if(timeOutField){
+       timeOutField.addEventListener("input", autoComputeMeals);
+    }
+
+});
     
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
@@ -2775,7 +2796,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
                             ${
                                 isAlreadySubmitted
                                 ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                                : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
+                                : `<button class="allowance-btn" onclick="'${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
                             }
                         </div>`;
                 });
