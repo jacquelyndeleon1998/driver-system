@@ -2509,7 +2509,11 @@ window.onload = async function () {
         tripType,
         trips: []
     };
-console.log("Grouped:", grouped[key].driver, grouped[key].tripType);
+console.log(
+    "Driver:", driver,
+    "| TripType:", tripType,
+    "| Stored:", grouped[key].tripType
+);
             
             grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
         });
