@@ -2467,7 +2467,7 @@ const noAllowanceItineraries = [
     "PM",
     "AM / Banking",
     "Banking / PM",
-    "Restday",
+    "Rest Day",
     "Standby",
     "ED",
     "AM / ED",
@@ -2477,6 +2477,7 @@ const noAllowanceItineraries = [
 ];
 
 if (noAllowanceItineraries.includes(itinerary)) {
+    console.log("HIDDEN:", itinerary);
     return;
 }
 
@@ -2682,7 +2683,7 @@ const noAllowanceItineraries = [
     "PM",
     "AM / Banking",
     "Banking / PM",
-    "Restday",
+    "Rest Day",
     "Standby",
     "ED",
     "AM / ED",
@@ -2692,7 +2693,8 @@ const noAllowanceItineraries = [
 ];
 
 if (noAllowanceItineraries.includes(itinerary)) {
-    return false;
+    console.log("HIDDEN:", itinerary);
+    return;
 }
                     
                     // FIXED: Standardized matching parameters for historical pending validations
