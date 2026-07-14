@@ -2509,6 +2509,12 @@ window.onload = async function () {
         tripType,
         trips: []
     };
+
+if (tripType && !grouped[key].tripType) {
+    grouped[key].tripType = tripType;
+}
+
+            
 console.log(
     "Driver:", driver,
     "| TripType:", tripType,
