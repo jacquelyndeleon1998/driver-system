@@ -1231,6 +1231,7 @@ const approvalURL = `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURICom
 let submittedDrivers = {};
 let selectedReceipts = [];
 let currentDriver = "", currentDate = "", currentPassengerCombined = "";
+let currentTripType = "";
 let isSubmitting = false;
 let grouped = {};
 let summaryDrivers = {};
@@ -1602,6 +1603,12 @@ function addReceipts(files) {
 document.getElementById("cameraInput").addEventListener("change", function () { addReceipts(this.files); this.value = ""; });
 document.getElementById("galleryInput").addEventListener("change", function () { addReceipts(this.files); this.value = ""; });
 
+    document.getElementById("allowanceTimeIn")
+    .addEventListener("change", autoComputeMeals);
+
+document.getElementById("allowanceTimeOut")
+    .addEventListener("change", autoComputeMeals);
+
 function refreshReceiptPreview() {
     const preview = document.getElementById("receiptPreview");
     preview.innerHTML = "";
@@ -1634,9 +1641,120 @@ function resetSubmitButton(btn) {
     btn.innerText = "Submit";
 }
 
-function submitAllowance(driver, date, reqBy, pass){
+function convertTimeToMinutes(timeStr) {
+    if (!timeStr) return 0;
+
+    const [h, m] = timeStr.split(":").map(Number);
+    return (h * 60) + m;
+}
+
+function calculateMealAllowance(tripType, timeIn, timeOut) {
+
+    const result = {
+        breakfast: 0,
+        lunch: 0,
+        dinner: 0
+    };
+
+    const inTime = convertTimeToMinutes(timeIn);
+    const outTime = convertTimeToMinutes(timeOut);
+
+    // Handle overnight trips
+    let adjustedOut = outTime;
+    if (adjustedOut < inTime) {
+        adjustedOut += 24 * 60;
+    }
+
+    if (tripType.toLowerCase() === "province") {
+
+        // BREAKFAST
+        if (
+            (inTime >= 0 && inTime <= 300) ||
+            (outTime >= 60 && outTime <= 240)
+        ) {
+            result.breakfast = 75;
+        }
+
+        // LUNCH
+        if (
+            (inTime >= 660 && inTime <= 780) ||
+            (outTime >= 840 && outTime <= 1020)
+        ) {
+            result.lunch = 75;
+        }
+
+        // DINNER
+        if (
+            (outTime >= 1020) ||
+            (outTime <= 300)
+        ) {
+            result.dinner = 75;
+        }
+
+    } else {
+
+        // ===================
+        // MANILA
+        // ===================
+
+        // BREAKFAST
+        if (
+            (inTime >= 0 && inTime <= 180) ||
+            (outTime >= 60 && outTime <= 120)
+        ) {
+            result.breakfast = 125;
+        }
+        else if (
+            (inTime >= 240 && inTime <= 300)
+        ) {
+            result.breakfast = 75;
+        }
+
+        // LUNCH
+        if (
+            (inTime >= 660 && inTime <= 780) ||
+            (outTime >= 840 && outTime <= 1020)
+        ) {
+            result.lunch = 125;
+        }
+
+        // DINNER
+        if (
+            (outTime >= 1020) ||
+            (outTime <= 300)
+        ) {
+            result.dinner = 125;
+        }
+
+    }
+
+    return result;
+}
+
+    function autoComputeMeals() {
+
+    if (!currentTripType) return;
+
+    const timeIn = document.getElementById("allowanceTimeIn").value;
+    const timeOut = document.getElementById("allowanceTimeOut").value;
+
+    if (!timeIn || !timeOut) return;
+
+    const meal = calculateMealAllowance(
+        currentTripType,
+        timeIn,
+        timeOut
+    );
+
+    document.getElementById("allowanceBreakfast").value = meal.breakfast;
+    document.getElementById("allowanceLunch").value = meal.lunch;
+    document.getElementById("allowanceDinner").value = meal.dinner;
+}
+    
+function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
+    currentTripType = tripType;
     
     let infoPieces = [];
     if(reqBy) infoPieces.push(reqBy);
@@ -2353,13 +2471,42 @@ window.onload = async function () {
             cols.push(current.trim());
             if (cols.length < 12) return;
 
-            const [driver, date, timeIn, vehicle, itinerary, pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks] = cols.map(v => (v || "").replace(/"/g, "").trim());
+          const [
+    driver,
+    date,
+    timeIn,
+    vehicle,
+    itinerary,
+    pickupTime,
+    requestedBy,
+    passengerName,
+    contactNumber,
+    origin,
+    destination,
+    remarks,
+    tripType
+] = cols.map(v => (v || "").replace(/"/g, "").trim());
             const key = driver + "_" + date;
 
             if (!summaryDrivers[date]) summaryDrivers[date] = {};
-            if (!summaryDrivers[date][driver]) summaryDrivers[date][driver] = { driver, timeIn, vehicle, itinerary };
-
-            if (!grouped[key]) grouped[key] = { driver, date, timeIn, vehicle, itinerary, trips: [] };
+           if (!summaryDrivers[date][driver])
+    summaryDrivers[date][driver] = {
+        driver,
+        timeIn,
+        vehicle,
+        itinerary,
+        tripType
+    };
+         if (!grouped[key])
+    grouped[key] = {
+        driver,
+        date,
+        timeIn,
+        vehicle,
+        itinerary,
+        tripType,
+        trips: []
+    };
             grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
         });
 
