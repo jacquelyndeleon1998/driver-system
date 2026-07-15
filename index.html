@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1253,8 +1253,44 @@ function standardizeDateStr(dateStr) {
 }
 
 function refreshLoginSession() {
-    const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
-    localStorage.setItem("loginExpires", expires);
+
+    const now = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Manila"
+        })
+    );
+
+    // Next midnight (12:00 AM)
+    const midnight = new Date(now);
+    midnight.setDate(midnight.getDate() + 1);
+    midnight.setHours(0, 0, 0, 0);
+
+    localStorage.setItem("loginExpires", midnight.getTime());
+}
+
+    function checkAdminSession() {
+
+    const loggedIn = localStorage.getItem("loggedIn") === "true";
+    const expires = Number(localStorage.getItem("loginExpires") || 0);
+
+    if (loggedIn && Date.now() >= expires) {
+
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("loginExpires");
+
+        // If currently on Admin page
+        if (document.getElementById("scheduleApprovalPage").style.display === "block") {
+
+            alert("Your admin session has expired.");
+
+            document.getElementById("scheduleApprovalPage").style.display = "none";
+            document.getElementById("driverDashboard").style.display = "block";
+
+            document.getElementById("dashboardBtn").classList.add("active");
+            document.getElementById("adminBtn").classList.remove("active");
+            document.getElementById("allowanceBtn").classList.remove("active");
+        }
+    }
 }
     
 function showAdminDashboard() {
@@ -1875,6 +1911,9 @@ document.getElementById("allowanceDinner").readOnly = true;
 
     document.addEventListener("DOMContentLoaded", function(){
 
+    checkAdminSession();
+   setInterval(checkAdminSession, 1000);
+        
     const timeInField = document.getElementById("allowanceTimeIn");
     const timeOutField = document.getElementById("allowanceTimeOut");
 
@@ -1883,7 +1922,7 @@ document.getElementById("allowanceDinner").readOnly = true;
     }
 
     if(timeOutField){
-       timeOutField.addEventListener("input", autoComputeMeals);
+        timeOutField.addEventListener("input", autoComputeMeals);
     }
 
 });
@@ -2248,11 +2287,10 @@ async function adminLogin() {
         let result = JSON.parse(text);
 
         if (result.success === true) {
-            const expires = Date.now() + (7 * 24 * 60 * 60 * 1000);
-            localStorage.setItem("userRole", result.role || "user");
-            localStorage.setItem("loggedIn", "true");
-            localStorage.setItem("loginExpires", expires);
-            showAdminDashboard();
+           localStorage.setItem("userRole", result.role || "user");
+        localStorage.setItem("loggedIn", "true");
+        refreshLoginSession();   // Sets expiration to next midnight
+        showAdminDashboard();
         } else {
             hideActionLoading();
             loginBtn.disabled = false;
