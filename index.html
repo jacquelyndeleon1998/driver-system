@@ -1317,8 +1317,6 @@ async function loadSubmittedAllowances() {
        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
 const data = await res.json();
 
-console.log("Submitted response:", data);
-
 submittedDrivers = {};
 
 if (!Array.isArray(data.submitted)) {
@@ -1876,8 +1874,6 @@ else if (outTime > 1440) {
 }
     
     function autoComputeMeals() {
-
-        console.log("Trip Type:", currentTripType);
 
     if (!currentTripType) return;
 
@@ -2695,12 +2691,6 @@ if (tripType && !grouped[key].tripType) {
 }
 
             
-console.log(
-    "Driver:", driver,
-    "| TripType:", tripType,
-    "| Stored:", grouped[key].tripType
-);
-            
             grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
         });
 
@@ -2817,7 +2807,7 @@ const noAllowanceItineraries = [
 ];
 
 if (noAllowanceItineraries.includes(itinerary)) {
-    console.log("HIDDEN:", itinerary);
+
     return;
 }
 
@@ -2967,7 +2957,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
     ];
 
     if (noAllowanceItineraries.includes(itinerary)) {
-        console.log("FUTURE DRIVER CARD HIDDEN:", itinerary);
+  
         return;
     }
 
@@ -3038,7 +3028,6 @@ if (noAllowanceItineraries.includes(itinerary)) {
                     if(d.date !== date) return false;
                   const itinerary = (d.itinerary || "").trim();
 
-                     console.log("Pending Itinerary:", "[" + itinerary + "]"); 
 
 const noAllowanceItineraries = [
     "AM",
@@ -3055,7 +3044,7 @@ const noAllowanceItineraries = [
 ];
 
 if (noAllowanceItineraries.includes(itinerary)) {
-    console.log("HIDDEN:", itinerary);
+
     return;
 }
                     
