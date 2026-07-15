@@ -36,9 +36,6 @@
         color: #14532d;
     }
         
-    /* =========================
-       Universal & Base Styles
-    ========================= */
     body {
         font-family: Arial, Helvetica, sans-serif;
         background: #eef3ef;
@@ -60,9 +57,6 @@
         font-weight: 700;
     }
 
-    /* =========================
-       Layout & Components
-    ========================= */
     .admin-toolbar {
         display: flex;
         justify-content: flex-end;
@@ -260,9 +254,6 @@
         font-weight: bold;
     }
 
-    /* =========================
-       App Header & Navigation Layout
-    ========================= */
     .app-header {
         display: flex;
         flex-direction: column;
@@ -350,9 +341,6 @@
         user-select: none;
     }
 
-    /* =========================
-       Modals & Overlays
-    ========================= */
     .modal {
         display: none;
         position: fixed;
@@ -411,7 +399,6 @@
     .cancel-btn { background: #6b7280; color: #fff; }
     .cancel-btn:hover { background: #4b5563; }
 
-    /* Form Fields inside Modal */
     .trip-info-card {
         background: #f0fdf4;
         border: 1px solid #bbf7d0;
@@ -523,7 +510,6 @@
         box-sizing: border-box;
     }
 
-    /* Upload & Receipts */
     .receipt-section {
         display: none;
         margin-top: 10px;
@@ -554,7 +540,6 @@
     .gallery-btn { background: #6b7280; }
     .receipt-preview { margin-top: 10px; }
 
-    /* Loading & Success Boxes */
     .success-overlay,
     .loading-overlay,
     .action-overlay,
@@ -621,7 +606,7 @@
         to { transform: rotate(360deg); }
     }
 
-    /* Driver View Table Styles */
+
     .summary-table {
         width: 100%;
         table-layout: auto;
@@ -661,7 +646,7 @@
     .summary-table td:nth-child(3) { font-weight:400; }
     .summary-table th:nth-child(4), .summary-table td:nth-child(4) { width: 30%; text-align: center; }
 
-    /* Footer */
+
     .app-footer {
         margin-top: 30px;
         padding: 8px 10px;
@@ -675,9 +660,7 @@
     .footer-sub { font-size: 11px; color: #6b7280; line-height: 1.2; }
     .footer-copy { font-size: 10px; color: #9ca3af; line-height: 1.2; }
 
-    /* =========================================
-       Admin Panel Specific Layout Styles
-    ========================================= */
+
     .schedule-header {
         background: #14532d;
         color: #ffffff;
@@ -729,9 +712,7 @@
         border-left: 4px solid #16a34a;
     }
 
-    /* =========================================
-       Admin Panel Compact Table Rows
-    ========================================= */
+
     .approval-table {
         width: 100%;
         table-layout: fixed;
@@ -814,7 +795,6 @@
         background: #eef3ef !important;
     }
 
-    /* Modal Internal List Structure */
     .modal-list-table {
         width: 100%;
         border-collapse: collapse;
@@ -845,9 +825,7 @@
     .status-approved { background: #d1fae5; color: #065f46; }
     .status-pending { background: #fef3c7; color: #92400e; }
          
-    /* =========================
-       Responsive Styles (Max 600px)
-    ========================= */
+
     @media(max-width:600px){
         #scheduleViewerPage .modal-content {
             max-height: 80vh !important;
@@ -1217,14 +1195,10 @@
 </footer>
 
 <script>
-// ==========================================
-// SECURED APPS SCRIPT SYSTEM HOOKS
-// ==========================================
+
 const WEBAPP_BASE = "https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec"; // Put your web app URL here
-const SECRET_TOKEN = "VIP-Secure-2026-Dispatch"; // Must match App Script exactly!
-// Appends the validation token securely to your execution requests
+const SECRET_TOKEN = "VIP-Secure-2026-Dispatch"; 
 const WEBAPP_URL = `${WEBAPP_BASE}?token=${encodeURIComponent(SECRET_TOKEN)}`;
-// Diverts direct data fetching safely through the authenticated proxy loop
 const sheetURL = `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
 const approvalURL = `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
 
@@ -1240,11 +1214,10 @@ let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
 
-// HELPER FUNCTION: Standardizes date strings to ensure reliable matching
 function standardizeDateStr(dateStr) {
     if (!dateStr) return "";
     const parsed = new Date(dateStr);
-    if (isNaN(parsed.getTime())) return dateStr.trim().toLowerCase(); // fallback
+    if (isNaN(parsed.getTime())) return dateStr.trim().toLowerCase();
     
     const y = parsed.getFullYear();
     const m = String(parsed.getMonth() + 1).padStart(2, '0');
@@ -1260,7 +1233,6 @@ function refreshLoginSession() {
         })
     );
 
-    // Next midnight (12:00 AM)
     const midnight = new Date(now);
     midnight.setDate(midnight.getDate() + 1);
     midnight.setHours(0, 0, 0, 0);
@@ -1278,7 +1250,6 @@ function refreshLoginSession() {
         localStorage.removeItem("loggedIn");
         localStorage.removeItem("loginExpires");
 
-        // If currently on Admin page
         if (document.getElementById("scheduleApprovalPage").style.display === "block") {
 
             alert("Your admin session has expired.");
@@ -1720,7 +1691,6 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
     let inTime = convertTimeToMinutes(timeIn);
     let outTime = convertTimeToMinutes(timeOut);
 
-    // Overnight handling
     if (outTime <= inTime) {
         outTime += 1440;
     }
@@ -1728,8 +1698,6 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
 
     const isProvince = tripType.toLowerCase() === "province";
 
-
-    // Helper: check kung nasa duty period ang isang oras
     function dutyPassed(hourMinute) {
 
         let checkTime = hourMinute;
@@ -1742,18 +1710,8 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
     }
 
 
-
-    /*
-    ==========================
-        BREAKFAST
-    ==========================
-    */
-
-
     if (isProvince) {
 
-        // Province Breakfast
-        // 1 AM - 5 AM
         if (
     dutyPassed(60) ||
     dutyPassed(120) ||
@@ -1766,12 +1724,8 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
 
     } else {
 
-        // Manila Breakfast
-
         let originalIn = convertTimeToMinutes(timeIn);
 
-        // ₱125
-        // Time out 1AM-2:59AM
         if (
             outTime >= 1500 ||
             (originalIn <= 179 && outTime >= 60)
@@ -1779,8 +1733,6 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
             result.breakfast = 125;
         }
 
-
-        // Time In 3:01AM - 4:00AM
         else if (
             originalIn > 180 &&
             originalIn <= 240
@@ -1789,7 +1741,6 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
         }
 
 
-        // Exact 3:00 AM
         else if (
             originalIn === 180
         ) {
@@ -1797,33 +1748,24 @@ function calculateMealAllowance(tripType, timeIn, timeOut) {
         }
 
     }
-/*
-==========================
-        LUNCH
-==========================
-*/
-
-let lunchTime = 660; // 11:00 AM
-let lunchEnd = 780;  // 1:00 PM
 
 
-// Normal duty
+let lunchTime = 660;
+let lunchEnd = 780;
+
 if (inTime <= lunchTime && outTime >= lunchEnd) {
 
     result.lunch = isProvince ? 75 : 125;
 
 }
 
-
-// Overnight duty
 else if (outTime > 1440) {
 
     let nextDayOut = outTime - 1440;
 
-    // nagsimula ng gabi
-    // kailangan umabot ng 1 PM next day
+
     if (
-        inTime >= 1080 &&  // 6 PM onwards
+        inTime >= 1080 && 
         nextDayOut >= lunchEnd
     ) {
 
@@ -1836,17 +1778,9 @@ else if (outTime > 1440) {
 
 
 
-/*
-==========================
-        DINNER
-==========================
-*/
+let dinnerStart = 1020; 
+let dinnerEnd = 1140; 
 
-let dinnerStart = 1020; // 5 PM
-let dinnerEnd = 1140;   // 7 PM
-
-
-// Normal duty
 if (inTime <= dinnerStart && outTime >= dinnerEnd) {
 
     result.dinner = isProvince ? 75 : 125;
@@ -1854,13 +1788,12 @@ if (inTime <= dinnerStart && outTime >= dinnerEnd) {
 }
 
 
-// Overnight duty
 else if (outTime > 1440) {
 
     let nextDayOut = outTime - 1440;
 
     if (
-        inTime >= 1080 && // 6 PM onwards
+        inTime >= 1080 && 
         nextDayOut >= dinnerEnd
     ) {
 
@@ -1898,7 +1831,6 @@ if (!timeIn || !timeOut) {
 document.getElementById("allowanceLunch").value = meal.lunch;
 document.getElementById("allowanceDinner").value = meal.dinner;
 
-// Lock the computed values
 document.getElementById("allowanceBreakfast").readOnly = true;
 document.getElementById("allowanceLunch").readOnly = true;
 document.getElementById("allowanceDinner").readOnly = true;
@@ -2284,7 +2216,7 @@ async function adminLogin() {
         if (result.success === true) {
            localStorage.setItem("userRole", result.role || "user");
         localStorage.setItem("loggedIn", "true");
-        refreshLoginSession();   // Sets expiration to next midnight
+        refreshLoginSession();  
         showAdminDashboard();
         } else {
             hideActionLoading();
@@ -2866,7 +2798,6 @@ if (noAllowanceItineraries.includes(itinerary)) {
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
-                    // FIXED: Standardized matching parameters to cross reference submission history properties
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
 
@@ -3048,7 +2979,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
     return;
 }
                     
-                    // FIXED: Standardized matching parameters for historical pending validations
+      
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     return !submittedDrivers[lookupKey];
                 });
