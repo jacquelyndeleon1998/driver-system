@@ -1838,6 +1838,12 @@ document.getElementById("allowanceDinner").readOnly = true;
 
     document.addEventListener("DOMContentLoaded", function(){
 
+        const backToDriverBtn = document.getElementById("backToDriverBtn");
+
+if(backToDriverBtn){
+    backToDriverBtn.addEventListener("click", backToDriverSchedule);
+}
+
     checkAdminSession();
    setInterval(checkAdminSession, 1000);
         
@@ -2414,6 +2420,20 @@ function loadScheduleApprovalPage(){
     if(!hasPending) {
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
+}
+
+    function backToDriverSchedule(){
+
+    document.getElementById("driverAllowancePage").style.display = "none";
+    document.getElementById("scheduleApprovalPage").style.display = "block";
+
+    document.getElementById("allowanceBtn").classList.remove("active");
+    document.getElementById("adminBtn").classList.add("active");
+
+    loadScheduleApprovalPage();
+
+    window.scrollTo(0,0);
+
 }
     
 function viewSchedule(date){
