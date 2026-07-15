@@ -1840,10 +1840,9 @@ document.getElementById("allowanceDinner").readOnly = true;
 
         const backToDriverBtn = document.getElementById("backToDriverBtn");
 
-if(backToDriverBtn){
-    backToDriverBtn.addEventListener("click", backToDriverSchedule);
+if (backToDriverBtn) {
+    backToDriverBtn.addEventListener("click", backToMainDashboard);
 }
-
     checkAdminSession();
    setInterval(checkAdminSession, 1000);
         
@@ -2422,18 +2421,17 @@ function loadScheduleApprovalPage(){
     }
 }
 
-    function backToDriverSchedule(){
+    function backToMainDashboard(){
 
     document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("scheduleApprovalPage").style.display = "block";
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+    document.getElementById("driverDashboard").style.display = "block";
 
+    document.getElementById("dashboardBtn").classList.add("active");
+    document.getElementById("adminBtn").classList.remove("active");
     document.getElementById("allowanceBtn").classList.remove("active");
-    document.getElementById("adminBtn").classList.add("active");
 
-    loadScheduleApprovalPage();
-
-    window.scrollTo(0,0);
-
+    window.scrollTo(0, 0);
 }
     
 function viewSchedule(date){
