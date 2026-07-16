@@ -2112,86 +2112,94 @@ function renderDriverViewTable() {
     tableBody.appendChild(totalRow);
 }
 
-function driverLogin() {
+async function driverLogin() {
+
     const driverSelect = document.getElementById("driverUsername");
     const selectedDriverValue = driverSelect.value;
     const pin = document.getElementById("driverPin").value.trim();
     const loginBtn = document.querySelector("#driverLoginModal .submit-btn");
 
     if (!selectedDriverValue) {
-        alert("❌ Please select your name from the menu.");
+        alert("❌ Please select your name.");
         return;
     }
-    if (pin.length < 4) {
-        alert("❌ Enter a valid Security PIN.");
+
+    if (!pin) {
+        alert("❌ Enter your Security PIN.");
         return;
     }
 
     loginBtn.disabled = true;
     loginBtn.innerText = "Verifying...";
-    showActionLoading("Verifying Driver Credential...", "Checking your workspace dashboard properties.");
-    closeDriverLogin();
 
-    setTimeout(() => {
-        loggedInDriverName = selectedDriverValue;
-        
+    showActionLoading(
+        "Verifying Driver Credential...",
+        "Checking your workspace dashboard properties."
+    );
+
+    try {
+
+        const response = await fetch(
+            `${WEBAPP_BASE}?action=login`
+            + `&username=${encodeURIComponent(selectedDriverValue)}`
+            + `&password=${encodeURIComponent(pin)}`
+            + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            hideActionLoading();
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Login";
+
+            alert("❌ Invalid Driver Name or PIN.");
+            return;
+        }
+
+        if (result.role !== "driver") {
+            hideActionLoading();
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Login";
+
+            alert("❌ This account is not a driver.");
+            return;
+        }
+
+        loggedInDriverName = result.name;
+
         driverSelect.selectedIndex = 0;
         document.getElementById("driverPin").value = "";
+
+        closeDriverLogin();
+        hideActionLoading();
+
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login";
+
+        document.getElementById("loginSuccessTitle").innerHTML =
+            `Hi ${loggedInDriverName}!`;
+
+        document.getElementById("loginSuccessMessage").innerHTML =
+            `This is just a reminder to always submit your allowance immediately after your trip!`;
+
+        document.getElementById("loginSuccessModal").style.display = "flex";
+
+        document.getElementById("loginSuccessOK").onclick = () => {
+            document.getElementById("loginSuccessModal").style.display = "none";
+            showDriverAllowanceSummary();
+        };
+
+    } catch (err) {
 
         hideActionLoading();
         loginBtn.disabled = false;
         loginBtn.innerText = "Login";
 
-        const loginTitle = document.getElementById("loginSuccessTitle");
-        const loginMsg = document.getElementById("loginSuccessMessage");
-        
-        loginTitle.innerHTML = `Hi ${loggedInDriverName}!`;
-        loginMsg.innerHTML = `This is just a reminder to always submit your allowance immediately after your trip!`;
-        
-        document.getElementById("loginSuccessModal").style.display = "flex";
-
-        document.getElementById("loginSuccessOK").onclick = () => {
-            document.getElementById("loginSuccessModal").style.display = "none";
-            showDriverAllowanceSummary(); 
-        };
-
-    }, 1200);
-}
-
-document.getElementById("driverViewBackBtn").addEventListener("click", () => {
-    document.getElementById("driverDashboard").style.display = "block";
-    document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("dashboardBtn").classList.add("active");
-    document.getElementById("allowanceBtn").classList.remove("active");
-    window.scrollTo(0, 0);
-});
-
-document.getElementById("adminBtn").addEventListener("click", () => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    const expires = Number(localStorage.getItem("loginExpires"));
-
-    if (loggedIn === "true" && Date.now() < expires) {
-        showAdminDashboard();
-    } else {
-        document.getElementById("adminLoginModal").style.display = "block";
+        console.error(err);
+        alert("Unable to connect to the server.");
     }
-});
-
-document.getElementById("dashboardBtn").addEventListener("click", () => {
-    document.getElementById("driverDashboard").style.display = "block";
-    document.getElementById("scheduleApprovalPage").style.display = "none";
-    document.getElementById("driverAllowancePage").style.display = "none";
-
-    document.getElementById("dashboardBtn").classList.add("active");
-    document.getElementById("adminBtn").classList.remove("active");
-    document.getElementById("allowanceBtn").classList.remove("active");
-    window.scrollTo(0, 0);
-});
-
-document.getElementById("closeViewerBtn").addEventListener("click", () => {
-    document.getElementById("scheduleViewerPage").style.display = "none";
-    document.body.style.overflow = ""; 
-});
+}
     
 function showActionLoading(title, message){
     const t = document.getElementById("actionLoadingTitle");
