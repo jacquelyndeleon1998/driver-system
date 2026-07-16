@@ -1841,6 +1841,12 @@ document.getElementById("allowanceDinner").readOnly = true;
 
     document.addEventListener("DOMContentLoaded", function(){
 
+        const driverViewBackBtn = document.getElementById("driverViewBackBtn");
+
+if (driverViewBackBtn) {
+    driverViewBackBtn.addEventListener("click", backToMainDashboard);
+}
+
         const backToDriverBtn = document.getElementById("backToDriverBtn");
 
 if (backToDriverBtn) {
