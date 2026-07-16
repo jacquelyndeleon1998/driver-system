@@ -3065,6 +3065,22 @@ if (noAllowanceItineraries.includes(itinerary)) {
         document.getElementById("pageLoadingOverlay").style.display = "none";
     }
 };
+
+document.getElementById("dashboardBtn").addEventListener("click", () => {
+    backToMainDashboard();
+});
+
+document.getElementById("adminBtn").addEventListener("click", () => {
+    const loggedIn = localStorage.getItem("loggedIn");
+    const expires = Number(localStorage.getItem("loginExpires"));
+
+    if (loggedIn === "true" && Date.now() < expires) {
+        showAdminDashboard();
+    } else {
+        document.getElementById("adminLoginModal").style.display = "block";
+    }
+});
+    
 </script>
 </body>
 </html>
