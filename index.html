@@ -2833,10 +2833,13 @@ if (noAllowanceItineraries.includes(itinerary)) {
                             </div>
                             ${tripsHTML}
                             ${
-                                isAlreadySubmitted
-                                ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                                : `<button class="allowance-btn" onclick="'${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
-                            }
+                               isAlreadySubmitted
+    ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
+    : `<button class="allowance-btn"
+        onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">
+        Submit Meal Allowance
+      </button>`
+}
                         </div>`;
                 });
             }
