@@ -2432,15 +2432,20 @@ function loadScheduleApprovalPage(){
     }
 }
 
-    function backToMainDashboard(){
+    function backToMainDashboard() {
 
-    document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("driverDashboard").style.display = "block";
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+    document.getElementById("driverAllowancePage").style.display = "none";
+    document.getElementById("scheduleViewerPage").style.display = "none";
+
+    document.body.style.overflow = "";
 
     document.getElementById("dashboardBtn").classList.add("active");
     document.getElementById("adminBtn").classList.remove("active");
     document.getElementById("allowanceBtn").classList.remove("active");
+
+    sessionStorage.removeItem("view");
 
     window.scrollTo(0, 0);
 }
