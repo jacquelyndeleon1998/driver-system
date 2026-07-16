@@ -1821,6 +1821,15 @@ document.getElementById("allowanceDinner").readOnly = true;
 
     document.addEventListener("DOMContentLoaded", function(){
 
+        const closeViewerBtn = document.getElementById("closeViewerBtn");
+
+if (closeViewerBtn) {
+    closeViewerBtn.addEventListener("click", function () {
+        document.getElementById("scheduleViewerPage").style.display = "none";
+        document.body.style.overflow = "";
+    });
+}
+
         const driverViewBackBtn = document.getElementById("driverViewBackBtn");
 
 if (driverViewBackBtn) {
