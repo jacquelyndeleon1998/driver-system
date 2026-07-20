@@ -3269,6 +3269,16 @@ showReminderModal();
         errorDiv.textContent = "Unable to connect to the server.";
     }
 }
+
+    function showReminderModal() {
+
+    const driverName = localStorage.getItem("username") || "Driver";
+
+    document.getElementById("reminderTitle").innerHTML =
+        `Welcome, ${driverName}!`;
+
+    document.getElementById("driverReminderModal").style.display = "flex";
+}
     
 </script>
 
