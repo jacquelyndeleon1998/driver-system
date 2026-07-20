@@ -862,10 +862,135 @@
             white-space: normal !important; 
         }
     }
+
+#loginPage{
+    position:fixed;
+    inset:0;
+    background:#f4f7f4;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+}
+
+.login-container{
+    width:100%;
+    max-width:380px;
+    text-align:center;
+    padding:20px;
+}
+
+#loginLogo{
+    width:80px;
+    margin-bottom:15px;
+}
+
+#loginPage h1{
+    color:#14532d;
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.loginSubtitle{
+    color:#666;
+    margin-bottom:30px;
+}
+
+.loginCard{
+    background:#fff;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.loginCard h2{
+    margin-bottom:20px;
+}
+
+.loginCard input{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+#loginBtn{
+    width:100%;
+    padding:12px;
+    background:#14532d;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+}
+
+#loginBtn:hover{
+    background:#166534;
+}
+
+#loginError{
+    color:red;
+    margin-top:15px;
+}
+
+.loginFooter{
+    margin-top:30px;
+    color:#777;
+    font-size:13px;
+}
+        
     </style>
 </head>
 
 <body>
+
+    <div id="loginPage">
+
+    <div class="login-container">
+
+        <img src="YOUR_LOGO_URL_HERE" id="loginLogo">
+
+        <h1>DAILY DISPATCH HUB</h1>
+
+        <p class="loginSubtitle">
+            Driver Management System
+        </p>
+
+        <div class="loginCard">
+
+            <h2>Welcome Back!</h2>
+
+            <input
+                type="text"
+                id="loginUsername"
+                placeholder="Username">
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Password">
+
+            <button id="loginBtn">
+                Login
+            </button>
+
+            <div id="loginError"></div>
+
+        </div>
+
+        <div class="loginFooter">
+            © 2026 JCD-A<br>
+            Version 1.0
+        </div>
+
+    </div>
+
+</div>
 
 <div class="app-header">
     <div class="app-left">
