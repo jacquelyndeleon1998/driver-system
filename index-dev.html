@@ -3238,8 +3238,11 @@ async function loginDriver() {
 
     try {
 
-       const response = await fetch(
-    `${scriptURL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+     const response = await fetch(
+    `${WEBAPP_BASE}?action=login`
+    + `&username=${encodeURIComponent(username)}`
+    + `&password=${encodeURIComponent(password)}`
+    + `&token=${encodeURIComponent(SECRET_TOKEN)}`
 );
 
         const result = await response.json();
