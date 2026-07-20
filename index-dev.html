@@ -2690,6 +2690,14 @@ function viewSchedule(date){
 }
    
 window.onload = async function () {
+
+    const loggedIn = localStorage.getItem("driverLoggedIn");
+
+if (loggedIn !== "true") {
+    document.getElementById("pageLoadingOverlay").style.display = "none";
+    return;
+}
+
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
     let autoLogin = (loggedIn === "true" && Date.now() < expires);
