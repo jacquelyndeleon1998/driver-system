@@ -3238,9 +3238,9 @@ async function loginDriver() {
 
     try {
 
-        const response = await fetch(
-            `${https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
-        );
+       const response = await fetch(
+    `${scriptURL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+);
 
         const result = await response.json();
 
