@@ -975,7 +975,7 @@
             <thead>
                 <tr>
                     <th style="width: 34%; text-align: left;">Driver Name</th>
-                    <th style="width: 24%; text-align: center;">Approved</th>
+                    <th style="width: 24%; text-align: center;">Paid</th>
                     <th style="width: 24%; text-align: center;">Pending</th>
                     <th style="width: 18%; text-align: center;">Action</th>
                 </tr>
@@ -1538,7 +1538,7 @@ function openDriverDetailsModal(driverName) {
         if (record.status === "Approved") {
             badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
         } else {
-            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Approve</button>`;
+            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Pay</button>`;
             row.style.backgroundColor = "#f0fdf4";
         }
 
@@ -2082,7 +2082,7 @@ function renderDriverViewTable() {
         
         let statusBadge = "";
         if (record.status === "Approved") {
-            statusBadge = `<span class="status-badge status-approved">Approved</span>`;
+            statusBadge = `<span class="status-badge status-approved">Paid</span>`;
         } else {
             statusBadge = `<span class="status-badge status-pending">Pending</span>`;
             row.style.backgroundColor = "#fef3c7";
