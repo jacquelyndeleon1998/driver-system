@@ -3220,6 +3220,47 @@ document.getElementById("adminBtn").addEventListener("click", () => {
         document.getElementById("adminLoginModal").style.display = "block";
     }
 });
+
+    document.getElementById("loginBtn").addEventListener("click", loginDriver);
+
+async function loginDriver() {
+
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+    const errorDiv = document.getElementById("loginError");
+
+    errorDiv.textContent = "";
+
+    if (!username || !password) {
+        errorDiv.textContent = "Please enter your username and password.";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            errorDiv.textContent = result.message || "Invalid username or password.";
+            return;
+        }
+
+        // Save session
+        localStorage.setItem("driverLoggedIn", "true");
+        localStorage.setItem("username", result.name);
+        localStorage.setItem("userRole", result.role);
+
+        alert("Login successful!");
+
+    } catch (err) {
+        console.error(err);
+        errorDiv.textContent = "Unable to connect to the server.";
+    }
+}
     
 </script>
 </body>
