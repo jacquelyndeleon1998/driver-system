@@ -3252,12 +3252,17 @@ async function loginDriver() {
             return;
         }
 
-        // Save session
         localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("username", result.name);
         localStorage.setItem("userRole", result.role);
 
-        alert("Login successful!");
+        localStorage.setItem("driverLoggedIn", "true");
+        localStorage.setItem("driverName", result.name);
+        localStorage.setItem("driverRole", result.role);
+
+document.getElementById("loginPage").style.display = "none";
+
+showReminderModal();
 
     } catch (err) {
         console.error(err);
