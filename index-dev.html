@@ -953,7 +953,7 @@
 
     <div class="login-container">
 
-        <img src="YOUR_LOGO_URL_HERE" id="loginLogo">
+        <img src="assets/dispatch-hub-logo.png" id="loginLogo">
 
         <h1>DAILY DISPATCH HUB</h1>
 
@@ -2691,9 +2691,9 @@ function viewSchedule(date){
    
 window.onload = async function () {
 
-    const loggedIn = localStorage.getItem("driverLoggedIn");
+    const driverLoggedIn = localStorage.getItem("driverLoggedIn");
 
-if (loggedIn !== "true") {
+if (driverLoggedIn !== "true") {
     document.getElementById("pageLoadingOverlay").style.display = "none";
     return;
 }
