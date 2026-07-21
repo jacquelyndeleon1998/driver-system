@@ -3328,27 +3328,33 @@ showReminderModal();
     
 </script>
 
-<p style="margin-bottom:18px;">
-    Hi <strong id="driverNameText"></strong>,
-</p>
+<div id="driverReminderModal" class="modal-overlay" style="display:none;">
 
-<p style="margin-bottom:18px;">
-    A gentle reminder before you begin your duty:
-</p>
+    <div class="modal-content reminder-modal">
 
-<ul class="reminder-list">
-    <li>Ensure the vehicle is fully fueled before returning it to the Feedmill.</li>
+        <h2>Welcome!</h2>
 
-    <li>Notify your passengers before their scheduled trips.</li>
+        <p style="margin-bottom:18px;">
+            Hi <strong id="driverNameText"></strong>,
+        </p>
 
-    <li>Submit your meal allowance immediately after completing your duty.</li>
+        <p style="margin-bottom:18px;">
+            A gentle reminder before you begin your duty:
+        </p>
 
-    <li>Drive safely and responsibly at all times.</li>
-</ul>
+        <ul class="reminder-list">
+            <li>Ensure the vehicle is fully fueled before returning it to the Feedmill.</li>
+            <li>Notify your passengers before their scheduled trips.</li>
+            <li>Submit your meal allowance immediately after completing your duty.</li>
+            <li>Drive safely and responsibly at all times.</li>
+        </ul>
 
-<button id="confirmReminderBtn" class="allowance-btn">
-    Confirm
-</button>
-    
+        <button id="confirmReminderBtn" class="allowance-btn">
+            Confirm
+        </button>
+
+    </div>
+
+</div>
 </body>
 </html>
