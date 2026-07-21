@@ -2215,6 +2215,9 @@ function closeDriverLogin() {
 }
 
 function showDriverAllowanceSummary() {
+
+const loggedInDriverName = localStorage.getItem("driverName");
+    
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "block";
@@ -2229,6 +2232,11 @@ function showDriverAllowanceSummary() {
 }
 
 function renderDriverViewTable() {
+    const loggedInDriverName = localStorage.getItem("driverName") || "";
+
+        console.log("Driver from localStorage:", loggedInDriverName);
+    console.log("Allowances:", globalParsedAllowances);
+    
     let selectorValue = document.getElementById("driverViewCutoff").value || "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
 
@@ -2239,7 +2247,8 @@ function renderDriverViewTable() {
     tableBody.innerHTML = "";
 
     const filteredRecords = globalParsedAllowances.filter(record => {
-        if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return false;
+      if (record.name.trim().toLowerCase() !== loggedInDriverName.trim().toLowerCase())
+    return false;
 
         const parsedDate = new Date(record.date);
         if(isNaN(parsedDate.getTime())) return false;
