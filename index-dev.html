@@ -8,6 +8,43 @@
     <link rel="icon" type="image/png" href="assets/dispatch-hub-logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.reminder-modal {
+    width: min(90%, 500px);
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+}
+
+.reminder-modal h2 {
+    color: #14532d;
+    margin-bottom: 18px;
+}
+
+.reminder-text {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #444;
+}
+
+#confirmReminderBtn {
+    margin-top: 22px;
+    width: 100%;
+}
+        
     .bg-schedule-admin,
     .bg-driver-allowance {
         background: #15803d !important; 
