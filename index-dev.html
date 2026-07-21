@@ -2756,9 +2756,21 @@ function viewSchedule(date){
    
 window.onload = async function () {
 
-    const driverLoggedIn = localStorage.getItem("driverLoggedIn");
+   const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
+const expires = Number(localStorage.getItem("loginExpires") || 0);
 
-if (driverLoggedIn !== "true") {
+if (driverLoggedIn && Date.now() >= expires) {
+
+    localStorage.removeItem("driverLoggedIn");
+    localStorage.removeItem("driverName");
+    localStorage.removeItem("driverRole");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("loginExpires");
+
+}
+
+if (localStorage.getItem("driverLoggedIn") !== "true") {
     document.getElementById("pageLoadingOverlay").style.display = "none";
     return;
 }
@@ -3326,19 +3338,13 @@ async function loginDriver() {
         localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("username", result.name);
         localStorage.setItem("userRole", result.role);
-
-        localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("driverName", result.name);
         localStorage.setItem("driverRole", result.role);
+        
+        refreshLoginSession();
 
-document.getElementById("loginLoadingOverlay").style.display = "flex";
-
-setTimeout(() => {
-    document.getElementById("loginLoadingOverlay").style.display = "none";
- hideLoginSpinner();
-
+hideLoginSpinner();
 showReminderModal();
-}, 800);
 
     } catch (err) {
         console.error(err);
