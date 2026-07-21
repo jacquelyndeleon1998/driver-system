@@ -2205,11 +2205,9 @@ async function saveAllowance() {
 }
 
 document.getElementById("allowanceBtn").addEventListener("click", () => {
-    if (loggedInDriverName) {
-        showDriverAllowanceSummary();
-    } else {
-        document.getElementById("driverLoginModal").style.display = "block";
-    }
+
+    showDriverAllowanceSummary();
+
 });
 
 function closeDriverLogin() {
