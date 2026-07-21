@@ -2763,8 +2763,18 @@ function viewSchedule(date){
    
 window.onload = async function () {
 
+    const role = localStorage.getItem("userRole");
+
+if (role === "driver") {
+    document.getElementById("adminBtn").style.display = "none";
+} else {
+    document.getElementById("adminBtn").style.display = "";
+}
+
   const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
 const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
+
+    
 
 if (driverLoggedIn && Date.now() >= driverExpires) {
 
@@ -3344,12 +3354,19 @@ const result = await response.json();
 }
 
         localStorage.setItem("driverLoggedIn", "true");
-        localStorage.setItem("username", result.name);
-        localStorage.setItem("userRole", result.role);
-        localStorage.setItem("driverName", result.name);
-        localStorage.setItem("driverRole", result.role);
-        
-        refreshLoginSession();
+localStorage.setItem("username", result.name);
+localStorage.setItem("userRole", result.role);
+localStorage.setItem("driverName", result.name);
+localStorage.setItem("driverRole", result.role);
+
+refreshLoginSession();
+
+// Hide Admin button for drivers
+if (result.role === "driver") {
+    document.getElementById("adminBtn").style.display = "none";
+} else {
+    document.getElementById("adminBtn").style.display = "";
+}
 
 hideLoginSpinner();
 showReminderModal();
