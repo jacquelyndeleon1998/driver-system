@@ -2039,6 +2039,12 @@ if (backToDriverBtn) {
         timeOutField.addEventListener("input", autoComputeMeals);
     }
 
+        const confirmReminderBtn = document.getElementById("confirmReminderBtn");
+
+if (confirmReminderBtn) {
+    confirmReminderBtn.addEventListener("click", confirmReminder);
+}
+
 });
     
 function submitAllowance(driver, date, reqBy, pass, tripType){
@@ -3325,6 +3331,28 @@ showReminderModal();
 
     document.getElementById("driverReminderModal").style.display = "flex";
 }
+
+    function confirmReminder() {
+
+    // Hide reminder modal
+    document.getElementById("driverReminderModal").style.display = "none";
+
+    // Show loading spinner
+    document.getElementById("loginLoadingOverlay").style.display = "flex";
+
+    setTimeout(() => {
+
+        // Hide loading spinner
+        document.getElementById("loginLoadingOverlay").style.display = "none";
+
+        // Hide login page
+        document.getElementById("loginPage").style.display = "none";
+
+        // Show dashboard
+        document.getElementById("driverDashboard").style.display = "block";
+
+    }, 1200);
+}
     
 </script>
 
@@ -3355,6 +3383,14 @@ showReminderModal();
 
     </div>
 
+</div>
+
+   <div id="loginLoadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <h3>Preparing Dashboard...</h3>
+        <p>Please wait while your schedules and assignments are being loaded.</p>
+    </div>
 </div>
 </body>
 </html>
