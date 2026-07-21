@@ -3322,25 +3322,29 @@ async function loginDriver() {
 
     try {
 
-     const response = await fetch(
+   showLoginSpinner(
+    "Signing In...",
+    "Checking your login credentials..."
+);
+
+const response = await fetch(
     `${WEBAPP_BASE}?action=login`
     + `&username=${encodeURIComponent(username)}`
     + `&password=${encodeURIComponent(password)}`
     + `&token=${encodeURIComponent(SECRET_TOKEN)}`
 );
 
-        showLoginSpinner(
-    "Signing In...",
-    "Checking your login credentials..."
-);
+const result = await response.json();
 
-        const result = await response.json();
+        
+      if (!result.success) {
+    hideLoginSpinner();
+    errorDiv.textContent = result.message || "Invalid username or password.";
+    return;
+}
 
-        if (!result.success) {
-            hideLoginSpinner();
-            errorDiv.textContent = result.message || "Invalid username or password.";
-            return;
-        }
+// Login successful
+document.getElementById("loginModal").style.display = "none";
 
         localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("username", result.name);
