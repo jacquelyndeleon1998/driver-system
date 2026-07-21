@@ -3343,9 +3343,6 @@ const result = await response.json();
     return;
 }
 
-// Login successful
-document.getElementById("loginModal").style.display = "none";
-
         localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("username", result.name);
         localStorage.setItem("userRole", result.role);
