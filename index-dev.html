@@ -1060,13 +1060,23 @@
             <div class="app-description">Real-time Schedule & Allowance Management</div>
         </div>
     </div>
-    <div class="top-nav">
-        <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
-        <span class="nav-separator">|</span>
-        <button id="allowanceBtn" class="nav-btn">Allowances</button>
-        <span class="nav-separator">|</span>
-        <button id="adminBtn" class="nav-btn">Admin</button>
-    </div>
+  <div class="top-nav">
+
+    <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+
+    <span id="sepDashboardAllowance" class="nav-separator">|</span>
+
+    <button id="allowanceBtn" class="nav-btn">Allowances</button>
+
+    <span id="sepAllowanceAdmin" class="nav-separator">|</span>
+
+    <button id="adminBtn" class="nav-btn">Admin</button>
+
+    <span id="sepAdminLogout" class="nav-separator">|</span>
+
+    <button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
+
+</div>
 </div>
 
 <div id="driverDashboard">
@@ -1380,6 +1390,19 @@ let approvalDates = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
+
+    function logoutUser() {
+
+    localStorage.removeItem("driverLoggedIn");
+    localStorage.removeItem("driverName");
+    localStorage.removeItem("driverRole");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("loginExpires");
+
+    location.reload();
+}
 
 function standardizeDateStr(dateStr) {
     if (!dateStr) return "";
@@ -2763,7 +2786,38 @@ function viewSchedule(date){
    
 window.onload = async function () {
 
-   const role = localStorage.getItem("userRole");
+ const role = localStorage.getItem("userRole");
+
+const dashboardBtn = document.getElementById("dashboardBtn");
+const allowanceBtn = document.getElementById("allowanceBtn");
+const adminBtn = document.getElementById("adminBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+dashboardBtn.style.display = "";
+logoutBtn.style.display = "";
+
+switch (role) {
+
+    case "driver":
+        allowanceBtn.style.display = "";
+        adminBtn.style.display = "none";
+        break;
+
+    case "admin":
+        allowanceBtn.style.display = "none";
+        adminBtn.style.display = "";
+        break;
+
+    case "tl":
+        allowanceBtn.style.display = "none";
+        adminBtn.style.display = "none";
+        break;
+
+    default:
+        allowanceBtn.style.display = "";
+        adminBtn.style.display = "";
+        logoutBtn.style.display = "none";
+}
 
 document.getElementById("adminBtn").style.display =
     (role === "driver") ? "none" : "";
@@ -3358,13 +3412,51 @@ localStorage.setItem("driverRole", result.role);
 
 refreshLoginSession();
 
-// Hide Admin button for drivers
-if (result.role === "driver") {
-    document.getElementById("adminBtn").style.display = "none";
-} else {
-    document.getElementById("adminBtn").style.display = "";
-}
+const role = result.role;
 
+const allowanceBtn = document.getElementById("allowanceBtn");
+const adminBtn = document.getElementById("adminBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
+const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+const sepAdminLogout = document.getElementById("sepAdminLogout");
+
+// Show everything first
+allowanceBtn.style.display = "";
+adminBtn.style.display = "";
+logoutBtn.style.display = "";
+
+sepDashboardAllowance.style.display = "";
+sepAllowanceAdmin.style.display = "";
+sepAdminLogout.style.display = "";
+
+switch (role) {
+
+    case "driver":
+
+        adminBtn.style.display = "none";
+        sepAllowanceAdmin.style.display = "none";
+
+        break;
+
+    case "admin":
+
+        allowanceBtn.style.display = "none";
+        sepDashboardAllowance.style.display = "none";
+
+        break;
+
+    case "tl":
+
+        allowanceBtn.style.display = "none";
+        adminBtn.style.display = "none";
+
+        sepDashboardAllowance.style.display = "none";
+        sepAllowanceAdmin.style.display = "none";
+
+        break;
+}
 hideLoginSpinner();
 showReminderModal();
 
