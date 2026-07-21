@@ -2819,9 +2819,6 @@ switch (role) {
         logoutBtn.style.display = "none";
 }
 
-document.getElementById("adminBtn").style.display =
-    (role === "driver") ? "none" : "";
-
   const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
 const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
 
