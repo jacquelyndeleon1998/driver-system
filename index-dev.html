@@ -1297,7 +1297,7 @@
     </div>
 </div>
 
-<div id="pageLoadingOverlay" class="loading-overlay" style="display: flex; justify-content: center; align-items: center;">
+<div id="pageLoadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-box loading-box-large">
         <div class="loading-banner">
             <h2>Daily Dispatch Hub</h2>
@@ -3313,9 +3313,12 @@ async function loginDriver() {
         localStorage.setItem("driverName", result.name);
         localStorage.setItem("driverRole", result.role);
 
-document.getElementById("loginPage").style.display = "none";
+document.getElementById("loginLoadingOverlay").style.display = "flex";
 
-showReminderModal();
+setTimeout(() => {
+    document.getElementById("loginLoadingOverlay").style.display = "none";
+    showReminderModal();
+}, 800);
 
     } catch (err) {
         console.error(err);
@@ -3334,24 +3337,18 @@ showReminderModal();
 
     function confirmReminder() {
 
-    // Hide reminder modal
     document.getElementById("driverReminderModal").style.display = "none";
 
-    // Show loading spinner
     document.getElementById("loginLoadingOverlay").style.display = "flex";
 
     setTimeout(() => {
 
-        // Hide loading spinner
         document.getElementById("loginLoadingOverlay").style.display = "none";
 
-        // Hide login page
         document.getElementById("loginPage").style.display = "none";
 
-        // Show dashboard
-        document.getElementById("driverDashboard").style.display = "block";
-
     }, 1200);
+
 }
     
 </script>
