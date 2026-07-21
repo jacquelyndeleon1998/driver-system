@@ -2763,13 +2763,10 @@ function viewSchedule(date){
    
 window.onload = async function () {
 
-    const role = localStorage.getItem("userRole");
+   const role = localStorage.getItem("userRole");
 
-if (role === "driver") {
-    document.getElementById("adminBtn").style.display = "none";
-} else {
-    document.getElementById("adminBtn").style.display = "";
-}
+document.getElementById("adminBtn").style.display =
+    (role === "driver") ? "none" : "";
 
   const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
 const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
