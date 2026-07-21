@@ -8,7 +8,17 @@
     <link rel="icon" type="image/png" href="assets/dispatch-hub-logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+.reminder-list{
+    text-align:left;
+    margin:20px 0;
+    padding-left:24px;
+    line-height:1.8;
+    color:#444;
+}
 
+.reminder-list li{
+    margin-bottom:10px;
+}
 
 .modal-overlay {
     position: fixed;
@@ -3311,44 +3321,34 @@ showReminderModal();
 
     const driverName = localStorage.getItem("username") || "Driver";
 
-    document.getElementById("reminderTitle").innerHTML =
-        `Welcome, ${driverName}!`;
+   document.getElementById("driverNameText").textContent = driverName;
 
     document.getElementById("driverReminderModal").style.display = "flex";
 }
     
 </script>
 
+<p style="margin-bottom:18px;">
+    Hi <strong id="driverNameText"></strong>,
+</p>
 
-       <div id="driverReminderModal" class="modal-overlay" style="display:none;">
+<p style="margin-bottom:18px;">
+    A gentle reminder before you begin your duty:
+</p>
 
-    <div class="modal-content reminder-modal">
+<ul class="reminder-list">
+    <li>Ensure the vehicle is fully fueled before returning it to the Feedmill.</li>
 
-        <h2 id="reminderTitle">Welcome!</h2>
+    <li>Notify your passengers before their scheduled trips.</li>
 
-        <p class="reminder-text">
-            A gentle reminder.
-        </p>
+    <li>Submit your meal allowance immediately after completing your duty.</li>
 
-        <p class="reminder-text">
-            Please ensure the vehicle is fully fueled before returning it to the Feedmill.
-        </p>
+    <li>Drive safely and responsibly at all times.</li>
+</ul>
 
-        <p class="reminder-text">
-            Kindly notify your passengers before their scheduled trips and submit your meal allowance immediately after completing your duty.
-        </p>
-
-        <p class="reminder-text">
-            Drive safely and responsibly at all times.
-        </p>
-
-        <button id="confirmReminderBtn" class="allowance-btn">
-            Confirm
-        </button>
-
-    </div>
-
-</div>
+<button id="confirmReminderBtn" class="allowance-btn">
+    Confirm
+</button>
     
 </body>
 </html>
