@@ -3276,6 +3276,18 @@ document.getElementById("adminBtn").addEventListener("click", () => {
 
     document.getElementById("loginBtn").addEventListener("click", loginDriver);
 
+function showLoginSpinner(title, message) {
+
+    document.getElementById("loadingTitle").textContent = title;
+    document.getElementById("loadingMessage").textContent = message;
+
+    document.getElementById("loginLoadingOverlay").style.display = "flex";
+}
+
+function hideLoginSpinner() {
+    document.getElementById("loginLoadingOverlay").style.display = "none";
+}
+    
 async function loginDriver() {
 
     const username = document.getElementById("loginUsername").value.trim();
@@ -3298,9 +3310,15 @@ async function loginDriver() {
     + `&token=${encodeURIComponent(SECRET_TOKEN)}`
 );
 
+        showLoginSpinner(
+    "Signing In...",
+    "Checking your login credentials..."
+);
+
         const result = await response.json();
 
         if (!result.success) {
+            hideLoginSpinner();
             errorDiv.textContent = result.message || "Invalid username or password.";
             return;
         }
@@ -3317,7 +3335,9 @@ document.getElementById("loginLoadingOverlay").style.display = "flex";
 
 setTimeout(() => {
     document.getElementById("loginLoadingOverlay").style.display = "none";
-    showReminderModal();
+ hideLoginSpinner();
+
+showReminderModal();
 }, 800);
 
     } catch (err) {
@@ -3335,22 +3355,24 @@ setTimeout(() => {
     document.getElementById("driverReminderModal").style.display = "flex";
 }
 
-    function confirmReminder() {
+   function confirmReminder() {
 
     document.getElementById("driverReminderModal").style.display = "none";
 
-    document.getElementById("loginLoadingOverlay").style.display = "flex";
+    showLoginSpinner(
+        "Preparing Dashboard...",
+        "Loading schedules and allowances..."
+    );
 
     setTimeout(() => {
 
-        document.getElementById("loginLoadingOverlay").style.display = "none";
+        hideLoginSpinner();
 
         document.getElementById("loginPage").style.display = "none";
 
-    }, 1200);
+    }, 1000);
 
 }
-    
 </script>
 
 <div id="driverReminderModal" class="modal-overlay" style="display:none;">
@@ -3385,9 +3407,14 @@ setTimeout(() => {
    <div id="loginLoadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-box">
         <div class="spinner"></div>
-        <h3>Preparing Dashboard...</h3>
-        <p>Please wait while your schedules and assignments are being loaded.</p>
+
+        <h3 id="loadingTitle">Loading...</h3>
+
+        <p id="loadingMessage">
+            Please wait...
+        </p>
     </div>
 </div>
+    
 </body>
 </html>
