@@ -2756,10 +2756,10 @@ function viewSchedule(date){
    
 window.onload = async function () {
 
-   const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
-const expires = Number(localStorage.getItem("loginExpires") || 0);
+  const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
+const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
 
-if (driverLoggedIn && Date.now() >= expires) {
+if (driverLoggedIn && Date.now() >= driverExpires) {
 
     localStorage.removeItem("driverLoggedIn");
     localStorage.removeItem("driverName");
