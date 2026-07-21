@@ -2838,10 +2838,6 @@ if (driverLoggedIn && Date.now() >= driverExpires) {
 
 }
 
-if (localStorage.getItem("driverLoggedIn") !== "true") {
-    document.getElementById("pageLoadingOverlay").style.display = "none";
-    return;
-}
 
     const loggedIn = localStorage.getItem("loggedIn");
     const expires = Number(localStorage.getItem("loginExpires"));
