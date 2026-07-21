@@ -3355,9 +3355,10 @@ hideLoginSpinner();
 showReminderModal();
 
     } catch (err) {
-        console.error(err);
-        errorDiv.textContent = "Unable to connect to the server.";
-    }
+    hideLoginSpinner();
+    console.error(err);
+    errorDiv.textContent = "Unable to connect to the server.";
+}
 }
 
     function showReminderModal() {
