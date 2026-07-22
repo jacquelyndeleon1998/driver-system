@@ -1674,11 +1674,26 @@ function processAllowanceSummaryTable() {
         if (!aggregateGroup[record.name]) {
             aggregateGroup[record.name] = { approved: 0, pending: 0 };
         }
-        if (record.status === "Approved") {
-            aggregateGroup[record.name].approved += record.amount;
-        } else {
-            aggregateGroup[record.name].pending += record.amount;
-        }
+       if (record.status === "Paid" || record.status === "Approved") {
+
+    // Already paid
+    aggregateGroup[record.name].approved += record.amount;
+
+} else if (
+    record.status === "For Review" ||
+    record.status === "Pay" ||
+    record.status === "Pending"
+) {
+
+    // Waiting for review/payment
+    aggregateGroup[record.name].pending += record.amount;
+
+} else {
+
+    // Any unknown status also counts as pending
+    aggregateGroup[record.name].pending += record.amount;
+
+}
     });
 
     let overallApprovedTotal = 0;
