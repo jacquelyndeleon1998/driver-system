@@ -1399,6 +1399,11 @@
     </td>
 </tr>
 
+            <tr id="reviewRemarksRow" style="display:none;">
+    <td><strong>Remarks</strong></td>
+    <td id="reviewRemarks"></td>
+</tr>
+
 </table>
         <br>
 
@@ -1987,6 +1992,15 @@ document.getElementById("reviewParking").value = record.parking;
 
 updateReviewTotal();
 
+       const remarksRow = document.getElementById("reviewRemarksRow");
+const remarksCell = document.getElementById("reviewRemarks");
+
+if (record.remarks && record.remarks.trim() !== "") {
+    remarksCell.textContent = record.remarks;
+    remarksRow.style.display = "";
+} else {
+    remarksRow.style.display = "none";
+}
 
     const receiptBtn = document.getElementById("reviewReceiptBtn");
 
