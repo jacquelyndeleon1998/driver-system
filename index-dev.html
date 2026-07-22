@@ -1806,10 +1806,19 @@ if (record.status === "Paid" || record.status === "Approved") {
 
     row.style.backgroundColor = "#fefce8";
 
+} else if (record.status === "Pending") {
+
+    badgeDisplay =
+        `<button class="action-table-btn"
+            style="padding:3px 8px;font-size:10px;background:#6b7280;color:white;"
+            disabled>
+            Pending
+        </button>`;
+
 } else {
 
     badgeDisplay =
-        `<span class="status-badge">Unknown</span>`;
+        `<span class="status-badge">Unknown (${record.status})</span>`;
 
 }
 
