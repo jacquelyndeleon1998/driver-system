@@ -1741,13 +1741,35 @@ function openDriverDetailsModal(driverName) {
     filteredRecords.forEach(record => {
         const row = document.createElement("tr");
         let badgeDisplay = "";
-        
-        if (record.status === "Approved") {
-            badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
-        } else {
-            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Pay</button>`;
-            row.style.backgroundColor = "#f0fdf4";
-        }
+
+if (record.status === "Paid") {
+
+    badgeDisplay =
+        `<span class="status-badge status-approved">Paid</span>`;
+
+} else if (record.status === "Pay") {
+
+    badgeDisplay =
+        `<button class="action-table-btn btn-approve"
+            style="padding:3px 8px; font-size:10px;"
+            onclick="openReviewModal('${record.name}','${record.date}', this)">
+            For Review
+        </button>`;
+
+    row.style.backgroundColor = "#fefce8";
+
+} else {
+
+    badgeDisplay =
+        `<button class="action-table-btn btn-approve"
+            style="padding:3px 8px; font-size:10px;"
+            onclick="approveItemInline('${record.name}','${record.date}', this)">
+            Pay
+        </button>`;
+
+    row.style.backgroundColor = "#f0fdf4";
+
+}
 
         row.innerHTML = `
             <td>${record.date}</td>
@@ -1759,6 +1781,16 @@ function openDriverDetailsModal(driverName) {
 
     document.getElementById("driverAllowanceDetailsModal").style.display = "block";
     document.body.style.overflow = "hidden";
+}
+
+    function openReviewModal(driverName, date, button) {
+
+    alert(
+        "Review Modal\n\n" +
+        "Driver: " + driverName +
+        "\nDate: " + date
+    );
+
 }
 
 function closeDetailsModal() {
