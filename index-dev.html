@@ -1512,11 +1512,16 @@ async function fetchLiveAllowancesFromSheet() {
                 const totalAllowance = parseFloat(row.total) || 0; 
                 const rawStatus = row.status || "";     
                 
-               let itemStatus = "For Review";
+             const lowerStatus = (rawStatus || "").trim().toLowerCase();
 
-const lowerStatus = (rawStatus || "").trim().toLowerCase();
+let itemStatus = rawStatus || "For Review";
 
-if (lowerStatus === "paid") {
+if (lowerStatus === "approved") {
+
+    // Old records
+    itemStatus = "Paid";
+
+} else if (lowerStatus === "paid") {
 
     itemStatus = "Paid";
 
@@ -1529,7 +1534,6 @@ if (lowerStatus === "paid") {
     itemStatus = "For Review";
 
 }
-
                 if (driverName && rawTripDate) {
                     globalParsedAllowances.push({
                         name: driverName,
