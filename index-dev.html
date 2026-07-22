@@ -1306,18 +1306,62 @@
     </div>
 </div>
 
-    <div id="reviewAllowanceModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width:500px;">
+  <div id="reviewAllowanceModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:550px;">
 
         <h2>Review Allowance</h2>
 
         <p><strong>Driver:</strong> <span id="reviewDriver"></span></p>
-        <p><strong>Date:</strong> <span id="reviewDate"></span></p>
+        <p><strong>Trip Date:</strong> <span id="reviewDate"></span></p>
 
         <hr>
 
-        <div style="text-align:right;margin-top:20px;">
+        <table style="width:100%;border-collapse:collapse;">
+            <tr>
+                <td><strong>Time In</strong></td>
+                <td id="reviewTimeIn"></td>
+            </tr>
+            <tr>
+                <td><strong>Time Out</strong></td>
+                <td id="reviewTimeOut"></td>
+            </tr>
+            <tr>
+                <td><strong>Breakfast</strong></td>
+                <td id="reviewBreakfast"></td>
+            </tr>
+            <tr>
+                <td><strong>Lunch</strong></td>
+                <td id="reviewLunch"></td>
+            </tr>
+            <tr>
+                <td><strong>Dinner</strong></td>
+                <td id="reviewDinner"></td>
+            </tr>
+            <tr>
+                <td><strong>Parking</strong></td>
+                <td id="reviewParking"></td>
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td id="reviewTotal" style="font-weight:bold;color:#14532d;"></td>
+            </tr>
+            <tr>
+                <td><strong>Remarks</strong></td>
+                <td id="reviewRemarks"></td>
+            </tr>
+        </table>
+
+        <br>
+
+        <button id="reviewReceiptBtn"
+                class="action-table-btn btn-view"
+                onclick="window.open(this.dataset.url,'_blank')">
+            View Receipt
+        </button>
+
+        <div style="margin-top:20px;text-align:right;">
             <button onclick="closeReviewModal()">Cancel</button>
+
             <button
                 style="background:#16a34a;color:white;"
                 onclick="alert('Approve will be added next.')">
@@ -1871,11 +1915,43 @@ if (record.status === "Paid" || record.status === "Approved") {
 
    function openReviewModal(driverName, date, button) {
 
-    document.getElementById("reviewDriver").textContent = driverName;
-    document.getElementById("reviewDate").textContent = date;
+    const record = globalParsedAllowances.find(r =>
+        r.name === driverName &&
+        r.date === date
+    );
+
+    if (!record) {
+        alert("Allowance record not found.");
+        return;
+    }
+
+    document.getElementById("reviewDriver").textContent = record.name;
+    document.getElementById("reviewDate").textContent = record.date;
+
+    document.getElementById("reviewTimeIn").textContent = record.timeIn;
+    document.getElementById("reviewTimeOut").textContent = record.timeOut;
+
+    document.getElementById("reviewBreakfast").textContent = "₱" + record.breakfast;
+    document.getElementById("reviewLunch").textContent = "₱" + record.lunch;
+    document.getElementById("reviewDinner").textContent = "₱" + record.dinner;
+    document.getElementById("reviewParking").textContent = "₱" + record.parking;
+
+    document.getElementById("reviewTotal").textContent =
+        "₱" + Number(record.amount).toLocaleString();
+
+    document.getElementById("reviewRemarks").textContent =
+        record.remarks || "-";
+
+    const receiptBtn = document.getElementById("reviewReceiptBtn");
+
+    if (record.receipt) {
+        receiptBtn.style.display = "";
+        receiptBtn.dataset.url = record.receipt;
+    } else {
+        receiptBtn.style.display = "none";
+    }
 
     document.getElementById("reviewAllowanceModal").style.display = "flex";
-
 }
 
     function closeReviewModal() {
