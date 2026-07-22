@@ -1759,7 +1759,7 @@ function openDriverDetailsModal(driverName) {
         const row = document.createElement("tr");
        let badgeDisplay = "";
 
-if (record.status === "Paid") {
+if (record.status === "Paid" || record.status === "Approved") {
 
     badgeDisplay =
         `<span class="status-badge status-approved">Paid</span>`;
