@@ -1501,6 +1501,7 @@ async function fetchLiveAllowancesFromSheet() {
 `${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`
 );
         const jsonResult = await response.json();
+        console.log(jsonResult.data);
         
         globalParsedAllowances = [];
         
