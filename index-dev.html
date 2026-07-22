@@ -2404,13 +2404,28 @@ function renderDriverViewTable() {
 
         const row = document.createElement("tr");
         
-        let statusBadge = "";
-        if (record.status === "Approved") {
-            statusBadge = `<span class="status-badge status-approved">Paid</span>`;
-        } else {
-            statusBadge = `<span class="status-badge status-pending">Pending</span>`;
-            row.style.backgroundColor = "#fef3c7";
-        }
+       let statusBadge = "";
+
+if (record.status === "Paid" || record.status === "Approved") {
+
+    statusBadge = `<span class="status-badge status-approved">Paid</span>`;
+
+} else if (record.status === "Pay") {
+
+    statusBadge = `<span class="status-badge status-pending">For Payment</span>`;
+    row.style.backgroundColor = "#dbeafe";
+
+} else if (record.status === "For Review") {
+
+    statusBadge = `<span class="status-badge status-pending">For Review</span>`;
+    row.style.backgroundColor = "#fef3c7";
+
+} else {
+
+    statusBadge = `<span class="status-badge status-pending">For Review</span>`;
+    row.style.backgroundColor = "#fef3c7";
+
+}
 
         row.innerHTML = `
             <td style="text-align: left;">${record.date}</td>
