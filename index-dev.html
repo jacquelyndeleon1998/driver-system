@@ -1665,6 +1665,7 @@ function processAllowanceSummaryTable() {
     const aggregateGroup = {};
 
     globalParsedAllowances.forEach(record => {
+        console.log(record.name, record.date, record.status, record.amount);
         const parsedDate = new Date(record.date);
         if(isNaN(parsedDate.getTime())) return;
 
