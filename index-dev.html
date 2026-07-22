@@ -1511,7 +1511,23 @@ async function fetchLiveAllowancesFromSheet() {
                 const totalAllowance = parseFloat(row.total) || 0; 
                 const rawStatus = row.status || "";     
                 
-                const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
+               let itemStatus = "For Review";
+
+const lowerStatus = (rawStatus || "").trim().toLowerCase();
+
+if (lowerStatus === "paid") {
+
+    itemStatus = "Paid";
+
+} else if (lowerStatus === "pay") {
+
+    itemStatus = "Pay";
+
+} else if (lowerStatus === "for review") {
+
+    itemStatus = "For Review";
+
+}
 
                 if (driverName && rawTripDate) {
                     globalParsedAllowances.push({
@@ -2288,9 +2304,6 @@ const loggedInDriverName = localStorage.getItem("driverName");
 
 function renderDriverViewTable() {
     const loggedInDriverName = localStorage.getItem("driverName") || "";
-
-        console.log("Driver from localStorage:", loggedInDriverName);
-    console.log("Allowances:", globalParsedAllowances);
     
     let selectorValue = document.getElementById("driverViewCutoff").value || "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
