@@ -1987,11 +1987,6 @@ document.getElementById("reviewParking").value = record.parking;
 
 updateReviewTotal();
 
-    document.getElementById("reviewTotal").textContent =
-        "₱" + Number(record.amount).toLocaleString();
-
-    document.getElementById("reviewRemarks").textContent =
-        record.remarks || "-";
 
     const receiptBtn = document.getElementById("reviewReceiptBtn");
 
