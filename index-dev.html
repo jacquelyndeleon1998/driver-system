@@ -1317,40 +1317,89 @@
         <hr>
 
         <table style="width:100%;border-collapse:collapse;">
-            <tr>
-                <td><strong>Time In</strong></td>
-                <td id="reviewTimeIn"></td>
-            </tr>
-            <tr>
-                <td><strong>Time Out</strong></td>
-                <td id="reviewTimeOut"></td>
-            </tr>
-            <tr>
-                <td><strong>Breakfast</strong></td>
-                <td id="reviewBreakfast"></td>
-            </tr>
-            <tr>
-                <td><strong>Lunch</strong></td>
-                <td id="reviewLunch"></td>
-            </tr>
-            <tr>
-                <td><strong>Dinner</strong></td>
-                <td id="reviewDinner"></td>
-            </tr>
-            <tr>
-                <td><strong>Parking</strong></td>
-                <td id="reviewParking"></td>
-            </tr>
-            <tr>
-                <td><strong>Total</strong></td>
-                <td id="reviewTotal" style="font-weight:bold;color:#14532d;"></td>
-            </tr>
-            <tr>
-                <td><strong>Remarks</strong></td>
-                <td id="reviewRemarks"></td>
-            </tr>
-        </table>
 
+<tr>
+    <td><strong>Time In</strong></td>
+    <td>
+        <input id="reviewTimeIn"
+               type="text"
+               class="form-control"
+               style="width:140px;">
+    </td>
+</tr>
+
+<tr>
+    <td><strong>Time Out</strong></td>
+    <td>
+        <input id="reviewTimeOut"
+               type="text"
+               class="form-control"
+               style="width:140px;">
+    </td>
+</tr>
+
+<tr>
+    <td><strong>Breakfast</strong></td>
+    <td>
+        <input id="reviewBreakfast"
+               type="number"
+               value="0"
+               min="0"
+               style="width:90px;"
+               oninput="updateReviewTotal()">
+    </td>
+</tr>
+
+<tr>
+    <td><strong>Lunch</strong></td>
+    <td>
+        <input id="reviewLunch"
+               type="number"
+               value="0"
+               min="0"
+               style="width:90px;"
+               oninput="updateReviewTotal()">
+    </td>
+</tr>
+
+<tr>
+    <td><strong>Dinner</strong></td>
+    <td>
+        <input id="reviewDinner"
+               type="number"
+               value="0"
+               min="0"
+               style="width:90px;"
+               oninput="updateReviewTotal()">
+    </td>
+</tr>
+
+<tr>
+    <td><strong>Parking</strong></td>
+    <td>
+        <input id="reviewParking"
+               type="number"
+               value="0"
+               min="0"
+               style="width:90px;"
+               oninput="updateReviewTotal()">
+    </td>
+</tr>
+
+<tr>
+    <td style="padding-top:15px;">
+        <strong>Total Allowance</strong>
+    </td>
+
+    <td style="padding-top:15px;">
+        <span id="reviewTotal"
+              style="font-size:18px;font-weight:bold;color:#14532d;">
+            ₱0
+        </span>
+    </td>
+</tr>
+
+</table>
         <br>
 
         <button id="reviewReceiptBtn"
@@ -1928,13 +1977,15 @@ if (record.status === "Paid" || record.status === "Approved") {
     document.getElementById("reviewDriver").textContent = record.name;
     document.getElementById("reviewDate").textContent = record.date;
 
-    document.getElementById("reviewTimeIn").textContent = record.timeIn;
-    document.getElementById("reviewTimeOut").textContent = record.timeOut;
+   document.getElementById("reviewTimeIn").value = record.timeIn;
+document.getElementById("reviewTimeOut").value = record.timeOut;
 
-    document.getElementById("reviewBreakfast").textContent = "₱" + record.breakfast;
-    document.getElementById("reviewLunch").textContent = "₱" + record.lunch;
-    document.getElementById("reviewDinner").textContent = "₱" + record.dinner;
-    document.getElementById("reviewParking").textContent = "₱" + record.parking;
+document.getElementById("reviewBreakfast").value = record.breakfast;
+document.getElementById("reviewLunch").value = record.lunch;
+document.getElementById("reviewDinner").value = record.dinner;
+document.getElementById("reviewParking").value = record.parking;
+
+updateReviewTotal();
 
     document.getElementById("reviewTotal").textContent =
         "₱" + Number(record.amount).toLocaleString();
@@ -1956,6 +2007,19 @@ if (record.status === "Paid" || record.status === "Approved") {
 
     function closeReviewModal() {
     document.getElementById("reviewAllowanceModal").style.display = "none";
+}
+
+    function updateReviewTotal() {
+
+    const breakfast = Number(document.getElementById("reviewBreakfast").value) || 0;
+    const lunch = Number(document.getElementById("reviewLunch").value) || 0;
+    const dinner = Number(document.getElementById("reviewDinner").value) || 0;
+    const parking = Number(document.getElementById("reviewParking").value) || 0;
+
+    const total = breakfast + lunch + dinner + parking;
+
+    document.getElementById("reviewTotal").textContent =
+        "₱" + total.toLocaleString();
 }
 
 function closeDetailsModal() {
