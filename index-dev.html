@@ -1556,12 +1556,26 @@ if (lowerStatus === "approved") {
 
 }
                 if (driverName && rawTripDate) {
-                    globalParsedAllowances.push({
-                        name: driverName,
-                        date: rawTripDate,
-                        amount: totalAllowance,
-                        status: itemStatus
-                    });
+                  globalParsedAllowances.push({
+    name: driverName,
+    date: rawTripDate,
+
+    passenger: row.passenger || "",
+
+    timeIn: row.timeIn || "",
+    timeOut: row.timeOut || "",
+
+    breakfast: Number(row.breakfast) || 0,
+    lunch: Number(row.lunch) || 0,
+    dinner: Number(row.dinner) || 0,
+    parking: Number(row.parking) || 0,
+
+    receipt: row.receipt || "",
+    remarks: row.remarks || "",
+
+    amount: totalAllowance,
+    status: itemStatus
+});
                 }
             });
         }
