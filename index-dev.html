@@ -2696,43 +2696,6 @@ function showActionLoading(title, message){
 }
 
 function hideActionLoading(){ document.getElementById("actionLoadingOverlay").style.display = "none"; }
-function closeAdminLogin(){ document.getElementById("adminLoginModal").style.display = "none"; }
-
-async function adminLogin() {
-    const username = document.getElementById("adminUsername").value.trim();
-    const password = document.getElementById("adminPassword").value.trim();
-    const loginBtn = document.querySelector("#adminLoginModal .submit-btn");
-
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Signing In...";
-    showActionLoading("Signing In...", "Please wait while we prepare your dashboard.");
-    closeAdminLogin();
-
-    try {
-        const res = await fetch(
-`${WEBAPP_BASE}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&token=${encodeURIComponent(SECRET_TOKEN)}`
-);
-        const text = await res.text();
-        let result = JSON.parse(text);
-
-        if (result.success === true) {
-           localStorage.setItem("userRole", result.role || "user");
-        localStorage.setItem("loggedIn", "true");
-        refreshLoginSession();  
-        showAdminDashboard();
-        } else {
-            hideActionLoading();
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login";
-            alert(result.message || "Invalid login");
-        }
-    } catch (err) {
-        hideActionLoading();
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Login";
-        alert("Network error. Please try again.");
-    }
-}
 
 function approveSchedule(date, buttonElement) {
     const confirmModal = document.getElementById("confirmApprovalModal");
@@ -3610,8 +3573,8 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
 document.getElementById("adminBtn").addEventListener("click", () => {
     showAdminDashboard();
 });
-    document.getElementById("loginBtn").addEventListener("click", loginDriver);
-
+document.getElementById("loginBtn").addEventListener("click", loginDriver);
+    
 function showLoginSpinner(title, message) {
 
     document.getElementById("loadingTitle").textContent = title;
