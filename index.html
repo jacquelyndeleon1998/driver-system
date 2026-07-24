@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Dispatch Hub</title>
-    
+   
     <link rel="icon" type="image/png" href="assets/dispatch-hub-logo.png">
  
     <style>
     .bg-schedule-admin,
     .bg-driver-allowance {
-        background: #15803d !important; 
+        background: #15803d !important;
         box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2) !important;
     }
 
@@ -18,24 +18,24 @@
     .bg-driver-allowance .month-selector select {
         color: #15803d !important;
     }
-  
+ 
     .header-schedule {
-        background: #064e3b !important; 
+        background: #064e3b !important;
         box-shadow: 0 4px 10px rgba(6, 78, 59, 0.2) !important;
     }
 
     .header-allowance {
-        background: #14532d !important; 
+        background: #14532d !important;
         box-shadow: 0 4px 10px rgba(20, 83, 45, 0.2) !important;
     }
-  
+ 
     .header-schedule .month-selector select {
         color: #064e3b;
     }
     .header-allowance .month-selector select {
         color: #14532d;
     }
-        
+       
     body {
         font-family: Arial, Helvetica, sans-serif;
         background: #eef3ef;
@@ -585,10 +585,10 @@
     .action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
 
     .spinner, .action-loading-spinner {
-        margin: 0 auto 18px auto; 
+        margin: 0 auto 18px auto;
         border: 5px solid #e5e7eb;
         border-radius: 50%;
-        display: block;           
+        display: block;          
     }
     .spinner {
         width: 55px; height: 55px;
@@ -637,7 +637,7 @@
     }
     .summary-table td:first-child { font-weight:400; }
     .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
-    
+   
     .summary-table th:nth-child(3),
     .summary-table td:nth-child(3) {
         width:18%;
@@ -820,7 +820,7 @@
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
         }
-        
+       
         body {
             padding-top: 175px;
         }
@@ -853,13 +853,13 @@
         .month-selector { width: 100%; justify-content: space-between; }
 
         .approval-table {
-            table-layout: auto !important; 
+            table-layout: auto !important;
             width: 100% !important;
         }
         .approval-table th, .approval-table td {
-            padding: 8px 4px !important; 
+            padding: 8px 4px !important;
             font-size: 11px !important;  
-            white-space: normal !important; 
+            white-space: normal !important;
         }
     }
     </style>
@@ -989,10 +989,10 @@
             <div class="summary-header" style="margin-top: 0;">
                 <h2 id="viewerTitle">Driver Schedule</h2>
             </div>
-            
+           
             <!-- Dito papasok ang scrollable content ng mga biyahe -->
             <div id="scheduleViewerContent" style="max-height: 60vh; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
-            
+           
             <div class="modal-buttons">
                 <button class="allowance-btn cancel-btn" id="closeViewerBtn" style="margin: 0; height: 44px; border-radius: 8px;">
                     Close Window
@@ -1013,7 +1013,7 @@
     <div class="modal-content" style="max-width: 500px;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
         <p style="font-size: 13px; color: #6b7280; margin-top: -8px;" id="detailsModalRange"></p>
-        
+       
         <div style="max-height: 50vh; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
             <table class="modal-list-table">
                 <thead>
@@ -1180,7 +1180,7 @@ Drive safely and responsibly at all times.</p>
 <script>
 
 const WEBAPP_BASE = "https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec"; // Put your web app URL here
-const SECRET_TOKEN = "VIP-Secure-2026-Dispatch"; 
+const SECRET_TOKEN = "VIP-Secure-2026-Dispatch";
 const WEBAPP_URL = `${WEBAPP_BASE}?token=${encodeURIComponent(SECRET_TOKEN)}`;
 const sheetURL = `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
 const approvalURL = `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
@@ -1201,7 +1201,7 @@ function standardizeDateStr(dateStr) {
     if (!dateStr) return "";
     const parsed = new Date(dateStr);
     if (isNaN(parsed.getTime())) return dateStr.trim().toLowerCase();
-    
+   
     const y = parsed.getFullYear();
     const m = String(parsed.getMonth() + 1).padStart(2, '0');
     const d = String(parsed.getDate()).padStart(2, '0');
@@ -1246,12 +1246,12 @@ function refreshLoginSession() {
         }
     }
 }
-    
+   
 function showAdminDashboard() {
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("driverAllowancePage").style.display = "none";
-    
+   
     document.querySelector(".approval-container").style.display = "block";
     document.querySelector(".approval-footer").style.display = "block";
     document.getElementById("scheduleViewerPage").style.display = "none";
@@ -1281,7 +1281,7 @@ if (!Array.isArray(data.submitted)) {
 data.submitted.forEach(item => {
             const [driver, rawDate] = item.split("|");
             const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
-            submittedDrivers[cleanKey] = true; 
+            submittedDrivers[cleanKey] = true;
         });
     } catch (err) {
         console.error("Error loading submitted allowances: ", err);
@@ -1294,16 +1294,16 @@ async function fetchLiveAllowancesFromSheet() {
 `${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`
 );
         const jsonResult = await response.json();
-        
+       
         globalParsedAllowances = [];
-        
+       
         if (jsonResult && jsonResult.success && jsonResult.data) {
             jsonResult.data.forEach(row => {
                 const rawTripDate = row.date || "";      
                 const driverName = row.driver || "";    
-                const totalAllowance = parseFloat(row.total) || 0; 
-                const rawStatus = row.status || "";     
-                
+                const totalAllowance = parseFloat(row.total) || 0;
+                const rawStatus = row.status || "";    
+               
                 const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
 
                 if (driverName && rawTripDate) {
@@ -1325,7 +1325,7 @@ function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
     const allowanceSelect = document.getElementById("allowanceCutoff");
     const driverViewSelect = document.getElementById("driverViewCutoff");
-    
+   
     if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
 
     const activeCutoffs = new Set();
@@ -1336,9 +1336,9 @@ function updateCutoffDropdownsDynamically() {
         if (isNaN(parsedDate.getTime())) return;
 
         const year = parsedDate.getFullYear();
-        const monthNum = parsedDate.getMonth(); 
+        const monthNum = parsedDate.getMonth();
         const day = parsedDate.getDate();
-        
+       
         const bucket = day <= 15 ? "1" : "2";
         activeCutoffs.add(`${year}-${monthNum}-${bucket}`);
     };
@@ -1365,13 +1365,13 @@ function updateCutoffDropdownsDynamically() {
     sortedBuckets.forEach(bucketKey => {
         const [year, monthNum, bucket] = bucketKey.split("-");
         const monthName = monthNames[Number(monthNum)];
-        
+       
         let labelText = "";
         let optionValue = "";
 
         if (bucket === "1") {
             labelText = `${monthName} 1 - 15, ${year}`;
-            optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-1`; 
+            optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-1`;
         } else {
             const totalDays = new Date(Number(year), Number(monthNum) + 1, 0).getDate();
             labelText = `${monthName} 16 - ${totalDays}, ${year}`;
@@ -1421,7 +1421,7 @@ if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)){
 
     return `${month}-${bucket}`;
 }
-    
+   
 
 function processAllowanceSummaryTable() {
     const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
@@ -1501,22 +1501,22 @@ function openDriverDetailsModal(driverName) {
     const targetMonth = parseInt(targetMonthStr);
 
     document.getElementById("detailsModalDriverName").textContent = driverName;
-    
+   
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     document.getElementById("detailsModalRange").textContent = "Selected Window: " + monthNames[targetMonth - 1] + (targetBucket === "1" ? " 1 - 15" : " 16 - End of Month");
-    
+   
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
 
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return false;
-        
+       
         const parsedDate = new Date(record.date);
         if(isNaN(parsedDate.getTime())) return false;
 
         const dayNumber = parsedDate.getDate();
         const monthNumber = parsedDate.getMonth() + 1;
-        
+       
         if (monthNumber !== targetMonth) return false;
         if (targetBucket === "1" && dayNumber > 15) return false;
         if (targetBucket === "2" && dayNumber <= 15) return false;
@@ -1534,7 +1534,7 @@ function openDriverDetailsModal(driverName) {
     filteredRecords.forEach(record => {
         const row = document.createElement("tr");
         let badgeDisplay = "";
-        
+       
         if (record.status === "Approved") {
             badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
         } else {
@@ -1564,12 +1564,12 @@ async function approveItemInline(name, date, element) {
         element.disabled = true;
         element.textContent = "Processing...";
         showActionLoading("Approving Entry...", "Updating status registry values on live spreadsheets.");
-        
+       
         try {
            const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
             const response = await fetch(targetUrl);
             const data = await response.json();
-            
+           
             if (data.success) {
                 document.getElementById("successModalTitle").textContent = "Item Approved";
                 document.getElementById("successModalText").textContent = "Record updated successfully!";
@@ -1578,7 +1578,7 @@ async function approveItemInline(name, date, element) {
                 document.getElementById("successOK").onclick = function() {
                     document.getElementById("successModal").style.display = "none";
                     document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    window.location.reload(); 
+                    window.location.reload();
                 };
             } else {
                 alert("❌ Error: " + data.message);
@@ -1748,7 +1748,7 @@ else if (outTime > 1440) {
 
 
     if (
-        inTime >= 1080 && 
+        inTime >= 1080 &&
         nextDayOut >= lunchEnd
     ) {
 
@@ -1761,8 +1761,8 @@ else if (outTime > 1440) {
 
 
 
-let dinnerStart = 1020; 
-let dinnerEnd = 1140; 
+let dinnerStart = 1020;
+let dinnerEnd = 1140;
 
 if (inTime <= dinnerStart && outTime >= dinnerEnd) {
 
@@ -1776,7 +1776,7 @@ else if (outTime > 1440) {
     let nextDayOut = outTime - 1440;
 
     if (
-        inTime >= 1080 && 
+        inTime >= 1080 &&
         nextDayOut >= dinnerEnd
     ) {
 
@@ -1788,7 +1788,7 @@ else if (outTime > 1440) {
 
     return result;
 }
-    
+   
     function autoComputeMeals() {
 
     if (!currentTripType) return;
@@ -1843,7 +1843,7 @@ if (backToDriverBtn) {
 }
     checkAdminSession();
    setInterval(checkAdminSession, 1000);
-        
+       
     const timeInField = document.getElementById("allowanceTimeIn");
     const timeOutField = document.getElementById("allowanceTimeOut");
 
@@ -1856,7 +1856,7 @@ if (backToDriverBtn) {
     }
 
 });
-    
+   
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
@@ -1869,7 +1869,7 @@ function submitAllowance(driver, date, reqBy, pass, tripType){
     document.getElementById("allowanceBreakfast").value = "";
     document.getElementById("allowanceLunch").value = "";
     document.getElementById("allowanceDinner").value = "";
-    
+   
     let infoPieces = [];
     if(reqBy) infoPieces.push(reqBy);
     if(pass) infoPieces.push(pass);
@@ -1877,7 +1877,7 @@ function submitAllowance(driver, date, reqBy, pass, tripType){
 
     document.getElementById("modalDriver").textContent = driver;
     document.getElementById("modalDate").textContent = date;
-    
+   
     if (reqBy) {
         document.getElementById("modalRequestedByRow").style.display = "flex";
         document.getElementById("modalRequestedBy").textContent = reqBy;
@@ -1967,7 +1967,7 @@ async function saveAllowance() {
 
     try {
         const payloadData = {
-            token: SECRET_TOKEN, 
+            token: SECRET_TOKEN,
             data: payload,
             receipts: receipts
         };
@@ -1979,7 +1979,7 @@ async function saveAllowance() {
             },
             body: JSON.stringify(payloadData)
         });
-        
+       
         const text = await response.text();
         let result = JSON.parse(text);
 
@@ -1994,7 +1994,7 @@ async function saveAllowance() {
 
         document.getElementById("successModalTitle").textContent = "Submitted Successfully";
         document.getElementById("successModalText").textContent = "Your meal allowance has been recorded for review and approval.";
-        
+       
         document.getElementById("successModal").style.display = "flex";
         await loadSubmittedAllowances();
         closeModal();
@@ -2004,7 +2004,7 @@ async function saveAllowance() {
             document.getElementById("pageLoadingOverlay").style.display = "flex";
             window.location.reload();
         };
-        
+       
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -2079,7 +2079,7 @@ function renderDriverViewTable() {
         totalAmount += record.amount;
 
         const row = document.createElement("tr");
-        
+       
         let statusBadge = "";
         if (record.status === "Approved") {
             statusBadge = `<span class="status-badge status-approved">Paid</span>`;
@@ -2195,7 +2195,7 @@ async function driverLogin() {
         alert("Unable to connect to the server.");
     }
 }
-    
+   
 function showActionLoading(title, message){
     const t = document.getElementById("actionLoadingTitle");
     const m = document.getElementById("actionLoadingMessage");
@@ -2271,7 +2271,7 @@ function approveSchedule(date, buttonElement) {
                 document.getElementById("successOK").onclick = function() {
                     document.getElementById("successModal").style.display = "none";
                     document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    window.location.reload(); 
+                    window.location.reload();
                 };
             } else {
                 buttonElement.disabled = false;
@@ -2332,7 +2332,7 @@ function loadScheduleApprovalPage(){
     scheduleDates.forEach(date => {
         const scheduleDate = new Date(date);
         if (isNaN(scheduleDate.getTime())) return;
-        
+       
         const dayNumber = scheduleDate.getDate();
         const monthNumber = scheduleDate.getMonth() + 1;
 
@@ -2341,13 +2341,13 @@ function loadScheduleApprovalPage(){
         if (targetBucket === "2" && dayNumber <= 15) return;
 
         scheduleDate.setHours(0,0,0,0);
-        
+       
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
         if (status === "approved") {
             hasApproved = true;
-            
+           
             const row = `
             <tr>
                 <td class="approval-day-name" style="text-align: left;">${weekday}</td>
@@ -2399,23 +2399,23 @@ function loadScheduleApprovalPage(){
 
         if (approvedDropdownItems.length > 0) {
             approvedDropdownItems.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
+           
             let dropdownRow = `
             <tr>
                 <td colspan="3" style="text-align: center; padding: 10px;">
                     <select onchange="if(this.value) { viewSchedule(this.value); this.selectedIndex=0; }" style="width: 90%; padding: 6px; font-size: 12px; font-weight: 600; border: 1px solid #14532d; border-radius: 6px; color: #14532d; background: #fff; cursor: pointer;">
                         <option value="" selected disabled>📂 View More Approved Schedules (${approvedDropdownItems.length})</option>
             `;
-            
+           
             approvedDropdownItems.forEach(item => {
                 dropdownRow += `<option value="${item.date}">${item.date}</option>`;
             });
-            
+           
             dropdownRow += `
                     </select>
                 </td>
             </tr>`;
-            
+           
             approvedDiv.innerHTML += dropdownRow;
         }
     } else {
@@ -2444,7 +2444,7 @@ function loadScheduleApprovalPage(){
 
     window.scrollTo(0, 0);
 }
-    
+   
 function viewSchedule(date){
     document.querySelector(".approval-container").style.display = "none";
 
@@ -2462,8 +2462,8 @@ function viewSchedule(date){
     Object.values(summaryDrivers[date] || {}).forEach(driver => {
         let itineraryDisplay = (driver.itinerary || "").trim();
         const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-        
-        let rowClass = isRestDay ? "rest-day-row" : ""; 
+       
+        let rowClass = isRestDay ? "rest-day-row" : "";
 
         if (/\bam\b/i.test(itineraryDisplay)) {
             itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
@@ -2536,11 +2536,7 @@ function viewSchedule(date){
                                 </a>
                             </div>
                         </div>` : ""}
-                        ${remarks ? `
-<div class="info-item">
-    <div class="info-label">Remarks</div>
-    <div class="info-value">${String(remarks).replace(/\n/g, "<br>")}</div>
-</div>` : ""}
+                        ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
                     </div>`;
                 }
             });
@@ -2563,9 +2559,9 @@ function viewSchedule(date){
     }
 
     viewerContent.innerHTML = viewerHTML;
-    
+   
     document.getElementById("scheduleViewerPage").style.display = "block";
-    document.body.style.overflow = "hidden"; 
+    document.body.style.overflow = "hidden";
 }
    
 window.onload = async function () {
@@ -2655,7 +2651,7 @@ if (tripType && !grouped[key].tripType) {
     grouped[key].tripType = tripType;
 }
 
-            
+           
             grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
         });
 
@@ -2710,8 +2706,8 @@ if (tripType && !grouped[key].tripType) {
                 Object.values(summaryDrivers[date] || {}).forEach(driver=>{
                     let itineraryDisplay = (driver.itinerary || "").trim();
                     const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                    
-                    let rowClass = isRestDay ? "rest-day-row" : ""; 
+                   
+                    let rowClass = isRestDay ? "rest-day-row" : "";
 
                     if (/\bam\b/i.test(itineraryDisplay)) {
                         itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
@@ -2855,14 +2851,14 @@ if (noAllowanceItineraries.includes(itinerary)) {
                         </div>`;
                 });
             }
-            
+           
             if (!isPast && !isToday) {
                 let tableRows = "";
                 Object.values(summaryDrivers[date] || {}).forEach(driver => {
                     let itineraryDisplay = (driver.itinerary || "").trim();
                     const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                    
-                    let rowClass = isRestDay ? "rest-day-row" : ""; 
+                   
+                    let rowClass = isRestDay ? "rest-day-row" : "";
 
                     if (/\bam\b/i.test(itineraryDisplay)) {
                         itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
@@ -2924,7 +2920,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
     ];
 
     if (noAllowanceItineraries.includes(itinerary)) {
-  
+ 
         return;
     }
 
@@ -3014,8 +3010,8 @@ if (noAllowanceItineraries.includes(itinerary)) {
 
     return;
 }
-                    
-      
+                   
+     
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     return !submittedDrivers[lookupKey];
                 });
@@ -3079,7 +3075,7 @@ document.getElementById("adminBtn").addEventListener("click", () => {
         document.getElementById("adminLoginModal").style.display = "block";
     }
 });
-    
+   
 </script>
 </body>
 </html>
