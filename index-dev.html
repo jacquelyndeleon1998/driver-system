@@ -1273,17 +1273,6 @@
     </div>
 </div>
 
-<div id="adminLoginModal" class="modal">
-    <div class="modal-content">
-        <h3 class="modal-title">Supervisor Login</h3>
-        <input id="adminUsername" type="text" placeholder="Username">
-        <input id="adminPassword" type="password" placeholder="Password">
-        <div class="modal-buttons">
-            <button class="allowance-btn submit-btn" onclick="adminLogin()">Login</button>
-            <button class="allowance-btn cancel-btn" onclick="closeAdminLogin()">Cancel</button>
-        </div>
-    </div>
-</div>
 
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
@@ -3619,16 +3608,8 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
 });
 
 document.getElementById("adminBtn").addEventListener("click", () => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    const expires = Number(localStorage.getItem("loginExpires"));
-
-    if (loggedIn === "true" && Date.now() < expires) {
-        showAdminDashboard();
-    } else {
-        document.getElementById("adminLoginModal").style.display = "block";
-    }
+    showAdminDashboard();
 });
-
     document.getElementById("loginBtn").addEventListener("click", loginDriver);
 
 function showLoginSpinner(title, message) {
