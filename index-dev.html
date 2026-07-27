@@ -1406,8 +1406,14 @@
             <button onclick="closeReviewModal()">Cancel</button>
 
            <button
+  <button
     style="background:#16a34a;color:white;"
-    onclick="approveItemInline('${record.name}','${record.date}', this)">
+    onclick="
+        approveItemInline(
+            document.getElementById('reviewAllowanceModal').dataset.driver,
+            document.getElementById('reviewAllowanceModal').dataset.date,
+            this
+        )">
     Approve
 </button>
         </div>
@@ -1970,6 +1976,8 @@ if (record.status === "Paid" || record.status === "Approved") {
 
     document.getElementById("reviewDriver").textContent = record.name;
     document.getElementById("reviewDate").textContent = record.date;
+       document.getElementById("reviewAllowanceModal").dataset.driver = record.name;
+document.getElementById("reviewAllowanceModal").dataset.date = record.date;
 
    document.getElementById("reviewTimeIn").value = record.timeIn;
 document.getElementById("reviewTimeOut").value = record.timeOut;
