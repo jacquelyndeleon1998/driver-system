@@ -2216,11 +2216,15 @@ document.getElementById("successModalText").textContent =
 
             document.getElementById("successModal").style.display = "flex";
 
-            document.getElementById("successOK").onclick = function () {
-                document.getElementById("successModal").style.display = "none";
-                document.getElementById("pageLoadingOverlay").style.display = "flex";
-                window.location.reload();
-            };
+           document.getElementById("successOK").onclick = async function () {
+
+    document.getElementById("successModal").style.display = "none";
+
+    await fetchLiveAllowancesFromSheet();
+
+    showAdminDashboard();
+
+};
 
         } else {
 
