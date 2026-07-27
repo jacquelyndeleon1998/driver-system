@@ -2035,7 +2035,10 @@ async function approveItemInline(name, date, element) {
 );
         
         try {
-           const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
+           console.log("Driver:", name);
+console.log("Date:", date);
+
+const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
             const response = await fetch(targetUrl);
             const data = await response.json();
             
