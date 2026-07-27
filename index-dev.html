@@ -2153,10 +2153,12 @@ document.getElementById("successModalText").textContent =
     "Allowance marked for pay.";
                 document.getElementById("successModal").style.display = "flex";
 
-               document.getElementById("successOK").onclick = function () {
+              document.getElementById("successOK").onclick = async function () {
 
     document.getElementById("successModal").style.display = "none";
     document.getElementById("reviewAllowanceModal").style.display = "none";
+
+    await fetchLiveAllowancesFromSheet();
 
     showAdminDashboard();
 
