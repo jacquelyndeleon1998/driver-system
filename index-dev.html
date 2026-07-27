@@ -8,6 +8,83 @@
     <link rel="icon" type="image/png" href="assets/dispatch-hub-logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+
+.review-modal{
+    max-width:600px;
+}
+
+.review-title{
+    color:#14532d;
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.review-subtitle{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+.review-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.review-field{
+    display:flex;
+    flex-direction:column;
+}
+
+.review-field label{
+    font-size:13px;
+    font-weight:600;
+    color:#374151;
+    margin-bottom:6px;
+}
+
+.review-field input{
+    width:100%;
+    padding:10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:14px;
+    box-sizing:border-box;
+}
+
+.review-total{
+    margin-top:20px;
+    padding:16px;
+    background:#ecfdf5;
+    border:1px solid #bbf7d0;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:18px;
+    font-weight:700;
+    color:#14532d;
+}
+
+.review-total span:last-child{
+    font-size:26px;
+    color:#15803d;
+}
+
+.modal-buttons{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:25px;
+}
+
+.section-title{
+    color:#14532d;
+    margin:20px 0 12px;
+    font-size:18px;
+}
+        
 .reminder-list{
     text-align:left;
     margin:20px 0;
@@ -1295,130 +1372,146 @@
     </div>
 </div>
 
-  <div id="reviewAllowanceModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width:550px;">
+ <div id="reviewAllowanceModal" class="modal" style="display:none;">
 
-        <h2>Review Allowance</h2>
+    <div class="modal-content review-modal">
 
-        <p><strong>Driver:</strong> <span id="reviewDriver"></span></p>
-        <p><strong>Trip Date:</strong> <span id="reviewDate"></span></p>
+        <h2 class="review-title">Review Allowance</h2>
 
-        <hr>
+        <p class="review-subtitle">
+            Review and approve the driver's submitted allowance.
+        </p>
 
-        <table style="width:100%;border-collapse:collapse;">
+        <div class="trip-info-card">
 
-<tr>
-    <td><strong>Time In</strong></td>
-    <td>
-        <input id="reviewTimeIn"
-               type="text"
-               class="form-control"
-               style="width:140px;">
-    </td>
-</tr>
+            <div class="info-item">
+                <div class="info-label">Driver</div>
+                <div id="reviewDriver" class="info-value"></div>
+            </div>
 
-<tr>
-    <td><strong>Time Out</strong></td>
-    <td>
-        <input id="reviewTimeOut"
-               type="text"
-               class="form-control"
-               style="width:140px;">
-    </td>
-</tr>
+            <div class="info-item">
+                <div class="info-label">Trip Date</div>
+                <div id="reviewDate" class="info-value"></div>
+            </div>
 
-<tr>
-    <td><strong>Breakfast</strong></td>
-    <td>
-        <input id="reviewBreakfast"
-               type="number"
-               value="0"
-               min="0"
-               style="width:90px;"
-               oninput="updateReviewTotal()">
-    </td>
-</tr>
+        </div>
 
-<tr>
-    <td><strong>Lunch</strong></td>
-    <td>
-        <input id="reviewLunch"
-               type="number"
-               value="0"
-               min="0"
-               style="width:90px;"
-               oninput="updateReviewTotal()">
-    </td>
-</tr>
+        <h3 class="section-title">Duty Time</h3>
 
-<tr>
-    <td><strong>Dinner</strong></td>
-    <td>
-        <input id="reviewDinner"
-               type="number"
-               value="0"
-               min="0"
-               style="width:90px;"
-               oninput="updateReviewTotal()">
-    </td>
-</tr>
+        <div class="review-grid">
 
-<tr>
-    <td><strong>Parking</strong></td>
-    <td>
-        <input id="reviewParking"
-               type="number"
-               value="0"
-               min="0"
-               style="width:90px;"
-               oninput="updateReviewTotal()">
-    </td>
-</tr>
+            <div class="review-field">
+                <label>Time In</label>
+                <input id="reviewTimeIn"
+                       type="text"
+                       class="form-control">
+            </div>
 
-<tr>
-    <td style="padding-top:15px;">
-        <strong>Total Allowance</strong>
-    </td>
+            <div class="review-field">
+                <label>Time Out</label>
+                <input id="reviewTimeOut"
+                       type="text"
+                       class="form-control">
+            </div>
 
-    <td style="padding-top:15px;">
-        <span id="reviewTotal"
-              style="font-size:18px;font-weight:bold;color:#14532d;">
-            ₱0
-        </span>
-    </td>
-</tr>
+        </div>
 
-            <tr id="reviewRemarksRow" style="display:none;">
-    <td><strong>Remarks</strong></td>
-    <td id="reviewRemarks"></td>
-</tr>
+        <h3 class="section-title">Meal Allowance</h3>
 
-</table>
-        <br>
+        <div class="review-grid">
 
-        <button id="reviewReceiptBtn"
-                class="action-table-btn btn-view"
-                onclick="window.open(this.dataset.url,'_blank')">
-            View Receipt
-        </button>
+            <div class="review-field">
+                <label>Breakfast</label>
+                <input id="reviewBreakfast"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
 
-        <div style="margin-top:20px;text-align:right;">
-            <button onclick="closeReviewModal()">Cancel</button>
+            <div class="review-field">
+                <label>Lunch</label>
+                <input id="reviewLunch"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
 
-           <button
-  <button
-    style="background:#16a34a;color:white;"
-    onclick="
-        approveItemInline(
-            document.getElementById('reviewAllowanceModal').dataset.driver,
-            document.getElementById('reviewAllowanceModal').dataset.date,
-            this
-        )">
-    Approve
-</button>
+            <div class="review-field">
+                <label>Dinner</label>
+                <input id="reviewDinner"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
+
+            <div class="review-field">
+                <label>Parking</label>
+                <input id="reviewParking"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
+
+        </div>
+
+        <div id="reviewRemarksRow" style="display:none;">
+
+            <h3 class="section-title">Remarks</h3>
+
+            <div class="trip-info-card">
+                <div id="reviewRemarks"></div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:18px;">
+
+            <button id="reviewReceiptBtn"
+                    class="allowance-btn"
+                    style="background:#2563eb;"
+                    onclick="window.open(this.dataset.url,'_blank')">
+
+                View Receipt
+
+            </button>
+
+        </div>
+
+        <div class="review-total">
+
+            <span>Total Allowance</span>
+
+            <span id="reviewTotal">₱0</span>
+
+        </div>
+
+        <div class="modal-buttons">
+
+            <button class="allowance-btn cancel-btn"
+                    onclick="closeReviewModal()">
+
+                Cancel
+
+            </button>
+
+            <button class="allowance-btn submit-btn"
+                    onclick="
+approveItemInline(
+document.getElementById('reviewAllowanceModal').dataset.driver,
+document.getElementById('reviewAllowanceModal').dataset.date,
+this
+)">
+                Approve
+            </button>
+
         </div>
 
     </div>
+
 </div>
 
 <div id="pageLoadingOverlay" class="loading-overlay" style="display:none;">
