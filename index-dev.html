@@ -3245,15 +3245,21 @@ if (driverLoggedIn && Date.now() >= driverExpires) {
 }
 
 
-    const loggedIn = localStorage.getItem("loggedIn");
-    const expires = Number(localStorage.getItem("loginExpires"));
-    let autoLogin = (loggedIn === "true" && Date.now() < expires);
+   const loggedIn = localStorage.getItem("driverLoggedIn") === "true";
+const expires = Number(localStorage.getItem("loginExpires") || 0);
 
-    if (!autoLogin) {
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("userRole");
-        localStorage.removeItem("loginExpires");
-    }
+const autoLogin = loggedIn && Date.now() < expires;
+
+if (!autoLogin) {
+
+    localStorage.removeItem("driverLoggedIn");
+    localStorage.removeItem("driverName");
+    localStorage.removeItem("driverRole");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("loginExpires");
+
+}
 
     try {
         const [_, scheduleResponse, approvalResponse] = await Promise.all([
@@ -3731,7 +3737,21 @@ if (noAllowanceItineraries.includes(itinerary)) {
 
         updateCutoffDropdownsDynamically();
         loadScheduleApprovalPage();
-        if (autoLogin) showAdminDashboard();
+     if (autoLogin) {
+
+    document.getElementById("loginPage").style.display = "none";
+
+    const role = localStorage.getItem("userRole");
+
+    if (role === "admin") {
+        showAdminDashboard();
+    } else if (role === "driver") {
+        backToMainDashboard();
+    } else if (role === "tl") {
+        backToMainDashboard();
+    }
+
+}
 
     } catch (err) {
         console.error(err);
