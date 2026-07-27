@@ -3677,7 +3677,16 @@ switch (role) {
         break;
 }
 hideLoginSpinner();
-showReminderModal();
+
+if (role === "driver") {
+    showReminderModal();
+} else {
+    document.getElementById("loginPage").style.display = "none";
+
+    if (role === "admin") {
+        showAdminDashboard();
+    }
+}
 
     } catch (err) {
     hideLoginSpinner();
