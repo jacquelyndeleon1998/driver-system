@@ -2081,8 +2081,8 @@ if (record.status === "Paid" || record.status === "Approved") {
        document.getElementById("reviewAllowanceModal").dataset.driver = record.name;
 document.getElementById("reviewAllowanceModal").dataset.date = record.date;
 
-   document.getElementById("reviewTimeIn").value = record.timeIn;
-document.getElementById("reviewTimeOut").value = record.timeOut;
+  document.getElementById("reviewTimeIn").textContent = record.timeIn || "";
+document.getElementById("reviewTimeOut").textContent = record.timeOut || "";
 
 document.getElementById("reviewBreakfast").value = record.breakfast;
 document.getElementById("reviewLunch").value = record.lunch;
