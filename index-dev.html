@@ -1910,10 +1910,10 @@ if (record.status === "Paid" || record.status === "Approved") {
 
     badgeDisplay =
         `<button class="action-table-btn btn-approve"
-            style="padding:3px 8px;font-size:10px;"
-            onclick="approveItemInline('${record.name}','${record.date}',this)">
-            Pay
-        </button>`;
+    style="padding:3px 8px;font-size:10px;"
+    onclick="markAllowancePaid('${record.name}','${record.date}',this)">
+    Pay
+</button>
 
     row.style.backgroundColor = "#f0fdf4";
 
@@ -2064,6 +2064,64 @@ document.getElementById("successModalText").textContent =
             hideActionLoading();
         }
     }
+}
+
+    async function markAllowancePaid(name, date, element) {
+
+    if (!confirm(`Mark allowance for ${name} on ${date} as Paid?`)) return;
+
+    element.disabled = true;
+    element.textContent = "Processing...";
+
+    showActionLoading(
+        "Processing Payment...",
+        "Please wait while we update the payment status."
+    );
+
+    try {
+
+        const targetUrl =
+            `${WEBAPP_BASE}?action=markAllowancePaid&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
+
+        const response = await fetch(targetUrl);
+        const data = await response.json();
+
+        if (data.success) {
+
+            document.getElementById("successModalTitle").textContent = "Payment Completed";
+            document.getElementById("successModalText").textContent =
+                "Allowance marked as Paid.";
+
+            document.getElementById("successModal").style.display = "flex";
+
+            document.getElementById("successOK").onclick = function () {
+                document.getElementById("successModal").style.display = "none";
+                document.getElementById("pageLoadingOverlay").style.display = "flex";
+                window.location.reload();
+            };
+
+        } else {
+
+            alert(data.message || "Unable to update payment status.");
+            element.disabled = false;
+            element.textContent = "Pay";
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Network error. Please try again.");
+
+        element.disabled = false;
+        element.textContent = "Pay";
+
+    } finally {
+
+        hideActionLoading();
+
+    }
+
 }
 
 document.getElementById("allowanceParking").addEventListener("input", function () {
