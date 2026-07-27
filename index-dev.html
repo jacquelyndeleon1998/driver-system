@@ -2029,7 +2029,10 @@ async function approveItemInline(name, date, element) {
     if (confirm(`Approve allowance request for ${name} on ${date}?`)) {
         element.disabled = true;
         element.textContent = "Processing...";
-        showActionLoading("Approving Entry...", "Updating status registry values on live spreadsheets.");
+        showActionLoading(
+    "Approving Allowance...",
+    "Please wait while we mark this allowance for payment."
+);
         
         try {
            const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
@@ -2037,8 +2040,9 @@ async function approveItemInline(name, date, element) {
             const data = await response.json();
             
             if (data.success) {
-                document.getElementById("successModalTitle").textContent = "Item Approved";
-                document.getElementById("successModalText").textContent = "Record updated successfully!";
+             document.getElementById("successModalTitle").textContent = "Allowance Approved";
+document.getElementById("successModalText").textContent =
+    "Allowance marked for pay.";
                 document.getElementById("successModal").style.display = "flex";
 
                 document.getElementById("successOK").onclick = function() {
