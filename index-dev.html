@@ -2060,11 +2060,14 @@ document.getElementById("successModalText").textContent =
     "Allowance marked for pay.";
                 document.getElementById("successModal").style.display = "flex";
 
-                document.getElementById("successOK").onclick = function() {
-                    document.getElementById("successModal").style.display = "none";
-                    document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    window.location.reload(); 
-                };
+               document.getElementById("successOK").onclick = function () {
+
+    document.getElementById("successModal").style.display = "none";
+    document.getElementById("reviewAllowanceModal").style.display = "none";
+
+    showAdminDashboard();
+
+};
             } else {
                 alert("❌ Error: " + data.message);
                 element.disabled = false;
