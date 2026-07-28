@@ -3808,7 +3808,15 @@ if (noAllowanceItineraries.includes(itinerary)) {
 };
 
 document.getElementById("dashboardBtn").addEventListener("click", () => {
-    backToMainDashboard();
+
+    const role = localStorage.getItem("userRole");
+
+    if (role === "organic") {
+        showAdminDashboard();
+    } else {
+        backToMainDashboard();
+    }
+
 });
 
 document.getElementById("adminBtn").addEventListener("click", () => {
