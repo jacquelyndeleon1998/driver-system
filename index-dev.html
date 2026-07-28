@@ -3793,11 +3793,16 @@ if (noAllowanceItineraries.includes(itinerary)) {
             }
         });
 
-        container.innerHTML = pageHTML;
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        updateCutoffDropdownsDynamically();
-        loadScheduleApprovalPage();
+        container.style.visibility = "hidden";
 
+container.innerHTML = pageHTML;
+
+await new Promise(resolve => requestAnimationFrame(resolve));
+
+updateCutoffDropdownsDynamically();
+loadScheduleApprovalPage();
+
+container.style.visibility = "visible";
         document.getElementById("driverDashboard").style.display = "none";
         document.getElementById("scheduleApprovalPage").style.display = "none";
         document.getElementById("driverAllowancePage").style.display = "none";
