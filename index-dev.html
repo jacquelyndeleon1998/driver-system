@@ -1687,25 +1687,28 @@ function showAdminDashboard() {
     const headers = document.querySelectorAll(".schedule-header");
     const footers = document.querySelectorAll(".approval-footer");
 
-    if (role === "organic") {
+   if (role === "organic") {
 
-        // Driver Schedule only
-        approvalContainers[0].style.display = "";
-        headers[0].style.display = "";
-        footers[0].style.display = "";
+    // Driver Schedule only
+    approvalContainers[0].style.display = "";
+    headers[0].style.display = "";
 
-        // Hide Driver Allowance
-        if (approvalContainers[1]) approvalContainers[1].style.display = "none";
-        if (headers[1]) headers[1].style.display = "none";
+    // Hide footer (Approve / Reject controls)
+    if (footers[0]) footers[0].style.display = "none";
 
-    } else {
+    // Hide Driver Allowance section completely
+    if (approvalContainers[1]) approvalContainers[1].style.display = "none";
+    if (headers[1]) headers[1].style.display = "none";
+    if (footers[1]) footers[1].style.display = "none";
 
-        // Admin
-        approvalContainers.forEach(x => x.style.display = "");
-        headers.forEach(x => x.style.display = "");
-        footers.forEach(x => x.style.display = "");
+} else {
 
-    }
+    // Admin
+    approvalContainers.forEach(x => x.style.display = "");
+    headers.forEach(x => x.style.display = "");
+    footers.forEach(x => x.style.display = "");
+
+}
 
     sessionStorage.setItem("view", "admin");
 
