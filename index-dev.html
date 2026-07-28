@@ -3794,7 +3794,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
         });
 
         container.innerHTML = pageHTML;
-
+        await new Promise(resolve => requestAnimationFrame(resolve));
         updateCutoffDropdownsDynamically();
         loadScheduleApprovalPage();
 
@@ -3959,7 +3959,7 @@ if (role === "driver") {
     document.getElementById("driverReminderModal").style.display = "flex";
 }
 
-   function confirmReminder() {
+  function confirmReminder() {
 
     document.getElementById("driverReminderModal").style.display = "none";
 
@@ -3968,13 +3968,13 @@ if (role === "driver") {
         "Loading schedules and allowances..."
     );
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
 
         hideLoginSpinner();
 
-        document.getElementById("loginPage").style.display = "none";
+        showHomePage();
 
-    }, 1000);
+    });
 
 }
 </script>
