@@ -3805,6 +3805,11 @@ if (noAllowanceItineraries.includes(itinerary)) {
 
         document.getElementById("loginPage").style.display = "block";
      if (autoLogin) {
+         console.log("driverLoggedIn:", driverLoggedIn);
+console.log("loginExpires:", localStorage.getItem("loginExpires"));
+console.log("Now:", Date.now());
+console.log("autoLogin:", autoLogin);
+console.log("Role:", localStorage.getItem("userRole"));
 
     document.getElementById("loginPage").style.display = "none";
 
