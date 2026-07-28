@@ -1677,43 +1677,34 @@ function showAdminDashboard() {
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("driverAllowancePage").style.display = "none";
-
     document.getElementById("scheduleViewerPage").style.display = "none";
 
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.add("active");
     document.getElementById("allowanceBtn").classList.remove("active");
 
-    const approvalContainers =
-        document.querySelectorAll(".approval-container");
+    const approvalContainers = document.querySelectorAll(".approval-container");
+    const headers = document.querySelectorAll(".schedule-header");
+    const footers = document.querySelectorAll(".approval-footer");
 
-    const headers =
-        document.querySelectorAll(".schedule-header");
+    if (role === "organic") {
 
-    const footers =
-        document.querySelectorAll(".approval-footer");
-
-    if (role === "tl") {
-
-        // Show only Driver Schedule section
+        // Driver Schedule only
         approvalContainers[0].style.display = "";
         headers[0].style.display = "";
         footers[0].style.display = "";
 
-        // Hide Driver Allowance section
-        approvalContainers[1].style.display = "none";
-        headers[1].style.display = "none";
+        // Hide Driver Allowance
+        if (approvalContainers[1]) approvalContainers[1].style.display = "none";
+        if (headers[1]) headers[1].style.display = "none";
 
     } else {
 
-        // Admin sees everything
-        approvalContainers[0].style.display = "";
-        approvalContainers[1].style.display = "";
+        // Admin
+        approvalContainers.forEach(x => x.style.display = "");
+        headers.forEach(x => x.style.display = "");
+        footers.forEach(x => x.style.display = "");
 
-        headers[0].style.display = "";
-        headers[1].style.display = "";
-
-        footers[0].style.display = "";
     }
 
     sessionStorage.setItem("view", "admin");
@@ -1725,6 +1716,7 @@ function showAdminDashboard() {
     window.scrollTo(0,0);
 }
 
+    
 async function loadSubmittedAllowances() {
     try {
        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
@@ -3271,7 +3263,7 @@ switch (role) {
         adminBtn.style.display = "";
         break;
 
-    case "tl":
+   case "organic":
         allowanceBtn.style.display = "none";
         adminBtn.style.display = "none";
         break;
@@ -3801,9 +3793,9 @@ if (noAllowanceItineraries.includes(itinerary)) {
         showAdminDashboard();
     } else if (role === "driver") {
         backToMainDashboard();
-    } else if (role === "tl") {
-        backToMainDashboard();
-    }
+   } else if (role === "organic") {
+    showAdminDashboard();
+}
 
 }
 
