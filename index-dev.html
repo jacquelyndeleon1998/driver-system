@@ -3105,7 +3105,29 @@ function loadScheduleApprovalPage(){
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
+function showHomePage() {
 
+    const role = localStorage.getItem("userRole");
+
+    if (role === "driver") {
+
+        backToMainDashboard();
+
+    } else if (role === "admin") {
+
+        showAdminDashboard();
+
+    } else if (role === "organic") {
+
+        showAdminDashboard();
+
+    } else {
+
+        document.getElementById("loginPage").style.display = "block";
+
+    }
+
+}
     function backToMainDashboard() {
 
     document.getElementById("driverDashboard").style.display = "block";
@@ -3791,15 +3813,7 @@ if (noAllowanceItineraries.includes(itinerary)) {
 
     document.getElementById("loginPage").style.display = "none";
 
-    const role = localStorage.getItem("userRole");
-
-    if (role === "admin") {
-        showAdminDashboard();
-    } else if (role === "driver") {
-        backToMainDashboard();
-   } else if (role === "organic") {
-    showAdminDashboard();
-}
+   showHomePage();
 
 }
 
@@ -3812,17 +3826,8 @@ if (noAllowanceItineraries.includes(itinerary)) {
 };
 
 document.getElementById("dashboardBtn").addEventListener("click", () => {
-
-    const role = localStorage.getItem("userRole");
-
-    if (role === "organic") {
-        showAdminDashboard();
-    } else {
-        backToMainDashboard();
-    }
-
+    showHomePage();
 });
-
 document.getElementById("adminBtn").addEventListener("click", () => {
     showAdminDashboard();
 });
@@ -3931,23 +3936,13 @@ switch (role) {
     break;
 }
 hideLoginSpinner();
-
+document.getElementById("loginPage").style.display = "none";
 if (role === "driver") {
-
     showReminderModal();
-
 } else {
-
-    document.getElementById("loginPage").style.display = "none";
-
-    if (role === "admin" || role === "organic") {
-
-        showAdminDashboard();
-
-    }
-
+    showHomePage();
 }
-
+        
     } catch (err) {
     hideLoginSpinner();
     console.error(err);
