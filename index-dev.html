@@ -3108,26 +3108,14 @@ function loadScheduleApprovalPage(){
 function showHomePage() {
 
     const role = localStorage.getItem("userRole");
-
+    document.getElementById("loginPage").style.display = "none";
     if (role === "driver") {
-
         backToMainDashboard();
-
-    } else if (role === "admin") {
-
-        showAdminDashboard();
-
-    } else if (role === "organic") {
-
-        showAdminDashboard();
-
     } else {
-
-        document.getElementById("loginPage").style.display = "block";
-
+        showAdminDashboard();
     }
-
 }
+    
     function backToMainDashboard() {
 
     document.getElementById("driverDashboard").style.display = "block";
@@ -3809,6 +3797,13 @@ if (noAllowanceItineraries.includes(itinerary)) {
 
         updateCutoffDropdownsDynamically();
         loadScheduleApprovalPage();
+
+        document.getElementById("driverDashboard").style.display = "none";
+        document.getElementById("scheduleApprovalPage").style.display = "none";
+        document.getElementById("driverAllowancePage").style.display = "none";
+        document.getElementById("scheduleViewerPage").style.display = "none";
+
+        document.getElementById("loginPage").style.display = "block";
      if (autoLogin) {
 
     document.getElementById("loginPage").style.display = "none";
