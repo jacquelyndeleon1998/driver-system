@@ -1720,7 +1720,11 @@ function showAdminDashboard() {
 async function loadSubmittedAllowances() {
     try {
        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
-const data = await res.json();
+const text = await res.text();
+
+console.log("Submitted response:", text);
+
+const data = JSON.parse(text);
 
 submittedDrivers = {};
 
