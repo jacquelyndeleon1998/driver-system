@@ -1671,22 +1671,58 @@ function refreshLoginSession() {
 }
     
 function showAdminDashboard() {
+
+    const role = localStorage.getItem("userRole");
+
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("driverAllowancePage").style.display = "none";
-    
-    document.querySelector(".approval-container").style.display = "block";
-    document.querySelector(".approval-footer").style.display = "block";
+
     document.getElementById("scheduleViewerPage").style.display = "none";
 
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.add("active");
     document.getElementById("allowanceBtn").classList.remove("active");
 
+    const approvalContainers =
+        document.querySelectorAll(".approval-container");
+
+    const headers =
+        document.querySelectorAll(".schedule-header");
+
+    const footers =
+        document.querySelectorAll(".approval-footer");
+
+    if (role === "tl") {
+
+        // Show only Driver Schedule section
+        approvalContainers[0].style.display = "";
+        headers[0].style.display = "";
+        footers[0].style.display = "";
+
+        // Hide Driver Allowance section
+        approvalContainers[1].style.display = "none";
+        headers[1].style.display = "none";
+
+    } else {
+
+        // Admin sees everything
+        approvalContainers[0].style.display = "";
+        approvalContainers[1].style.display = "";
+
+        headers[0].style.display = "";
+        headers[1].style.display = "";
+
+        footers[0].style.display = "";
+    }
+
     sessionStorage.setItem("view", "admin");
+
     processAllowanceSummaryTable();
+
     hideActionLoading();
-    window.scrollTo(0, 0);
+
+    window.scrollTo(0,0);
 }
 
 async function loadSubmittedAllowances() {
@@ -3887,13 +3923,19 @@ switch (role) {
 hideLoginSpinner();
 
 if (role === "driver") {
+
     showReminderModal();
+
 } else {
+
     document.getElementById("loginPage").style.display = "none";
 
-    if (role === "admin") {
+    if (role === "admin" || role === "tl") {
+
         showAdminDashboard();
+
     }
+
 }
 
     } catch (err) {
