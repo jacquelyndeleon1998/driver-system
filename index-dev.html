@@ -1681,21 +1681,25 @@ function showAdminDashboard() {
     const headers = document.querySelectorAll(".schedule-header");
     const footers = document.querySelectorAll(".approval-footer");
 
-   if (role === "organic") {
+  if (role === "organic") {
 
-    // Driver Schedule only
-    approvalContainers[0].style.display = "";
+    // Driver Schedule
     headers[0].style.display = "";
+    approvalContainers[0].style.display = "";
 
-    // Hide footer (Approve / Reject controls)
+    // Hide Driver Allowance
+    headers[1].style.display = "none";
+    approvalContainers[1].style.display = "none";
+
+    // Hide allowance modal if ever opened
+    document.getElementById("driverAllowancePage").style.display = "none";
+    document.getElementById("driverAllowanceDetailsModal").style.display = "none";
+
+    // Hide Back button
     if (footers[0]) footers[0].style.display = "none";
 
-    // Hide Driver Allowance section completely
-    if (approvalContainers[1]) approvalContainers[1].style.display = "none";
-    if (headers[1]) headers[1].style.display = "none";
-    if (footers[1]) footers[1].style.display = "none";
-
-} else {
+}
+  else {
 
     // Admin
     approvalContainers.forEach(x => x.style.display = "");
@@ -1704,7 +1708,10 @@ function showAdminDashboard() {
 
 }
 
-    sessionStorage.setItem("view", "admin");
+    sessionStorage.setItem(
+    "view",
+    role === "organic" ? "organic" : "admin"
+);
 
     processAllowanceSummaryTable();
 
@@ -3828,7 +3835,19 @@ console.log("Role:", localStorage.getItem("userRole"));
 };
 
 document.getElementById("dashboardBtn").addEventListener("click", () => {
-    showHomePage();
+
+    const role = localStorage.getItem("userRole");
+
+    if (role === "organic") {
+
+        showAdminDashboard();
+
+    } else {
+
+        showHomePage();
+
+    }
+
 });
 document.getElementById("adminBtn").addEventListener("click", () => {
     showAdminDashboard();
