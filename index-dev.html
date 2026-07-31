@@ -1713,11 +1713,13 @@ function showAdminDashboard() {
     role === "organic" ? "organic" : "admin"
 );
 
+    if (role !== "organic") {
     processAllowanceSummaryTable();
+}
 
-    hideActionLoading();
+hideActionLoading();
 
-    window.scrollTo(0,0);
+window.scrollTo(0,0);
 }
 
     
