@@ -3122,11 +3122,14 @@ function showHomePage() {
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("scheduleViewerPage").style.display = "none";
 
-    if (role === "driver") {
-        backToMainDashboard();
-    } else {
-        showAdminDashboard();
-    }
+   if (role === "admin") {
+
+    showAdminDashboard();
+
+} else {
+
+    backToMainDashboard();
+
 }
     
     function backToMainDashboard() {
