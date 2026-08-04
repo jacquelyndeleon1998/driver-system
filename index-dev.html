@@ -3971,9 +3971,17 @@ switch (role) {
 hideLoginSpinner();
 document.getElementById("loginPage").style.display = "none";
 if (role === "driver") {
+
     showReminderModal();
-} else {
+
+} else if (role === "organic") {
+
     showHomePage();
+
+} else if (role === "admin") {
+
+    showHomePage();
+
 }
         
     } catch (err) {
