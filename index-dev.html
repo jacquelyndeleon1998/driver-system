@@ -3116,19 +3116,20 @@ function showHomePage() {
     const role = localStorage.getItem("userRole");
 
     document.getElementById("loginPage").style.display = "none";
-
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("scheduleViewerPage").style.display = "none";
 
-   if (role === "admin") {
+    if (role === "admin") {
 
-    showAdminDashboard();
+        showAdminDashboard();
 
-} else {
+    } else {
 
-    backToMainDashboard();
+        backToMainDashboard();
+
+    }
 
 }
     
