@@ -1747,16 +1747,16 @@ async function fetchLiveAllowancesFromSheet() {
         const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`);
         
         if (!response.ok) {
-            console.warn("getAllowancesData returned HTTP status:", response.status);
+            console.warn("getAllowancesData returned status:", response.status);
             globalParsedAllowances = [];
             return;
         }
 
         const text = await response.text();
         
-        // Prevent parsing HTML error pages as JSON
+        // Prevent throwing JSON syntax errors on HTML error pages
         if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            console.warn("Received HTML error page instead of JSON from Apps Script.");
+            console.warn("Apps script returned HTML instead of JSON.");
             globalParsedAllowances = [];
             return;
         }
@@ -1806,7 +1806,7 @@ async function fetchLiveAllowancesFromSheet() {
         globalParsedAllowances = [];
     }
 }
-
+    
 function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
     const allowanceSelect = document.getElementById("allowanceCutoff");
@@ -3282,23 +3282,19 @@ function showReminderModal() {
 
 async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-
     showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
 
     try {
-        // Fetch all APIs in PARALLEL simultaneously to drastically reduce load time
         await Promise.all([
             loadSubmittedAllowances(),
             fetchLiveAllowancesFromSheet(),
             loadMainSchedulesAndApprovals()
         ]);
-        
+    } catch (err) {
+        console.error("Error loading driver dashboard:", err);
+    } finally {
         hideLoginSpinner();
         showHomePage();
-    } catch (err) {
-        hideLoginSpinner();
-        console.error("Error loading dashboard:", err);
-        alert("Failed to load schedule. Please try again.");
     }
 }
     
