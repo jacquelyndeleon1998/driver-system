@@ -1745,8 +1745,23 @@ async function loadSubmittedAllowances() {
 async function fetchLiveAllowancesFromSheet() {
     try {
         const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`);
-        const jsonResult = await response.json();
         
+        if (!response.ok) {
+            console.warn("getAllowancesData returned HTTP status:", response.status);
+            globalParsedAllowances = [];
+            return;
+        }
+
+        const text = await response.text();
+        
+        // Prevent parsing HTML error pages as JSON
+        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+            console.warn("Received HTML error page instead of JSON from Apps Script.");
+            globalParsedAllowances = [];
+            return;
+        }
+
+        const jsonResult = JSON.parse(text);
         globalParsedAllowances = [];
         
         if (jsonResult && jsonResult.success && jsonResult.data) {
@@ -1788,6 +1803,7 @@ async function fetchLiveAllowancesFromSheet() {
         }
     } catch (err) {
         console.error("Error pulling database items proxy: ", err);
+        globalParsedAllowances = [];
     }
 }
 
