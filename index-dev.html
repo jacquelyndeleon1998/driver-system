@@ -2800,23 +2800,15 @@ async function loadMainSchedulesAndApprovals() {
         const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
         const status = (approvalDates[date] || "").toLowerCase();
 
-        // -----------------------------------------------------------
-        // ROLE FILTERING LOGIC
-        // -----------------------------------------------------------
-        
-        // 1. ORGANIC ROLE:
-        // - Hide ALL past schedules completely.
-        // - Allow Today & Future schedules even if status is pending ("not approved").
+
         if (role === "organic") {
             if (isPast) return; 
         } 
-        // 2. DRIVER & ADMIN ROLES:
-        // - Show ONLY approved schedules for Today & Future dates.
-        else {
+   
+        else if (role === "driver") {
             if (status !== "approved" && !isPast) return;
         }
-
-        // Small rectangular pending badge ABOVE the summary card
+    
         let pendingBadgeHeaderHtml = "";
         if (role === "organic" && status !== "approved") {
             pendingBadgeHeaderHtml = `
@@ -3033,19 +3025,13 @@ async function loadMainSchedulesAndApprovals() {
 }
 
 function showHomePage() {
-    const role = localStorage.getItem("userRole");
-
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("scheduleViewerPage").style.display = "none";
 
-    if (role === "admin") {
-        showAdminDashboard();
-    } else {
-        backToMainDashboard();
-    }
+    backToMainDashboard();
 }
 
 function backToMainDashboard() {
