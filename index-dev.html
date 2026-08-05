@@ -3056,9 +3056,13 @@ function backToMainDashboard() {
 
     document.body.style.overflow = "";
 
-    document.getElementById("dashboardBtn").classList.add("active");
-    document.getElementById("adminBtn").classList.remove("active");
-    document.getElementById("allowanceBtn").classList.remove("active");
+    const dashboardBtn = document.getElementById("dashboardBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const allowanceBtn = document.getElementById("allowanceBtn");
+
+    if (dashboardBtn) dashboardBtn.classList.add("active");
+    if (adminBtn) adminBtn.classList.remove("active");
+    if (allowanceBtn) allowanceBtn.classList.remove("active");
 
     sessionStorage.removeItem("view");
     window.scrollTo(0, 0);
@@ -3193,12 +3197,27 @@ window.onload = async function () {
     }
 };
 
-document.getElementById("dashboardBtn").addEventListener("click", () => {
+document.getElementById("dashboardBtn").addEventListener("click", async () => {
     const role = localStorage.getItem("userRole");
-    if (role === "admin") {
-        showAdminDashboard();
-    } else {
-        showHomePage();
+    
+    showActionLoading("Loading Dashboard...", "Fetching latest data...");
+    
+    try {
+        await Promise.allSettled([
+            loadSubmittedAllowances(),
+            fetchLiveAllowancesFromSheet(),
+            loadMainSchedulesAndApprovals()
+        ]);
+        
+        if (role === "admin") {
+            showAdminDashboard();
+        } else {
+            backToMainDashboard();
+        }
+    } catch (err) {
+        console.error("Dashboard refresh error:", err);
+    } finally {
+        hideActionLoading();
     }
 });
 
