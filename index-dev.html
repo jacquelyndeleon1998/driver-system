@@ -3825,20 +3825,27 @@ container.style.visibility = "visible";
         document.getElementById("driverAllowancePage").style.display = "none";
         document.getElementById("scheduleViewerPage").style.display = "none";
 
-        document.getElementById("loginPage").style.display = "block";
-     if (autoLogin) {
-         console.log("driverLoggedIn:", driverLoggedIn);
-console.log("loginExpires:", localStorage.getItem("loginExpires"));
-console.log("Now:", Date.now());
-console.log("autoLogin:", autoLogin);
-console.log("Role:", localStorage.getItem("userRole"));
+       if (autoLogin) {
+
+    showLoginSpinner(
+        "Welcome Back!",
+        "Restoring your session..."
+    );
 
     document.getElementById("loginPage").style.display = "none";
 
-   showHomePage();
+    setTimeout(() => {
+
+        hideLoginSpinner();
+        showHomePage();
+
+    }, 1000);
+
+} else {
+
+    document.getElementById("loginPage").style.display = "block";
 
 }
-
     } catch (err) {
         console.error(err);
         alert("Failed to load schedule.");
