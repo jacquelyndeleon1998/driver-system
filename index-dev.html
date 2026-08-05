@@ -3834,12 +3834,12 @@ container.style.visibility = "visible";
 
     document.getElementById("loginPage").style.display = "none";
 
-    setTimeout(() => {
+  requestAnimationFrame(() => {
 
-        hideLoginSpinner();
-        showHomePage();
+    hideLoginSpinner();
+    showHomePage();
 
-    }, 1000);
+});
 
 } else {
 
