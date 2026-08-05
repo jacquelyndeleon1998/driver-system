@@ -3819,7 +3819,9 @@ await new Promise(resolve => requestAnimationFrame(resolve));
 updateCutoffDropdownsDynamically();
 loadScheduleApprovalPage();
 
-container.style.visibility = "visible";
+if (!autoLogin) {
+    container.style.visibility = "visible";
+}
         document.getElementById("driverDashboard").style.display = "none";
         document.getElementById("scheduleApprovalPage").style.display = "none";
         document.getElementById("driverAllowancePage").style.display = "none";
@@ -3835,6 +3837,8 @@ container.style.visibility = "visible";
     document.getElementById("loginPage").style.display = "none";
 
   requestAnimationFrame(() => {
+
+    container.style.visibility = "visible";
 
     hideLoginSpinner();
     showHomePage();
