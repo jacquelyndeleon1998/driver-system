@@ -1727,7 +1727,7 @@ async function loadSubmittedAllowances() {
     try {
         const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
         if (!res.ok) {
-            console.warn("submitted action returned status:", res.status);
+            console.warn("submitted action returned non-200 status:", res.status);
             submittedDrivers = {};
             return;
         }
@@ -1740,15 +1740,21 @@ async function loadSubmittedAllowances() {
 
         const data = JSON.parse(text);
         submittedDrivers = {};
-        if (!Array.isArray(data.submitted)) return;
+        const list = Array.isArray(data.submitted) ? data.submitted : (Array.isArray(data) ? data : []);
 
-        data.submitted.forEach(item => {
-            const [driver, rawDate] = item.split("|");
-            const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
-            submittedDrivers[cleanKey] = true; 
+        list.forEach(item => {
+            if (typeof item === "string" && item.includes("|")) {
+                const [driver, rawDate] = item.split("|");
+                if (driver && rawDate) {
+                    const cleanDriver = driver.trim().toLowerCase();
+                    const cleanDate = standardizeDateStr(rawDate.trim());
+                    submittedDrivers[`${cleanDriver}|${cleanDate}`] = true;
+                    submittedDrivers[`${cleanDriver}|${rawDate.trim().toLowerCase()}`] = true;
+                }
+            }
         });
     } catch (err) {
-        console.warn("Error loading submitted allowances safely handled:", err);
+        console.warn("Error loading submitted allowances:", err);
         submittedDrivers = {};
     }
 }
@@ -2771,7 +2777,7 @@ async function loadMainSchedulesAndApprovals() {
         ]);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
-            console.warn("Schedule CSV endpoints returned non-OK status.");
+            console.warn("Schedule CSV endpoints returned status:", scheduleResponse.status, approvalResponse.status);
             return false;
         }
 
@@ -2781,7 +2787,7 @@ async function loadMainSchedulesAndApprovals() {
         ]);
 
         if (data.trim().startsWith("<!DOCTYPE") || approvalData.trim().startsWith("<!DOCTYPE")) {
-            console.warn("Schedule CSV endpoints returned HTML 404 page.");
+            console.warn("Schedule CSV endpoints returned HTML error page.");
             return false;
         }
 
@@ -2872,15 +2878,9 @@ async function loadMainSchedulesAndApprovals() {
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             const status = (approvalDates[date] || "").toLowerCase();
 
-            // -----------------------------------------------------------
-            // ROLE FILTERING LOGIC
-            // -----------------------------------------------------------
-            // Organic role: Hide past, show Today/Future even if pending
             if (role === "organic") {
                 if (isPast) return; 
-            } 
-            // Driver & Admin Roles on Main Dashboard: Show ONLY APPROVED schedules for Today & Future
-            else {
+            } else {
                 if (status !== "approved" && !isPast) return;
             }
 
@@ -2892,7 +2892,6 @@ async function loadMainSchedulesAndApprovals() {
                 </div>`;
             }
 
-            // TODAY'S SCHEDULE RENDERING
             if (isToday) {
                 const hideSummaryTable = phNow.getHours() >= 16;
                 let tableRows = "";
@@ -2950,8 +2949,10 @@ async function loadMainSchedulesAndApprovals() {
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
-                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
+                    const driverLower = d.driver.trim().toLowerCase();
+                    const key1 = `${driverLower}|${standardizeDateStr(d.date)}`;
+                    const key2 = `${driverLower}|${d.date.trim().toLowerCase()}`;
+                    const isAlreadySubmitted = (submittedDrivers[key1] === true) || (submittedDrivers[key2] === true);
 
                     const allowanceBtnHtml = role === "organic" ? "" : (
                         isAlreadySubmitted
@@ -2974,7 +2975,6 @@ async function loadMainSchedulesAndApprovals() {
                 });
             }
 
-            // FUTURE SCHEDULES RENDERING
             if (!isPast && !isToday) {
                 let tableRows = "";
                 Object.values(summaryDrivers[date] || {}).forEach(driver => {
@@ -3041,7 +3041,6 @@ async function loadMainSchedulesAndApprovals() {
                 });
             }
 
-            // PAST UNSUBMITTED ALLOWANCE CARDS
             if (isPast && role !== "organic") {
                 const pendingDrivers = Object.values(grouped).filter(d => {
                     if (d.date !== date) return false;
@@ -3049,8 +3048,12 @@ async function loadMainSchedulesAndApprovals() {
                     const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
                     if (noAllowanceItineraries.includes(itinerary)) return false;
 
-                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    return !submittedDrivers[lookupKey];
+                    const driverLower = d.driver.trim().toLowerCase();
+                    const key1 = `${driverLower}|${standardizeDateStr(d.date)}`;
+                    const key2 = `${driverLower}|${d.date.trim().toLowerCase()}`;
+                    
+                    const isSubmitted = (submittedDrivers[key1] === true) || (submittedDrivers[key2] === true);
+                    return !isSubmitted;
                 });
 
                 if (pendingDrivers.length === 0) return;
@@ -3091,11 +3094,11 @@ async function loadMainSchedulesAndApprovals() {
         if (container) container.style.visibility = "visible";
         return true;
     } catch (err) {
-        console.error("Safely handled schedule loading error:", err);
+        console.error("Error loading main schedules:", err);
         return false;
     }
 }
-
+    
 function showHomePage() {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("driverDashboard").style.display = "none";
