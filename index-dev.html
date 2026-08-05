@@ -1727,7 +1727,7 @@ async function loadSubmittedAllowances() {
     try {
         const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
         if (!res.ok) {
-            console.warn("submitted action returned non-200 status:", res.status);
+            console.warn("submitted action returned status:", res.status);
             submittedDrivers = {};
             return;
         }
@@ -1740,21 +1740,15 @@ async function loadSubmittedAllowances() {
 
         const data = JSON.parse(text);
         submittedDrivers = {};
-        const list = Array.isArray(data.submitted) ? data.submitted : (Array.isArray(data) ? data : []);
+        if (!Array.isArray(data.submitted)) return;
 
-        list.forEach(item => {
-            if (typeof item === "string" && item.includes("|")) {
-                const [driver, rawDate] = item.split("|");
-                if (driver && rawDate) {
-                    const cleanDriver = driver.trim().toLowerCase();
-                    const cleanDate = standardizeDateStr(rawDate.trim());
-                    submittedDrivers[`${cleanDriver}|${cleanDate}`] = true;
-                    submittedDrivers[`${cleanDriver}|${rawDate.trim().toLowerCase()}`] = true;
-                }
-            }
+        data.submitted.forEach(item => {
+            const [driver, rawDate] = item.split("|");
+            const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
+            submittedDrivers[cleanKey] = true; 
         });
     } catch (err) {
-        console.warn("Error loading submitted allowances:", err);
+        console.warn("Error loading submitted allowances safely handled:", err);
         submittedDrivers = {};
     }
 }
@@ -2658,112 +2652,62 @@ function loadScheduleApprovalPage(){
     const [targetMonthStr, targetBucket] = selectorValue.split("-");
     const targetMonth = parseInt(targetMonthStr);
 
-    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-    today.setHours(0, 0, 0, 0);
+    let hasApproved = false;
+    let hasPending = false;
 
-    // 1. Filter schedules belonging to the selected cutoff
-    let cutOffSchedules = scheduleDates.map(date => {
+    scheduleDates.forEach(date => {
         const scheduleDate = new Date(date);
-        if (isNaN(scheduleDate.getTime())) return null;
+        if (isNaN(scheduleDate.getTime())) return;
         
         const dayNumber = scheduleDate.getDate();
         const monthNumber = scheduleDate.getMonth() + 1;
 
-        if (monthNumber !== targetMonth) return null;
-        if (targetBucket === "1" && dayNumber > 15) return null;
-        if (targetBucket === "2" && dayNumber <= 15) return null;
+        if (monthNumber !== targetMonth) return;
+        if (targetBucket === "1" && dayNumber > 15) return;
+        if (targetBucket === "2" && dayNumber <= 15) return;
 
-        const dateObj = new Date(date);
-        dateObj.setHours(0, 0, 0, 0);
+        const status = (approvalDates[date] || "").toString().trim().toLowerCase();
+        const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
-        return {
-            dateStr: date,
-            dateObj: dateObj,
-            status: (approvalDates[date] || "").toString().trim().toLowerCase(),
-            weekday: dateObj.toLocaleDateString("en-US", { weekday: "long" })
-        };
-    }).filter(Boolean);
+        const approveBtnHtml = userRole === "organic" 
+            ? "" 
+            : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`;
 
-    // Sort chronologically
-    cutOffSchedules.sort((a, b) => a.dateObj - b.dateObj);
-
-    let approvedList = cutOffSchedules.filter(item => item.status === "approved");
-    let pendingList = cutOffSchedules.filter(item => item.status !== "approved");
-
-    // 2. Render Pending Schedules Table
-    if (pendingList.length > 0) {
-        pendingList.forEach(item => {
-            const approveBtnHtml = userRole === "organic" 
-                ? "" 
-                : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${item.dateStr}', this)">Approve</button>`;
-
-            pendingDiv.innerHTML += `
+        if (status === "approved") {
+            hasApproved = true;
+            const row = `
             <tr>
-                <td class="approval-day-name" style="text-align: left;">${item.weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${item.dateStr}</td>
+                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
+                <td class="approval-date-val" style="text-align: center;">${date}</td>
                 <td>
                     <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${item.dateStr}')">View</button>
+                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
+                    </div>
+                </td>
+            </tr>`;
+            approvedDiv.innerHTML += row;
+        } else {
+            hasPending = true;
+            const pendingRow = `
+            <tr>
+                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
+                <td class="approval-date-val" style="text-align: center;">${date}</td>
+                <td>
+                    <div class="action-btn-grp" style="justify-content: center;">
+                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
                         ${approveBtnHtml}
                     </div>
                 </td>
             </tr>`;
-        });
-    } else {
-        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
-    }
-
-    // 3. Render Approved Schedules Table with Collapsible Dropdown
-    if (approvedList.length > 0) {
-        // Separate past vs current/future approved dates
-        const pastApproved = approvedList.filter(item => item.dateObj < today);
-        const currentFutureApproved = approvedList.filter(item => item.dateObj >= today);
-
-        // Keep 1 previous day visible alongside today and future dates
-        const visiblePast = pastApproved.slice(-1); 
-        const hiddenPast = pastApproved.slice(0, -1);
-
-        const visibleApproved = [...visiblePast, ...currentFutureApproved];
-
-        const renderRow = (item) => `
-        <tr>
-            <td class="approval-day-name" style="text-align: left;">${item.weekday}</td>
-            <td class="approval-date-val" style="text-align: center;">${item.dateStr}</td>
-            <td>
-                <div class="action-btn-grp" style="justify-content: center;">
-                    <button class="action-table-btn btn-view" onclick="viewSchedule('${item.dateStr}')">View</button>
-                </div>
-            </td>
-        </tr>`;
-
-        // Display standard visible rows
-        visibleApproved.forEach(item => {
-            approvedDiv.innerHTML += renderRow(item);
-        });
-
-        // Add dropdown accordion for older past approved schedules
-        if (hiddenPast.length > 0) {
-            let hiddenRowsHtml = hiddenPast.map(renderRow).join("");
-
-            approvedDiv.innerHTML += `
-            <tr>
-                <td colspan="3" style="padding: 10px 8px; background: #f9fafb;">
-                    <details style="width: 100%;">
-                        <summary style="cursor: pointer; font-weight: 700; color: #14532d; font-size: 12px; outline: none; padding: 4px 0;">
-                            📁 View More Approved Schedules (${hiddenPast.length})
-                        </summary>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
-                            <tbody>
-                                ${hiddenRowsHtml}
-                            </tbody>
-                        </table>
-                    </details>
-                </td>
-            </tr>`;
+            pendingDiv.innerHTML += pendingRow;
         }
+    });
 
-    } else {
+    if (!hasApproved) {
         approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
+    }
+    if(!hasPending) {
+        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
 
@@ -2777,7 +2721,7 @@ async function loadMainSchedulesAndApprovals() {
         ]);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
-            console.warn("Schedule CSV endpoints returned status:", scheduleResponse.status, approvalResponse.status);
+            console.warn("Schedule CSV endpoints returned non-OK status.");
             return false;
         }
 
@@ -2787,7 +2731,7 @@ async function loadMainSchedulesAndApprovals() {
         ]);
 
         if (data.trim().startsWith("<!DOCTYPE") || approvalData.trim().startsWith("<!DOCTYPE")) {
-            console.warn("Schedule CSV endpoints returned HTML error page.");
+            console.warn("Schedule CSV endpoints returned HTML 404 page.");
             return false;
         }
 
@@ -2878,9 +2822,15 @@ async function loadMainSchedulesAndApprovals() {
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             const status = (approvalDates[date] || "").toLowerCase();
 
+            // -----------------------------------------------------------
+            // ROLE FILTERING LOGIC
+            // -----------------------------------------------------------
+            // Organic role: Hide past, show Today/Future even if pending
             if (role === "organic") {
                 if (isPast) return; 
-            } else {
+            } 
+            // Driver & Admin Roles on Main Dashboard: Show ONLY APPROVED schedules for Today & Future
+            else {
                 if (status !== "approved" && !isPast) return;
             }
 
@@ -2892,6 +2842,7 @@ async function loadMainSchedulesAndApprovals() {
                 </div>`;
             }
 
+            // TODAY'S SCHEDULE RENDERING
             if (isToday) {
                 const hideSummaryTable = phNow.getHours() >= 16;
                 let tableRows = "";
@@ -2949,10 +2900,8 @@ async function loadMainSchedulesAndApprovals() {
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
                     const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
-                    const driverLower = d.driver.trim().toLowerCase();
-                    const key1 = `${driverLower}|${standardizeDateStr(d.date)}`;
-                    const key2 = `${driverLower}|${d.date.trim().toLowerCase()}`;
-                    const isAlreadySubmitted = (submittedDrivers[key1] === true) || (submittedDrivers[key2] === true);
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
 
                     const allowanceBtnHtml = role === "organic" ? "" : (
                         isAlreadySubmitted
@@ -2975,6 +2924,7 @@ async function loadMainSchedulesAndApprovals() {
                 });
             }
 
+            // FUTURE SCHEDULES RENDERING
             if (!isPast && !isToday) {
                 let tableRows = "";
                 Object.values(summaryDrivers[date] || {}).forEach(driver => {
@@ -3041,6 +2991,7 @@ async function loadMainSchedulesAndApprovals() {
                 });
             }
 
+            // PAST UNSUBMITTED ALLOWANCE CARDS
             if (isPast && role !== "organic") {
                 const pendingDrivers = Object.values(grouped).filter(d => {
                     if (d.date !== date) return false;
@@ -3048,12 +2999,8 @@ async function loadMainSchedulesAndApprovals() {
                     const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
                     if (noAllowanceItineraries.includes(itinerary)) return false;
 
-                    const driverLower = d.driver.trim().toLowerCase();
-                    const key1 = `${driverLower}|${standardizeDateStr(d.date)}`;
-                    const key2 = `${driverLower}|${d.date.trim().toLowerCase()}`;
-                    
-                    const isSubmitted = (submittedDrivers[key1] === true) || (submittedDrivers[key2] === true);
-                    return !isSubmitted;
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    return !submittedDrivers[lookupKey];
                 });
 
                 if (pendingDrivers.length === 0) return;
@@ -3094,11 +3041,11 @@ async function loadMainSchedulesAndApprovals() {
         if (container) container.style.visibility = "visible";
         return true;
     } catch (err) {
-        console.error("Error loading main schedules:", err);
+        console.error("Safely handled schedule loading error:", err);
         return false;
     }
 }
-    
+
 function showHomePage() {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("driverDashboard").style.display = "none";
