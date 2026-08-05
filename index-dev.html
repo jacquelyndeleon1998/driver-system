@@ -2798,10 +2798,13 @@ async function loadMainSchedulesAndApprovals() {
             if (status !== "approved" && !isPast) return;
         }
 
-        // Pending indicator label for Organic users on unapproved dates
-        let statusBadgeText = "";
+        // Small rectangular pending badge ABOVE the summary card
+        let pendingBadgeHeaderHtml = "";
         if (role === "organic" && status !== "approved") {
-            statusBadgeText = ` <span style="font-size: 12px; color: #b45309; font-weight: 700;">(Pending Approval)</span>`;
+            pendingBadgeHeaderHtml = `
+            <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
+                Pending Approval
+            </div>`;
         }
 
         // -----------------------------------------------------------
@@ -2831,7 +2834,8 @@ async function loadMainSchedulesAndApprovals() {
             if (!hideSummaryTable) {
                 pageHTML += `
                 <div class="summary-card">
-                    <div class="summary-header"><h2>${dayName} | ${date}${statusBadgeText}</h2></div>
+                    ${pendingBadgeHeaderHtml}
+                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
                     <table class="summary-table">
                         <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                         <tbody>${tableRows}</tbody>
@@ -2877,7 +2881,7 @@ async function loadMainSchedulesAndApprovals() {
                 <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
                     <div class="driver-header">
                         <h2>${d.driver}</h2>
-                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}${statusBadgeText}</div></div>
+                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                         <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                         <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                         <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
@@ -2913,7 +2917,8 @@ async function loadMainSchedulesAndApprovals() {
             if (tableRows !== "") {
                 pageHTML += `
                 <div class="summary-card">
-                    <div class="summary-header"><h2>${dayName} | ${date}${statusBadgeText}</h2></div>
+                    ${pendingBadgeHeaderHtml}
+                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
                     <table class="summary-table">
                         <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                         <tbody>${tableRows}</tbody>
@@ -2946,7 +2951,7 @@ async function loadMainSchedulesAndApprovals() {
                 <div class="driver-card">
                     <div class="driver-header">
                         <h2>${d.driver}</h2>
-                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}${statusBadgeText}</div></div>
+                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                         <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                         <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                         <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
