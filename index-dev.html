@@ -1744,19 +1744,21 @@ async function loadSubmittedAllowances() {
 
 async function fetchLiveAllowancesFromSheet() {
     try {
-        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`);
-        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s safety timeout
+
+        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            console.warn("getAllowancesData returned status:", response.status);
             globalParsedAllowances = [];
             return;
         }
 
         const text = await response.text();
-        
-        // Prevent throwing JSON syntax errors on HTML error pages
         if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            console.warn("Apps script returned HTML instead of JSON.");
             globalParsedAllowances = [];
             return;
         }
@@ -1802,7 +1804,7 @@ async function fetchLiveAllowancesFromSheet() {
             });
         }
     } catch (err) {
-        console.error("Error pulling database items proxy: ", err);
+        console.warn("fetchLiveAllowancesFromSheet bypassed/timed out:", err);
         globalParsedAllowances = [];
     }
 }
@@ -3255,14 +3257,15 @@ async function loginDriver() {
         hideLoginSpinner();
         document.getElementById("loginPage").style.display = "none";
 
-        // NAUNA NA ANG REMINDER MODAL DITO
         if (result.role === "driver") {
             showReminderModal();
         } else {
             showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-            await loadSubmittedAllowances();
-            await fetchLiveAllowancesFromSheet();
-            await loadMainSchedulesAndApprovals();
+            await Promise.allSettled([
+                loadSubmittedAllowances(),
+                fetchLiveAllowancesFromSheet(),
+                loadMainSchedulesAndApprovals()
+            ]);
             hideLoginSpinner();
             showHomePage();
         }
@@ -3285,7 +3288,7 @@ async function confirmReminder() {
     showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
 
     try {
-        await Promise.all([
+        await Promise.allSettled([
             loadSubmittedAllowances(),
             fetchLiveAllowancesFromSheet(),
             loadMainSchedulesAndApprovals()
