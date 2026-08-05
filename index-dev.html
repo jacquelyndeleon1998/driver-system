@@ -2652,62 +2652,112 @@ function loadScheduleApprovalPage(){
     const [targetMonthStr, targetBucket] = selectorValue.split("-");
     const targetMonth = parseInt(targetMonthStr);
 
-    let hasApproved = false;
-    let hasPending = false;
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+    today.setHours(0, 0, 0, 0);
 
-    scheduleDates.forEach(date => {
+    // 1. Filter schedules belonging to the selected cutoff
+    let cutOffSchedules = scheduleDates.map(date => {
         const scheduleDate = new Date(date);
-        if (isNaN(scheduleDate.getTime())) return;
+        if (isNaN(scheduleDate.getTime())) return null;
         
         const dayNumber = scheduleDate.getDate();
         const monthNumber = scheduleDate.getMonth() + 1;
 
-        if (monthNumber !== targetMonth) return;
-        if (targetBucket === "1" && dayNumber > 15) return;
-        if (targetBucket === "2" && dayNumber <= 15) return;
+        if (monthNumber !== targetMonth) return null;
+        if (targetBucket === "1" && dayNumber > 15) return null;
+        if (targetBucket === "2" && dayNumber <= 15) return null;
 
-        const status = (approvalDates[date] || "").toString().trim().toLowerCase();
-        const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
+        const dateObj = new Date(date);
+        dateObj.setHours(0, 0, 0, 0);
 
-        const approveBtnHtml = userRole === "organic" 
-            ? "" 
-            : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`;
+        return {
+            dateStr: date,
+            dateObj: dateObj,
+            status: (approvalDates[date] || "").toString().trim().toLowerCase(),
+            weekday: dateObj.toLocaleDateString("en-US", { weekday: "long" })
+        };
+    }).filter(Boolean);
 
-        if (status === "approved") {
-            hasApproved = true;
-            const row = `
+    // Sort chronologically
+    cutOffSchedules.sort((a, b) => a.dateObj - b.dateObj);
+
+    let approvedList = cutOffSchedules.filter(item => item.status === "approved");
+    let pendingList = cutOffSchedules.filter(item => item.status !== "approved");
+
+    // 2. Render Pending Schedules Table
+    if (pendingList.length > 0) {
+        pendingList.forEach(item => {
+            const approveBtnHtml = userRole === "organic" 
+                ? "" 
+                : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${item.dateStr}', this)">Approve</button>`;
+
+            pendingDiv.innerHTML += `
             <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
+                <td class="approval-day-name" style="text-align: left;">${item.weekday}</td>
+                <td class="approval-date-val" style="text-align: center;">${item.dateStr}</td>
                 <td>
                     <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                    </div>
-                </td>
-            </tr>`;
-            approvedDiv.innerHTML += row;
-        } else {
-            hasPending = true;
-            const pendingRow = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
+                        <button class="action-table-btn btn-view" onclick="viewSchedule('${item.dateStr}')">View</button>
                         ${approveBtnHtml}
                     </div>
                 </td>
             </tr>`;
-            pendingDiv.innerHTML += pendingRow;
-        }
-    });
-
-    if (!hasApproved) {
-        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
-    }
-    if(!hasPending) {
+        });
+    } else {
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
+    }
+
+    // 3. Render Approved Schedules Table with Collapsible Dropdown
+    if (approvedList.length > 0) {
+        // Separate past vs current/future approved dates
+        const pastApproved = approvedList.filter(item => item.dateObj < today);
+        const currentFutureApproved = approvedList.filter(item => item.dateObj >= today);
+
+        // Keep 1 previous day visible alongside today and future dates
+        const visiblePast = pastApproved.slice(-1); 
+        const hiddenPast = pastApproved.slice(0, -1);
+
+        const visibleApproved = [...visiblePast, ...currentFutureApproved];
+
+        const renderRow = (item) => `
+        <tr>
+            <td class="approval-day-name" style="text-align: left;">${item.weekday}</td>
+            <td class="approval-date-val" style="text-align: center;">${item.dateStr}</td>
+            <td>
+                <div class="action-btn-grp" style="justify-content: center;">
+                    <button class="action-table-btn btn-view" onclick="viewSchedule('${item.dateStr}')">View</button>
+                </div>
+            </td>
+        </tr>`;
+
+        // Display standard visible rows
+        visibleApproved.forEach(item => {
+            approvedDiv.innerHTML += renderRow(item);
+        });
+
+        // Add dropdown accordion for older past approved schedules
+        if (hiddenPast.length > 0) {
+            let hiddenRowsHtml = hiddenPast.map(renderRow).join("");
+
+            approvedDiv.innerHTML += `
+            <tr>
+                <td colspan="3" style="padding: 10px 8px; background: #f9fafb;">
+                    <details style="width: 100%;">
+                        <summary style="cursor: pointer; font-weight: 700; color: #14532d; font-size: 12px; outline: none; padding: 4px 0;">
+                            📁 View More Approved Schedules (${hiddenPast.length})
+                        </summary>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
+                            <tbody>
+                                ${hiddenRowsHtml}
+                            </tbody>
+                        </table>
+                    </details>
+                </td>
+            </tr>`;
+        }
+
+    } else {
+        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
 }
 
