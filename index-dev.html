@@ -1726,9 +1726,19 @@ function showAdminDashboard() {
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
+        if (!res.ok) {
+            console.warn("submitted action returned status:", res.status);
+            submittedDrivers = {};
+            return;
+        }
         const text = await res.text();
-        const data = JSON.parse(text);
+        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+            console.warn("submitted action returned HTML instead of JSON.");
+            submittedDrivers = {};
+            return;
+        }
 
+        const data = JSON.parse(text);
         submittedDrivers = {};
         if (!Array.isArray(data.submitted)) return;
 
@@ -1738,7 +1748,8 @@ async function loadSubmittedAllowances() {
             submittedDrivers[cleanKey] = true; 
         });
     } catch (err) {
-        console.error("Error loading submitted allowances: ", err);
+        console.warn("Error loading submitted allowances safely handled:", err);
+        submittedDrivers = {};
     }
 }
 
@@ -2703,325 +2714,336 @@ function loadScheduleApprovalPage(){
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
-    const [scheduleResponse, approvalResponse] = await Promise.all([
-        fetch(sheetURL),
-        fetch(approvalURL)
-    ]);
+    try {
+        const [scheduleResponse, approvalResponse] = await Promise.all([
+            fetch(sheetURL),
+            fetch(approvalURL)
+        ]);
 
-    const [data, approvalData] = await Promise.all([
-        scheduleResponse.text(),
-        approvalResponse.text()
-    ]);
-
-    const rows = data.trim().split("\n").slice(1);
-    const approvalRows = approvalData.trim().split("\n").slice(1);
-
-    grouped = {};
-    summaryDrivers = {};
-    approvalDates = {};
-
-    approvalRows.forEach(row => {
-        const parts = row.split(",");
-        const status = parts.pop().replace(/"/g, "").trim().toLowerCase();
-        const date = parts.join(",").replace(/"/g, "").trim();
-        approvalDates[date] = status;
-    });
-
-    rows.forEach(row => {
-        let cols = [];
-        let current = "";
-        let insideQuotes = false;
-        for (let i = 0; i < row.length; i++) {
-            const char = row[i];
-            if (char === '"') insideQuotes = !insideQuotes;
-            else if (char === ',' && !insideQuotes) {
-                cols.push(current.trim());
-                current = "";
-            } else current += char;
-        }
-        cols.push(current.trim());
-        if (cols.length < 13) return;
-
-        const [
-            driver, date, timeIn, vehicle, itinerary, pickupTime,
-            requestedBy, passengerName, contactNumber, origin,
-            destination, remarks, tripType
-        ] = cols.map(v => (v || "").replace(/"/g, "").trim());
-
-        const key = driver + "_" + date;
-
-        if (!summaryDrivers[date]) summaryDrivers[date] = {};
-        if (!summaryDrivers[date][driver]) {
-            summaryDrivers[date][driver] = { driver, timeIn, vehicle, itinerary, tripType };
+        if (!scheduleResponse.ok || !approvalResponse.ok) {
+            console.warn("Schedule CSV endpoints returned non-OK status.");
+            return false;
         }
 
-        if (!grouped[key]) {
-            grouped[key] = { driver, date, timeIn, vehicle, itinerary, tripType, trips: [] };
+        const [data, approvalData] = await Promise.all([
+            scheduleResponse.text(),
+            approvalResponse.text()
+        ]);
+
+        if (data.trim().startsWith("<!DOCTYPE") || approvalData.trim().startsWith("<!DOCTYPE")) {
+            console.warn("Schedule CSV endpoints returned HTML 404 page.");
+            return false;
         }
 
-        if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
-        grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
-    });
+        const rows = data.trim().split("\n").slice(1);
+        const approvalRows = approvalData.trim().split("\n").slice(1);
 
-    scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
+        grouped = {};
+        summaryDrivers = {};
+        approvalDates = {};
 
-    const container = document.getElementById("driversContainer");
-    let pageHTML = "";
-    if (container) container.innerHTML = "";
+        approvalRows.forEach(row => {
+            const parts = row.split(",");
+            const status = parts.pop().replace(/"/g, "").trim().toLowerCase();
+            const date = parts.join(",").replace(/"/g, "").trim();
+            approvalDates[date] = status;
+        });
 
-    const phNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-    today.setHours(0, 0, 0, 0);
+        rows.forEach(row => {
+            let cols = [];
+            let current = "";
+            let insideQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') insideQuotes = !insideQuotes;
+                else if (char === ',' && !insideQuotes) {
+                    cols.push(current.trim());
+                    current = "";
+                } else current += char;
+            }
+            cols.push(current.trim());
+            if (cols.length < 13) return;
 
-    scheduleDates.sort((a, b) => {
-        const da = new Date(a);
-        const db = new Date(b);
-        da.setHours(0, 0, 0, 0);
-        db.setHours(0, 0, 0, 0);
+            const [
+                driver, date, timeIn, vehicle, itinerary, pickupTime,
+                requestedBy, passengerName, contactNumber, origin,
+                destination, remarks, tripType
+            ] = cols.map(v => (v || "").replace(/"/g, "").trim());
 
-        const aToday = da.getTime() === today.getTime();
-        const bToday = db.getTime() === today.getTime();
-        const aPast = da < today;
-        const bPast = db < today;
+            const key = driver + "_" + date;
 
-        if (aPast && !bPast) return -1;
-        if (!aPast && bPast) return 1;
-        if (aToday && !bToday) return -1;
-        if (!aToday && bToday) return 1;
-        return da - db;
-    });
+            if (!summaryDrivers[date]) summaryDrivers[date] = {};
+            if (!summaryDrivers[date][driver]) {
+                summaryDrivers[date][driver] = { driver, timeIn, vehicle, itinerary, tripType };
+            }
 
-    scheduleDates.forEach(date => {
-        const scheduleDate = new Date(date);
-        scheduleDate.setHours(0, 0, 0, 0);
+            if (!grouped[key]) {
+                grouped[key] = { driver, date, timeIn, vehicle, itinerary, tripType, trips: [] };
+            }
 
-        const isPast = scheduleDate.getTime() < today.getTime();
-        const isToday = scheduleDate.getTime() === today.getTime();
-        const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
-        const status = (approvalDates[date] || "").toLowerCase();
+            if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
+            grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
+        });
 
+        scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
 
-        if (role === "organic") {
-            if (isPast) return; 
-        } 
-   
-        else if (role === "driver") {
-            if (status !== "approved" && !isPast) return;
-        }
-    
-        let pendingBadgeHeaderHtml = "";
-        if (role === "organic" && status !== "approved") {
-            pendingBadgeHeaderHtml = `
-            <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
-                Pending Approval
-            </div>`;
-        }
+        const container = document.getElementById("driversContainer");
+        let pageHTML = "";
+        if (container) container.innerHTML = "";
 
-        // -----------------------------------------------------------
-        // TODAY'S SCHEDULE RENDERING
-        // -----------------------------------------------------------
-        if (isToday) {
-            const hideSummaryTable = phNow.getHours() >= 16;
-            let tableRows = "";
+        const phNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        today.setHours(0, 0, 0, 0);
 
-            Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                let itineraryDisplay = (driver.itinerary || "").trim();
-                const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                let rowClass = isRestDay ? "rest-day-row" : "";
+        scheduleDates.sort((a, b) => {
+            const da = new Date(a);
+            const db = new Date(b);
+            da.setHours(0, 0, 0, 0);
+            db.setHours(0, 0, 0, 0);
 
-                if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+            const aToday = da.getTime() === today.getTime();
+            const bToday = db.getTime() === today.getTime();
+            const aPast = da < today;
+            const bPast = db < today;
 
-                tableRows += `
-                <tr class="${rowClass}">
-                    <td>${driver.driver}</td>
-                    <td>${driver.timeIn}</td>
-                    <td>${driver.vehicle}</td>
-                    <td>${itineraryDisplay}</td>
-                </tr>`;
-            });
+            if (aPast && !bPast) return -1;
+            if (!aPast && bPast) return 1;
+            if (aToday && !bToday) return -1;
+            if (!aToday && bToday) return 1;
+            return da - db;
+        });
 
-            if (!hideSummaryTable) {
-                pageHTML += `
-                <div class="summary-card">
-                    ${pendingBadgeHeaderHtml}
-                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
-                    <table class="summary-table">
-                        <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
+        scheduleDates.forEach(date => {
+            const scheduleDate = new Date(date);
+            scheduleDate.setHours(0, 0, 0, 0);
+
+            const isPast = scheduleDate.getTime() < today.getTime();
+            const isToday = scheduleDate.getTime() === today.getTime();
+            const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
+            const status = (approvalDates[date] || "").toLowerCase();
+
+            // -----------------------------------------------------------
+            // ROLE FILTERING LOGIC
+            // -----------------------------------------------------------
+            // Organic role: Hide past, show Today/Future even if pending
+            if (role === "organic") {
+                if (isPast) return; 
+            } 
+            // Driver & Admin Roles on Main Dashboard: Show ONLY APPROVED schedules for Today & Future
+            else {
+                if (status !== "approved" && !isPast) return;
+            }
+
+            let pendingBadgeHeaderHtml = "";
+            if (role === "organic" && status !== "approved") {
+                pendingBadgeHeaderHtml = `
+                <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
+                    Pending Approval
                 </div>`;
             }
 
-            Object.values(grouped).filter(d => d.date === date).forEach(d => {
-                const itinerary = (d.itinerary || "").trim();
-                const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                if (noAllowanceItineraries.includes(itinerary)) return;
+            // TODAY'S SCHEDULE RENDERING
+            if (isToday) {
+                const hideSummaryTable = phNow.getHours() >= 16;
+                let tableRows = "";
 
-                let tripsHTML = "";
-                d.trips.forEach((trip, index) => {
-                    with (trip) {
-                        tripsHTML += `
-                        <div class="trip">
-                            <div class="trip-title">Pick-Up ${index + 1}</div>
-                            ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                            ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                            ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                            ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                            ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                            ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                        </div>`;
-                    }
-                });
+                Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                    let rowClass = isRestDay ? "rest-day-row" : "";
 
-                const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
-                const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
-                const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
-
-                // Organic role gets NO submit allowance buttons
-                const allowanceBtnHtml = role === "organic" ? "" : (
-                    isAlreadySubmitted
-                        ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                        : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
-                );
-
-                pageHTML += `
-                <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
-                    <div class="driver-header">
-                        <h2>${d.driver}</h2>
-                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                        <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                        <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                        <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                    </div>
-                    ${tripsHTML}
-                    ${allowanceBtnHtml}
-                </div>`;
-            });
-        }
-
-        // -----------------------------------------------------------
-        // FUTURE SCHEDULES RENDERING
-        // -----------------------------------------------------------
-        if (!isPast && !isToday) {
-            let tableRows = "";
-            Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                let itineraryDisplay = (driver.itinerary || "").trim();
-                const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                let rowClass = isRestDay ? "rest-day-row" : "";
-
-                if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
-
-                tableRows += `
-                <tr class="${rowClass}">
-                    <td>${driver.driver}</td>
-                    <td>${driver.timeIn}</td>
-                    <td>${driver.vehicle}</td>
-                    <td>${itineraryDisplay}</td>
-                </tr>`;
-            });
-
-            if (tableRows !== "") {
-                pageHTML += `
-                <div class="summary-card">
-                    ${pendingBadgeHeaderHtml}
-                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
-                    <table class="summary-table">
-                        <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                </div>`;
-            }
-
-            Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
-                const itinerary = (d.itinerary || "").trim();
-                const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                if (noAllowanceItineraries.includes(itinerary)) return;
-
-                let tripsHTML = "";
-                d.trips.forEach((trip, index) => {
-                    with (trip) {
-                        tripsHTML += `
-                        <div class="trip">
-                            <div class="trip-title">Pick-Up ${index + 1}</div>
-                            ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                            ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                            ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                            ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                            ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                            ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                        </div>`;
-                    }
-                });
-
-                pageHTML += `
-                <div class="driver-card">
-                    <div class="driver-header">
-                        <h2>${d.driver}</h2>
-                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                        <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                        <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                        <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                    </div>
-                    ${tripsHTML}
-                </div>`;
-            });
-        }
-
-        // -----------------------------------------------------------
-        // PAST UNMITTED ALLOWANCE CARDS (DRIVER & ADMIN ONLY)
-        // -----------------------------------------------------------
-        if (isPast && role !== "organic") {
-            const pendingDrivers = Object.values(grouped).filter(d => {
-                if (d.date !== date) return false;
-                const itinerary = (d.itinerary || "").trim();
-                const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                if (noAllowanceItineraries.includes(itinerary)) return false;
-
-                const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                return !submittedDrivers[lookupKey];
-            });
-
-            if (pendingDrivers.length === 0) return;
-
-            pageHTML += `
-            <div class="pending-summary-card">
-                <div class="pending-summary-header">${dayName} | ${date}</div>
-                <table class="pending-table">
-                    <tbody>`;
-
-            pendingDrivers.forEach(d => {
-                const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
-                const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
-                pageHTML += `
-                    <tr>
-                        <td class="pending-driver-cell">${d.driver}</td>
-                        <td class="pending-action-cell">
-                            <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit</button>
-                        </td>
+                    tableRows += `
+                    <tr class="${rowClass}">
+                        <td>${driver.driver}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>${driver.vehicle}</td>
+                        <td>${itineraryDisplay}</td>
                     </tr>`;
-            });
+                });
 
-            pageHTML += `</tbody></table></div>`;
+                if (!hideSummaryTable) {
+                    pageHTML += `
+                    <div class="summary-card">
+                        ${pendingBadgeHeaderHtml}
+                        <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                        <table class="summary-table">
+                            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>`;
+                }
+
+                Object.values(grouped).filter(d => d.date === date).forEach(d => {
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                    if (noAllowanceItineraries.includes(itinerary)) return;
+
+                    let tripsHTML = "";
+                    d.trips.forEach((trip, index) => {
+                        with (trip) {
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                            </div>`;
+                        }
+                    });
+
+                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
+                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
+
+                    const allowanceBtnHtml = role === "organic" ? "" : (
+                        isAlreadySubmitted
+                            ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
+                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
+                    );
+
+                    pageHTML += `
+                    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
+                        <div class="driver-header">
+                            <h2>${d.driver}</h2>
+                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+                        </div>
+                        ${tripsHTML}
+                        ${allowanceBtnHtml}
+                    </div>`;
+                });
+            }
+
+            // FUTURE SCHEDULES RENDERING
+            if (!isPast && !isToday) {
+                let tableRows = "";
+                Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                    let rowClass = isRestDay ? "rest-day-row" : "";
+
+                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+
+                    tableRows += `
+                    <tr class="${rowClass}">
+                        <td>${driver.driver}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>${driver.vehicle}</td>
+                        <td>${itineraryDisplay}</td>
+                    </tr>`;
+                });
+
+                if (tableRows !== "") {
+                    pageHTML += `
+                    <div class="summary-card">
+                        ${pendingBadgeHeaderHtml}
+                        <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                        <table class="summary-table">
+                            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>`;
+                }
+
+                Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                    if (noAllowanceItineraries.includes(itinerary)) return;
+
+                    let tripsHTML = "";
+                    d.trips.forEach((trip, index) => {
+                        with (trip) {
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                            </div>`;
+                        }
+                    });
+
+                    pageHTML += `
+                    <div class="driver-card">
+                        <div class="driver-header">
+                            <h2>${d.driver}</h2>
+                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+                        </div>
+                        ${tripsHTML}
+                    </div>`;
+                });
+            }
+
+            // PAST UNSUBMITTED ALLOWANCE CARDS
+            if (isPast && role !== "organic") {
+                const pendingDrivers = Object.values(grouped).filter(d => {
+                    if (d.date !== date) return false;
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                    if (noAllowanceItineraries.includes(itinerary)) return false;
+
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    return !submittedDrivers[lookupKey];
+                });
+
+                if (pendingDrivers.length === 0) return;
+
+                pageHTML += `
+                <div class="pending-summary-card">
+                    <div class="pending-summary-header">${dayName} | ${date}</div>
+                    <table class="pending-table">
+                        <tbody>`;
+
+                pendingDrivers.forEach(d => {
+                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
+                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+                    pageHTML += `
+                        <tr>
+                            <td class="pending-driver-cell">${d.driver}</td>
+                            <td class="pending-action-cell">
+                                <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit</button>
+                            </td>
+                        </tr>`;
+                });
+
+                pageHTML += `</tbody></table></div>`;
+            }
+        });
+
+        if (container) {
+            container.style.visibility = "hidden";
+            container.innerHTML = pageHTML;
         }
-    });
 
-    if (container) {
-        container.style.visibility = "hidden";
-        container.innerHTML = pageHTML;
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
+        updateCutoffDropdownsDynamically();
+        loadScheduleApprovalPage();
+
+        window.scrollTo(0, 0);
+        if (container) container.style.visibility = "visible";
+        return true;
+    } catch (err) {
+        console.error("Safely handled schedule loading error:", err);
+        return false;
     }
-
-    await new Promise(resolve => requestAnimationFrame(resolve));
-
-    updateCutoffDropdownsDynamically();
-    loadScheduleApprovalPage();
-
-    window.scrollTo(0, 0);
-    if (container) container.style.visibility = "visible";
-    return true;
 }
 
 function showHomePage() {
@@ -3183,28 +3205,8 @@ window.onload = async function () {
     }
 };
 
-document.getElementById("dashboardBtn").addEventListener("click", async () => {
-    const role = localStorage.getItem("userRole");
-    
-    showActionLoading("Loading Dashboard...", "Fetching latest data...");
-    
-    try {
-        await Promise.allSettled([
-            loadSubmittedAllowances(),
-            fetchLiveAllowancesFromSheet(),
-            loadMainSchedulesAndApprovals()
-        ]);
-        
-        if (role === "admin") {
-            showAdminDashboard();
-        } else {
-            backToMainDashboard();
-        }
-    } catch (err) {
-        console.error("Dashboard refresh error:", err);
-    } finally {
-        hideActionLoading();
-    }
+document.getElementById("dashboardBtn").addEventListener("click", () => {
+    backToMainDashboard();
 });
 
 document.getElementById("adminBtn").addEventListener("click", () => {
