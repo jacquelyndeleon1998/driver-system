@@ -3236,18 +3236,18 @@ async function loginDriver() {
         refreshLoginSession();
         configureNavigation(result.role);
 
+        hideLoginSpinner();
         document.getElementById("loginPage").style.display = "none";
 
-        // Pre-load all data before showing the main dashboard/reminder
-        showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-        await loadSubmittedAllowances();
-        await fetchLiveAllowancesFromSheet();
-        await loadMainSchedulesAndApprovals();
-        hideLoginSpinner();
-
+        // NAUNA NA ANG REMINDER MODAL DITO
         if (result.role === "driver") {
             showReminderModal();
         } else {
+            showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+            await loadSubmittedAllowances();
+            await fetchLiveAllowancesFromSheet();
+            await loadMainSchedulesAndApprovals();
+            hideLoginSpinner();
             showHomePage();
         }
 
@@ -3257,17 +3257,32 @@ async function loginDriver() {
         errorDiv.textContent = "Unable to connect to the server.";
     }
 }
-
+    
 function showReminderModal() {
     const driverName = localStorage.getItem("username") || "Driver";
     document.getElementById("driverNameText").textContent = driverName;
     document.getElementById("driverReminderModal").style.display = "flex";
 }
 
-function confirmReminder() {
+async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-    showHomePage();
+
+    // PAGKAPINDOT NG CONFIRM, SAKA MAGFE-FETCH NG DATA AT IPAPAKITA ANG DASHBOARD
+    showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+
+    try {
+        await loadSubmittedAllowances();
+        await fetchLiveAllowancesFromSheet();
+        await loadMainSchedulesAndApprovals();
+        hideLoginSpinner();
+        showHomePage();
+    } catch (err) {
+        hideLoginSpinner();
+        console.error("Error loading dashboard:", err);
+        alert("Failed to load schedule. Please try again.");
+    }
 }
+    
 </script>
 
     
