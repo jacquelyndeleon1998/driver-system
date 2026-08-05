@@ -2639,12 +2639,14 @@ function loadScheduleApprovalPage(){
     const approvedDiv = document.getElementById("approvedSchedules");
     const pendingDiv = document.getElementById("pendingSchedules");
     
+    // Safety guard clause
     if (!approvedDiv || !pendingDiv) return;
 
     approvedDiv.innerHTML = "";
     pendingDiv.innerHTML = "";
 
     const userRole = localStorage.getItem("userRole");
+    const isAdmin = userRole !== "organic"; // Admin check flag
 
     let selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
@@ -2652,6 +2654,27 @@ function loadScheduleApprovalPage(){
     const [targetMonthStr, targetBucket] = selectorValue.split("-");
     const targetMonth = parseInt(targetMonthStr);
 
+    // Date setup for Admin upfront filter (Manila Timezone)
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+    today.setHours(0,0,0,0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0,0,0,0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0,0,0,0);
+
+    const isTomorrowApproved = scheduleDates.some(date => {
+        const d = new Date(date);
+        d.setHours(0,0,0,0);
+        const status = (approvalDates[date] || "").toString().trim().toLowerCase();
+        return d.getTime() === tomorrow.getTime() && status === "approved";
+    });
+
+    let approvedMainRowsHtml = "";
+    let approvedDropdownItems = [];
     let hasApproved = false;
     let hasPending = false;
 
@@ -2666,15 +2689,19 @@ function loadScheduleApprovalPage(){
         if (targetBucket === "1" && dayNumber > 15) return;
         if (targetBucket === "2" && dayNumber <= 15) return;
 
+        scheduleDate.setHours(0,0,0,0);
+
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
         const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
 
-        const approveBtnHtml = userRole === "organic" 
-            ? "" 
-            : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`;
+        // Role-based action button
+        const approveBtnHtml = isAdmin 
+            ? `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`
+            : "";
 
         if (status === "approved") {
             hasApproved = true;
+            
             const row = `
             <tr>
                 <td class="approval-day-name" style="text-align: left;">${weekday}</td>
@@ -2685,7 +2712,32 @@ function loadScheduleApprovalPage(){
                     </div>
                 </td>
             </tr>`;
-            approvedDiv.innerHTML += row;
+
+            if (isAdmin) {
+                // Admin View: Split between upfront display and dropdown menu
+                const scheduleTime = scheduleDate.getTime();
+                let showUpfront = false;
+
+                if (isTomorrowApproved) {
+                    if (scheduleTime === today.getTime() || scheduleTime === tomorrow.getTime()) {
+                        showUpfront = true;
+                    }
+                } else {
+                    if (scheduleTime === yesterday.getTime() || scheduleTime === today.getTime()) {
+                        showUpfront = true;
+                    }
+                }
+
+                if (showUpfront) {
+                    approvedMainRowsHtml += row;
+                } else {
+                    approvedDropdownItems.push({ date: date, html: row });
+                }
+            } else {
+                // Non-Admin (Organic): Render all directly
+                approvedMainRowsHtml += row;
+            }
+
         } else {
             hasPending = true;
             const pendingRow = `
@@ -2703,13 +2755,42 @@ function loadScheduleApprovalPage(){
         }
     });
 
-    if (!hasApproved) {
+    // Render Approved Schedules Block
+    if (hasApproved) {
+        approvedDiv.innerHTML = approvedMainRowsHtml;
+
+        // Render Dropdown if Admin and previous schedules exist
+        if (isAdmin && approvedDropdownItems.length > 0) {
+            approvedDropdownItems.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            let dropdownRow = `
+            <tr>
+                <td colspan="3" style="text-align: center; padding: 10px;">
+                    <select onchange="if(this.value) { viewSchedule(this.value); this.selectedIndex=0; }" style="width: 90%; padding: 6px; font-size: 12px; font-weight: 600; border: 1px solid #14532d; border-radius: 6px; color: #14532d; background: #fff; cursor: pointer;">
+                        <option value="" selected disabled>📂 View More Approved Schedules (${approvedDropdownItems.length})</option>
+            `;
+            
+            approvedDropdownItems.forEach(item => {
+                dropdownRow += `<option value="${item.date}">${item.date}</option>`;
+            });
+            
+            dropdownRow += `
+                    </select>
+                </td>
+            </tr>`;
+            
+            approvedDiv.innerHTML += dropdownRow;
+        }
+    } else {
         approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
-    if(!hasPending) {
+
+    // Render Empty Pending State
+    if (!hasPending) {
         pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
     }
 }
+
 
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
