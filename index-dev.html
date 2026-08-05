@@ -3266,13 +3266,25 @@ function showReminderModal() {
     document.getElementById("driverReminderModal").style.display = "flex";
 }
 
-function confirmReminder() {
+async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-    showLoginSpinner("Preparing Dashboard...", "Loading schedules and allowances...");
-    requestAnimationFrame(() => {
+
+    showLoginSpinner(
+        "Preparing Dashboard...",
+        "Loading schedules and allowances..."
+    );
+
+    try {
+        await loadSubmittedAllowances();
+        await fetchLiveAllowancesFromSheet();
+        await loadMainSchedulesAndApprovals();
         hideLoginSpinner();
         showHomePage();
-    });
+    } catch (err) {
+        hideLoginSpinner();
+        console.error("Error loading driver dashboard:", err);
+        alert("Failed to load schedule. Please try again.");
+    }
 }
 </script>
 
