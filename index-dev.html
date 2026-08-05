@@ -2606,79 +2606,6 @@ function approveSchedule(date, buttonElement) {
     };
 }
 
-function loadScheduleApprovalPage(){
-    const approvedDiv = document.getElementById("approvedSchedules");
-    const pendingDiv = document.getElementById("pendingSchedules");
-    approvedDiv.innerHTML = "";
-    pendingDiv.innerHTML = "";
-
-    const userRole = localStorage.getItem("userRole");
-
-    let selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "07-1";
-    if(!selectorValue.includes("-")) selectorValue = "07-1";
-
-    const [targetMonthStr, targetBucket] = selectorValue.split("-");
-    const targetMonth = parseInt(targetMonthStr);
-
-    let hasApproved = false;
-    let hasPending = false;
-
-    scheduleDates.forEach(date => {
-        const scheduleDate = new Date(date);
-        if (isNaN(scheduleDate.getTime())) return;
-        
-        const dayNumber = scheduleDate.getDate();
-        const monthNumber = scheduleDate.getMonth() + 1;
-
-        if (monthNumber !== targetMonth) return;
-        if (targetBucket === "1" && dayNumber > 15) return;
-        if (targetBucket === "2" && dayNumber <= 15) return;
-
-        const status = (approvalDates[date] || "").toString().trim().toLowerCase();
-        const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
-
-        const approveBtnHtml = userRole === "organic" 
-            ? "" 
-            : `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`;
-
-        if (status === "approved") {
-            hasApproved = true;
-            const row = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                    </div>
-                </td>
-            </tr>`;
-            approvedDiv.innerHTML += row;
-        } else {
-            hasPending = true;
-            const pendingRow = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                        ${approveBtnHtml}
-                    </div>
-                </td>
-            </tr>`;
-            pendingDiv.innerHTML += pendingRow;
-        }
-    });
-
-    if (!hasApproved) {
-        approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
-    }
-    if(!hasPending) {
-        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
-    }
-}
-
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
@@ -2772,15 +2699,38 @@ async function loadMainSchedulesAndApprovals() {
 
     scheduleDates.forEach(date => {
         const scheduleDate = new Date(date);
+        scheduleDate.setHours(0, 0, 0, 0);
+
+        const isPast = scheduleDate.getTime() < today.getTime();
+        const isToday = scheduleDate.getTime() === today.getTime();
+        const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
         const status = (approvalDates[date] || "").toLowerCase();
 
-        if (status !== "approved") return;
+        // -----------------------------------------------------------
+        // ROLE FILTERING LOGIC
+        // -----------------------------------------------------------
+        
+        // 1. ORGANIC ROLE:
+        // - Hide ALL past schedules completely.
+        // - Allow Today & Future schedules even if status is pending ("not approved").
+        if (role === "organic") {
+            if (isPast) return; 
+        } 
+        // 2. DRIVER & ADMIN ROLES:
+        // - Show ONLY approved schedules for Today & Future dates.
+        else {
+            if (status !== "approved" && !isPast) return;
+        }
 
-        scheduleDate.setHours(0, 0, 0, 0);
-        const isToday = scheduleDate.getTime() === today.getTime();
-        const isPast = scheduleDate.getTime() < today.getTime();
-        const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
+        // Pending indicator label for Organic users on unapproved dates
+        let statusBadgeText = "";
+        if (role === "organic" && status !== "approved") {
+            statusBadgeText = ` <span style="font-size: 12px; color: #b45309; font-weight: 700;">(Pending Approval)</span>`;
+        }
 
+        // -----------------------------------------------------------
+        // TODAY'S SCHEDULE RENDERING
+        // -----------------------------------------------------------
         if (isToday) {
             const hideSummaryTable = phNow.getHours() >= 16;
             let tableRows = "";
@@ -2805,7 +2755,7 @@ async function loadMainSchedulesAndApprovals() {
             if (!hideSummaryTable) {
                 pageHTML += `
                 <div class="summary-card">
-                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                    <div class="summary-header"><h2>${dayName} | ${date}${statusBadgeText}</h2></div>
                     <table class="summary-table">
                         <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                         <tbody>${tableRows}</tbody>
@@ -2840,6 +2790,7 @@ async function loadMainSchedulesAndApprovals() {
                 const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                 const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
 
+                // Organic role gets NO submit allowance buttons
                 const allowanceBtnHtml = role === "organic" ? "" : (
                     isAlreadySubmitted
                         ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
@@ -2850,7 +2801,7 @@ async function loadMainSchedulesAndApprovals() {
                 <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
                     <div class="driver-header">
                         <h2>${d.driver}</h2>
-                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}${statusBadgeText}</div></div>
                         <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                         <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                         <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
@@ -2861,6 +2812,9 @@ async function loadMainSchedulesAndApprovals() {
             });
         }
 
+        // -----------------------------------------------------------
+        // FUTURE SCHEDULES RENDERING
+        // -----------------------------------------------------------
         if (!isPast && !isToday) {
             let tableRows = "";
             Object.values(summaryDrivers[date] || {}).forEach(driver => {
@@ -2883,7 +2837,7 @@ async function loadMainSchedulesAndApprovals() {
             if (tableRows !== "") {
                 pageHTML += `
                 <div class="summary-card">
-                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                    <div class="summary-header"><h2>${dayName} | ${date}${statusBadgeText}</h2></div>
                     <table class="summary-table">
                         <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                         <tbody>${tableRows}</tbody>
@@ -2916,7 +2870,7 @@ async function loadMainSchedulesAndApprovals() {
                 <div class="driver-card">
                     <div class="driver-header">
                         <h2>${d.driver}</h2>
-                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}${statusBadgeText}</div></div>
                         <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                         <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                         <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
@@ -2926,9 +2880,10 @@ async function loadMainSchedulesAndApprovals() {
             });
         }
 
-        if (isPast) {
-            if (role === "organic") return;
-
+        // -----------------------------------------------------------
+        // PAST UNMITTED ALLOWANCE CARDS (DRIVER & ADMIN ONLY)
+        // -----------------------------------------------------------
+        if (isPast && role !== "organic") {
             const pendingDrivers = Object.values(grouped).filter(d => {
                 if (d.date !== date) return false;
                 const itinerary = (d.itinerary || "").trim();
