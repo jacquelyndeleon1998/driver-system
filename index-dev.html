@@ -2803,7 +2803,7 @@ async function loadMainSchedulesAndApprovals() {
         if (role === "organic" && status !== "approved") {
             pendingBadgeHeaderHtml = `
             <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
-                Pending For Supervisor Approval
+                Pending Approval
             </div>`;
         }
 
@@ -3238,18 +3238,16 @@ async function loginDriver() {
 
         document.getElementById("loginPage").style.display = "none";
 
+        // Pre-load all data before showing the main dashboard/reminder
+        showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+        await loadSubmittedAllowances();
+        await fetchLiveAllowancesFromSheet();
+        await loadMainSchedulesAndApprovals();
+        hideLoginSpinner();
+
         if (result.role === "driver") {
-            hideLoginSpinner();
             showReminderModal();
         } else {
-            showLoginSpinner(
-                "Loading Dashboard...",
-                "Fetching latest schedules..."
-            );
-            await loadSubmittedAllowances();
-            await fetchLiveAllowancesFromSheet();
-            await loadMainSchedulesAndApprovals();
-            hideLoginSpinner();
             showHomePage();
         }
 
@@ -3266,25 +3264,9 @@ function showReminderModal() {
     document.getElementById("driverReminderModal").style.display = "flex";
 }
 
-async function confirmReminder() {
+function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-
-    showLoginSpinner(
-        "Preparing Dashboard...",
-        "Loading schedules and allowances..."
-    );
-
-    try {
-        await loadSubmittedAllowances();
-        await fetchLiveAllowancesFromSheet();
-        await loadMainSchedulesAndApprovals();
-        hideLoginSpinner();
-        showHomePage();
-    } catch (err) {
-        hideLoginSpinner();
-        console.error("Error loading driver dashboard:", err);
-        alert("Failed to load schedule. Please try again.");
-    }
+    showHomePage();
 }
 </script>
 
