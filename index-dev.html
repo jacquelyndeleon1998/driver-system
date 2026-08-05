@@ -1745,7 +1745,7 @@ async function loadSubmittedAllowances() {
 async function fetchLiveAllowancesFromSheet() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s fallback limit
 
         const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`, {
             signal: controller.signal
@@ -3175,9 +3175,12 @@ window.onload = async function () {
     showLoginSpinner("Welcome Back!", "Loading latest schedules...");
 
     try {
-        await loadSubmittedAllowances();
-        await fetchLiveAllowancesFromSheet();
-        await loadMainSchedulesAndApprovals();
+        // Fire all endpoints in parallel simultaneously
+        await Promise.allSettled([
+            loadSubmittedAllowances(),
+            fetchLiveAllowancesFromSheet(),
+            loadMainSchedulesAndApprovals()
+        ]);
 
         hideLoginSpinner();
         showHomePage();
