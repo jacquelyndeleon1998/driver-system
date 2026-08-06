@@ -3074,15 +3074,26 @@ async function loadMainSchedulesAndApprovals() {
 
             // PAST UNSUBMITTED ALLOWANCE CARDS
             if (isPast && role !== "organic") {
-                const pendingDrivers = Object.values(grouped).filter(d => {
-                    if (d.date !== date) return false;
-                    const itinerary = (d.itinerary || "").trim();
-                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                    if (noAllowanceItineraries.includes(itinerary)) return false;
+               const pendingDrivers = Object.values(grouped).filter(d => {
+    if (d.date !== date) return false;
 
-                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    return !submittedDrivers[lookupKey];
-                });
+    const itinerary = (d.itinerary || "").trim();
+
+    const noAllowanceItineraries = [
+        "AM","PM","AM / Banking","Banking / PM",
+        "Rest Day","Standby","ED",
+        "AM / ED","ED / PM","ED / Banking","Banking"
+    ];
+
+    if (noAllowanceItineraries.includes(itinerary)) return false;
+
+    const alreadySubmitted = globalParsedAllowances.some(a =>
+        a.name.trim().toLowerCase() === d.driver.trim().toLowerCase() &&
+        standardizeDateStr(a.date) === standardizeDateStr(d.date)
+    );
+
+    return !alreadySubmitted;
+});
 
                 if (pendingDrivers.length === 0) return;
 
