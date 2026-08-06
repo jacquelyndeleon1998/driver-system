@@ -1091,7 +1091,27 @@
     font-size:13px;
 }
 
-        
+       .schedule-notes-box{
+    margin-top:15px;
+    padding:15px 18px;
+    background:#dcfce7;
+    border:1px solid #86efac;
+    border-left:5px solid #16a34a;
+    border-radius:10px;
+}
+
+.schedule-notes-header{
+    font-size:16px;
+    font-weight:700;
+    color:#14532d;
+    margin-bottom:8px;
+}
+
+.schedule-notes-body{
+    color:#374151;
+    line-height:1.8;
+    white-space:pre-line;
+} 
         
     </style>
 </head>
@@ -1596,6 +1616,7 @@ let isSubmitting = false;
 let grouped = {};
 let summaryDrivers = {};
 let approvalDates = {};
+let approvalNotes = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
@@ -3208,6 +3229,23 @@ function viewSchedule(date){
                 <tbody>${tableRows}</tbody>
             </table>
         </div>`;
+        const scheduleNotes = approvalNotes[date] || "";
+
+if (scheduleNotes.trim() !== "") {
+
+    viewerHTML += `
+    <div class="schedule-notes-box">
+
+        <div class="schedule-notes-header">
+            📝 Schedule Notes
+        </div>
+
+        <div class="schedule-notes-body">
+            ${scheduleNotes.replace(/\n/g,"<br>")}
+        </div>
+
+    </div>`;
+}
     }
 
     Object.values(grouped)
