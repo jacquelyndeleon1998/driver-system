@@ -1636,15 +1636,19 @@ function logoutUser() {
 
 function standardizeDateStr(dateStr) {
     if (!dateStr) return "";
-    const parsed = new Date(dateStr);
-    if (isNaN(parsed.getTime())) return dateStr.trim().toLowerCase();
+    const cleanStr = dateStr.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(cleanStr)) {
+        return cleanStr.toLowerCase();
+    }
+    const parsed = new Date(cleanStr);
+    if (isNaN(parsed.getTime())) return cleanStr.toLowerCase();
     
     const y = parsed.getFullYear();
     const m = String(parsed.getMonth() + 1).padStart(2, '0');
     const d = String(parsed.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
 }
-
+    
 function refreshLoginSession() {
     const now = new Date(
         new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
@@ -1748,15 +1752,13 @@ function showAdminDashboard() {
 
 async function loadSubmittedAllowances() {
     try {
-        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
+        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`);
         if (!res.ok) {
-            console.warn("submitted action returned status:", res.status);
             submittedDrivers = {};
             return;
         }
         const text = await res.text();
         if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            console.warn("submitted action returned HTML instead of JSON.");
             submittedDrivers = {};
             return;
         }
@@ -1767,10 +1769,11 @@ async function loadSubmittedAllowances() {
 
         data.submitted.forEach(item => {
             const [driver, rawDate] = item.split("|");
-            const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
+            const cleanDriver = driver.trim().replace(/\s+/g, " ").toLowerCase();
+            const cleanKey = `${cleanDriver}|${standardizeDateStr(rawDate)}`;
             submittedDrivers[cleanKey] = true; 
         });
-        console.log("Submitted Drivers:", submittedDrivers);
+        console.log("Submitted Drivers Loaded:", submittedDrivers);
     } catch (err) {
         console.warn("Error loading submitted allowances safely handled:", err);
         submittedDrivers = {};
@@ -1782,7 +1785,7 @@ async function fetchLiveAllowancesFromSheet() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s fallback limit
 
-        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`, {
+        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`, {
             signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -2493,16 +2496,18 @@ async function saveAllowance() {
         await loadSubmittedAllowances();
         closeModal();
 
-       document.getElementById("successOK").onclick = async function () {
+        document.getElementById("successOK").onclick = async function () {
+            document.getElementById("successModal").style.display = "none";
+            document.getElementById("pageLoadingOverlay").style.display = "flex";
 
-    document.getElementById("successModal").style.display = "none";
-    document.getElementById("pageLoadingOverlay").style.display = "flex";
+            await Promise.all([
+                loadSubmittedAllowances(),
+                fetchLiveAllowancesFromSheet()
+            ]);
+            await loadMainSchedulesAndApprovals();
 
-    await loadSubmittedAllowances();
-    await loadMainSchedulesAndApprovals();
-
-    document.getElementById("pageLoadingOverlay").style.display = "none";
-};
+            document.getElementById("pageLoadingOverlay").style.display = "none";
+        };
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -2512,10 +2517,7 @@ async function saveAllowance() {
     }
 }
 
-document.getElementById("allowanceBtn").addEventListener("click", () => {
-    showDriverAllowanceSummary();
-});
-
+    
 function closeDriverLogin() {
     document.getElementById("driverLoginModal").style.display = "none";
 }
@@ -3192,26 +3194,22 @@ ${
             // PAST UNSUBMITTED ALLOWANCE CARDS
             if (isPast && role !== "organic") {
                const pendingDrivers = Object.values(grouped).filter(d => {
-    if (d.date !== date) return false;
+                    if (d.date !== date) return false;
 
-    const itinerary = (d.itinerary || "").trim();
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = [
+                        "AM","PM","AM / Banking","Banking / PM",
+                        "Rest Day","Standby","ED",
+                        "AM / ED","ED / PM","ED / Banking","Banking"
+                    ];
 
-    const noAllowanceItineraries = [
-        "AM","PM","AM / Banking","Banking / PM",
-        "Rest Day","Standby","ED",
-        "AM / ED","ED / PM","ED / Banking","Banking"
-    ];
+                    if (noAllowanceItineraries.includes(itinerary)) return false;
 
-    if (noAllowanceItineraries.includes(itinerary)) return false;
+                    const cleanDriver = d.driver.trim().replace(/\s+/g, " ").toLowerCase();
+                    const lookupKey = `${cleanDriver}|${standardizeDateStr(d.date)}`;
 
-   const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-console.log(
-    lookupKey,
-    "=>",
-    submittedDrivers[lookupKey]
-);
-return submittedDrivers[lookupKey] !== true;
-});
+                    return submittedDrivers[lookupKey] !== true;
+                });
 
                 if (pendingDrivers.length === 0) return;
 
