@@ -3257,7 +3257,12 @@ function viewSchedule(date){
                 <tbody>${tableRows}</tbody>
             </table>
         </div>`;
-        const scheduleNotes = approvalNotes[date] || "";
+        console.log("Current Date:", date);
+console.log("approvalNotes:", approvalNotes);
+
+const scheduleNotes = approvalNotes[date] || "";
+
+console.log("Notes Found:", scheduleNotes);
 
 if (scheduleNotes.trim() !== "") {
 
