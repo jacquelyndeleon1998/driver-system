@@ -2850,11 +2850,7 @@ approvalRows.forEach(row => {
     const date = parts.join(",").replace(/"/g, "").trim();
     approvalDates[date] = status;
 });
-            const parts = row.split(",");
-            const status = parts.pop().replace(/"/g, "").trim().toLowerCase();
-            const date = parts.join(",").replace(/"/g, "").trim();
-            approvalDates[date] = status;
-        });
+        
 
         rows.forEach(row => {
             let cols = [];
