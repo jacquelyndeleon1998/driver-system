@@ -2492,11 +2492,16 @@ async function saveAllowance() {
         await loadSubmittedAllowances();
         closeModal();
 
-        document.getElementById("successOK").onclick = function() {
-            document.getElementById("successModal").style.display = "none";
-            document.getElementById("pageLoadingOverlay").style.display = "flex";
-            window.location.reload();
-        };
+       document.getElementById("successOK").onclick = async function () {
+
+    document.getElementById("successModal").style.display = "none";
+    document.getElementById("pageLoadingOverlay").style.display = "flex";
+
+    await loadSubmittedAllowances();
+    await loadMainSchedulesAndApprovals();
+
+    document.getElementById("pageLoadingOverlay").style.display = "none";
+};
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
