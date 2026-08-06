@@ -3002,7 +3002,13 @@ approvalRows.forEach(row => {
                        <div class="summary-header">
     <h2>${dayName} | ${date}</h2>
 
-    ${
+    
+</div>
+                        <table class="summary-table">
+                            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+${
         approvalNotes[date] && approvalNotes[date].trim() !== ""
         ?
         `
@@ -3022,11 +3028,7 @@ approvalRows.forEach(row => {
         ""
     }
 
-</div>
-                        <table class="summary-table">
-                            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
-                            <tbody>${tableRows}</tbody>
-                        </table>
+                        
                     </div>`;
                 }
 
@@ -3098,54 +3100,52 @@ approvalRows.forEach(row => {
                     </tr>`;
                 });
 
-                if (tableRows !== "") {
-                  pageHTML += `
-<div class="summary-card">
-    ${pendingBadgeHeaderHtml}
+              if (tableRows !== "") {
+    pageHTML += `
+    <div class="summary-card">
 
-   <div class="summary-header">
-    <h2>${dayName} | ${date}</h2>
-</div>
+        ${pendingBadgeHeaderHtml}
 
-<table class="summary-table">
-    <thead>
-        <tr>
-            <th>Driver Name</th>
-            <th>Time In</th>
-            <th>Unit</th>
-            <th>Assignment</th>
-        </tr>
-    </thead>
-    <tbody>
-        ${tableRows}
-    </tbody>
-</table>
-
-${
-    approvalNotes[date] && approvalNotes[date].trim() !== ""
-    ?
-    `
-    <div class="schedule-notes-box">
-
-        <div class="schedule-notes-header">
-            📝 Schedule Notes
+        <div class="summary-header">
+            <h2>${dayName} | ${date}</h2>
         </div>
 
-        <div class="schedule-notes-body">
-            ${approvalNotes[date].replace(/\n/g,"<br>")}
-        </div>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Driver Name</th>
+                    <th>Time In</th>
+                    <th>Unit</th>
+                    <th>Assignment</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableRows}
+            </tbody>
+        </table>
 
-    </div>
-    `
-    :
-    ""
+        ${
+            approvalNotes[date] && approvalNotes[date].trim() !== ""
+            ?
+            `
+            <div class="schedule-notes-box">
+
+                <div class="schedule-notes-header">
+                    📝 Schedule Notes
+                </div>
+
+                <div class="schedule-notes-body">
+                    ${approvalNotes[date].replace(/\n/g,"<br>")}
+                </div>
+
+            </div>
+            `
+            :
+            ""
+        }
+
+    </div>`;
 }
-                            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
-                            <tbody>${tableRows}</tbody>
-                        </table>
-                    </div>`;
-                }
-
                 Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
                     const itinerary = (d.itinerary || "").trim();
                     const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
