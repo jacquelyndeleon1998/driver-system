@@ -3225,6 +3225,9 @@ function viewSchedule(date){
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
+    console.log("Viewing Date:", date);
+console.log("approvalNotes Object:", approvalNotes);
+console.log("Current Note:", approvalNotes[date]);
     let viewerHTML = "";
 
     const scheduleDate = new Date(date);
