@@ -3103,31 +3103,43 @@ approvalRows.forEach(row => {
 <div class="summary-card">
     ${pendingBadgeHeaderHtml}
 
-    <div class="summary-header">
-        <h2>${dayName} | ${date}</h2>
+   <div class="summary-header">
+    <h2>${dayName} | ${date}</h2>
+</div>
 
-        ${
-            approvalNotes[date] && approvalNotes[date].trim() !== ""
-            ?
-            `
-            <div class="schedule-notes-box">
+<table class="summary-table">
+    <thead>
+        <tr>
+            <th>Driver Name</th>
+            <th>Time In</th>
+            <th>Unit</th>
+            <th>Assignment</th>
+        </tr>
+    </thead>
+    <tbody>
+        ${tableRows}
+    </tbody>
+</table>
 
-                <div class="schedule-notes-header">
-                    📝 Schedule Notes
-                </div>
+${
+    approvalNotes[date] && approvalNotes[date].trim() !== ""
+    ?
+    `
+    <div class="schedule-notes-box">
 
-                <div class="schedule-notes-body">
-                    ${approvalNotes[date].replace(/\n/g,"<br>")}
-                </div>
+        <div class="schedule-notes-header">
+            📝 Schedule Notes
+        </div>
 
-            </div>
-            `
-            :
-            ""
-        }
+        <div class="schedule-notes-body">
+            ${approvalNotes[date].replace(/\n/g,"<br>")}
+        </div>
 
     </div>
-                        <table class="summary-table">
+    `
+    :
+    ""
+}
                             <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                             <tbody>${tableRows}</tbody>
                         </table>
