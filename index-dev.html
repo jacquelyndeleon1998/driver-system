@@ -1770,6 +1770,7 @@ async function loadSubmittedAllowances() {
             const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
             submittedDrivers[cleanKey] = true; 
         });
+        console.log("Submitted Drivers:", submittedDrivers);
     } catch (err) {
         console.warn("Error loading submitted allowances safely handled:", err);
         submittedDrivers = {};
@@ -3203,12 +3204,13 @@ ${
 
     if (noAllowanceItineraries.includes(itinerary)) return false;
 
-    const alreadySubmitted = globalParsedAllowances.some(a =>
-        a.name.trim().toLowerCase() === d.driver.trim().toLowerCase() &&
-        standardizeDateStr(a.date) === standardizeDateStr(d.date)
-    );
-
-    return !alreadySubmitted;
+   const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+console.log(
+    lookupKey,
+    "=>",
+    submittedDrivers[lookupKey]
+);
+return submittedDrivers[lookupKey] !== true;
 });
 
                 if (pendingDrivers.length === 0) return;
