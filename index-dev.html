@@ -2843,6 +2843,7 @@ async function loadMainSchedulesAndApprovals() {
      grouped = {};
 summaryDrivers = {};
 approvalDates = {};
+approvalNotes = {};
 
 approvalRows.forEach(row => {
 
@@ -2998,7 +2999,30 @@ approvalRows.forEach(row => {
                     pageHTML += `
                     <div class="summary-card">
                         ${pendingBadgeHeaderHtml}
-                        <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                       <div class="summary-header">
+    <h2>${dayName} | ${date}</h2>
+
+    ${
+        approvalNotes[date] && approvalNotes[date].trim() !== ""
+        ?
+        `
+        <div class="schedule-notes-box">
+
+            <div class="schedule-notes-header">
+                📝 Schedule Notes
+            </div>
+
+            <div class="schedule-notes-body">
+                ${approvalNotes[date].replace(/\n/g,"<br>")}
+            </div>
+
+        </div>
+        `
+        :
+        ""
+    }
+
+</div>
                         <table class="summary-table">
                             <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                             <tbody>${tableRows}</tbody>
@@ -3075,10 +3099,34 @@ approvalRows.forEach(row => {
                 });
 
                 if (tableRows !== "") {
-                    pageHTML += `
-                    <div class="summary-card">
-                        ${pendingBadgeHeaderHtml}
-                        <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                  pageHTML += `
+<div class="summary-card">
+    ${pendingBadgeHeaderHtml}
+
+    <div class="summary-header">
+        <h2>${dayName} | ${date}</h2>
+
+        ${
+            approvalNotes[date] && approvalNotes[date].trim() !== ""
+            ?
+            `
+            <div class="schedule-notes-box">
+
+                <div class="schedule-notes-header">
+                    📝 Schedule Notes
+                </div>
+
+                <div class="schedule-notes-body">
+                    ${approvalNotes[date].replace(/\n/g,"<br>")}
+                </div>
+
+            </div>
+            `
+            :
+            ""
+        }
+
+    </div>
                         <table class="summary-table">
                             <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                             <tbody>${tableRows}</tbody>
