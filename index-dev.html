@@ -2840,27 +2840,15 @@ async function loadMainSchedulesAndApprovals() {
         const rows = data.trim().split("\n").slice(1);
         const approvalRows = approvalData.trim().split("\n").slice(1);
 
-      grouped = {};
+     grouped = {};
 summaryDrivers = {};
 approvalDates = {};
-approvalNotes = {};
 
 approvalRows.forEach(row => {
-
     const parts = row.split(",");
-
-    // Column C = Schedule Notes
-    const notes = (parts.pop() || "").replace(/"/g, "").trim();
-
-    // Column B = Status
-    const status = (parts.pop() || "").replace(/"/g, "").trim().toLowerCase();
-
-    // Column A = Date
+    const status = parts.pop().replace(/"/g, "").trim().toLowerCase();
     const date = parts.join(",").replace(/"/g, "").trim();
-
     approvalDates[date] = status;
-    approvalNotes[date] = notes;
-
 });
             const parts = row.split(",");
             const status = parts.pop().replace(/"/g, "").trim().toLowerCase();
