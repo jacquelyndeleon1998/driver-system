@@ -3423,11 +3423,11 @@ window.onload = async function () {
 
     try {
         // Fire all endpoints in parallel simultaneously
-        await Promise.allSettled([
-            loadSubmittedAllowances(),
-            fetchLiveAllowancesFromSheet(),
-            loadMainSchedulesAndApprovals()
-        ]);
+        await loadSubmittedAllowances();
+
+await fetchLiveAllowancesFromSheet();
+
+await loadMainSchedulesAndApprovals();
 
         hideLoginSpinner();
         showHomePage();
@@ -3506,11 +3506,11 @@ async function loginDriver() {
             showReminderModal();
         } else {
             showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-            await Promise.allSettled([
-                loadSubmittedAllowances(),
-                fetchLiveAllowancesFromSheet(),
-                loadMainSchedulesAndApprovals()
-            ]);
+           await loadSubmittedAllowances();
+
+await fetchLiveAllowancesFromSheet();
+
+await loadMainSchedulesAndApprovals();
             hideLoginSpinner();
             showHomePage();
         }
@@ -3533,11 +3533,11 @@ async function confirmReminder() {
     showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
 
     try {
-        await Promise.allSettled([
-            loadSubmittedAllowances(),
-            fetchLiveAllowancesFromSheet(),
-            loadMainSchedulesAndApprovals()
-        ]);
+      await loadSubmittedAllowances();
+
+await fetchLiveAllowancesFromSheet();
+
+await loadMainSchedulesAndApprovals();
     } catch (err) {
         console.error("Error loading driver dashboard:", err);
     } finally {
