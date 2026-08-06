@@ -2845,10 +2845,37 @@ summaryDrivers = {};
 approvalDates = {};
 
 approvalRows.forEach(row => {
-    const parts = row.split(",");
-    const status = parts.pop().replace(/"/g, "").trim().toLowerCase();
-    const date = parts.join(",").replace(/"/g, "").trim();
+
+    let cols = [];
+    let current = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+
+        const char = row[i];
+
+        if (char === '"') {
+            insideQuotes = !insideQuotes;
+        }
+        else if (char === "," && !insideQuotes) {
+            cols.push(current.trim());
+            current = "";
+        }
+        else {
+            current += char;
+        }
+
+    }
+
+    cols.push(current.trim());
+
+    const date = (cols[0] || "").replace(/"/g, "").trim();
+    const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
+    const notes = (cols[2] || "").replace(/"/g, "").trim();
+
     approvalDates[date] = status;
+    approvalNotes[date] = notes;
+
 });
         
 
