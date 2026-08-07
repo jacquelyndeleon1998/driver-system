@@ -2706,6 +2706,8 @@ function loadScheduleApprovalPage(){
 
     let approvedMainRowsHtml = "";
     let approvedDropdownItems = [];
+    let pendingHtml = "";
+
     let hasApproved = false;
     let hasPending = false;
 
@@ -2784,7 +2786,7 @@ function loadScheduleApprovalPage(){
                     </div>
                 </td>
             </tr>`;
-            pendingDiv.innerHTML += pendingRow;
+            pendingHtml += pendingRow;
         }
     });
 
@@ -2818,10 +2820,15 @@ function loadScheduleApprovalPage(){
         approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
 
-    // Render Empty Pending State
-    if (!hasPending) {
-        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
-    }
+    if (hasPending) {
+
+    pendingDiv.innerHTML = pendingHtml;
+
+} else {
+
+    pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
+
+}
 }
 
 
