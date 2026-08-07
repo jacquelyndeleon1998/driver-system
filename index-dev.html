@@ -2732,19 +2732,19 @@ function loadScheduleApprovalPage(){
       if (status === "approved") {
             hasApproved = true;
             
-            const row = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">
-                    ${date} <br>
-                </td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                    </div>
-                </td>
-            </tr>`;
-
+            const row = createScheduleRow(
+    weekday,
+    date,
+    `
+    <div class="action-btn-grp" style="justify-content:center;">
+        <button class="action-table-btn btn-view"
+            onclick="viewSchedule('${date}')">
+            View
+        </button>
+    </div>
+    `,
+    true
+);
             if (isAdmin) {
                 // Admin View: Split between upfront display and dropdown menu
                 const scheduleTime = scheduleDate.getTime();
@@ -2772,13 +2772,11 @@ function loadScheduleApprovalPage(){
 
         } else {
             hasPending = true;
-            const pendingRow = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
-               <td>
-    ${createActionButtons(date, isAdmin)}
-</td>            </tr>`;
+            const pendingRow = createScheduleRow(
+    weekday,
+    date,
+    createActionButtons(date, isAdmin)
+);
             pendingHtml += pendingRow;
         }
     });
@@ -2862,6 +2860,22 @@ function createActionButtons(date, isAdmin) {
     html += `</div>`;
 
     return html;
+}
+
+function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
+    return `
+        <tr>
+            <td class="approval-day-name" style="text-align:left;">
+                ${weekday}
+            </td>
+            <td class="approval-date-val" style="text-align:center;">
+                ${date}${showLineBreak ? " <br>" : ""}
+            </td>
+            <td>
+                ${actionHtml}
+            </td>
+        </tr>
+    `;
 }
     
 async function loadMainSchedulesAndApprovals() {
