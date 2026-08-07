@@ -9,6 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        .text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
         .info-row{
     display:flex;
     justify-content:space-between;
@@ -2843,7 +2855,7 @@ function renderEmptyTable(tableBody, message, colspan = 3) {
 
 function createActionButtons(date, isAdmin) {
     let html = `
-        <div class="action-btn-grp" style="justify-content:center;">
+        <div class="action-btn-grp justify-center">
             <button class="action-table-btn btn-view"
                 onclick="viewSchedule('${date}')">
                 View
@@ -2865,12 +2877,14 @@ function createActionButtons(date, isAdmin) {
 function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
     return `
         <tr>
-            <td class="approval-day-name" style="text-align:left;">
+            <td class="approval-day-name text-left">
                 ${weekday}
             </td>
-            <td class="approval-date-val" style="text-align:center;">
+
+            <td class="approval-date-val text-center">
                 ${date}${showLineBreak ? " <br>" : ""}
             </td>
+
             <td>
                 ${actionHtml}
             </td>
