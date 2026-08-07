@@ -4,13 +4,162 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Dispatch Hub</title>
-   
+    
     <link rel="icon" type="image/png" href="assets/dispatch-hub-logo.png">
- 
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+
+        .text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+        .info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+}
+
+.info-row .info-label{
+    font-weight:600;
+    color:#14532d;
+    min-width:90px;
+}
+
+.info-row .info-value{
+    flex:1;
+    text-align:left;
+    margin-left:20px;
+}
+
+.review-modal{
+    max-width:600px;
+}
+
+.review-title{
+    color:#14532d;
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.review-subtitle{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+.review-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.review-field{
+    display:flex;
+    flex-direction:column;
+}
+
+.review-field label{
+    font-size:13px;
+    font-weight:600;
+    color:#374151;
+    margin-bottom:6px;
+}
+
+.review-field input{
+    width:100%;
+    padding:10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:14px;
+    box-sizing:border-box;
+}
+
+.review-total{
+    margin-top:20px;
+    padding:16px;
+    background:#ecfdf5;
+    border:1px solid #bbf7d0;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:18px;
+    font-weight:700;
+    color:#14532d;
+}
+
+.review-total span:last-child{
+    font-size:26px;
+    color:#15803d;
+}
+
+.modal-buttons{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:25px;
+}
+        
+.reminder-list{
+    text-align:left;
+    margin:20px 0;
+    padding-left:24px;
+    line-height:1.8;
+    color:#444;
+}
+
+.reminder-list li{
+    margin-bottom:10px;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.reminder-modal {
+    width: min(90%, 500px);
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+}
+
+.reminder-modal h2 {
+    color: #14532d;
+    margin-bottom: 18px;
+}
+
+.reminder-text {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #444;
+}
+
+#confirmReminderBtn {
+    margin-top: 22px;
+    width: 100%;
+}
+        
     .bg-schedule-admin,
     .bg-driver-allowance {
-        background: #15803d !important;
+        background: #15803d !important; 
         box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2) !important;
     }
 
@@ -18,24 +167,24 @@
     .bg-driver-allowance .month-selector select {
         color: #15803d !important;
     }
- 
+  
     .header-schedule {
-        background: #064e3b !important;
+        background: #064e3b !important; 
         box-shadow: 0 4px 10px rgba(6, 78, 59, 0.2) !important;
     }
 
     .header-allowance {
-        background: #14532d !important;
+        background: #14532d !important; 
         box-shadow: 0 4px 10px rgba(20, 83, 45, 0.2) !important;
     }
- 
+  
     .header-schedule .month-selector select {
         color: #064e3b;
     }
     .header-allowance .month-selector select {
         color: #14532d;
     }
-       
+        
     body {
         font-family: Arial, Helvetica, sans-serif;
         background: #eef3ef;
@@ -444,15 +593,15 @@
     .driver-header .info-value { color: #fff; }
     .trip-info-card .info-value { font-weight: 600; }
 
-    .section-title {
-        display: block;
-        margin: 12px 0 8px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #14532d;
-        border-bottom: 1px solid #d1fae5;
-        padding-bottom: 5px;
-    }
+  .section-title {
+    display: block;
+    margin: 20px 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #14532d;
+    border-bottom: 1px solid #d1fae5;
+    padding-bottom: 5px;
+}
 
     .duty-time-row {
         display: flex;
@@ -585,10 +734,10 @@
     .action-loading-logo { margin: 0; color: #15803d; font-size: 24px; font-weight: 700; }
 
     .spinner, .action-loading-spinner {
-        margin: 0 auto 18px auto;
+        margin: 0 auto 18px auto; 
         border: 5px solid #e5e7eb;
         border-radius: 50%;
-        display: block;          
+        display: block;           
     }
     .spinner {
         width: 55px; height: 55px;
@@ -637,7 +786,7 @@
     }
     .summary-table td:first-child { font-weight:400; }
     .summary-table th:nth-child(2), .summary-table td:nth-child(2) { width: 20%; text-align: center; }
-   
+    
     .summary-table th:nth-child(3),
     .summary-table td:nth-child(3) {
         width:18%;
@@ -820,7 +969,7 @@
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
         }
-       
+        
         body {
             padding-top: 175px;
         }
@@ -853,19 +1002,178 @@
         .month-selector { width: 100%; justify-content: space-between; }
 
         .approval-table {
-            table-layout: auto !important;
+            table-layout: auto !important; 
             width: 100% !important;
         }
         .approval-table th, .approval-table td {
-            padding: 8px 4px !important;
+            padding: 8px 4px !important; 
             font-size: 11px !important;  
-            white-space: normal !important;
+            white-space: normal !important; 
         }
     }
+
+        .dispatch-title{
+    font-family: 'Pacifico', cursive;
+    font-size: 34px;
+    color: #14532d;
+    font-weight: normal;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+#loginPage{
+    position:fixed;
+    inset:0;
+    background:#f4f7f4;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+}
+
+.login-container{
+    width:100%;
+    max-width:380px;
+    text-align:center;
+    padding:20px;
+}
+
+#loginLogo{
+    width:140px;
+}
+
+#loginPage h1{
+    color:#14532d;
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.loginSubtitle{
+    color:#666;
+    margin-bottom:30px;
+}
+
+.loginCard{
+    background:#fff;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.loginCard h2{
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.loginCard input{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+#loginBtn{
+    width:100%;
+    padding:12px;
+    background:#14532d;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+}
+
+#loginBtn:hover{
+    background:#166534;
+}
+
+#loginError{
+    color:red;
+    margin-top:15px;
+}
+
+.loginFooter{
+    margin-top:30px;
+    color:#777;
+    font-size:13px;
+}
+
+   .schedule-notes-box{
+    margin-top:15px;
+    background:#dcfce7;
+    border:1px solid #86efac;
+    border-left:5px solid #15803d;
+    border-radius:10px;
+    padding:8px 12px;
+}
+
+.schedule-notes-header{
+    font-weight:700;
+    font-size:12px;
+    margin:0 0 4px 0;
+    padding:0;
+}
+
+.schedule-notes-body{
+    margin:0;
+    padding:0;
+    font-size:12px;  
+    line-height:1.4;
+    color:#374151;
+}
+        
     </style>
 </head>
 
 <body>
+
+    <div id="loginPage" style="display:none;">
+
+    <div class="login-container">
+
+        <img src="assets/dispatch-hub-logo.png" id="loginLogo">
+
+        <h1 class="dispatch-title">Daily Dispatch Hub</h1>
+
+        <p class="loginSubtitle">
+            Driver Management System
+        </p>
+
+        <div class="loginCard">
+
+            <h2>Welcome Back!</h2>
+
+            <input
+                type="text"
+                id="loginUsername"
+                placeholder="Username">
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Password">
+
+            <button id="loginBtn">
+                Login
+            </button>
+
+            <div id="loginError"></div>
+
+        </div>
+
+        <div class="loginFooter">
+            © 2026 JCD-A<br>
+            Version 1.0
+        </div>
+
+    </div>
+
+</div>
 
 <div class="app-header">
     <div class="app-left">
@@ -876,22 +1184,32 @@
             <div class="app-description">Real-time Schedule & Allowance Management</div>
         </div>
     </div>
-    <div class="top-nav">
-        <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
-        <span class="nav-separator">|</span>
-        <button id="allowanceBtn" class="nav-btn">Allowances</button>
-        <span class="nav-separator">|</span>
-        <button id="adminBtn" class="nav-btn">Admin</button>
-    </div>
+  <div class="top-nav">
+
+    <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+
+    <span id="sepDashboardAllowance" class="nav-separator">|</span>
+
+    <button id="allowanceBtn" class="nav-btn">Allowances</button>
+
+    <span id="sepAllowanceAdmin" class="nav-separator">|</span>
+
+    <button id="adminBtn" class="nav-btn">Admin</button>
+
+    <span id="sepAdminLogout" class="nav-separator">|</span>
+
+    <button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
+
+</div>
 </div>
 
-<div id="driverDashboard">
+<div id="driverDashboard" style="display:none;">
     <div id="driversContainer"></div>
 </div>
 
 <!-- DRIVER ALLOWANCE SUMMARY VIEW CONTAINER -->
 <div id="driverAllowancePage" style="display:none;">
-    <div class="schedule-header bg-driver-allowance" style="margin-top: 0;">
+ <div id="driverAllowanceHeader" class="schedule-header bg-driver-allowance" style="margin-top: 0;">
         <h2 id="driverViewNameHeader">Driver Name</h2>
         <div class="month-selector">
             <label for="driverViewCutoff">Cut-off Period</label>
@@ -899,7 +1217,7 @@
             </select>
         </div>
     </div>
-    <div class="approval-container" style="margin-top: 15px;">
+    <div id="driverAllowanceSection" class="approval-container" style="margin-top: 15px;">
         <h3>My Allowance Summary</h3>
         <table class="approval-table">
             <thead>
@@ -989,10 +1307,10 @@
             <div class="summary-header" style="margin-top: 0;">
                 <h2 id="viewerTitle">Driver Schedule</h2>
             </div>
-           
+            
             <!-- Dito papasok ang scrollable content ng mga biyahe -->
             <div id="scheduleViewerContent" style="max-height: 60vh; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
-           
+            
             <div class="modal-buttons">
                 <button class="allowance-btn cancel-btn" id="closeViewerBtn" style="margin: 0; height: 44px; border-radius: 8px;">
                     Close Window
@@ -1008,12 +1326,11 @@
     </div>
 </div>
    
-<!-- BREAKDOWN DETAILED SHEET DISPLAY MODAL -->
 <div id="driverAllowanceDetailsModal" class="modal">
     <div class="modal-content" style="max-width: 500px;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
         <p style="font-size: 13px; color: #6b7280; margin-top: -8px;" id="detailsModalRange"></p>
-       
+        
         <div style="max-height: 50vh; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
             <table class="modal-list-table">
                 <thead>
@@ -1080,17 +1397,6 @@
     </div>
 </div>
 
-<div id="adminLoginModal" class="modal">
-    <div class="modal-content">
-        <h3 class="modal-title">Supervisor Login</h3>
-        <input id="adminUsername" type="text" placeholder="Username">
-        <input id="adminPassword" type="password" placeholder="Password">
-        <div class="modal-buttons">
-            <button class="allowance-btn submit-btn" onclick="adminLogin()">Login</button>
-            <button class="allowance-btn cancel-btn" onclick="closeAdminLogin()">Cancel</button>
-        </div>
-    </div>
-</div>
 
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
@@ -1113,7 +1419,139 @@
     </div>
 </div>
 
-<div id="pageLoadingOverlay" class="loading-overlay" style="display: flex; justify-content: center; align-items: center;">
+ <div id="reviewAllowanceModal" class="modal" style="display:none;">
+
+    <div class="modal-content review-modal">
+
+        <h2 class="review-title">Review Allowance</h2>
+
+        <p class="review-subtitle">
+            Review and approve the driver's submitted allowance.
+        </p>
+
+      <div class="trip-info-card">
+
+    <div class="info-row">
+        <span class="info-label">Driver</span>
+        <span id="reviewDriver" class="info-value"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">Trip Date</span>
+        <span id="reviewDate" class="info-value"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">Duty</span>
+        <span class="info-value">
+            <span id="reviewTimeIn"></span>
+            &nbsp;to&nbsp;
+            <span id="reviewTimeOut"></span>
+        </span>
+    </div>
+
+</div>
+
+
+        <h3 class="section-title">Meal Allowance</h3>
+
+        <div class="review-grid">
+
+            <div class="review-field">
+                <label>Breakfast</label>
+                <input id="reviewBreakfast"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
+
+            <div class="review-field">
+                <label>Lunch</label>
+                <input id="reviewLunch"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
+
+            <div class="review-field">
+                <label>Dinner</label>
+                <input id="reviewDinner"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
+
+            <div class="review-field">
+                <label>Parking</label>
+                <input id="reviewParking"
+                       type="number"
+                       value="0"
+                       min="0"
+                       oninput="updateReviewTotal()">
+            </div>
+
+        </div>
+
+        <div id="reviewRemarksRow" style="display:none;">
+
+            <h3 class="section-title">Remarks</h3>
+
+            <div class="trip-info-card">
+                <div id="reviewRemarks"></div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:18px;">
+
+            <button id="reviewReceiptBtn"
+                    class="allowance-btn"
+                    style="background:#2563eb;"
+                    onclick="window.open(this.dataset.url,'_blank')">
+
+                View Receipt
+
+            </button>
+
+        </div>
+
+        <div class="review-total">
+
+            <span>Total Allowance</span>
+
+            <span id="reviewTotal">₱0</span>
+
+        </div>
+
+        <div class="modal-buttons">
+
+            <button class="allowance-btn cancel-btn"
+                    onclick="closeReviewModal()">
+
+                Cancel
+
+            </button>
+
+            <button class="allowance-btn submit-btn"
+                    onclick="
+approveItemInline(
+document.getElementById('reviewAllowanceModal').dataset.driver,
+document.getElementById('reviewAllowanceModal').dataset.date,
+this
+)">
+                Approve
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="pageLoadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-box loading-box-large">
         <div class="loading-banner">
             <h2>Daily Dispatch Hub</h2>
@@ -1178,9 +1616,8 @@ Drive safely and responsibly at all times.</p>
 </div>
 
 <script>
-
-const WEBAPP_BASE = "https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec"; // Put your web app URL here
-const SECRET_TOKEN = "VIP-Secure-2026-Dispatch";
+const WEBAPP_BASE = "https://script.google.com/macros/s/AKfycbwmIeIvWLqlT2h3pBQz_RoO7IjYFRz9QopTt8S_dhX1qq4fW7or6E8sMs-d3rQ36e4S/exec";
+const SECRET_TOKEN = "VIP-Secure-2026-Dispatch"; 
 const WEBAPP_URL = `${WEBAPP_BASE}?token=${encodeURIComponent(SECRET_TOKEN)}`;
 const sheetURL = `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
 const approvalURL = `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}`;
@@ -1193,29 +1630,41 @@ let isSubmitting = false;
 let grouped = {};
 let summaryDrivers = {};
 let approvalDates = {};
+let approvalNotes = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
 
+function logoutUser() {
+    localStorage.removeItem("driverLoggedIn");
+    localStorage.removeItem("driverName");
+    localStorage.removeItem("driverRole");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("loginExpires");
+    location.reload();
+}
+
 function standardizeDateStr(dateStr) {
     if (!dateStr) return "";
-    const parsed = new Date(dateStr);
-    if (isNaN(parsed.getTime())) return dateStr.trim().toLowerCase();
-   
+    const cleanStr = dateStr.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(cleanStr)) {
+        return cleanStr.toLowerCase();
+    }
+    const parsed = new Date(cleanStr);
+    if (isNaN(parsed.getTime())) return cleanStr.toLowerCase();
+    
     const y = parsed.getFullYear();
     const m = String(parsed.getMonth() + 1).padStart(2, '0');
     const d = String(parsed.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
 }
-
+    
 function refreshLoginSession() {
-
     const now = new Date(
-        new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Manila"
-        })
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
     );
-
     const midnight = new Date(now);
     midnight.setDate(midnight.getDate() + 1);
     midnight.setHours(0, 0, 0, 0);
@@ -1223,93 +1672,181 @@ function refreshLoginSession() {
     localStorage.setItem("loginExpires", midnight.getTime());
 }
 
-    function checkAdminSession() {
-
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
+function checkAdminSession() {
+    const loggedIn = localStorage.getItem("driverLoggedIn") === "true" || localStorage.getItem("loggedIn") === "true";
     const expires = Number(localStorage.getItem("loginExpires") || 0);
 
     if (loggedIn && Date.now() >= expires) {
-
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("loginExpires");
-
-        if (document.getElementById("scheduleApprovalPage").style.display === "block") {
-
-            alert("Your admin session has expired.");
-
-            document.getElementById("scheduleApprovalPage").style.display = "none";
-            document.getElementById("driverDashboard").style.display = "block";
-
-            document.getElementById("dashboardBtn").classList.add("active");
-            document.getElementById("adminBtn").classList.remove("active");
-            document.getElementById("allowanceBtn").classList.remove("active");
-        }
+        logoutUser();
     }
 }
-   
+
+function configureNavigation(role) {
+    const allowanceBtn = document.getElementById("allowanceBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
+    const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+    const sepAdminLogout = document.getElementById("sepAdminLogout");
+
+    if (allowanceBtn) allowanceBtn.style.display = "";
+    if (adminBtn) adminBtn.style.display = "";
+    if (logoutBtn) logoutBtn.style.display = "";
+
+    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
+    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+    if (sepAdminLogout) sepAdminLogout.style.display = "";
+
+    switch (role) {
+        case "driver":
+            if (adminBtn) adminBtn.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            break;
+
+        case "admin":
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            break;
+
+        case "organic":
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (adminBtn) adminBtn.style.display = "none";
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
+            break;
+    }
+}
+
 function showAdminDashboard() {
+    const role = localStorage.getItem("userRole");
+
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "block";
     document.getElementById("driverAllowancePage").style.display = "none";
-   
-    document.querySelector(".approval-container").style.display = "block";
-    document.querySelector(".approval-footer").style.display = "block";
     document.getElementById("scheduleViewerPage").style.display = "none";
 
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.add("active");
     document.getElementById("allowanceBtn").classList.remove("active");
 
-    sessionStorage.setItem("view", "admin");
-    processAllowanceSummaryTable();
+    const approvalContainers = document.querySelectorAll(".approval-container");
+    const headers = document.querySelectorAll(".schedule-header");
+    const footers = document.querySelectorAll(".approval-footer");
+
+    if (role === "organic") {
+        headers[0].style.display = "";
+        approvalContainers[0].style.display = "";
+
+        headers[1].style.display = "none";
+        approvalContainers[1].style.display = "none";
+
+        document.getElementById("driverAllowancePage").style.display = "none";
+        document.getElementById("driverAllowanceDetailsModal").style.display = "none";
+
+        if (footers[0]) footers[0].style.display = "none";
+    } else {
+        approvalContainers.forEach(x => x.style.display = "");
+        headers.forEach(x => x.style.display = "");
+        footers.forEach(x => x.style.display = "");
+    }
+
+    sessionStorage.setItem("view", role === "organic" ? "organic" : "admin");
+
+    if (role !== "organic") {
+        processAllowanceSummaryTable();
+    }
+
     hideActionLoading();
-    window.scrollTo(0, 0);
+    window.scrollTo(0,0);
 }
 
 async function loadSubmittedAllowances() {
     try {
-       const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}`);
-const data = await res.json();
+        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`);
+        if (!res.ok) {
+            submittedDrivers = {};
+            return;
+        }
+        const text = await res.text();
+        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+            submittedDrivers = {};
+            return;
+        }
 
-submittedDrivers = {};
+        const data = JSON.parse(text);
+        submittedDrivers = {};
+        if (!Array.isArray(data.submitted)) return;
 
-if (!Array.isArray(data.submitted)) {
-    console.error("Submitted list missing:", data);
-    return;
-}
-
-data.submitted.forEach(item => {
+        data.submitted.forEach(item => {
             const [driver, rawDate] = item.split("|");
-            const cleanKey = `${driver.trim().toLowerCase()}|${standardizeDateStr(rawDate)}`;
-            submittedDrivers[cleanKey] = true;
+            const cleanDriver = driver.trim().replace(/\s+/g, " ").toLowerCase();
+            const cleanKey = `${cleanDriver}|${standardizeDateStr(rawDate)}`;
+            submittedDrivers[cleanKey] = true; 
         });
+        console.log("Submitted Drivers Loaded:", submittedDrivers);
     } catch (err) {
-        console.error("Error loading submitted allowances: ", err);
+        console.warn("Error loading submitted allowances safely handled:", err);
+        submittedDrivers = {};
     }
 }
 
 async function fetchLiveAllowancesFromSheet() {
     try {
-        const response = await fetch(
-`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}`
-);
-        const jsonResult = await response.json();
-       
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s fallback limit
+
+        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            globalParsedAllowances = [];
+            return;
+        }
+
+        const text = await response.text();
+        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+            globalParsedAllowances = [];
+            return;
+        }
+
+        const jsonResult = JSON.parse(text);
         globalParsedAllowances = [];
-       
+        
         if (jsonResult && jsonResult.success && jsonResult.data) {
             jsonResult.data.forEach(row => {
                 const rawTripDate = row.date || "";      
                 const driverName = row.driver || "";    
-                const totalAllowance = parseFloat(row.total) || 0;
-                const rawStatus = row.status || "";    
-               
-                const itemStatus = (rawStatus.toLowerCase() === "approved") ? "Approved" : "Pending";
+                const totalAllowance = parseFloat(row.total) || 0; 
+                const rawStatus = row.status || "";     
+                
+                const lowerStatus = (rawStatus || "").trim().toLowerCase();
+                let itemStatus = rawStatus || "For Review";
+
+                if (lowerStatus === "approved" || lowerStatus === "paid") {
+                    itemStatus = "Paid";
+                } else if (lowerStatus === "pay") {
+                    itemStatus = "Pay";
+                } else if (lowerStatus === "for review") {
+                    itemStatus = "For Review";
+                }
 
                 if (driverName && rawTripDate) {
                     globalParsedAllowances.push({
                         name: driverName,
                         date: rawTripDate,
+                        passenger: row.passenger || "",
+                        timeIn: row.timeIn || "",
+                        timeOut: row.timeOut || "",
+                        breakfast: Number(row.breakfast) || 0,
+                        lunch: Number(row.lunch) || 0,
+                        dinner: Number(row.dinner) || 0,
+                        parking: Number(row.parking) || 0,
+                        receipt: row.receipt || "",
+                        remarks: row.remarks || "",
                         amount: totalAllowance,
                         status: itemStatus
                     });
@@ -1317,15 +1854,16 @@ async function fetchLiveAllowancesFromSheet() {
             });
         }
     } catch (err) {
-        console.error("Error pulling database items via Apps Script proxy: ", err);
+        console.warn("fetchLiveAllowancesFromSheet bypassed/timed out:", err);
+        globalParsedAllowances = [];
     }
 }
-
+    
 function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
     const allowanceSelect = document.getElementById("allowanceCutoff");
     const driverViewSelect = document.getElementById("driverViewCutoff");
-   
+    
     if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
 
     const activeCutoffs = new Set();
@@ -1336,19 +1874,15 @@ function updateCutoffDropdownsDynamically() {
         if (isNaN(parsedDate.getTime())) return;
 
         const year = parsedDate.getFullYear();
-        const monthNum = parsedDate.getMonth();
+        const monthNum = parsedDate.getMonth(); 
         const day = parsedDate.getDate();
-       
+        
         const bucket = day <= 15 ? "1" : "2";
         activeCutoffs.add(`${year}-${monthNum}-${bucket}`);
     };
 
     scheduleDates.forEach(date => processDateString(date));
     globalParsedAllowances.forEach(record => processDateString(record.date));
-
-    const currentScheduleVal = scheduleSelect.value;
-    const currentAllowanceVal = allowanceSelect.value;
-    const currentDriverViewVal = driverViewSelect.value;
 
     scheduleSelect.innerHTML = "";
     allowanceSelect.innerHTML = "";
@@ -1365,13 +1899,12 @@ function updateCutoffDropdownsDynamically() {
     sortedBuckets.forEach(bucketKey => {
         const [year, monthNum, bucket] = bucketKey.split("-");
         const monthName = monthNames[Number(monthNum)];
-       
         let labelText = "";
         let optionValue = "";
 
         if (bucket === "1") {
             labelText = `${monthName} 1 - 15, ${year}`;
-            optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-1`;
+            optionValue = `${String(Number(monthNum)+1).padStart(2, '0')}-1`; 
         } else {
             const totalDays = new Date(Number(year), Number(monthNum) + 1, 0).getDate();
             labelText = `${monthName} 16 - ${totalDays}, ${year}`;
@@ -1390,38 +1923,19 @@ function updateCutoffDropdownsDynamically() {
         driverViewSelect.add(fallback.cloneNode(true));
     }
 
-const currentCutoff = getCurrentCutoffValue();
-
-if(scheduleSelect.querySelector(`option[value="${currentCutoff}"]`)){
-    scheduleSelect.value = currentCutoff;
+    const currentCutoff = getCurrentCutoffValue();
+    if(scheduleSelect.querySelector(`option[value="${currentCutoff}"]`)) scheduleSelect.value = currentCutoff;
+    if(allowanceSelect.querySelector(`option[value="${currentCutoff}"]`)) allowanceSelect.value = currentCutoff;
+    if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)) driverViewSelect.value = currentCutoff;
 }
 
-if(allowanceSelect.querySelector(`option[value="${currentCutoff}"]`)){
-    allowanceSelect.value = currentCutoff;
-}
-
-if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)){
-    driverViewSelect.value = currentCutoff;
-}
-
-}
-
-    function getCurrentCutoffValue(){
-
-    const today = new Date(
-        new Date().toLocaleString("en-US", {
-            timeZone:"Asia/Manila"
-        })
-    );
-
+function getCurrentCutoffValue(){
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone:"Asia/Manila" }));
     const month = String(today.getMonth() + 1).padStart(2,"0");
     const day = today.getDate();
-
     const bucket = day <= 15 ? "1" : "2";
-
     return `${month}-${bucket}`;
 }
-   
 
 function processAllowanceSummaryTable() {
     const selectorElement = document.querySelectorAll("#allowanceCutoff")[0];
@@ -1450,7 +1964,7 @@ function processAllowanceSummaryTable() {
         if (!aggregateGroup[record.name]) {
             aggregateGroup[record.name] = { approved: 0, pending: 0 };
         }
-        if (record.status === "Approved") {
+        if (record.status === "Paid" || record.status === "Approved") {
             aggregateGroup[record.name].approved += record.amount;
         } else {
             aggregateGroup[record.name].pending += record.amount;
@@ -1501,22 +2015,20 @@ function openDriverDetailsModal(driverName) {
     const targetMonth = parseInt(targetMonthStr);
 
     document.getElementById("detailsModalDriverName").textContent = driverName;
-   
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     document.getElementById("detailsModalRange").textContent = "Selected Window: " + monthNames[targetMonth - 1] + (targetBucket === "1" ? " 1 - 15" : " 16 - End of Month");
-   
+    
     const targetBody = document.getElementById("driverDetailsModalBody");
     targetBody.innerHTML = "";
 
     const filteredRecords = globalParsedAllowances.filter(record => {
         if (record.name.toLowerCase().trim() !== driverName.toLowerCase().trim()) return false;
-       
         const parsedDate = new Date(record.date);
         if(isNaN(parsedDate.getTime())) return false;
 
         const dayNumber = parsedDate.getDate();
         const monthNumber = parsedDate.getMonth() + 1;
-       
+        
         if (monthNumber !== targetMonth) return false;
         if (targetBucket === "1" && dayNumber > 15) return false;
         if (targetBucket === "2" && dayNumber <= 15) return false;
@@ -1534,12 +2046,17 @@ function openDriverDetailsModal(driverName) {
     filteredRecords.forEach(record => {
         const row = document.createElement("tr");
         let badgeDisplay = "";
-       
-        if (record.status === "Approved") {
-            badgeDisplay = `<span class="status-badge status-approved">Approved</span>`;
-        } else {
-            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding: 3px 8px; font-size:10px;" onclick="approveItemInline('${record.name}', '${record.date}', this)">Pay</button>`;
+
+        if (record.status === "Paid" || record.status === "Approved") {
+            badgeDisplay = `<span class="status-badge status-approved">Paid</span>`;
+        } else if (record.status === "Pay") {
+            badgeDisplay = `<button class="action-table-btn btn-approve" style="padding:3px 8px;font-size:10px;" onclick="markAllowancePaid('${record.name}','${record.date}',this)">Pay</button>`;
             row.style.backgroundColor = "#f0fdf4";
+        } else if (record.status === "For Review") {
+            badgeDisplay = `<button class="action-table-btn" style="padding:3px 8px;font-size:10px;background:#d97706;color:white;" onclick="openReviewModal('${record.name}','${record.date}',this)">For Review</button>`;
+            row.style.backgroundColor = "#fefce8";
+        } else {
+            badgeDisplay = `<button class="action-table-btn" style="padding:3px 8px;font-size:10px;background:#6b7280;color:white;" disabled>Pending</button>`;
         }
 
         row.innerHTML = `
@@ -1554,6 +2071,62 @@ function openDriverDetailsModal(driverName) {
     document.body.style.overflow = "hidden";
 }
 
+function openReviewModal(driverName, date, button) {
+    const record = globalParsedAllowances.find(r => r.name === driverName && r.date === date);
+    if (!record) {
+        alert("Allowance record not found.");
+        return;
+    }
+
+    document.getElementById("reviewDriver").textContent = record.name;
+    document.getElementById("reviewDate").textContent = record.date;
+    document.getElementById("reviewAllowanceModal").dataset.driver = record.name;
+    document.getElementById("reviewAllowanceModal").dataset.date = record.date;
+
+    document.getElementById("reviewTimeIn").textContent = record.timeIn || "";
+    document.getElementById("reviewTimeOut").textContent = record.timeOut || "";
+
+    document.getElementById("reviewBreakfast").value = record.breakfast;
+    document.getElementById("reviewLunch").value = record.lunch;
+    document.getElementById("reviewDinner").value = record.dinner;
+    document.getElementById("reviewParking").value = record.parking;
+
+    updateReviewTotal();
+
+    const remarksRow = document.getElementById("reviewRemarksRow");
+    const remarksCell = document.getElementById("reviewRemarks");
+
+    if (record.remarks && record.remarks.trim() !== "") {
+        remarksCell.textContent = record.remarks;
+        remarksRow.style.display = "";
+    } else {
+        remarksRow.style.display = "none";
+    }
+
+    const receiptBtn = document.getElementById("reviewReceiptBtn");
+    if (record.receipt) {
+        receiptBtn.style.display = "";
+        receiptBtn.dataset.url = record.receipt;
+    } else {
+        receiptBtn.style.display = "none";
+    }
+
+    document.getElementById("reviewAllowanceModal").style.display = "flex";
+}
+
+function closeReviewModal() {
+    document.getElementById("reviewAllowanceModal").style.display = "none";
+}
+
+function updateReviewTotal() {
+    const breakfast = Number(document.getElementById("reviewBreakfast").value) || 0;
+    const lunch = Number(document.getElementById("reviewLunch").value) || 0;
+    const dinner = Number(document.getElementById("reviewDinner").value) || 0;
+    const parking = Number(document.getElementById("reviewParking").value) || 0;
+    const total = breakfast + lunch + dinner + parking;
+    document.getElementById("reviewTotal").textContent = "₱" + total.toLocaleString();
+}
+
 function closeDetailsModal() {
     document.getElementById("driverAllowanceDetailsModal").style.display = "none";
     document.body.style.overflow = "";
@@ -1563,22 +2136,23 @@ async function approveItemInline(name, date, element) {
     if (confirm(`Approve allowance request for ${name} on ${date}?`)) {
         element.disabled = true;
         element.textContent = "Processing...";
-        showActionLoading("Approving Entry...", "Updating status registry values on live spreadsheets.");
-       
+        showActionLoading("Approving Allowance...", "Please wait while we mark this allowance for payment.");
+        
         try {
-           const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
+            const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
             const response = await fetch(targetUrl);
             const data = await response.json();
-           
+            
             if (data.success) {
-                document.getElementById("successModalTitle").textContent = "Item Approved";
-                document.getElementById("successModalText").textContent = "Record updated successfully!";
+                document.getElementById("successModalTitle").textContent = "Allowance Approved";
+                document.getElementById("successModalText").textContent = "Allowance marked for pay.";
                 document.getElementById("successModal").style.display = "flex";
 
-                document.getElementById("successOK").onclick = function() {
+                document.getElementById("successOK").onclick = async function () {
                     document.getElementById("successModal").style.display = "none";
-                    document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    window.location.reload();
+                    document.getElementById("reviewAllowanceModal").style.display = "none";
+                    await fetchLiveAllowancesFromSheet();
+                    showAdminDashboard();
                 };
             } else {
                 alert("❌ Error: " + data.message);
@@ -1593,6 +2167,43 @@ async function approveItemInline(name, date, element) {
         } finally {
             hideActionLoading();
         }
+    }
+}
+
+async function markAllowancePaid(name, date, element) {
+    if (!confirm(`Mark allowance for ${name} on ${date} as Paid?`)) return;
+
+    element.disabled = true;
+    element.textContent = "Processing...";
+    showActionLoading("Processing Payment...", "Please wait while we update the payment status.");
+
+    try {
+        const targetUrl = `${WEBAPP_BASE}?action=markAllowancePaid&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
+        const response = await fetch(targetUrl);
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById("successModalTitle").textContent = "Payment Completed";
+            document.getElementById("successModalText").textContent = "Allowance marked as Paid.";
+            document.getElementById("successModal").style.display = "flex";
+
+            document.getElementById("successOK").onclick = async function () {
+                document.getElementById("successModal").style.display = "none";
+                await fetchLiveAllowancesFromSheet();
+                showAdminDashboard();
+            };
+        } else {
+            alert(data.message || "Unable to update payment status.");
+            element.disabled = false;
+            element.textContent = "Pay";
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Network error. Please try again.");
+        element.disabled = false;
+        element.textContent = "Pay";
+    } finally {
+        hideActionLoading();
     }
 }
 
@@ -1617,12 +2228,6 @@ function addReceipts(files) {
 
 document.getElementById("cameraInput").addEventListener("change", function () { addReceipts(this.files); this.value = ""; });
 document.getElementById("galleryInput").addEventListener("change", function () { addReceipts(this.files); this.value = ""; });
-
-    document.getElementById("allowanceTimeIn")
-    .addEventListener("change", autoComputeMeals);
-
-document.getElementById("allowanceTimeOut")
-    .addEventListener("change", autoComputeMeals);
 
 function refreshReceiptPreview() {
     const preview = document.getElementById("receiptPreview");
@@ -1658,218 +2263,129 @@ function resetSubmitButton(btn) {
 
 function convertTimeToMinutes(timeStr) {
     if (!timeStr) return 0;
-
     const [h, m] = timeStr.split(":").map(Number);
     return (h * 60) + m;
 }
 
 function calculateMealAllowance(tripType, timeIn, timeOut) {
-
-    const result = {
-        breakfast: 0,
-        lunch: 0,
-        dinner: 0
-    };
-
+    const result = { breakfast: 0, lunch: 0, dinner: 0 };
     let inTime = convertTimeToMinutes(timeIn);
     let outTime = convertTimeToMinutes(timeOut);
 
-    if (outTime <= inTime) {
-        outTime += 1440;
-    }
-
+    if (outTime <= inTime) outTime += 1440;
 
     const isProvince = tripType.toLowerCase() === "province";
 
     function dutyPassed(hourMinute) {
-
         let checkTime = hourMinute;
-
-        if (checkTime < inTime) {
-            checkTime += 1440;
-        }
-
+        if (checkTime < inTime) checkTime += 1440;
         return checkTime >= inTime && checkTime <= outTime;
     }
 
-
     if (isProvince) {
-
-        if (
-    dutyPassed(60) ||
-    dutyPassed(120) ||
-    dutyPassed(180) ||
-    dutyPassed(240)
-) {
-    result.breakfast = 75;
-}
-
-
-    } else {
-
-        let originalIn = convertTimeToMinutes(timeIn);
-
-        if (
-            outTime >= 1500 ||
-            (originalIn <= 179 && outTime >= 60)
-        ) {
-            result.breakfast = 125;
-        }
-
-        else if (
-            originalIn > 180 &&
-            originalIn <= 240
-        ) {
+        if (dutyPassed(60) || dutyPassed(120) || dutyPassed(180) || dutyPassed(240)) {
             result.breakfast = 75;
         }
-
-
-        else if (
-            originalIn === 180
-        ) {
+    } else {
+        let originalIn = convertTimeToMinutes(timeIn);
+        if (outTime >= 1500 || (originalIn <= 179 && outTime >= 60)) {
+            result.breakfast = 125;
+        } else if (originalIn > 180 && originalIn <= 240) {
+            result.breakfast = 75;
+        } else if (originalIn === 180) {
             result.breakfast = 125;
         }
-
     }
 
-
-let lunchTime = 660;
-let lunchEnd = 780;
-
-if (inTime <= lunchTime && outTime >= lunchEnd) {
-
-    result.lunch = isProvince ? 75 : 125;
-
-}
-
-else if (outTime > 1440) {
-
-    let nextDayOut = outTime - 1440;
-
-
-    if (
-        inTime >= 1080 &&
-        nextDayOut >= lunchEnd
-    ) {
-
+    let lunchTime = 660;
+    let lunchEnd = 780;
+    if (inTime <= lunchTime && outTime >= lunchEnd) {
         result.lunch = isProvince ? 75 : 125;
-
+    } else if (outTime > 1440) {
+        let nextDayOut = outTime - 1440;
+        if (inTime >= 1080 && nextDayOut >= lunchEnd) {
+            result.lunch = isProvince ? 75 : 125;
+        }
     }
 
-}
-
-
-
-
-let dinnerStart = 1020;
-let dinnerEnd = 1140;
-
-if (inTime <= dinnerStart && outTime >= dinnerEnd) {
-
-    result.dinner = isProvince ? 75 : 125;
-
-}
-
-
-else if (outTime > 1440) {
-
-    let nextDayOut = outTime - 1440;
-
-    if (
-        inTime >= 1080 &&
-        nextDayOut >= dinnerEnd
-    ) {
-
+    let dinnerStart = 1020; 
+    let dinnerEnd = 1140; 
+    if (inTime <= dinnerStart && outTime >= dinnerEnd) {
         result.dinner = isProvince ? 75 : 125;
-
+    } else if (outTime > 1440) {
+        let nextDayOut = outTime - 1440;
+        if (inTime >= 1080 && nextDayOut >= dinnerEnd) {
+            result.dinner = isProvince ? 75 : 125;
+        }
     }
-
-}
 
     return result;
 }
-   
-    function autoComputeMeals() {
 
+function autoComputeMeals() {
     if (!currentTripType) return;
-
     const timeIn = document.getElementById("allowanceTimeIn").value;
     const timeOut = document.getElementById("allowanceTimeOut").value;
 
-if (!timeIn || !timeOut) {
+    if (!timeIn || !timeOut) {
+        document.getElementById("allowanceBreakfast").value = "";
+        document.getElementById("allowanceLunch").value = "";
+        document.getElementById("allowanceDinner").value = "";
+        return;
+    }
 
-    document.getElementById("allowanceBreakfast").value = "";
-    document.getElementById("allowanceLunch").value = "";
-    document.getElementById("allowanceDinner").value = "";
+    const meal = calculateMealAllowance(currentTripType, timeIn, timeOut);
 
-    return;
-}
-    const meal = calculateMealAllowance(
-        currentTripType,
-        timeIn,
-        timeOut
-    );
+    document.getElementById("allowanceBreakfast").value = meal.breakfast;
+    document.getElementById("allowanceLunch").value = meal.lunch;
+    document.getElementById("allowanceDinner").value = meal.dinner;
 
-   document.getElementById("allowanceBreakfast").value = meal.breakfast;
-document.getElementById("allowanceLunch").value = meal.lunch;
-document.getElementById("allowanceDinner").value = meal.dinner;
-
-document.getElementById("allowanceBreakfast").readOnly = true;
-document.getElementById("allowanceLunch").readOnly = true;
-document.getElementById("allowanceDinner").readOnly = true;
+    document.getElementById("allowanceBreakfast").readOnly = true;
+    document.getElementById("allowanceLunch").readOnly = true;
+    document.getElementById("allowanceDinner").readOnly = true;
 }
 
-    document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function(){
+    const closeViewerBtn = document.getElementById("closeViewerBtn");
+    if (closeViewerBtn) {
+        closeViewerBtn.addEventListener("click", function () {
+            document.getElementById("scheduleViewerPage").style.display = "none";
+            document.body.style.overflow = "";
+        });
+    }
 
-        const closeViewerBtn = document.getElementById("closeViewerBtn");
+    const driverViewBackBtn = document.getElementById("driverViewBackBtn");
+    if (driverViewBackBtn) driverViewBackBtn.addEventListener("click", backToMainDashboard);
 
-if (closeViewerBtn) {
-    closeViewerBtn.addEventListener("click", function () {
-        document.getElementById("scheduleViewerPage").style.display = "none";
-        document.body.style.overflow = "";
-    });
-}
+    const backToDriverBtn = document.getElementById("backToDriverBtn");
+    if (backToDriverBtn) backToDriverBtn.addEventListener("click", backToMainDashboard);
 
-        const driverViewBackBtn = document.getElementById("driverViewBackBtn");
-
-if (driverViewBackBtn) {
-    driverViewBackBtn.addEventListener("click", backToMainDashboard);
-}
-
-        const backToDriverBtn = document.getElementById("backToDriverBtn");
-
-if (backToDriverBtn) {
-    backToDriverBtn.addEventListener("click", backToMainDashboard);
-}
     checkAdminSession();
-   setInterval(checkAdminSession, 1000);
-       
+    setInterval(checkAdminSession, 1000);
+        
     const timeInField = document.getElementById("allowanceTimeIn");
     const timeOutField = document.getElementById("allowanceTimeOut");
 
-    if(timeInField){
-        timeInField.addEventListener("input", autoComputeMeals);
-    }
+    if(timeInField) timeInField.addEventListener("input", autoComputeMeals);
+    if(timeOutField) timeOutField.addEventListener("input", autoComputeMeals);
 
-    if(timeOutField){
-        timeOutField.addEventListener("input", autoComputeMeals);
-    }
-
+    const confirmReminderBtn = document.getElementById("confirmReminderBtn");
+    if (confirmReminderBtn) confirmReminderBtn.addEventListener("click", confirmReminder);
 });
-   
+
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
     currentTripType = tripType;
 
-      document.getElementById("allowanceBreakfast").readOnly = false;
+    document.getElementById("allowanceBreakfast").readOnly = false;
     document.getElementById("allowanceLunch").readOnly = false;
     document.getElementById("allowanceDinner").readOnly = false;
 
     document.getElementById("allowanceBreakfast").value = "";
     document.getElementById("allowanceLunch").value = "";
     document.getElementById("allowanceDinner").value = "";
-   
+    
     let infoPieces = [];
     if(reqBy) infoPieces.push(reqBy);
     if(pass) infoPieces.push(pass);
@@ -1877,7 +2393,7 @@ function submitAllowance(driver, date, reqBy, pass, tripType){
 
     document.getElementById("modalDriver").textContent = driver;
     document.getElementById("modalDate").textContent = date;
-   
+    
     if (reqBy) {
         document.getElementById("modalRequestedByRow").style.display = "flex";
         document.getElementById("modalRequestedBy").textContent = reqBy;
@@ -1966,20 +2482,13 @@ async function saveAllowance() {
     for (const file of selectedReceipts) { receipts.push(await fileToBase64(file)); }
 
     try {
-        const payloadData = {
-            token: SECRET_TOKEN,
-            data: payload,
-            receipts: receipts
-        };
-
+        const payloadData = { token: SECRET_TOKEN, data: payload, receipts: receipts };
         const response = await fetch(WEBAPP_URL, {
             method: "POST",
-            headers: {
-                "Content-Type": "text/plain;charset=utf-8"
-            },
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(payloadData)
         });
-       
+        
         const text = await response.text();
         let result = JSON.parse(text);
 
@@ -1994,17 +2503,23 @@ async function saveAllowance() {
 
         document.getElementById("successModalTitle").textContent = "Submitted Successfully";
         document.getElementById("successModalText").textContent = "Your meal allowance has been recorded for review and approval.";
-       
+        
         document.getElementById("successModal").style.display = "flex";
         await loadSubmittedAllowances();
         closeModal();
 
-        document.getElementById("successOK").onclick = function() {
+        document.getElementById("successOK").onclick = async function () {
             document.getElementById("successModal").style.display = "none";
             document.getElementById("pageLoadingOverlay").style.display = "flex";
-            window.location.reload();
+
+            await Promise.all([
+                loadSubmittedAllowances(),
+                fetchLiveAllowancesFromSheet()
+            ]);
+            await loadMainSchedulesAndApprovals();
+
+            document.getElementById("pageLoadingOverlay").style.display = "none";
         };
-       
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -2014,19 +2529,13 @@ async function saveAllowance() {
     }
 }
 
-document.getElementById("allowanceBtn").addEventListener("click", () => {
-    if (loggedInDriverName) {
-        showDriverAllowanceSummary();
-    } else {
-        document.getElementById("driverLoginModal").style.display = "block";
-    }
-});
-
+    
 function closeDriverLogin() {
     document.getElementById("driverLoginModal").style.display = "none";
 }
 
 function showDriverAllowanceSummary() {
+    const loggedInDriverName = localStorage.getItem("driverName");
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "block";
@@ -2041,6 +2550,7 @@ function showDriverAllowanceSummary() {
 }
 
 function renderDriverViewTable() {
+    const loggedInDriverName = localStorage.getItem("driverName") || "";
     let selectorValue = document.getElementById("driverViewCutoff").value || "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
 
@@ -2051,8 +2561,7 @@ function renderDriverViewTable() {
     tableBody.innerHTML = "";
 
     const filteredRecords = globalParsedAllowances.filter(record => {
-        if (!record.name.toLowerCase().includes(loggedInDriverName.toLowerCase().trim())) return false;
-
+        if (record.name.trim().toLowerCase() !== loggedInDriverName.trim().toLowerCase()) return false;
         const parsedDate = new Date(record.date);
         if(isNaN(parsedDate.getTime())) return false;
 
@@ -2067,7 +2576,6 @@ function renderDriverViewTable() {
     });
 
     filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
-
     let totalAmount = 0;
 
     if (filteredRecords.length === 0) {
@@ -2077,14 +2585,16 @@ function renderDriverViewTable() {
 
     filteredRecords.forEach(record => {
         totalAmount += record.amount;
-
         const row = document.createElement("tr");
-       
         let statusBadge = "";
-        if (record.status === "Approved") {
+
+        if (record.status === "Paid" || record.status === "Approved") {
             statusBadge = `<span class="status-badge status-approved">Paid</span>`;
+        } else if (record.status === "Pay") {
+            statusBadge = `<span class="status-badge status-pending">For Payment</span>`;
+            row.style.backgroundColor = "#dbeafe";
         } else {
-            statusBadge = `<span class="status-badge status-pending">Pending</span>`;
+            statusBadge = `<span class="status-badge status-pending">For Review</span>`;
             row.style.backgroundColor = "#fef3c7";
         }
 
@@ -2107,95 +2617,6 @@ function renderDriverViewTable() {
     tableBody.appendChild(totalRow);
 }
 
-async function driverLogin() {
-
-    const driverSelect = document.getElementById("driverUsername");
-    const selectedDriverValue = driverSelect.value;
-    const pin = document.getElementById("driverPin").value.trim();
-    const loginBtn = document.querySelector("#driverLoginModal .submit-btn");
-
-    if (!selectedDriverValue) {
-        alert("❌ Please select your name.");
-        return;
-    }
-
-    if (!pin) {
-        alert("❌ Enter your Security PIN.");
-        return;
-    }
-
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Verifying...";
-
-    showActionLoading(
-        "Verifying Driver Credential...",
-        "Checking your workspace dashboard properties."
-    );
-
-    try {
-
-        const response = await fetch(
-            `${WEBAPP_BASE}?action=login`
-            + `&username=${encodeURIComponent(selectedDriverValue)}`
-            + `&password=${encodeURIComponent(pin)}`
-            + `&token=${encodeURIComponent(SECRET_TOKEN)}`
-        );
-
-        const result = await response.json();
-
-        if (!result.success) {
-            hideActionLoading();
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login";
-
-            alert("❌ Invalid Driver Name or PIN.");
-            return;
-        }
-
-        if (result.role !== "driver") {
-            hideActionLoading();
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login";
-
-            alert("❌ This account is not a driver.");
-            return;
-        }
-
-        loggedInDriverName = result.name;
-
-        driverSelect.selectedIndex = 0;
-        document.getElementById("driverPin").value = "";
-
-        closeDriverLogin();
-        hideActionLoading();
-
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Login";
-
-        document.getElementById("loginSuccessTitle").innerHTML =
-            `Hi ${loggedInDriverName}!`;
-
-        document.getElementById("loginSuccessMessage").innerHTML =
-            `This is just a reminder to always submit your allowance immediately after your trip!`;
-
-        document.getElementById("loginSuccessModal").style.display = "flex";
-
-        document.getElementById("loginSuccessOK").onclick = () => {
-            document.getElementById("loginSuccessModal").style.display = "none";
-            showDriverAllowanceSummary();
-        };
-
-    } catch (err) {
-
-        hideActionLoading();
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Login";
-
-        console.error(err);
-        alert("Unable to connect to the server.");
-    }
-}
-   
 function showActionLoading(title, message){
     const t = document.getElementById("actionLoadingTitle");
     const m = document.getElementById("actionLoadingMessage");
@@ -2205,43 +2626,6 @@ function showActionLoading(title, message){
 }
 
 function hideActionLoading(){ document.getElementById("actionLoadingOverlay").style.display = "none"; }
-function closeAdminLogin(){ document.getElementById("adminLoginModal").style.display = "none"; }
-
-async function adminLogin() {
-    const username = document.getElementById("adminUsername").value.trim();
-    const password = document.getElementById("adminPassword").value.trim();
-    const loginBtn = document.querySelector("#adminLoginModal .submit-btn");
-
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Signing In...";
-    showActionLoading("Signing In...", "Please wait while we prepare your dashboard.");
-    closeAdminLogin();
-
-    try {
-        const res = await fetch(
-`${WEBAPP_BASE}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&token=${encodeURIComponent(SECRET_TOKEN)}`
-);
-        const text = await res.text();
-        let result = JSON.parse(text);
-
-        if (result.success === true) {
-           localStorage.setItem("userRole", result.role || "user");
-        localStorage.setItem("loggedIn", "true");
-        refreshLoginSession();  
-        showAdminDashboard();
-        } else {
-            hideActionLoading();
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login";
-            alert(result.message || "Invalid login");
-        }
-    } catch (err) {
-        hideActionLoading();
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Login";
-        alert("Network error. Please try again.");
-    }
-}
 
 function approveSchedule(date, buttonElement) {
     const confirmModal = document.getElementById("confirmApprovalModal");
@@ -2271,7 +2655,7 @@ function approveSchedule(date, buttonElement) {
                 document.getElementById("successOK").onclick = function() {
                     document.getElementById("successModal").style.display = "none";
                     document.getElementById("pageLoadingOverlay").style.display = "flex";
-                    window.location.reload();
+                    window.location.reload(); 
                 };
             } else {
                 buttonElement.disabled = false;
@@ -2297,8 +2681,15 @@ function approveSchedule(date, buttonElement) {
 function loadScheduleApprovalPage(){
     const approvedDiv = document.getElementById("approvedSchedules");
     const pendingDiv = document.getElementById("pendingSchedules");
+    
+    // Safety guard clause
+    if (!approvedDiv || !pendingDiv) return;
+
     approvedDiv.innerHTML = "";
     pendingDiv.innerHTML = "";
+
+    const userRole = localStorage.getItem("userRole");
+    const isAdmin = userRole !== "organic"; // Admin check flag
 
     let selectorValue = document.getElementById("scheduleCutoff") ? document.getElementById("scheduleCutoff").value : "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
@@ -2306,6 +2697,7 @@ function loadScheduleApprovalPage(){
     const [targetMonthStr, targetBucket] = selectorValue.split("-");
     const targetMonth = parseInt(targetMonthStr);
 
+    // Date setup for Admin upfront filter (Manila Timezone)
     const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
     today.setHours(0,0,0,0);
 
@@ -2326,13 +2718,15 @@ function loadScheduleApprovalPage(){
 
     let approvedMainRowsHtml = "";
     let approvedDropdownItems = [];
+    let pendingHtml = "";
+
     let hasApproved = false;
     let hasPending = false;
 
     scheduleDates.forEach(date => {
         const scheduleDate = new Date(date);
         if (isNaN(scheduleDate.getTime())) return;
-       
+        
         const dayNumber = scheduleDate.getDate();
         const monthNumber = scheduleDate.getMonth() + 1;
 
@@ -2341,94 +2735,605 @@ function loadScheduleApprovalPage(){
         if (targetBucket === "2" && dayNumber <= 15) return;
 
         scheduleDate.setHours(0,0,0,0);
-       
+
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
-        const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
+        const weekday = formatWeekday(scheduleDate);
 
-        if (status === "approved") {
+       
+
+      if (status === "approved") {
             hasApproved = true;
-           
-            const row = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                    </div>
-                </td>
-            </tr>`;
+            
+            const row = createScheduleRow(
+    weekday,
+    date,
+    `
+   <div class="action-btn-grp justify-center">
+        <button class="action-table-btn btn-view"
+            onclick="viewSchedule('${date}')">
+            View
+        </button>
+    </div>
+    `,
+    true
+);
+            if (isAdmin) {
+                // Admin View: Split between upfront display and dropdown menu
+                const scheduleTime = scheduleDate.getTime();
+                let showUpfront = false;
 
-            const scheduleTime = scheduleDate.getTime();
-            let showUpfront = false;
+                if (isTomorrowApproved) {
+                    if (scheduleTime === today.getTime() || scheduleTime === tomorrow.getTime()) {
+                        showUpfront = true;
+                    }
+                } else {
+                    if (scheduleTime === yesterday.getTime() || scheduleTime === today.getTime()) {
+                        showUpfront = true;
+                    }
+                }
 
-            if (isTomorrowApproved) {
-                if (scheduleTime === today.getTime() || scheduleTime === tomorrow.getTime()) {
-                    showUpfront = true;
+                if (showUpfront) {
+                    approvedMainRowsHtml += row;
+                } else {
+                    approvedDropdownItems.push({ date: date, html: row });
                 }
             } else {
-                if (scheduleTime === yesterday.getTime() || scheduleTime === today.getTime()) {
-                    showUpfront = true;
-                }
-            }
-
-            if (showUpfront) {
+                // Non-Admin (Organic): Render all directly
                 approvedMainRowsHtml += row;
-            } else {
-                approvedDropdownItems.push({ date: date, html: row });
             }
+
         } else {
-            const pendingRow = `
-            <tr>
-                <td class="approval-day-name" style="text-align: left;">${weekday}</td>
-                <td class="approval-date-val" style="text-align: center;">${date}</td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                        <button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>
-                    </div>
-                </td>
-            </tr>`;
-            pendingDiv.innerHTML += pendingRow;
             hasPending = true;
+            const pendingRow = createScheduleRow(
+    weekday,
+    date,
+    createActionButtons(date, isAdmin)
+);
+            pendingHtml += pendingRow;
         }
     });
 
+    // Render Approved Schedules Block
     if (hasApproved) {
         approvedDiv.innerHTML = approvedMainRowsHtml;
 
-        if (approvedDropdownItems.length > 0) {
+        // Render Dropdown if Admin and previous schedules exist
+        if (isAdmin && approvedDropdownItems.length > 0) {
             approvedDropdownItems.sort((a, b) => new Date(a.date) - new Date(b.date));
-           
+            
             let dropdownRow = `
             <tr>
                 <td colspan="3" style="text-align: center; padding: 10px;">
                     <select onchange="if(this.value) { viewSchedule(this.value); this.selectedIndex=0; }" style="width: 90%; padding: 6px; font-size: 12px; font-weight: 600; border: 1px solid #14532d; border-radius: 6px; color: #14532d; background: #fff; cursor: pointer;">
                         <option value="" selected disabled>📂 View More Approved Schedules (${approvedDropdownItems.length})</option>
             `;
-           
+            
             approvedDropdownItems.forEach(item => {
                 dropdownRow += `<option value="${item.date}">${item.date}</option>`;
             });
-           
+            
             dropdownRow += `
                     </select>
                 </td>
             </tr>`;
-           
+            
             approvedDiv.innerHTML += dropdownRow;
         }
     } else {
         approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
 
-    if(!hasPending) {
-        pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
+   if (hasPending) {
+
+    pendingDiv.innerHTML = pendingHtml;
+
+} else {
+
+    renderEmptyTable(
+        pendingDiv,
+        "No pending schedules found for this cut-off window."
+    );
+
+}
+}
+
+function formatWeekday(date) {
+    return new Date(date).toLocaleDateString("en-US", {
+        weekday: "long"
+    });
+}
+
+function renderEmptyTable(tableBody, message, colspan = 3) {
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="${colspan}"
+                style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                ${message}
+            </td>
+        </tr>`;
+}
+
+function createActionButtons(date, isAdmin) {
+    let html = `
+        <div class="action-btn-grp justify-center">
+            <button class="action-table-btn btn-view"
+                onclick="viewSchedule('${date}')">
+                View
+            </button>`;
+
+    if (isAdmin) {
+        html += `
+            <button class="action-table-btn btn-approve"
+                onclick="approveSchedule('${date}', this)">
+                Approve
+            </button>`;
+    }
+
+    html += `</div>`;
+
+    return html;
+}
+
+function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
+    return `
+        <tr>
+            <td class="approval-day-name text-left">
+                ${weekday}
+            </td>
+
+            <td class="approval-date-val text-center">
+                ${date}${showLineBreak ? " <br>" : ""}
+            </td>
+
+            <td>
+                ${actionHtml}
+            </td>
+        </tr>
+    `;
+}
+    
+async function loadMainSchedulesAndApprovals() {
+    const role = localStorage.getItem("userRole");
+
+    try {
+        const [scheduleResponse, approvalResponse] = await Promise.all([
+            fetch(sheetURL),
+            fetch(approvalURL)
+        ]);
+
+        if (!scheduleResponse.ok || !approvalResponse.ok) {
+            console.warn("Schedule CSV endpoints returned non-OK status.");
+            return false;
+        }
+
+        const [data, approvalData] = await Promise.all([
+            scheduleResponse.text(),
+            approvalResponse.text()
+        ]);
+
+        if (data.trim().startsWith("<!DOCTYPE") || approvalData.trim().startsWith("<!DOCTYPE")) {
+            console.warn("Schedule CSV endpoints returned HTML 404 page.");
+            return false;
+        }
+
+        const rows = data.trim().split("\n").slice(1);
+        const approvalRows = approvalData.trim().split("\n").slice(1);
+
+     grouped = {};
+summaryDrivers = {};
+approvalDates = {};
+approvalNotes = {};
+
+approvalRows.forEach(row => {
+
+    let cols = [];
+    let current = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+
+        const char = row[i];
+
+        if (char === '"') {
+            insideQuotes = !insideQuotes;
+        }
+        else if (char === "," && !insideQuotes) {
+            cols.push(current.trim());
+            current = "";
+        }
+        else {
+            current += char;
+        }
+
+    }
+
+    cols.push(current.trim());
+
+    const date = (cols[0] || "").replace(/"/g, "").trim();
+    const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
+    const notes = (cols[2] || "").replace(/"/g, "").trim();
+
+    approvalDates[date] = status;
+    approvalNotes[date] = notes;
+
+});
+        
+
+        rows.forEach(row => {
+            let cols = [];
+            let current = "";
+            let insideQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') insideQuotes = !insideQuotes;
+                else if (char === ',' && !insideQuotes) {
+                    cols.push(current.trim());
+                    current = "";
+                } else current += char;
+            }
+            cols.push(current.trim());
+            if (cols.length < 13) return;
+
+            const [
+                driver, date, timeIn, vehicle, itinerary, pickupTime,
+                requestedBy, passengerName, contactNumber, origin,
+                destination, remarks, tripType
+            ] = cols.map(v => (v || "").replace(/"/g, "").trim());
+
+            const key = driver + "_" + date;
+
+            if (!summaryDrivers[date]) summaryDrivers[date] = {};
+            if (!summaryDrivers[date][driver]) {
+                summaryDrivers[date][driver] = { driver, timeIn, vehicle, itinerary, tripType };
+            }
+
+            if (!grouped[key]) {
+                grouped[key] = { driver, date, timeIn, vehicle, itinerary, tripType, trips: [] };
+            }
+
+            if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
+            grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
+        });
+
+        scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
+
+        const container = document.getElementById("driversContainer");
+        let pageHTML = "";
+        if (container) container.innerHTML = "";
+
+        const phNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        today.setHours(0, 0, 0, 0);
+
+        scheduleDates.sort((a, b) => {
+            const da = new Date(a);
+            const db = new Date(b);
+            da.setHours(0, 0, 0, 0);
+            db.setHours(0, 0, 0, 0);
+
+            const aToday = da.getTime() === today.getTime();
+            const bToday = db.getTime() === today.getTime();
+            const aPast = da < today;
+            const bPast = db < today;
+
+            if (aPast && !bPast) return -1;
+            if (!aPast && bPast) return 1;
+            if (aToday && !bToday) return -1;
+            if (!aToday && bToday) return 1;
+            return da - db;
+        });
+
+        scheduleDates.forEach(date => {
+            const scheduleDate = new Date(date);
+            scheduleDate.setHours(0, 0, 0, 0);
+
+            const isPast = scheduleDate.getTime() < today.getTime();
+            const isToday = scheduleDate.getTime() === today.getTime();
+            const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
+            const status = (approvalDates[date] || "").toLowerCase();
+
+            // -----------------------------------------------------------
+            // ROLE FILTERING LOGIC
+            // -----------------------------------------------------------
+            // Organic role: Hide past, show Today/Future even if pending
+            if (role === "organic") {
+                if (isPast) return; 
+            } 
+            // Driver & Admin Roles on Main Dashboard: Show ONLY APPROVED schedules for Today & Future
+            else {
+                if (status !== "approved" && !isPast) return;
+            }
+
+            let pendingBadgeHeaderHtml = "";
+            if (role === "organic" && status !== "approved") {
+                pendingBadgeHeaderHtml = `
+                <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
+                    Pending Approval
+                </div>`;
+            }
+
+            // TODAY'S SCHEDULE RENDERING
+            if (isToday) {
+                const hideSummaryTable = phNow.getHours() >= 16;
+                let tableRows = "";
+
+                Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                    let rowClass = isRestDay ? "rest-day-row" : "";
+
+                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+
+                    tableRows += `
+                    <tr class="${rowClass}">
+                        <td>${driver.driver}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>${driver.vehicle}</td>
+                        <td>${itineraryDisplay}</td>
+                    </tr>`;
+                });
+
+                if (!hideSummaryTable) {
+                    pageHTML += `
+                    <div class="summary-card">
+                        ${pendingBadgeHeaderHtml}
+                       <div class="summary-header">
+    <h2>${dayName} | ${date}</h2>
+
+    
+</div>
+                        <table class="summary-table">
+                            <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+${
+        approvalNotes[date] && approvalNotes[date].trim() !== ""
+        ?
+        `
+        <div class="schedule-notes-box">
+
+            <div class="schedule-notes-header">
+                Schedule Notes
+            </div>
+
+            <div class="schedule-notes-body">
+                ${approvalNotes[date].replace(/\n/g,"<br>")}
+            </div>
+
+        </div>
+        `
+        :
+        ""
+    }
+
+                        
+                    </div>`;
+                }
+
+                Object.values(grouped).filter(d => d.date === date).forEach(d => {
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                    if (noAllowanceItineraries.includes(itinerary)) return;
+
+                    let tripsHTML = "";
+                    d.trips.forEach((trip, index) => {
+                        with (trip) {
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                            </div>`;
+                        }
+                    });
+
+                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
+                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+
+                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
+
+                    const allowanceBtnHtml = role === "organic" ? "" : (
+                        isAlreadySubmitted
+                            ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
+                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
+                    );
+
+                    pageHTML += `
+                    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
+                        <div class="driver-header">
+                            <h2>${d.driver}</h2>
+                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+                        </div>
+                        ${tripsHTML}
+                        ${allowanceBtnHtml}
+                    </div>`;
+                });
+            }
+
+            // FUTURE SCHEDULES RENDERING
+            if (!isPast && !isToday) {
+                let tableRows = "";
+                Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                    let rowClass = isRestDay ? "rest-day-row" : "";
+
+                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+
+                    tableRows += `
+                    <tr class="${rowClass}">
+                        <td>${driver.driver}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>${driver.vehicle}</td>
+                        <td>${itineraryDisplay}</td>
+                    </tr>`;
+                });
+
+              if (tableRows !== "") {
+    pageHTML += `
+    <div class="summary-card">
+
+        ${pendingBadgeHeaderHtml}
+
+        <div class="summary-header">
+            <h2>${dayName} | ${date}</h2>
+        </div>
+
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Driver Name</th>
+                    <th>Time In</th>
+                    <th>Unit</th>
+                    <th>Assignment</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableRows}
+            </tbody>
+        </table>
+
+        ${
+            approvalNotes[date] && approvalNotes[date].trim() !== ""
+            ?
+            `
+            <div class="schedule-notes-box">
+
+                <div class="schedule-notes-header">
+                    Schedule Notes
+                </div>
+
+                <div class="schedule-notes-body">
+                    ${approvalNotes[date].replace(/\n/g,"<br>")}
+                </div>
+
+            </div>
+            `
+            :
+            ""
+        }
+
+    </div>`;
+}
+                Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                    if (noAllowanceItineraries.includes(itinerary)) return;
+
+                    let tripsHTML = "";
+                    d.trips.forEach((trip, index) => {
+                        with (trip) {
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                            </div>`;
+                        }
+                    });
+
+                    pageHTML += `
+                    <div class="driver-card">
+                        <div class="driver-header">
+                            <h2>${d.driver}</h2>
+                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+                        </div>
+                        ${tripsHTML}
+                    </div>`;
+                });
+            }
+
+            // PAST UNSUBMITTED ALLOWANCE CARDS
+            if (isPast && role !== "organic") {
+               const pendingDrivers = Object.values(grouped).filter(d => {
+                    if (d.date !== date) return false;
+
+                    const itinerary = (d.itinerary || "").trim();
+                    const noAllowanceItineraries = [
+                        "AM","PM","AM / Banking","Banking / PM",
+                        "Rest Day","Standby","ED",
+                        "AM / ED","ED / PM","ED / Banking","Banking"
+                    ];
+
+                    if (noAllowanceItineraries.includes(itinerary)) return false;
+
+                    const cleanDriver = d.driver.trim().replace(/\s+/g, " ").toLowerCase();
+                    const lookupKey = `${cleanDriver}|${standardizeDateStr(d.date)}`;
+
+                    return submittedDrivers[lookupKey] !== true;
+                });
+
+                if (pendingDrivers.length === 0) return;
+
+                pageHTML += `
+                <div class="pending-summary-card">
+                    <div class="pending-summary-header">${dayName} | ${date}</div>
+                    <table class="pending-table">
+                        <tbody>`;
+
+                pendingDrivers.forEach(d => {
+                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
+                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+                    pageHTML += `
+                        <tr>
+                            <td class="pending-driver-cell">${d.driver}</td>
+                            <td class="pending-action-cell">
+                                <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit</button>
+                            </td>
+                        </tr>`;
+                });
+
+                pageHTML += `</tbody></table></div>`;
+            }
+        });
+
+        if (container) {
+            container.style.visibility = "hidden";
+            container.innerHTML = pageHTML;
+        }
+
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
+        updateCutoffDropdownsDynamically();
+        loadScheduleApprovalPage();
+
+        window.scrollTo(0, 0);
+        if (container) container.style.visibility = "visible";
+        return true;
+    } catch (err) {
+        console.error("Safely handled schedule loading error:", err);
+        return false;
     }
 }
 
-    function backToMainDashboard() {
+function showHomePage() {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("driverDashboard").style.display = "none";
+    document.getElementById("driverAllowancePage").style.display = "none";
+    document.getElementById("scheduleApprovalPage").style.display = "none";
+    document.getElementById("scheduleViewerPage").style.display = "none";
 
+    backToMainDashboard();
+}
+
+function backToMainDashboard() {
     document.getElementById("driverDashboard").style.display = "block";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "none";
@@ -2436,15 +3341,18 @@ function loadScheduleApprovalPage(){
 
     document.body.style.overflow = "";
 
-    document.getElementById("dashboardBtn").classList.add("active");
-    document.getElementById("adminBtn").classList.remove("active");
-    document.getElementById("allowanceBtn").classList.remove("active");
+    const dashboardBtn = document.getElementById("dashboardBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const allowanceBtn = document.getElementById("allowanceBtn");
+
+    if (dashboardBtn) dashboardBtn.classList.add("active");
+    if (adminBtn) adminBtn.classList.remove("active");
+    if (allowanceBtn) allowanceBtn.classList.remove("active");
 
     sessionStorage.removeItem("view");
-
     window.scrollTo(0, 0);
 }
-   
+
 function viewSchedule(date){
     document.querySelector(".approval-container").style.display = "none";
 
@@ -2453,6 +3361,9 @@ function viewSchedule(date){
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
+    console.log("Viewing Date:", date);
+console.log("approvalNotes Object:", approvalNotes);
+console.log("Current Note:", approvalNotes[date]);
     let viewerHTML = "";
 
     const scheduleDate = new Date(date);
@@ -2462,15 +3373,10 @@ function viewSchedule(date){
     Object.values(summaryDrivers[date] || {}).forEach(driver => {
         let itineraryDisplay = (driver.itinerary || "").trim();
         const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-       
-        let rowClass = isRestDay ? "rest-day-row" : "";
+        let rowClass = isRestDay ? "rest-day-row" : ""; 
 
-        if (/\bam\b/i.test(itineraryDisplay)) {
-            itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-        }
-        if (/\bpm\b/i.test(itineraryDisplay)) {
-            itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
-        }
+        if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+        if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
         tableRows += `
           <tr class="${rowClass}">
@@ -2490,6 +3396,28 @@ function viewSchedule(date){
                 <tbody>${tableRows}</tbody>
             </table>
         </div>`;
+        console.log("Current Date:", date);
+console.log("approvalNotes:", approvalNotes);
+
+const scheduleNotes = approvalNotes[date] || "";
+
+console.log("Notes Found:", scheduleNotes);
+
+if (scheduleNotes.trim() !== "") {
+
+    viewerHTML += `
+    <div class="schedule-notes-box">
+
+        <div class="schedule-notes-header">
+            Schedule Notes
+        </div>
+
+        <div class="schedule-notes-body">
+            ${scheduleNotes.replace(/\n/g,"<br>")}
+        </div>
+
+    </div>`;
+}
     }
 
     Object.values(grouped)
@@ -2504,38 +3432,10 @@ function viewSchedule(date){
                     <div class="trip">
                         <div class="trip-title">Pick-Up ${index + 1}</div>
                         ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                        ${requestedBy ? `
-                        <div class="info-item">
-                            <div class="info-label">Requested By</div>
-                            <div class="info-value">
-                                ${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
-                            </div>
-                        </div>` : ""}
-                        ${passengerName ? `
-                        <div class="info-item">
-                            <div class="info-label">Passenger</div>
-                            <div class="info-value">
-                                ${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
-                            </div>
-                        </div>` : ""}
-                        ${origin ? `
-                        <div class="info-item">
-                            <div class="info-label">Origin</div>
-                            <div class="info-value">
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">
-                                    ${origin}
-                                </a>
-                            </div>
-                        </div>` : ""}
-                        ${destination ? `
-                        <div class="info-item">
-                            <div class="info-label">Destination</div>
-                            <div class="info-value">
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">
-                                    ${destination}
-                                </a>
-                            </div>
-                        </div>` : ""}
+                        ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                        ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                        ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                        ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
                         ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
                     </div>`;
                 }
@@ -2559,503 +3459,49 @@ function viewSchedule(date){
     }
 
     viewerContent.innerHTML = viewerHTML;
-   
     document.getElementById("scheduleViewerPage").style.display = "block";
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden"; 
 }
-   
+
 window.onload = async function () {
-    const loggedIn = localStorage.getItem("loggedIn");
-    const expires = Number(localStorage.getItem("loginExpires"));
-    let autoLogin = (loggedIn === "true" && Date.now() < expires);
+    const role = localStorage.getItem("userRole");
+    const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
+    const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
+
+    const autoLogin = driverLoggedIn && Date.now() < driverExpires;
 
     if (!autoLogin) {
-        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("driverLoggedIn");
+        localStorage.removeItem("driverName");
+        localStorage.removeItem("driverRole");
+        localStorage.removeItem("username");
         localStorage.removeItem("userRole");
         localStorage.removeItem("loginExpires");
-    }
 
-    try {
-        const [_, scheduleResponse, approvalResponse] = await Promise.all([
-            loadSubmittedAllowances(),
-            fetch(sheetURL),
-            fetch(approvalURL)
-        ]);
-
-        await fetchLiveAllowancesFromSheet();
-
-        const [data, approvalData] = await Promise.all([scheduleResponse.text(), approvalResponse.text()]);
-        const rows = data.trim().split("\n").slice(1);
-        const approvalRows = approvalData.trim().split("\n").slice(1);
-
-        grouped = {};
-        summaryDrivers = {};
-        approvalDates = {};
-
-        approvalRows.forEach(row => {
-            const parts = row.split(",");
-            const status = parts.pop().replace(/"/g,"").trim().toLowerCase();
-            const date = parts.join(",").replace(/"/g,"").trim();
-            approvalDates[date] = status;
-        });
-
-        rows.forEach(row => {
-            let cols = []; let current = ""; let insideQuotes = false;
-            for (let i = 0; i < row.length; i++) {
-                const char = row[i];
-                if (char === '"') insideQuotes = !insideQuotes;
-                else if (char === ',' && !insideQuotes) { cols.push(current.trim()); current = ""; }
-                else current += char;
-            }
-            cols.push(current.trim());
-            if (cols.length < 13) return;
-
-          const [
-    driver,
-    date,
-    timeIn,
-    vehicle,
-    itinerary,
-    pickupTime,
-    requestedBy,
-    passengerName,
-    contactNumber,
-    origin,
-    destination,
-    remarks,
-    tripType
-] = cols.map(v => (v || "").replace(/"/g, "").trim());
-            const key = driver + "_" + date;
-
-            if (!summaryDrivers[date]) summaryDrivers[date] = {};
-           if (!summaryDrivers[date][driver])
-    summaryDrivers[date][driver] = {
-        driver,
-        timeIn,
-        vehicle,
-        itinerary,
-        tripType
-    };
-         if (!grouped[key])
-    grouped[key] = {
-        driver,
-        date,
-        timeIn,
-        vehicle,
-        itinerary,
-        tripType,
-        trips: []
-    };
-
-if (tripType && !grouped[key].tripType) {
-    grouped[key].tripType = tripType;
-}
-
-           
-            grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
-        });
-
-        scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
-       
-        const container = document.getElementById("driversContainer");
-        let pageHTML = "";
-
-        const now = new Date();
-        const phTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
-        const phNow = new Date(phTimeStr);
-
-        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        today.setHours(0,0,0,0);
-
-        scheduleDates.sort((a, b) => {
-            const da = new Date(a);
-            const db = new Date(b);
-            da.setHours(0,0,0,0);
-            db.setHours(0,0,0,0);
-
-            const aToday = da.getTime() === today.getTime();
-            const bToday = db.getTime() === today.getTime();
-            const aPast = da < today;
-            const bPast = db < today;
-
-            if (aPast && !bPast) return -1;
-            if (!aPast && bPast) return 1;
-            if (aToday && !bToday) return -1;
-            if (!aToday && bToday) return 1;
-            return da - db;
-        });
-
-        scheduleDates.forEach(date => {
-            const scheduleDate = new Date(date);
-            const status = (approvalDates[date] || "").toLowerCase();
-
-            if(status !== "approved") return;
-
-            const today = new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"}));
-            today.setHours(0,0,0,0);
-            scheduleDate.setHours(0,0,0,0);
-
-            const isToday = scheduleDate.getTime() === today.getTime();
-            const isPast = scheduleDate.getTime() < today.getTime();
-            const dayName = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
-
-            if(isToday){
-                const hideSummaryTable = phNow.getHours() >= 16;
-                let tableRows="";
-
-                Object.values(summaryDrivers[date] || {}).forEach(driver=>{
-                    let itineraryDisplay = (driver.itinerary || "").trim();
-                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                   
-                    let rowClass = isRestDay ? "rest-day-row" : "";
-
-                    if (/\bam\b/i.test(itineraryDisplay)) {
-                        itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    }
-                    if (/\bpm\b/i.test(itineraryDisplay)) {
-                        itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
-                    }
-
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driver.driver}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>${driver.vehicle}</td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
-                });
-
-                if (!hideSummaryTable) {
-                    pageHTML += `
-                    <div class="summary-card">
-                        <div class="summary-header">
-                            <h2>${dayName} | ${date}</h2>
-                        </div>
-                        <table class="summary-table">
-                            <thead>
-                                <tr>
-                                    <th>Driver Name</th>
-                                    <th>Time In</th>
-                                    <th>Unit</th>
-                                    <th>Assignment</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRows}
-                            </tbody>
-                        </table>
-                    </div>`;
-                }
-
-                Object.values(grouped)
-                .filter(d => d.date === date)
-                .forEach(d => {
-                   const itinerary = (d.itinerary || "").trim();
-
-
-const noAllowanceItineraries = [
-    "AM",
-    "PM",
-    "AM / Banking",
-    "Banking / PM",
-    "Rest Day",
-    "Standby",
-    "ED",
-    "AM / ED",
-    "ED / PM",
-    "ED / Banking",
-    "Banking"
-];
-
-if (noAllowanceItineraries.includes(itinerary)) {
-
-    return;
-}
-
-                    let tripsHTML = "";
-                    d.trips.forEach((trip, index) => {
-                        with (trip) {
-                            tripsHTML += `
-                            <div class="trip">
-                                <div class="trip-title">Pick-Up ${index + 1}</div>
-                                ${pickupTime ? `
-                                <div class="info-item">
-                                    <div class="info-label">Pick Up Time</div>
-                                    <div class="info-value">${pickupTime}</div>
-                                </div>` : ""}
-                                ${requestedBy ? `
-                                <div class="info-item">
-                                    <div class="info-label">Requested By</div>
-                                    <div class="info-value">
-                                        ${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
-                                    </div>
-                                </div>` : ""}
-                                ${passengerName ? `
-                                <div class="info-item">
-                                    <div class="info-label">Passenger</div>
-                                    <div class="info-value">
-                                        ${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
-                                    </div>
-                                </div>` : ""}
-                                ${origin ? `
-                                <div class="info-item">
-                                    <div class="info-label">Origin</div>
-                                    <div class="info-value">
-                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">
-                                            ${origin}
-                                        </a>
-                                    </div>
-                                </div>` : ""}
-                                ${destination ? `
-                                <div class="info-item">
-                                    <div class="info-label">Destination</div>
-                                    <div class="info-value">
-                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">
-                                            ${destination}
-                                        </a>
-                                    </div>
-                                </div>` : ""}
-                                ${remarks ? `
-                                <div class="info-item">
-                                    <div class="info-label">Remarks</div>
-                                    <div class="info-value">${remarks}</div>
-                                </div>` : ""}
-                            </div>`;
-                        }
-                    });
-
-                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
-                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
-
-                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
-
-                    pageHTML += `
-                    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g,'-')}">
-                            <div class="driver-header">
-                                <h2>${d.driver}</h2>
-                                <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                                <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                                <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                                <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                            </div>
-                            ${tripsHTML}
-                            ${
-                               isAlreadySubmitted
-    ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-    : `<button class="allowance-btn"
-        onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">
-        Submit Meal Allowance
-      </button>`
-}
-                        </div>`;
-                });
-            }
-           
-            if (!isPast && !isToday) {
-                let tableRows = "";
-                Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                    let itineraryDisplay = (driver.itinerary || "").trim();
-                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                   
-                    let rowClass = isRestDay ? "rest-day-row" : "";
-
-                    if (/\bam\b/i.test(itineraryDisplay)) {
-                        itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    }
-                    if (/\bpm\b/i.test(itineraryDisplay)) {
-                        itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
-                    }
-
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driver.driver}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>${driver.vehicle}</td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
-                });
-
-                if (tableRows !== "") {
-                    pageHTML += `
-                    <div class="summary-card">
-                        <div class="summary-header">
-                            <h2>${dayName} | ${date}</h2>
-                        </div>
-                        <table class="summary-table">
-                            <thead>
-                                <tr>
-                                    <th>Driver Name</th>
-                                    <th>Time In</th>
-                                    <th>Unit</th>
-                                    <th>Assignment</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRows}
-                            </tbody>
-                        </table>
-                    </div>`;
-                }
-
-              Object.values(grouped)
-.sort()
-.filter(d => d.date === date)
-.forEach(d => {
-
-    const itinerary = (d.itinerary || "").trim();
-
-    const noAllowanceItineraries = [
-        "AM",
-        "PM",
-        "AM / Banking",
-        "Banking / PM",
-        "Rest Day",
-        "Standby",
-        "ED",
-        "AM / ED",
-        "ED / PM",
-        "ED / Banking",
-        "Banking"
-    ];
-
-    if (noAllowanceItineraries.includes(itinerary)) {
- 
+        document.getElementById("loginPage").style.display = "block";
+        document.getElementById("pageLoadingOverlay").style.display = "none";
         return;
     }
 
-    let tripsHTML = "";
-                    d.trips.forEach((trip, index) => {
-                        with (trip) {
-                            tripsHTML += `
-                            <div class="trip">
-                                <div class="trip-title">Pick-Up ${index + 1}</div>
-                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                                ${requestedBy ? `
-                                <div class="info-item">
-                                    <div class="info-label">Requested By</div>
-                                    <div class="info-value">
-                                        ${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
-                                    </div>
-                                </div>` : ""}
-                                ${passengerName ? `
-                                <div class="info-item">
-                                    <div class="info-label">Passenger</div>
-                                    <div class="info-value">
-                                        ${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}
-                                    </div>
-                                </div>` : ""}
-                                ${origin ? `
-                                <div class="info-item">
-                                    <div class="info-label">Origin</div>
-                                    <div class="info-value">
-                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">
-                                            ${origin}
-                                        </a>
-                                    </div>
-                                </div>` : ""}
-                                ${destination ? `
-                                <div class="info-item">
-                                    <div class="info-label">Destination</div>
-                                    <div class="info-value">
-                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">
-                                            ${destination}
-                                        </a>
-                                    </div>
-                                </div>` : ""}
-                                ${remarks ? `
-                                <div class="info-item">
-                                    <div class="info-label">Remarks</div>
-                                    <div class="info-value">${remarks}</div>
-                                </div>` : ""}
-                            </div>`;
-                        }
-                    });
+    configureNavigation(role);
 
-                    pageHTML += `
-                    <div class="driver-card">
-                        <div class="driver-header">
-                            <h2>${d.driver}</h2>
-                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                        </div>
-                        ${tripsHTML}
-                    </div>`;
-                });
-            }
+    document.getElementById("loginPage").style.display = "none";
+    showLoginSpinner("Welcome Back!", "Loading latest schedules...");
 
-            if(isPast){
-                const pendingDrivers = Object.values(grouped).filter(d=>{
-                    if(d.date !== date) return false;
-                  const itinerary = (d.itinerary || "").trim();
+    try {
+        // Fire all endpoints in parallel simultaneously
+        await loadSubmittedAllowances();
 
+await fetchLiveAllowancesFromSheet();
 
-const noAllowanceItineraries = [
-    "AM",
-    "PM",
-    "AM / Banking",
-    "Banking / PM",
-    "Rest Day",
-    "Standby",
-    "ED",
-    "AM / ED",
-    "ED / PM",
-    "ED / Banking",
-    "Banking"
-];
+await loadMainSchedulesAndApprovals();
 
-if (noAllowanceItineraries.includes(itinerary)) {
-
-    return;
-}
-                   
-     
-                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    return !submittedDrivers[lookupKey];
-                });
-
-                if(pendingDrivers.length===0) return;
-
-                pageHTML += `
-                <div class="pending-summary-card">
-                    <div class="pending-summary-header">
-                        ${dayName} | ${date}
-                    </div>
-                    <table class="pending-table">
-                        <tbody>`;
-
-                pendingDrivers.forEach(d => {
-                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
-                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
-                    pageHTML += `
-                        <tr>
-                            <td class="pending-driver-cell">${d.driver}</td>
-                            <td class="pending-action-cell">
-                                <button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">
-                                    Submit
-                                </button>
-                            </td>
-                        </tr>`;
-                });
-
-                pageHTML += `
-                        </tbody>
-                    </table>
-                </div>`;
-            }
-        });
-
-        container.innerHTML = pageHTML;
-
-        updateCutoffDropdownsDynamically();
-        loadScheduleApprovalPage();
-        if (autoLogin) showAdminDashboard();
-
+        hideLoginSpinner();
+        showHomePage();
     } catch (err) {
-        console.error(err);
-        alert("Failed to load schedule.");
+        hideLoginSpinner();
+        console.error("Initialization Error:", err);
+        alert("Failed to load dashboard data. Please refresh.");
     } finally {
         document.getElementById("pageLoadingOverlay").style.display = "none";
     }
@@ -3065,17 +3511,155 @@ document.getElementById("dashboardBtn").addEventListener("click", () => {
     backToMainDashboard();
 });
 
-document.getElementById("adminBtn").addEventListener("click", () => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    const expires = Number(localStorage.getItem("loginExpires"));
-
-    if (loggedIn === "true" && Date.now() < expires) {
-        showAdminDashboard();
-    } else {
-        document.getElementById("adminLoginModal").style.display = "block";
-    }
+document.getElementById("allowanceBtn").addEventListener("click", () => {
+    showDriverAllowanceSummary();
 });
-   
+
+document.getElementById("adminBtn").addEventListener("click", () => {
+    showAdminDashboard();
+});
+
+document.getElementById("loginBtn").addEventListener("click", loginDriver);
+
+function showLoginSpinner(title, message) {
+    document.getElementById("loadingTitle").textContent = title;
+    document.getElementById("loadingMessage").textContent = message;
+    document.getElementById("loginLoadingOverlay").style.display = "flex";
+}
+
+function hideLoginSpinner() {
+    document.getElementById("loginLoadingOverlay").style.display = "none";
+}
+
+async function loginDriver() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+    const errorDiv = document.getElementById("loginError");
+
+    errorDiv.textContent = "";
+
+    if (!username || !password) {
+        errorDiv.textContent = "Please enter your username and password.";
+        return;
+    }
+
+    try {
+        showLoginSpinner("Signing In...", "Checking your login credentials...");
+
+        const response = await fetch(
+            `${WEBAPP_BASE}?action=login`
+            + `&username=${encodeURIComponent(username)}`
+            + `&password=${encodeURIComponent(password)}`
+            + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            hideLoginSpinner();
+            errorDiv.textContent = result.message || "Invalid username or password.";
+            return;
+        }
+
+        localStorage.setItem("driverLoggedIn", "true");
+        localStorage.setItem("username", result.name);
+        localStorage.setItem("userRole", result.role);
+        localStorage.setItem("driverName", result.name);
+        localStorage.setItem("driverRole", result.role);
+
+        refreshLoginSession();
+        configureNavigation(result.role);
+
+        hideLoginSpinner();
+        document.getElementById("loginPage").style.display = "none";
+
+        if (result.role === "driver") {
+            showReminderModal();
+        } else {
+            showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+           await loadSubmittedAllowances();
+
+await fetchLiveAllowancesFromSheet();
+
+await loadMainSchedulesAndApprovals();
+            hideLoginSpinner();
+            showHomePage();
+        }
+
+    } catch (err) {
+        hideLoginSpinner();
+        console.error(err);
+        errorDiv.textContent = "Unable to connect to the server.";
+    }
+}
+    
+function showReminderModal() {
+    const driverName = localStorage.getItem("username") || "Driver";
+    document.getElementById("driverNameText").textContent = driverName;
+    document.getElementById("driverReminderModal").style.display = "flex";
+}
+
+async function confirmReminder() {
+    document.getElementById("driverReminderModal").style.display = "none";
+    showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+
+    try {
+      await loadSubmittedAllowances();
+
+await fetchLiveAllowancesFromSheet();
+
+await loadMainSchedulesAndApprovals();
+    } catch (err) {
+        console.error("Error loading driver dashboard:", err);
+    } finally {
+        hideLoginSpinner();
+        showHomePage();
+    }
+}
+    
 </script>
+
+    
+<div id="driverReminderModal" class="modal-overlay" style="display:none;">
+
+    <div class="modal-content reminder-modal">
+
+        <h2>Welcome!</h2>
+
+        <p style="margin-bottom:18px;">
+            Hi <strong id="driverNameText"></strong>,
+        </p>
+
+        <p style="margin-bottom:18px;">
+            A gentle reminder before you begin your duty:
+        </p>
+
+        <ul class="reminder-list">
+            <li>Ensure the vehicle is fully fueled before returning it to the Feedmill.</li>
+            <li>Notify your passengers before their scheduled trips.</li>
+            <li>Submit your meal allowance immediately after completing your duty.</li>
+            <li>Drive safely and responsibly at all times.</li>
+        </ul>
+
+        <button id="confirmReminderBtn" class="allowance-btn">
+            Confirm
+        </button>
+
+    </div>
+
+</div>
+
+   <div id="loginLoadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-box">
+        <div class="spinner"></div>
+
+        <h3 id="loadingTitle">Loading...</h3>
+
+        <p id="loadingMessage">
+            Please wait...
+        </p>
+    </div>
+</div>
+    
 </body>
 </html>
