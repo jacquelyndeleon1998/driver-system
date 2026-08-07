@@ -2820,18 +2820,30 @@ function loadScheduleApprovalPage(){
         approvedDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No approved schedules found for this cut-off window.</td></tr>`;
     }
 
-    if (hasPending) {
+   if (hasPending) {
 
     pendingDiv.innerHTML = pendingHtml;
 
 } else {
 
-    pendingDiv.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">No pending schedules found for this cut-off window.</td></tr>`;
+    renderEmptyTable(
+        pendingDiv,
+        "No pending schedules found for this cut-off window."
+    );
 
 }
 }
 
-
+function renderEmptyTable(tableBody, message, colspan = 3) {
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="${colspan}"
+                style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                ${message}
+            </td>
+        </tr>`;
+}
+    
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
