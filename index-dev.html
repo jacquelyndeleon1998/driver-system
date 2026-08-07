@@ -2725,12 +2725,9 @@ function loadScheduleApprovalPage(){
         scheduleDate.setHours(0,0,0,0);
 
         const status = (approvalDates[date] || "").toString().trim().toLowerCase();
-        const weekday = scheduleDate.toLocaleDateString("en-US", {weekday:"long"});
+        const weekday = formatWeekday(scheduleDate);
 
-        // Role-based action button
-        const approveBtnHtml = isAdmin 
-            ? `<button class="action-table-btn btn-approve" onclick="approveSchedule('${date}', this)">Approve</button>`
-            : "";
+       
 
       if (status === "approved") {
             hasApproved = true;
@@ -2779,13 +2776,9 @@ function loadScheduleApprovalPage(){
             <tr>
                 <td class="approval-day-name" style="text-align: left;">${weekday}</td>
                 <td class="approval-date-val" style="text-align: center;">${date}</td>
-                <td>
-                    <div class="action-btn-grp" style="justify-content: center;">
-                        <button class="action-table-btn btn-view" onclick="viewSchedule('${date}')">View</button>
-                        ${approveBtnHtml}
-                    </div>
-                </td>
-            </tr>`;
+               <td>
+    ${createActionButtons(date, isAdmin)}
+</td>            </tr>`;
             pendingHtml += pendingRow;
         }
     });
@@ -2834,6 +2827,12 @@ function loadScheduleApprovalPage(){
 }
 }
 
+function formatWeekday(date) {
+    return new Date(date).toLocaleDateString("en-US", {
+        weekday: "long"
+    });
+}
+
 function renderEmptyTable(tableBody, message, colspan = 3) {
     tableBody.innerHTML = `
         <tr>
@@ -2842,6 +2841,27 @@ function renderEmptyTable(tableBody, message, colspan = 3) {
                 ${message}
             </td>
         </tr>`;
+}
+
+function createActionButtons(date, isAdmin) {
+    let html = `
+        <div class="action-btn-grp" style="justify-content:center;">
+            <button class="action-table-btn btn-view"
+                onclick="viewSchedule('${date}')">
+                View
+            </button>`;
+
+    if (isAdmin) {
+        html += `
+            <button class="action-table-btn btn-approve"
+                onclick="approveSchedule('${date}', this)">
+                Approve
+            </button>`;
+    }
+
+    html += `</div>`;
+
+    return html;
 }
     
 async function loadMainSchedulesAndApprovals() {
