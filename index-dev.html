@@ -2921,6 +2921,26 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         value.replace(/^"|"$/g, "").trim()
     );
 }
+
+    function isScheduleAcknowledged(date, driverName) {
+
+    if (!date || !driverName) {
+        return false;
+    }
+
+    const confirmations =
+        approvalConfirmations[date] || {};
+
+    return confirmations[driverName] === true;
+}
+
+    function getLoggedInDriverName() {
+
+    return (
+        localStorage.getItem("driverName") ||
+        ""
+    ).trim();
+}
     
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
@@ -2957,6 +2977,7 @@ const approvalRows = approvalAllRows.slice(1);
 summaryDrivers = {};
 approvalDates = {};
 approvalNotes = {};
+        approvalConfirmations = {};
 
 approvalRows.forEach(row => {
 
@@ -3019,7 +3040,7 @@ approvalRows.forEach(row => {
     }
 
 });
-       console.log("APPROVAL CONFIRMATIONS:", approvalConfirmations); 
+    
 
         rows.forEach(row => {
             let cols = [];
