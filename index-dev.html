@@ -2978,6 +2978,81 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         ""
     ).trim();
 }
+
+    async function acknowledgeDriverSchedule(date, buttonElement) {
+
+    const driverName = getLoggedInDriverName();
+
+    if (!driverName) {
+        alert("Driver name not found. Please log in again.");
+        return;
+    }
+
+    if (!date) {
+        alert("Schedule date is missing.");
+        return;
+    }
+
+    // Prevent double-click
+    if (buttonElement) {
+        buttonElement.disabled = true;
+        buttonElement.textContent = "Confirming...";
+    }
+
+    try {
+
+        const targetUrl =
+            `${WEBAPP_BASE}?action=acknowledgeSchedule` +
+            `&driver=${encodeURIComponent(driverName)}` +
+            `&date=${encodeURIComponent(date)}` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}`;
+
+        const response = await fetch(targetUrl);
+
+        if (!response.ok) {
+            throw new Error("Server returned an error.");
+        }
+
+        const result = await response.json();
+
+        console.log("Acknowledgment result:", result);
+
+        if (!result.success) {
+            throw new Error(
+                result.message || "Unable to acknowledge schedule."
+            );
+        }
+
+        // Reload the approval data and dashboard.
+        // This will automatically remove the blur because
+        // approvalConfirmations will now contain Confirm.
+        const loaded = await loadMainSchedulesAndApprovals();
+
+        if (!loaded) {
+            throw new Error(
+                "Schedule was confirmed, but the dashboard could not be refreshed."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Acknowledge schedule error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to acknowledge this schedule. Please try again."
+        );
+
+        // Restore button if something failed
+        if (buttonElement) {
+            buttonElement.disabled = false;
+            buttonElement.textContent = "Acknowledge Schedule";
+        }
+    }
+}
     
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
@@ -3345,10 +3420,10 @@ ${
             </p>
 
             <button
-                class="acknowledge-schedule-btn"
-                onclick="acknowledgeDriverSchedule('${date}')">
-                Acknowledge Schedule
-            </button>
+    class="acknowledge-schedule-btn"
+    onclick="acknowledgeDriverSchedule('${date}', this)">
+    Acknowledge Schedule
+</button>
         </div>
         `
         :
