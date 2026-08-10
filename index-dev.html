@@ -3362,12 +3362,8 @@ ${
                     const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
                     let rowClass = isRestDay ? "rest-day-row" : "";
 
-                    const loggedInDriver = getLoggedInDriverName();
-
-const isAcknowledgedDriver =
-    loggedInDriver &&
-    driver.driver.trim().toLowerCase() === loggedInDriver.toLowerCase() &&
-    isScheduleAcknowledged(date, loggedInDriver);
+                    const isAcknowledgedDriver =
+    isScheduleAcknowledged(date, driver.driver);
 
 const driverNameDisplay =
     isAcknowledgedDriver
