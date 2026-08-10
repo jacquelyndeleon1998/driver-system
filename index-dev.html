@@ -9,15 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
-        #sepAllowanceAdmin,
-#sepDashboardAllowance {
-    display: none !important;
-}
-
-        #manualBtn {
-    display: none;
-}
-
         .login-container input {
     font-size: 16px;
 }
@@ -1286,23 +1277,19 @@
     </div>
   <div class="top-nav">
 
-<button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+    <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
 
-<span id="sepDashboardAllowance" class="nav-separator">|</span>
+    <span id="sepDashboardAllowance" class="nav-separator">|</span>
 
-<button id="allowanceBtn" class="nav-btn">Allowances</button>
+    <button id="allowanceBtn" class="nav-btn">Allowances</button>
 
-<span id="sepAllowanceAdmin" class="nav-separator">|</span>
+    <span id="sepAllowanceAdmin" class="nav-separator">|</span>
 
-<button id="adminBtn" class="nav-btn">Admin</button>
+    <button id="adminBtn" class="nav-btn">Admin</button>
 
-<span id="sepAdminManual" class="nav-separator">|</span>
+    <span id="sepAdminLogout" class="nav-separator">|</span>
 
-<button id="manualBtn" class="nav-btn">Manual</button>
-
-<span id="sepManualLogout" class="nav-separator">|</span>
-
-<button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
+    <button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
 
 </div>
 </div>
@@ -1789,53 +1776,41 @@ function checkAdminSession() {
 function configureNavigation(role) {
     const allowanceBtn = document.getElementById("allowanceBtn");
     const adminBtn = document.getElementById("adminBtn");
-    const manualBtn = document.getElementById("manualBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
     const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
     const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
-    const sepAdminManual = document.getElementById("sepAdminManual");
-    const sepManualLogout = document.getElementById("sepManualLogout");
+    const sepAdminLogout = document.getElementById("sepAdminLogout");
 
-    // Hide all optional buttons
-    allowanceBtn.style.display = "none";
-    adminBtn.style.display = "none";
-    manualBtn.style.display = "none";
+    if (allowanceBtn) allowanceBtn.style.display = "";
+    if (adminBtn) adminBtn.style.display = "";
+    if (logoutBtn) logoutBtn.style.display = "";
 
-    // Hide all separators
-    sepDashboardAllowance.style.display = "none";
-    sepAllowanceAdmin.style.display = "none";
-    sepAdminManual.style.display = "none";
-    sepManualLogout.style.display = "none";
+    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
+    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+    if (sepAdminLogout) sepAdminLogout.style.display = "";
 
-    // Logout always visible
-    logoutBtn.style.display = "";
+    switch (role) {
+        case "driver":
+            if (adminBtn) adminBtn.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            break;
 
-    if (role === "driver") {
+        case "admin":
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            break;
 
-        // Dashboard | Allowances | Log Out
-        allowanceBtn.style.display = "";
-        sepDashboardAllowance.style.display = "";
-
-        // Use the separator before Logout
-        sepManualLogout.style.display = "";
-
-    } else if (role === "admin") {
-
-        // Dashboard | Admin | Manual | Log Out
-        adminBtn.style.display = "";
-        manualBtn.style.display = "";
-
-        sepAdminManual.style.display = "";
-        sepManualLogout.style.display = "";
-
-    } else if (role === "organic") {
-
-        // Dashboard | Log Out
-        // Nothing else is shown
+        case "organic":
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (adminBtn) adminBtn.style.display = "none";
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
+            break;
     }
 }
-    
+
 function showAdminDashboard() {
     const role = localStorage.getItem("userRole");
 
