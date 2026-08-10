@@ -3438,22 +3438,7 @@ const driverNameDisplay =
         <div class="summary-header">
             <h2>${dayName} | ${date}</h2>
         </div>
-
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Driver Name</th>
-                    <th>Time In</th>
-                    <th>Unit</th>
-                    <th>Assignment</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${tableRows}
-            </tbody>
-        </table>
-
-        ${
+${
     role === "driver" &&
     status === "approved" &&
     !isScheduleAcknowledged(date, getLoggedInDriverName())
@@ -3469,15 +3454,30 @@ const driverNameDisplay =
             </p>
 
             <button
-    class="acknowledge-schedule-btn"
-    onclick="acknowledgeDriverSchedule('${date}', this)">
-    Acknowledge Schedule
-</button>
+                class="acknowledge-schedule-btn"
+                onclick="acknowledgeDriverSchedule('${date}', this)">
+                Acknowledge Schedule
+            </button>
         </div>
         `
         :
         ""
 }
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Driver Name</th>
+                    <th>Time In</th>
+                    <th>Unit</th>
+                    <th>Assignment</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableRows}
+            </tbody>
+        </table>
+
+        
 
         ${
             approvalNotes[date] && approvalNotes[date].trim() !== ""
