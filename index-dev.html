@@ -1281,7 +1281,7 @@
     </div>
   <div class="top-nav">
 
-    <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+<button id="dashboardBtn" class="nav-btn active">Dashboard</button>
 
 <span id="sepDashboardAllowance" class="nav-separator">|</span>
 
@@ -1792,40 +1792,41 @@ function configureNavigation(role) {
     const sepAdminManual = document.getElementById("sepAdminManual");
     const sepManualLogout = document.getElementById("sepManualLogout");
 
-    // Default
-    if (allowanceBtn) allowanceBtn.style.display = "";
-    if (adminBtn) adminBtn.style.display = "";
-    if (manualBtn) manualBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "";
+    // Hide role-specific buttons/separators first
+    allowanceBtn.style.display = "none";
+    adminBtn.style.display = "none";
+    manualBtn.style.display = "none";
 
-    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
-    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-    if (sepAdminManual) sepAdminManual.style.display = "none";
-    if (sepManualLogout) sepManualLogout.style.display = "none";
+    sepDashboardAllowance.style.display = "none";
+    sepAllowanceAdmin.style.display = "none";
+    sepAdminManual.style.display = "none";
+    sepManualLogout.style.display = "none";
 
-    switch (role) {
+    logoutBtn.style.display = "";
 
-        case "driver":
-            if (adminBtn) adminBtn.style.display = "none";
-            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            break;
+    if (role === "driver") {
 
-        case "admin":
-            if (allowanceBtn) allowanceBtn.style.display = "none";
-            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+        // Dashboard | Allowances | Log Out
+        allowanceBtn.style.display = "";
+        sepDashboardAllowance.style.display = "";
 
-            // Show Manual for Admin
-            if (manualBtn) manualBtn.style.display = "";
-            if (sepAdminManual) sepAdminManual.style.display = "";
-            if (sepManualLogout) sepManualLogout.style.display = "";
-            break;
+        // We need the separator immediately before Logout.
+        sepManualLogout.style.display = "";
 
-        case "organic":
-            if (allowanceBtn) allowanceBtn.style.display = "none";
-            if (adminBtn) adminBtn.style.display = "none";
-            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            break;
+    } else if (role === "admin") {
+
+        // Dashboard | Admin | Manual | Log Out
+        adminBtn.style.display = "";
+        manualBtn.style.display = "";
+
+        sepAdminManual.style.display = "";
+        sepManualLogout.style.display = "";
+
+    } else if (role === "organic") {
+
+        // Dashboard | Log Out
+        // Nothing else needed
+
     }
 }
 
