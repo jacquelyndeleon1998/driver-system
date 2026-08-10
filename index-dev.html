@@ -1631,6 +1631,7 @@ let grouped = {};
 let summaryDrivers = {};
 let approvalDates = {};
 let approvalNotes = {};
+let approvalConfirmations = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
@@ -2891,6 +2892,35 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         </tr>
     `;
 }
+
+    function parseCSVRow(row) {
+
+    let cols = [];
+    let current = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+
+        const char = row[i];
+
+        if (char === '"') {
+            insideQuotes = !insideQuotes;
+        }
+        else if (char === "," && !insideQuotes) {
+            cols.push(current.trim());
+            current = "";
+        }
+        else {
+            current += char;
+        }
+    }
+
+    cols.push(current.trim());
+
+    return cols.map(value =>
+        value.replace(/^"|"$/g, "").trim()
+    );
+}
     
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
@@ -2917,7 +2947,11 @@ async function loadMainSchedulesAndApprovals() {
         }
 
         const rows = data.trim().split("\n").slice(1);
-        const approvalRows = approvalData.trim().split("\n").slice(1);
+
+const approvalAllRows = approvalData.trim().split("\n");
+
+const approvalHeaders = parseCSVRow(approvalAllRows[0] || "");
+const approvalRows = approvalAllRows.slice(1);
 
      grouped = {};
 summaryDrivers = {};
@@ -2944,11 +2978,13 @@ approvalRows.forEach(row => {
         else {
             current += char;
         }
-
     }
 
     cols.push(current.trim());
 
+    // -----------------------------
+    // Approval information
+    // -----------------------------
     const date = (cols[0] || "").replace(/"/g, "").trim();
     const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
     const notes = (cols[2] || "").replace(/"/g, "").trim();
@@ -2956,8 +2992,34 @@ approvalRows.forEach(row => {
     approvalDates[date] = status;
     approvalNotes[date] = notes;
 
+    // -----------------------------
+    // Driver confirmations
+    // Columns D:I = index 3:8
+    // -----------------------------
+    if (!approvalConfirmations[date]) {
+        approvalConfirmations[date] = {};
+    }
+
+    for (let i = 3; i <= 8; i++) {
+
+        const driverName =
+            (approvalHeaders[i] || "")
+                .replace(/"/g, "")
+                .trim();
+
+        const confirmation =
+            (cols[i] || "")
+                .replace(/"/g, "")
+                .trim();
+
+        if (driverName) {
+            approvalConfirmations[date][driverName] =
+                confirmation.toLowerCase() === "confirm";
+        }
+    }
+
 });
-        
+       console.log("APPROVAL CONFIRMATIONS:", approvalConfirmations); 
 
         rows.forEach(row => {
             let cols = [];
