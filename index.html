@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        .login-container input {
+    font-size: 16px;
+}
+
         .text-left {
     text-align: left;
 }
@@ -433,10 +437,11 @@
     }
 
     .app-title h1 {
+        font-family:'Pacifico', cursive;
         margin: 0;
         font-size: 30px;
         color: #14532d;
-        font-weight: 700;
+        font-weight: 500;
         text-align: left;
         line-height: 1.1;
     }
@@ -1024,18 +1029,25 @@
 #loginPage{
     position:fixed;
     inset:0;
+    width:100%;
+    height:100dvh;
+    min-height:100dvh;
     background:#f4f7f4;
     display:flex;
     justify-content:center;
     align-items:center;
     z-index:99999;
+    box-sizing:border-box;
+    padding:20px;
 }
 
 .login-container{
     width:100%;
     max-width:380px;
     text-align:center;
-    padding:20px;
+    padding:0;
+    margin:0 auto;
+    box-sizing:border-box;
 }
 
 #loginLogo{
@@ -1125,6 +1137,85 @@
     font-size:12px;  
     line-height:1.4;
     color:#374151;
+}
+    .schedule-locked .summary-table {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.driver-card.schedule-locked {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.acknowledge-schedule-box {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 18px 16px 20px;
+    margin-top: 12px;
+}
+
+.acknowledge-message {
+    margin: 0 0 7px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.acknowledge-submessage {
+    margin: 0 auto 16px;
+    max-width: 520px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.acknowledge-schedule-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    min-width: 190px;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.acknowledge-schedule-btn:hover {
+    transform: translateY(-1px);
+}
+
+.acknowledge-schedule-btn:disabled {
+    cursor: wait;
+    opacity: 0.7;
+    transform: none;
+}
+
+        
+@media (max-width: 600px) {
+
+    .acknowledge-schedule-box {
+        padding: 16px 12px 18px;
+        margin-top: 10px;
+    }
+
+    .acknowledge-message {
+        font-size: 14px;
+    }
+
+    .acknowledge-submessage {
+        font-size: 12px;
+        line-height: 1.45;
+        margin-bottom: 14px;
+    }
+
+    .acknowledge-schedule-btn {
+        width: 100%;
+        max-width: 260px;
+        padding: 12px 18px;
+    }
 }
         
     </style>
@@ -1631,6 +1722,7 @@ let grouped = {};
 let summaryDrivers = {};
 let approvalDates = {};
 let approvalNotes = {};
+let approvalConfirmations = {};
 let scheduleDates = [];
 let globalParsedAllowances = [];
 let loggedInDriverName = "";
@@ -2891,6 +2983,130 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         </tr>
     `;
 }
+
+    function parseCSVRow(row) {
+
+    let cols = [];
+    let current = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+
+        const char = row[i];
+
+        if (char === '"') {
+            insideQuotes = !insideQuotes;
+        }
+        else if (char === "," && !insideQuotes) {
+            cols.push(current.trim());
+            current = "";
+        }
+        else {
+            current += char;
+        }
+    }
+
+    cols.push(current.trim());
+
+    return cols.map(value =>
+        value.replace(/^"|"$/g, "").trim()
+    );
+}
+
+    function isScheduleAcknowledged(date, driverName) {
+
+    if (!date || !driverName) {
+        return false;
+    }
+
+    const confirmations =
+        approvalConfirmations[date] || {};
+
+    return confirmations[driverName] === true;
+}
+
+    function getLoggedInDriverName() {
+
+    return (
+        localStorage.getItem("driverName") ||
+        ""
+    ).trim();
+}
+
+    async function acknowledgeDriverSchedule(date, buttonElement) {
+
+    const driverName = getLoggedInDriverName();
+
+    if (!driverName) {
+        alert("Driver name not found. Please log in again.");
+        return;
+    }
+
+    if (!date) {
+        alert("Schedule date is missing.");
+        return;
+    }
+
+    // Prevent double-click
+    if (buttonElement) {
+        buttonElement.disabled = true;
+        buttonElement.textContent = "Confirming...";
+    }
+
+    try {
+
+        const targetUrl =
+            `${WEBAPP_BASE}?action=acknowledgeSchedule` +
+            `&driver=${encodeURIComponent(driverName)}` +
+            `&date=${encodeURIComponent(date)}` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}`;
+
+        const response = await fetch(targetUrl);
+
+        if (!response.ok) {
+            throw new Error("Server returned an error.");
+        }
+
+        const result = await response.json();
+
+        console.log("Acknowledgment result:", result);
+
+        if (!result.success) {
+            throw new Error(
+                result.message || "Unable to acknowledge schedule."
+            );
+        }
+
+        // Reload the approval data and dashboard.
+        // This will automatically remove the blur because
+        // approvalConfirmations will now contain Confirm.
+        const loaded = await loadMainSchedulesAndApprovals();
+
+        if (!loaded) {
+            throw new Error(
+                "Schedule was confirmed, but the dashboard could not be refreshed."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Acknowledge schedule error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to acknowledge this schedule. Please try again."
+        );
+
+        // Restore button if something failed
+        if (buttonElement) {
+            buttonElement.disabled = false;
+            buttonElement.textContent = "Acknowledge Schedule";
+        }
+    }
+}
     
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
@@ -2917,12 +3133,17 @@ async function loadMainSchedulesAndApprovals() {
         }
 
         const rows = data.trim().split("\n").slice(1);
-        const approvalRows = approvalData.trim().split("\n").slice(1);
+
+const approvalAllRows = approvalData.trim().split("\n");
+
+const approvalHeaders = parseCSVRow(approvalAllRows[0] || "");
+const approvalRows = approvalAllRows.slice(1);
 
      grouped = {};
 summaryDrivers = {};
 approvalDates = {};
 approvalNotes = {};
+        approvalConfirmations = {};
 
 approvalRows.forEach(row => {
 
@@ -2944,11 +3165,13 @@ approvalRows.forEach(row => {
         else {
             current += char;
         }
-
     }
 
     cols.push(current.trim());
 
+    // -----------------------------
+    // Approval information
+    // -----------------------------
     const date = (cols[0] || "").replace(/"/g, "").trim();
     const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
     const notes = (cols[2] || "").replace(/"/g, "").trim();
@@ -2956,8 +3179,34 @@ approvalRows.forEach(row => {
     approvalDates[date] = status;
     approvalNotes[date] = notes;
 
+    // -----------------------------
+    // Driver confirmations
+    // Columns D:I = index 3:8
+    // -----------------------------
+    if (!approvalConfirmations[date]) {
+        approvalConfirmations[date] = {};
+    }
+
+    for (let i = 3; i <= 8; i++) {
+
+        const driverName =
+            (approvalHeaders[i] || "")
+                .replace(/"/g, "")
+                .trim();
+
+        const confirmation =
+            (cols[i] || "")
+                .replace(/"/g, "")
+                .trim();
+
+        if (driverName) {
+            approvalConfirmations[date][driverName] =
+                confirmation.toLowerCase() === "confirm";
+        }
+    }
+
 });
-        
+    
 
         rows.forEach(row => {
             let cols = [];
@@ -3167,12 +3416,20 @@ ${
                     const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
                     let rowClass = isRestDay ? "rest-day-row" : "";
 
+                    const isAcknowledgedDriver =
+    isScheduleAcknowledged(date, driver.driver);
+
+const driverNameDisplay =
+    isAcknowledgedDriver
+        ? `<strong>${driver.driver}</strong>`
+        : driver.driver;
+
                     if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
                     if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
                     tableRows += `
                     <tr class="${rowClass}">
-                        <td>${driver.driver}</td>
+                        <td>${driverNameDisplay}</td>
                         <td>${driver.timeIn}</td>
                         <td>${driver.vehicle}</td>
                         <td>${itineraryDisplay}</td>
@@ -3181,14 +3438,44 @@ ${
 
               if (tableRows !== "") {
     pageHTML += `
-    <div class="summary-card">
+   <div class="summary-card ${
+    role === "driver" &&
+    status === "approved" &&
+    !isScheduleAcknowledged(date, getLoggedInDriverName())
+        ? "schedule-locked"
+        : ""
+}">
 
         ${pendingBadgeHeaderHtml}
 
         <div class="summary-header">
             <h2>${dayName} | ${date}</h2>
         </div>
+${
+    role === "driver" &&
+    status === "approved" &&
+    !isScheduleAcknowledged(date, getLoggedInDriverName())
+        ?
+        `
+        <div class="acknowledge-schedule-box">
+            <p class="acknowledge-message">
+                Kindly acknowledge this schedule.
+            </p>
 
+            <p class="acknowledge-submessage">
+                If there is any confusion about your schedule, just message the Admin.
+            </p>
+
+            <button
+                class="acknowledge-schedule-btn"
+                onclick="acknowledgeDriverSchedule('${date}', this)">
+                Acknowledge Schedule
+            </button>
+        </div>
+        `
+        :
+        ""
+}
         <table class="summary-table">
             <thead>
                 <tr>
@@ -3202,6 +3489,8 @@ ${
                 ${tableRows}
             </tbody>
         </table>
+
+        
 
         ${
             approvalNotes[date] && approvalNotes[date].trim() !== ""
@@ -3247,7 +3536,13 @@ ${
                     });
 
                     pageHTML += `
-                    <div class="driver-card">
+                  <div class="driver-card ${
+    role === "driver" &&
+    status === "approved" &&
+    !isScheduleAcknowledged(date, getLoggedInDriverName())
+        ? "schedule-locked"
+        : ""
+}">
                         <div class="driver-header">
                             <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
