@@ -1139,20 +1139,25 @@
 }
 
         .acknowledge-schedule-box {
+    position: relative;
+    z-index: 5;
     text-align: center;
-    padding: 20px 15px;
+    padding: 18px 16px 20px;
     margin-top: 12px;
 }
 
 .acknowledge-message {
-    margin: 0 0 8px;
-    font-size: 16px;
+    margin: 0 0 7px;
+    font-size: 15px;
     font-weight: 700;
+    line-height: 1.4;
 }
 
 .acknowledge-submessage {
-    margin: 0 0 16px;
+    margin: 0 auto 16px;
+    max-width: 520px;
     font-size: 13px;
+    line-height: 1.5;
 }
 
 .acknowledge-schedule-btn {
@@ -1162,6 +1167,42 @@
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    min-width: 190px;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.acknowledge-schedule-btn:hover {
+    transform: translateY(-1px);
+}
+
+.acknowledge-schedule-btn:disabled {
+    cursor: wait;
+    opacity: 0.7;
+    transform: none;
+}
+
+@media (max-width: 600px) {
+
+    .acknowledge-schedule-box {
+        padding: 16px 12px 18px;
+        margin-top: 10px;
+    }
+
+    .acknowledge-message {
+        font-size: 14px;
+    }
+
+    .acknowledge-submessage {
+        font-size: 12px;
+        line-height: 1.45;
+        margin-bottom: 14px;
+    }
+
+    .acknowledge-schedule-btn {
+        width: 100%;
+        max-width: 260px;
+        padding: 12px 18px;
+    }
 }
         
     </style>
@@ -3424,7 +3465,7 @@ const driverNameDisplay =
             </p>
 
             <p class="acknowledge-submessage">
-                If there are any confusion on your schedule, just message the Admin.
+                If there is any confusion about your schedule, just message the Admin.
             </p>
 
             <button
