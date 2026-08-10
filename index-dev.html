@@ -1137,6 +1137,32 @@
     user-select: none;
     pointer-events: none;
 }
+
+        .acknowledge-schedule-box {
+    text-align: center;
+    padding: 20px 15px;
+    margin-top: 12px;
+}
+
+.acknowledge-message {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.acknowledge-submessage {
+    margin: 0 0 16px;
+    font-size: 13px;
+}
+
+.acknowledge-schedule-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
         
     </style>
 </head>
@@ -3302,6 +3328,32 @@ ${
                 ${tableRows}
             </tbody>
         </table>
+
+        ${
+    role === "driver" &&
+    status === "approved" &&
+    !isScheduleAcknowledged(date, getLoggedInDriverName())
+        ?
+        `
+        <div class="acknowledge-schedule-box">
+            <p class="acknowledge-message">
+                Kindly acknowledge this schedule.
+            </p>
+
+            <p class="acknowledge-submessage">
+                If there are any confusion on your schedule, just message the Admin.
+            </p>
+
+            <button
+                class="acknowledge-schedule-btn"
+                onclick="acknowledgeDriverSchedule('${date}')">
+                Acknowledge Schedule
+            </button>
+        </div>
+        `
+        :
+        ""
+}
 
         ${
             approvalNotes[date] && approvalNotes[date].trim() !== ""
