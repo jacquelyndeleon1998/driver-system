@@ -9,6 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        #sepAllowanceAdmin,
+#sepDashboardAllowance {
+    display: none !important;
+}
+
         #manualBtn {
     display: none;
 }
@@ -1792,16 +1797,18 @@ function configureNavigation(role) {
     const sepAdminManual = document.getElementById("sepAdminManual");
     const sepManualLogout = document.getElementById("sepManualLogout");
 
-    // Hide role-specific buttons/separators first
+    // Hide all optional buttons
     allowanceBtn.style.display = "none";
     adminBtn.style.display = "none";
     manualBtn.style.display = "none";
 
+    // Hide all separators
     sepDashboardAllowance.style.display = "none";
     sepAllowanceAdmin.style.display = "none";
     sepAdminManual.style.display = "none";
     sepManualLogout.style.display = "none";
 
+    // Logout always visible
     logoutBtn.style.display = "";
 
     if (role === "driver") {
@@ -1810,7 +1817,7 @@ function configureNavigation(role) {
         allowanceBtn.style.display = "";
         sepDashboardAllowance.style.display = "";
 
-        // We need the separator immediately before Logout.
+        // Use the separator before Logout
         sepManualLogout.style.display = "";
 
     } else if (role === "admin") {
@@ -1825,11 +1832,10 @@ function configureNavigation(role) {
     } else if (role === "organic") {
 
         // Dashboard | Log Out
-        // Nothing else needed
-
+        // Nothing else is shown
     }
 }
-
+    
 function showAdminDashboard() {
     const role = localStorage.getItem("userRole");
 
