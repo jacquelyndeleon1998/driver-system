@@ -1131,6 +1131,13 @@
     user-select: none;
     pointer-events: none;
 }   
+
+.schedule-locked.driver-card {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}
+        
     </style>
 </head>
 
@@ -3340,7 +3347,13 @@ ${
                     });
 
                     pageHTML += `
-                    <div class="driver-card">
+                  <div class="driver-card ${
+    role === "driver" &&
+    status === "approved" &&
+    !isScheduleAcknowledged(date, getLoggedInDriverName())
+        ? "schedule-locked"
+        : ""
+}">
                         <div class="driver-header">
                             <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
