@@ -1126,7 +1126,11 @@
     line-height:1.4;
     color:#374151;
 }
-        
+     .schedule-locked .summary-table {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}   
     </style>
 </head>
 
@@ -3264,7 +3268,13 @@ ${
 
               if (tableRows !== "") {
     pageHTML += `
-    <div class="summary-card">
+   <div class="summary-card ${
+    role === "driver" &&
+    status === "approved" &&
+    !isScheduleAcknowledged(date, getLoggedInDriverName())
+        ? "schedule-locked"
+        : ""
+}">
 
         ${pendingBadgeHeaderHtml}
 
