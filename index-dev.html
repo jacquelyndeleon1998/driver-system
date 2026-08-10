@@ -1791,8 +1791,8 @@ function configureNavigation(role) {
     const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
     const sepAdminManual = document.getElementById("sepAdminManual");
     const sepManualLogout = document.getElementById("sepManualLogout");
-    const sepAdminLogout = document.getElementById("sepAdminLogout");
 
+    // Default
     if (allowanceBtn) allowanceBtn.style.display = "";
     if (adminBtn) adminBtn.style.display = "";
     if (manualBtn) manualBtn.style.display = "none";
@@ -1802,9 +1802,9 @@ function configureNavigation(role) {
     if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
     if (sepAdminManual) sepAdminManual.style.display = "none";
     if (sepManualLogout) sepManualLogout.style.display = "none";
-    if (sepAdminLogout) sepAdminLogout.style.display = "";
 
     switch (role) {
+
         case "driver":
             if (adminBtn) adminBtn.style.display = "none";
             if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
@@ -1818,7 +1818,6 @@ function configureNavigation(role) {
             if (manualBtn) manualBtn.style.display = "";
             if (sepAdminManual) sepAdminManual.style.display = "";
             if (sepManualLogout) sepManualLogout.style.display = "";
-            if (sepAdminLogout) sepAdminLogout.style.display = "none";
             break;
 
         case "organic":
@@ -1826,7 +1825,6 @@ function configureNavigation(role) {
             if (adminBtn) adminBtn.style.display = "none";
             if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
             if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            if (sepAdminLogout) sepAdminLogout.style.display = "none";
             break;
     }
 }
