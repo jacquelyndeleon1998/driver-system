@@ -1784,18 +1784,24 @@ function checkAdminSession() {
 function configureNavigation(role) {
     const allowanceBtn = document.getElementById("allowanceBtn");
     const adminBtn = document.getElementById("adminBtn");
+    const manualBtn = document.getElementById("manualBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
     const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
     const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+    const sepAdminManual = document.getElementById("sepAdminManual");
+    const sepManualLogout = document.getElementById("sepManualLogout");
     const sepAdminLogout = document.getElementById("sepAdminLogout");
 
     if (allowanceBtn) allowanceBtn.style.display = "";
     if (adminBtn) adminBtn.style.display = "";
+    if (manualBtn) manualBtn.style.display = "none";
     if (logoutBtn) logoutBtn.style.display = "";
 
     if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
     if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+    if (sepAdminManual) sepAdminManual.style.display = "none";
+    if (sepManualLogout) sepManualLogout.style.display = "none";
     if (sepAdminLogout) sepAdminLogout.style.display = "";
 
     switch (role) {
@@ -1807,6 +1813,12 @@ function configureNavigation(role) {
         case "admin":
             if (allowanceBtn) allowanceBtn.style.display = "none";
             if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+
+            // Show Manual for Admin
+            if (manualBtn) manualBtn.style.display = "";
+            if (sepAdminManual) sepAdminManual.style.display = "";
+            if (sepManualLogout) sepManualLogout.style.display = "";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
             break;
 
         case "organic":
