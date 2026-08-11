@@ -1288,6 +1288,12 @@
 
     <button id="adminBtn" class="nav-btn">Admin</button>
 
+    <span id="sepAdminManual" class="nav-separator">|</span>
+
+    <button id="manualBtn" class="nav-btn">Manual</button>
+
+    <span id="sepManualLogout" class="nav-separator">|</span>
+
     <span id="sepAdminLogout" class="nav-separator">|</span>
 
     <button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
@@ -1777,10 +1783,13 @@ function checkAdminSession() {
 function configureNavigation(role) {
     const allowanceBtn = document.getElementById("allowanceBtn");
     const adminBtn = document.getElementById("adminBtn");
+    const manualBtn = document.getElementById("manualBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
     const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
     const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+    const sepAdminManual = document.getElementById("sepAdminManual");
+    const sepManualLogout = document.getElementById("sepManualLogout");
     const sepAdminLogout = document.getElementById("sepAdminLogout");
 
     if (allowanceBtn) allowanceBtn.style.display = "";
@@ -1792,24 +1801,40 @@ function configureNavigation(role) {
     if (sepAdminLogout) sepAdminLogout.style.display = "";
 
     switch (role) {
-        case "driver":
-            if (adminBtn) adminBtn.style.display = "none";
-            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            break;
 
-        case "admin":
-            if (allowanceBtn) allowanceBtn.style.display = "none";
-            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-            break;
+    case "driver":
+        if (adminBtn) adminBtn.style.display = "none";
+        if (manualBtn) manualBtn.style.display = "none";
 
-        case "organic":
-            if (allowanceBtn) allowanceBtn.style.display = "none";
-            if (adminBtn) adminBtn.style.display = "none";
-            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            if (sepAdminLogout) sepAdminLogout.style.display = "none";
-            break;
-    }
+        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+        if (sepAdminManual) sepAdminManual.style.display = "none";
+        if (sepManualLogout) sepManualLogout.style.display = "none";
+        break;
+
+    case "admin":
+        if (allowanceBtn) allowanceBtn.style.display = "none";
+        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+
+        if (adminBtn) adminBtn.style.display = "";
+        if (manualBtn) manualBtn.style.display = "";
+
+        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+        if (sepAdminManual) sepAdminManual.style.display = "";
+        if (sepManualLogout) sepManualLogout.style.display = "";
+        if (sepAdminLogout) sepAdminLogout.style.display = "none";
+        break;
+
+    case "organic":
+        if (allowanceBtn) allowanceBtn.style.display = "none";
+        if (adminBtn) adminBtn.style.display = "none";
+        if (manualBtn) manualBtn.style.display = "none";
+
+        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+        if (sepAdminManual) sepAdminManual.style.display = "none";
+        if (sepManualLogout) sepManualLogout.style.display = "none";
+        if (sepAdminLogout) sepAdminLogout.style.display = "none";
+        break;
 }
 
 function showAdminDashboard() {
@@ -3822,6 +3847,14 @@ document.getElementById("allowanceBtn").addEventListener("click", () => {
 document.getElementById("adminBtn").addEventListener("click", () => {
     showAdminDashboard();
 });
+
+    document.getElementById("manualBtn").addEventListener("click", () => {
+    window.open(
+        "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=441234750#gid=441234750",
+        "_blank"
+    );
+});
+
 
 document.getElementById("loginBtn").addEventListener("click", loginDriver);
 
