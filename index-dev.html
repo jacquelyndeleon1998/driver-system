@@ -3188,6 +3188,11 @@ Thank you, and see you!`;
     const editButtons =
         document.getElementById("messageEditButtons");
 
+    if (!messageBox || !composeButtons || !editButtons) {
+        console.error("Message edit elements not found.");
+        return;
+    }
+
     messageBox.readOnly = false;
     messageBox.focus();
 
