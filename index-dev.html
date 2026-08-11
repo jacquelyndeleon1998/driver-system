@@ -505,35 +505,40 @@
     align-items: center;
     gap: 8px;
     width: 100%;
+    max-width: 100%;
     margin-bottom: 8px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .passenger-message-checkbox {
     width: 16px;
     height: 16px;
-    flex: 0 0 auto;
+    flex: 0 0 16px;
+    margin: 0;
     cursor: pointer;
 }
 
 .passenger-message-option {
-    flex: 0 1 420px;
+    flex: 1 1 auto;
     min-width: 0;
+    max-width: 360px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 10px 12px;
+    gap: 8px;
+    padding: 9px 12px;
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
     border-radius: 9px;
     color: #14532d;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
     transition: background .2s ease, border-color .2s ease;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .passenger-message-option:hover {
@@ -541,11 +546,18 @@
     border-color: #86efac;
 }
 
+.passenger-message-option span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .passenger-message-option small {
     color: #6b7280;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
         .driver-action-buttons {
@@ -1691,7 +1703,7 @@
 </div>
    
 <div id="driverAllowanceDetailsModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
+   <div class="modal-content" style="max-width: 500px; overflow-x: hidden;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
         <p style="font-size: 13px; color: #6b7280; margin-top: -8px;" id="detailsModalRange"></p>
         
