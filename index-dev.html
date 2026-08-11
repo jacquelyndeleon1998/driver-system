@@ -427,8 +427,29 @@
     transform: scale(0.99);
 }
 
-        .message-compose-modal {
+      .message-compose-modal {
     max-width: 520px;
+    position: relative;
+}
+
+        .message-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.message-modal-close:hover {
+    background: #f3f4f6;
+    color: #14532d;
 }
 
 .passenger-message-text {
@@ -1748,7 +1769,15 @@
 <div id="messageComposeModal" class="modal">
     <div class="modal-content message-compose-modal">
 
-        <h3 class="modal-title">Message Passenger</h3>
+        <button
+    type="button"
+    class="message-modal-close"
+    onclick="closeMessageComposeModal()"
+    aria-label="Close">
+    &times;
+</button>
+
+        <h3 class="modal-title">Message Requestor</h3>
 
         <p id="messageComposePassenger"
            style="font-size:14px; font-weight:600; color:#14532d; margin-bottom:12px;">
@@ -2906,6 +2935,11 @@ Thank you, and see you!`;
 
     document.getElementById("messageComposeModal").style.display = "block";
     document.body.style.overflow = "hidden";
+}
+
+    function closeMessageComposeModal() {
+    document.getElementById("messageComposeModal").style.display = "none";
+    document.body.style.overflow = "";
 }
 
 function submitAllowance(driver, date, reqBy, pass, tripType){
