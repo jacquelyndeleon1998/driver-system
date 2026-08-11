@@ -3315,13 +3315,21 @@ approvalRows.forEach(row => {
                     if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
                     if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driver.driver}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>${driver.vehicle}</td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
+                    const isAcknowledgedDriver =
+    isScheduleAcknowledged(date, driver.driver);
+
+const driverNameDisplay =
+    isAcknowledgedDriver
+        ? `<strong>${driver.driver}</strong>`
+        : driver.driver;
+
+tableRows += `
+<tr class="${rowClass}">
+    <td>${driverNameDisplay}</td>
+    <td>${driver.timeIn}</td>
+    <td>${driver.vehicle}</td>
+    <td>${itineraryDisplay}</td>
+</tr>`;
                 });
 
                 if (!hideSummaryTable) {
