@@ -401,6 +401,179 @@
         transform: scale(.99);
     }
 
+       .allowance-btn:hover {
+    background: #4ade80;
+}
+
+        .message-passenger-btn {
+    width: 100%;
+    height: 46px;
+    margin-top: 14px;
+    background: #86efac;
+    color: #14532d;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.message-passenger-btn:hover {
+    background: #4ade80;
+}
+
+.message-passenger-btn:active {
+    transform: scale(0.99);
+}
+
+      .message-compose-modal {
+    max-width: 520px;
+    position: relative;
+}
+
+        .message-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.message-modal-close:hover {
+    background: #f3f4f6;
+    color: #14532d;
+}
+
+.passenger-message-text {
+    width: 100%;
+    min-height: 300px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #f9fafb;
+    color: #374151;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.message-compose-buttons {
+    margin-top: 15px;
+}
+
+.message-edit-btn,
+.message-send-btn {
+    flex: 1;
+    height: 44px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.message-edit-btn {
+    background: #dcfce7;
+    color: #14532d;
+}
+
+.message-edit-btn:hover {
+    background: #bbf7d0;
+}
+
+.message-send-btn {
+    background: #16a34a;
+    color: #fff;
+}
+
+.message-send-btn:hover {
+    background: #15803d;
+}
+
+        .passenger-message-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.passenger-message-checkbox {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.passenger-message-option {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 9px;
+    color: #14532d;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.passenger-message-option:hover {
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.passenger-message-option span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.passenger-message-option small {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+        .driver-action-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 14px;
+}
+
+.driver-action-buttons .message-passenger-btn,
+.driver-action-buttons .allowance-btn {
+    flex: 1;
+    width: auto;
+    margin-top: 0;
+}
+
     .rest-day-row {
         background: #f8d7da;
         color: #721c24;
@@ -968,56 +1141,160 @@
     .status-pending { background: #fef3c7; color: #92400e; }
          
 
-    @media(max-width:600px){
-        #scheduleViewerPage .modal-content {
-            max-height: 80vh !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        body {
-            padding-top: 175px;
-        }
-        .admin-toolbar { justify-content: stretch; }
-        .admin-btn { width: 100%; }
-        .meal-grid { gap: 10px; }
-        .meal-item label, .time-card label { font-size: 11px; }
-        .duty-time-row { gap: 8px; padding: 0 2px; }
-        .time-card input { height: 38px; font-size: 13px; }
-        .upload-btn, .allowance-btn { font-size: 13px; padding: 10px; }
-        .driver-header p, .nav-btn { font-size: 12px; line-height: 1.2; }
-       
-        .trip .info-label,
-        .trip .info-value,
-        .trip .info-value a,
-        .phone-link {
-            font-size: 13px !important;
-            line-height: 1.3;
-        }
-       
-        .trip-title { font-size: 12px; }
-        .driver-header h2 { font-size: 15px; }
-        .app-header { gap: 14px; padding: 15px 15px 10px 15px; }
-        .app-logo { width: 56px; height: 56px; }
-        .app-title h1 { font-size: 24px; }
-        .app-subtitle { font-size: 14px; }
-        .app-description { font-size: 12px; }
-        .top-nav { justify-content: flex-end; margin-top: 8px; font-size: 12px; gap: 8px; padding-right: 8px; }
-        .schedule-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-        .month-selector { width: 100%; justify-content: space-between; }
+ @media(max-width:600px) {
 
-        .approval-table {
-            table-layout: auto !important; 
-            width: 100% !important;
-        }
-        .approval-table th, .approval-table td {
-            padding: 8px 4px !important; 
-            font-size: 11px !important;  
-            white-space: normal !important; 
-        }
+    #scheduleViewerPage .modal-content {
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
     }
 
-        .dispatch-title{
+    .reminder-modal {
+    width: 84%;
+    padding: 18px;
+    border-radius: 12px;
+}
+
+    .reminder-modal h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+
+    .reminder-modal p {
+        font-size: 14px;
+        margin-bottom: 10px !important;
+    }
+
+    .reminder-list {
+        margin: 12px 0;
+        padding-left: 20px;
+        line-height: 1.45;
+        font-size: 13px;
+    }
+
+    .reminder-list li {
+        margin-bottom: 6px;
+    }
+
+    #confirmReminderBtn {
+        margin-top: 14px;
+        height: 42px;
+    }
+
+    body {
+        padding-top: 175px;
+    }
+
+    .admin-toolbar {
+        justify-content: stretch;
+    }
+
+    .admin-btn {
+        width: 100%;
+    }
+
+    .meal-grid {
+        gap: 10px;
+    }
+
+    .meal-item label,
+    .time-card label {
+        font-size: 11px;
+    }
+
+    .duty-time-row {
+        gap: 8px;
+        padding: 0 2px;
+    }
+
+    .time-card input {
+        height: 38px;
+        font-size: 13px;
+    }
+
+    .upload-btn,
+    .allowance-btn {
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .driver-header p,
+    .nav-btn {
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    .trip .info-label,
+    .trip .info-value,
+    .trip .info-value a,
+    .phone-link {
+        font-size: 13px !important;
+        line-height: 1.3;
+    }
+
+    .trip-title {
+        font-size: 12px;
+    }
+
+    .driver-header h2 {
+        font-size: 15px;
+    }
+
+    .app-header {
+        gap: 14px;
+        padding: 15px 15px 10px 15px;
+    }
+
+    .app-logo {
+        width: 56px;
+        height: 56px;
+    }
+
+    .app-title h1 {
+        font-size: 24px;
+    }
+
+    .app-subtitle {
+        font-size: 14px;
+    }
+
+    .app-description {
+        font-size: 12px;
+    }
+
+    .top-nav {
+        justify-content: flex-end;
+        margin-top: 8px;
+        font-size: 12px;
+        gap: 8px;
+        padding-right: 8px;
+    }
+
+    .schedule-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .month-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .approval-table {
+        table-layout: auto !important;
+        width: 100% !important;
+    }
+
+    .approval-table th,
+    .approval-table td {
+        padding: 8px 4px !important;
+        font-size: 11px !important;
+        white-space: normal !important;
+    }
+}
+
+.dispatch-title {
     font-family: 'Pacifico', cursive;
     font-size: 34px;
     color: #14532d;
@@ -1026,119 +1303,120 @@
     line-height: 1.2;
 }
 
-#loginPage{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100dvh;
-    min-height:100dvh;
-    background:#f4f7f4;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:99999;
-    box-sizing:border-box;
-    padding:20px;
+#loginPage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    background: #f4f7f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    box-sizing: border-box;
+    padding: 20px;
 }
 
-.login-container{
-    width:100%;
-    max-width:380px;
-    text-align:center;
-    padding:0;
-    margin:0 auto;
-    box-sizing:border-box;
+.login-container {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    padding: 0;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-#loginLogo{
-    width:140px;
+#loginLogo {
+    width: 140px;
 }
 
-#loginPage h1{
-    color:#14532d;
-    font-size:28px;
-    margin-bottom:5px;
+#loginPage h1 {
+    color: #14532d;
+    font-size: 28px;
+    margin-bottom: 5px;
 }
 
-.loginSubtitle{
-    color:#666;
-    margin-bottom:30px;
+.loginSubtitle {
+    color: #666;
+    margin-bottom: 30px;
 }
 
-.loginCard{
-    background:#fff;
-    border-radius:12px;
-    padding:25px;
-    box-shadow:0 5px 15px rgba(0,0,0,.15);
+.loginCard {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
 }
 
-.loginCard h2{
+.loginCard h2 {
     font-family: inherit;
     font-size: 20px;
     font-weight: 700;
 }
 
-.loginCard input{
-    width:100%;
-    padding:12px;
-    margin-bottom:15px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:15px;
-    box-sizing:border-box;
+.loginCard input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
 }
 
-#loginBtn{
-    width:100%;
-    padding:12px;
-    background:#14532d;
-    color:white;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:16px;
-    font-weight:bold;
+#loginBtn {
+    width: 100%;
+    padding: 12px;
+    background: #14532d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-#loginBtn:hover{
-    background:#166534;
+#loginBtn:hover {
+    opacity: 0.9;
 }
 
-#loginError{
-    color:red;
-    margin-top:15px;
+#loginError {
+    color: red;
+    margin-top: 15px;
 }
 
-.loginFooter{
-    margin-top:30px;
-    color:#777;
-    font-size:13px;
+.loginFooter {
+    margin-top: 30px;
+    color: #777;
+    font-size: 13px;
 }
 
-   .schedule-notes-box{
-    margin-top:15px;
-    background:#dcfce7;
-    border:1px solid #86efac;
-    border-left:5px solid #15803d;
-    border-radius:10px;
-    padding:8px 12px;
+.schedule-notes-box {
+    margin-top: 15px;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    border-left: 5px solid #15803d;
+    border-radius: 10px;
+    padding: 8px 12px;
 }
 
-.schedule-notes-header{
-    font-weight:700;
-    font-size:12px;
-    margin:0 0 4px 0;
-    padding:0;
+.schedule-notes-header {
+    font-weight: 700;
+    font-size: 12px;
+    margin: 0 0 4px 0;
+    padding: 0;
 }
 
-.schedule-notes-body{
-    margin:0;
-    padding:0;
-    font-size:12px;  
-    line-height:1.4;
-    color:#374151;
+.schedule-notes-body {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #374151;
 }
-   .schedule-locked .summary-table,
+
+.schedule-locked .summary-table,
 .schedule-locked .schedule-notes-box {
     filter: blur(5px);
     user-select: none;
@@ -1194,8 +1472,17 @@
     transform: none;
 }
 
-        
 @media (max-width: 600px) {
+
+    .message-passenger-btn,
+.allowance-btn {
+    font-size: 13px !important;
+    font-weight: 600;
+}
+
+    /* ================================
+       ACKNOWLEDGE SCHEDULE
+       ================================ */
 
     .acknowledge-schedule-box {
         padding: 16px 12px 18px;
@@ -1217,6 +1504,135 @@
         max-width: 260px;
         padding: 12px 18px;
     }
+
+
+    /* ================================
+       PASSENGER MESSAGE SELECTION
+       ================================ */
+
+    #passengerMessageModal {
+        padding: 10px;
+    }
+
+    #passengerMessageModal .modal-content {
+        width: 100%;
+        max-width: 420px !important;
+        margin: 20px auto;
+        padding: 18px;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    #passengerMessageList {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    /* Passenger row */
+    .passenger-message-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 8px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Checkbox outside passenger box */
+    .passenger-message-checkbox {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        min-height: 18px !important;
+        max-width: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        flex: 0 0 18px;
+        cursor: pointer;
+    }
+
+    /* Passenger information box */
+    .passenger-message-option {
+        flex: 1 1 auto;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 8px;
+
+        padding: 9px 10px;
+        margin: 0;
+
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 9px;
+
+        color: #14532d;
+        font-size: 12px;
+        font-weight: 600;
+
+        text-align: left;
+
+        box-sizing: border-box;
+        overflow: hidden;
+
+        cursor: pointer;
+        transition:
+            background .2s ease,
+            border-color .2s ease;
+    }
+
+    .passenger-message-option:hover {
+        background: #dcfce7;
+        border-color: #86efac;
+    }
+
+    /* Passenger name */
+    .passenger-message-option span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Contact number */
+    .passenger-message-option small {
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+
+    /* ================================
+       CANCEL / CONTINUE BUTTONS
+       ================================ */
+
+    #passengerMessageModal .modal-buttons {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #passengerMessageModal .modal-buttons .allowance-btn {
+        flex: 1;
+        width: auto;
+        margin-top: 0;
+        height: 42px;
+        font-size: 13px;
+        box-sizing: border-box;
+    }
+
 }
         
     </style>
@@ -1288,9 +1704,15 @@
 
     <button id="adminBtn" class="nav-btn">Admin</button>
 
-    <span id="sepAdminLogout" class="nav-separator">|</span>
+<span id="sepAdminManual" class="nav-separator" style="display:none;">|</span>
 
-    <button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
+<button id="manualBtn" class="nav-btn" style="display:none;">Manual</button>
+
+<span id="sepManualLogout" class="nav-separator" style="display:none;">|</span>
+
+<span id="sepAdminLogout" class="nav-separator">|</span>
+
+<button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
 
 </div>
 </div>
@@ -1419,7 +1841,7 @@
 </div>
    
 <div id="driverAllowanceDetailsModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
+   <div class="modal-content" style="max-width: 500px; overflow-x: hidden;">
         <h3 class="modal-title" id="detailsModalDriverName">Driver Allowance Breakdown</h3>
         <p style="font-size: 13px; color: #6b7280; margin-top: -8px;" id="detailsModalRange"></p>
         
@@ -1488,7 +1910,98 @@
         </div>
     </div>
 </div>
+<!-- PASSENGER MESSAGE SELECTION MODAL -->
+<div id="passengerMessageModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
 
+        <h3 class="modal-title">Message your passenger/s</h3>
+
+        <p id="passengerMessageInstruction"
+           style="font-size: 14px; color: #6b7280; margin-bottom: 18px;">
+            Select the passenger to proceed with texting.
+        </p>
+
+        <div id="passengerMessageList"></div>
+
+        <div class="modal-buttons">
+    <button
+        class="allowance-btn cancel-btn"
+        onclick="closePassengerMessageModal()">
+        Cancel
+    </button>
+
+    <button
+        class="allowance-btn submit-btn"
+        onclick="continuePassengerMessageSelection()">
+        Continue
+    </button>
+</div>
+    </div>
+</div>
+
+    <!-- MESSAGE COMPOSE MODAL -->
+<div id="messageComposeModal" class="modal">
+    <div class="modal-content message-compose-modal">
+
+        <button
+    type="button"
+    class="message-modal-close"
+    onclick="closeMessageComposeModal()"
+    aria-label="Close">
+    &times;
+</button>
+
+        <h3 class="modal-title">Message Requestor</h3>
+
+        <p id="messageComposePassenger"
+           style="font-size:14px; font-weight:600; color:#14532d; margin-bottom:12px;">
+        </p>
+
+        <textarea
+            id="passengerMessageText"
+            class="passenger-message-text"
+            readonly>
+        </textarea>
+
+        <div class="modal-buttons message-compose-buttons">
+            <button
+                type="button"
+                class="message-edit-btn"
+                onclick="editPassengerMessage()">
+                Edit Message
+            </button>
+
+            <button
+                type="button"
+                class="message-send-btn"
+                onclick="sendPassengerMessage()">
+                Send Message
+            </button>
+        </div>
+
+        <div
+            id="messageEditButtons"
+            class="modal-buttons"
+            style="display:none;">
+
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                onclick="cancelPassengerMessageEdit()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn submit-btn"
+                onclick="savePassengerMessageEdit()">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+</div>
 
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
@@ -1775,43 +2288,66 @@ function checkAdminSession() {
 }
 
 function configureNavigation(role) {
-    const allowanceBtn = document.getElementById("allowanceBtn");
-    const adminBtn = document.getElementById("adminBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
+const allowanceBtn = document.getElementById("allowanceBtn");
+const adminBtn = document.getElementById("adminBtn");
+const manualBtn = document.getElementById("manualBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-    const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
-    const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
-    const sepAdminLogout = document.getElementById("sepAdminLogout");
+const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
+const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+const sepAdminManual = document.getElementById("sepAdminManual");
+const sepManualLogout = document.getElementById("sepManualLogout");
+const sepAdminLogout = document.getElementById("sepAdminLogout");
 
-    if (allowanceBtn) allowanceBtn.style.display = "";
-    if (adminBtn) adminBtn.style.display = "";
-    if (logoutBtn) logoutBtn.style.display = "";
+if (allowanceBtn) allowanceBtn.style.display = "";
+if (adminBtn) adminBtn.style.display = "";
+if (manualBtn) manualBtn.style.display = "none";
+if (logoutBtn) logoutBtn.style.display = "";
 
-    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
-    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-    if (sepAdminLogout) sepAdminLogout.style.display = "";
+if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
+if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+if (sepAdminManual) sepAdminManual.style.display = "none";
+if (sepManualLogout) sepManualLogout.style.display = "none";
+if (sepAdminLogout) sepAdminLogout.style.display = "";
 
-    switch (role) {
-        case "driver":
-            if (adminBtn) adminBtn.style.display = "none";
-            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            break;
+switch (role) {
 
-        case "admin":
-            if (allowanceBtn) allowanceBtn.style.display = "none";
-            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-            break;
+    case "driver":
+        if (adminBtn) adminBtn.style.display = "none";
+        if (manualBtn) manualBtn.style.display = "none";
 
-        case "organic":
-            if (allowanceBtn) allowanceBtn.style.display = "none";
-            if (adminBtn) adminBtn.style.display = "none";
-            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-            if (sepAdminLogout) sepAdminLogout.style.display = "none";
-            break;
-    }
+        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+        if (sepAdminManual) sepAdminManual.style.display = "none";
+        if (sepManualLogout) sepManualLogout.style.display = "none";
+        break;
+
+    case "admin":
+        if (allowanceBtn) allowanceBtn.style.display = "none";
+        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+
+        if (adminBtn) adminBtn.style.display = "";
+        if (manualBtn) manualBtn.style.display = "";
+
+        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+        if (sepAdminManual) sepAdminManual.style.display = "";
+        if (sepManualLogout) sepManualLogout.style.display = "";
+        if (sepAdminLogout) sepAdminLogout.style.display = "none";
+        break;
+
+    case "organic":
+        if (allowanceBtn) allowanceBtn.style.display = "none";
+        if (adminBtn) adminBtn.style.display = "none";
+        if (manualBtn) manualBtn.style.display = "none";
+
+        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+        if (sepAdminManual) sepAdminManual.style.display = "none";
+        if (sepManualLogout) sepManualLogout.style.display = "none";
+        if (sepAdminLogout) sepAdminLogout.style.display = "none";
+        break;
 }
 
+}
 function showAdminDashboard() {
     const role = localStorage.getItem("userRole");
 
@@ -2465,6 +3001,244 @@ document.addEventListener("DOMContentLoaded", function(){
     const confirmReminderBtn = document.getElementById("confirmReminderBtn");
     if (confirmReminderBtn) confirmReminderBtn.addEventListener("click", confirmReminder);
 });
+
+    function openPassengerMessage(driver, date) {
+
+    const messageKey =
+        `${driver.trim().toLowerCase()}|${standardizeDateStr(date)}`;
+
+    const data = window.passengerMessageData?.[messageKey];
+
+    if (!data || !Array.isArray(data.trips)) {
+        alert("Passenger information is not available.");
+        return;
+    }
+
+    const passengerTrips = data.trips.filter(trip =>
+        (trip.passengerName || "").trim() !== ""
+    );
+
+    if (passengerTrips.length === 0) {
+        alert("No passenger is available for messaging.");
+        return;
+    }
+
+    // Store the current messaging data for the Continue button
+    window.currentPassengerMessageData = data;
+    window.currentPassengerMessageTrips = passengerTrips;
+
+    const list = document.getElementById("passengerMessageList");
+
+    list.innerHTML = "";
+
+    passengerTrips.forEach((trip, index) => {
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const contactNumber =
+            (trip.contactNumber || "").trim();
+
+        const row = document.createElement("div");
+
+row.className = "passenger-message-row";
+
+row.innerHTML = `
+    <input
+        type="checkbox"
+        class="passenger-message-checkbox"
+        value="${index}">
+
+    <label class="passenger-message-option">
+        <span>${passengerName}</span>
+
+        ${
+            contactNumber
+                ? `<small>${contactNumber}</small>`
+                : `<small>No contact number</small>`
+        }
+    </label>
+`;
+
+list.appendChild(row);
+    });
+
+    document.getElementById("passengerMessageModal").style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+
+function closePassengerMessageModal() {
+    document.getElementById("passengerMessageModal").style.display = "none";
+    document.body.style.overflow = "";
+}
+
+    function continuePassengerMessageSelection() {
+
+    const checkboxes =
+        document.querySelectorAll(".passenger-message-checkbox:checked");
+
+    if (checkboxes.length === 0) {
+        alert("Please select at least one passenger.");
+        return;
+    }
+
+    const data = window.currentPassengerMessageData;
+    const trips = window.currentPassengerMessageTrips || [];
+
+    const selectedTrips = Array.from(checkboxes)
+        .map(checkbox => trips[Number(checkbox.value)])
+        .filter(Boolean);
+
+    if (selectedTrips.length === 0) {
+        alert("No passenger was selected.");
+        return;
+    }
+
+    // Store selected passengers for the next step
+    window.selectedPassengerMessageTrips = selectedTrips;
+
+    closePassengerMessageModal();
+
+    openPassengerMessageCompose(data, selectedTrips);
+}
+
+
+function openPassengerMessageCompose(data, selectedTrips) {
+
+    const driverName = data.driver || "";
+    const tripDate = data.date || "";
+
+    let tripDetails = "";
+
+    selectedTrips.forEach((trip, index) => {
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const pickupTime =
+            (trip.pickupTime || "").trim();
+
+        const origin =
+            (trip.origin || "").trim();
+
+        const destination =
+            (trip.destination || "").trim();
+
+        const remarks =
+            (trip.remarks || "").trim();
+
+        tripDetails += `
+Passenger: ${passengerName}
+Pick-up Time: ${pickupTime}
+Origin: ${origin}
+Destination: ${destination}
+Remarks: ${remarks || "None"}
+`;
+
+        if (index < selectedTrips.length - 1) {
+            tripDetails += "\n";
+        }
+    });
+
+    const message =
+`Hi, Ma'am/Sir!
+
+I am ${driverName}, your assigned driver for your trip on ${tripDate}.
+
+Here are the trip details:
+${tripDetails}
+If there are any changes or concerns regarding your trip, please message me here and notify the admin as well.
+
+Please be advised that the trip will proceed as scheduled even if I have not received your confirmation, unless you or the admin informs you that the trip has been cancelled or changed.
+
+Thank you, and see you!`;
+
+    const passengerNames = selectedTrips
+        .map(trip => (trip.passengerName || "").trim())
+        .filter(Boolean)
+        .join(", ");
+
+    document.getElementById("messageComposePassenger").textContent =
+        passengerNames;
+
+    document.getElementById("passengerMessageText").value =
+        message;
+
+    window.originalPassengerMessage = message;
+
+    document.getElementById("messageComposeModal").style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+    
+    function closeMessageComposeModal() {
+    document.getElementById("messageComposeModal").style.display = "none";
+    document.body.style.overflow = "";
+}
+
+    function editPassengerMessage() {
+
+    const messageBox =
+        document.getElementById("passengerMessageText");
+
+    const composeButtons =
+        document.querySelector(".message-compose-buttons");
+
+    const editButtons =
+        document.getElementById("messageEditButtons");
+
+    if (!messageBox || !composeButtons || !editButtons) {
+        console.error("Message edit elements not found.");
+        return;
+    }
+
+    messageBox.readOnly = false;
+    messageBox.focus();
+
+    composeButtons.style.display = "none";
+    editButtons.style.display = "flex";
+}
+
+    function cancelPassengerMessageEdit() {
+
+    const messageBox =
+        document.getElementById("passengerMessageText");
+
+    const composeButtons =
+        document.querySelector(".message-compose-buttons");
+
+    const editButtons =
+        document.getElementById("messageEditButtons");
+
+    messageBox.value =
+        window.originalPassengerMessage || messageBox.value;
+
+    messageBox.readOnly = true;
+
+    editButtons.style.display = "none";
+    composeButtons.style.display = "flex";
+}
+
+    function savePassengerMessageEdit() {
+
+    const messageBox =
+        document.getElementById("passengerMessageText");
+
+    const composeButtons =
+        document.querySelector(".message-compose-buttons");
+
+    const editButtons =
+        document.getElementById("messageEditButtons");
+
+    window.originalPassengerMessage =
+        messageBox.value;
+
+    messageBox.readOnly = true;
+
+    editButtons.style.display = "none";
+    composeButtons.style.display = "flex";
+}
 
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
@@ -3315,13 +4089,21 @@ approvalRows.forEach(row => {
                     if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
                     if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driver.driver}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>${driver.vehicle}</td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
+                    const isAcknowledgedDriver =
+    isScheduleAcknowledged(date, driver.driver);
+
+const driverNameDisplay =
+    isAcknowledgedDriver
+        ? `<strong>${driver.driver}</strong>`
+        : driver.driver;
+
+tableRows += `
+<tr class="${rowClass}">
+    <td>${driverNameDisplay}</td>
+    <td>${driver.timeIn}</td>
+    <td>${driver.vehicle}</td>
+    <td>${itineraryDisplay}</td>
+</tr>`;
                 });
 
                 if (!hideSummaryTable) {
@@ -3387,11 +4169,28 @@ ${
 
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
+if (!window.passengerMessageData) {
+    window.passengerMessageData = {};
+}
 
+const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+
+window.passengerMessageData[messageKey] = {
+    driver: d.driver,
+    date: d.date,
+    trips: d.trips
+};
+const messagePassengerBtnHtml = role === "organic" ? "" : `
+    <button class="message-passenger-btn"
+        onclick="openPassengerMessage('${d.driver}','${d.date}')">
+        Notify Passenger
+    </button>
+`;
+                    
                     const allowanceBtnHtml = role === "organic" ? "" : (
                         isAlreadySubmitted
                             ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
+                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Allowance</button>`
                     );
 
                     pageHTML += `
@@ -3403,158 +4202,381 @@ ${
                             <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                             <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                         </div>
-                        ${tripsHTML}
-                        ${allowanceBtnHtml}
+                       ${tripsHTML}
+
+<div class="driver-action-buttons">
+    ${messagePassengerBtnHtml}
+    ${allowanceBtnHtml}
+</div>
                     </div>`;
                 });
             }
 
-            // FUTURE SCHEDULES RENDERING
-            if (!isPast && !isToday) {
-                let tableRows = "";
-                Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                    let itineraryDisplay = (driver.itinerary || "").trim();
-                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                    let rowClass = isRestDay ? "rest-day-row" : "";
+         // FUTURE SCHEDULES RENDERING
+if (!isPast && !isToday) {
+    let tableRows = "";
 
-                    const isAcknowledgedDriver =
-    isScheduleAcknowledged(date, driver.driver);
+    Object.values(summaryDrivers[date] || {}).forEach(driver => {
+        let itineraryDisplay = (driver.itinerary || "").trim();
+        const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+        let rowClass = isRestDay ? "rest-day-row" : "";
 
-const driverNameDisplay =
-    isAcknowledgedDriver
-        ? `<strong>${driver.driver}</strong>`
-        : driver.driver;
+        const isAcknowledgedDriver =
+            isScheduleAcknowledged(date, driver.driver);
 
-                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+        const driverNameDisplay =
+            isAcknowledgedDriver
+                ? `<strong>${driver.driver}</strong>`
+                : driver.driver;
 
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driverNameDisplay}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>${driver.vehicle}</td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
-                });
-
-              if (tableRows !== "") {
-    pageHTML += `
-   <div class="summary-card ${
-    role === "driver" &&
-    status === "approved" &&
-    !isScheduleAcknowledged(date, getLoggedInDriverName())
-        ? "schedule-locked"
-        : ""
-}">
-
-        ${pendingBadgeHeaderHtml}
-
-        <div class="summary-header">
-            <h2>${dayName} | ${date}</h2>
-        </div>
-${
-    role === "driver" &&
-    status === "approved" &&
-    !isScheduleAcknowledged(date, getLoggedInDriverName())
-        ?
-        `
-        <div class="acknowledge-schedule-box">
-            <p class="acknowledge-message">
-                Kindly acknowledge this schedule.
-            </p>
-
-            <p class="acknowledge-submessage">
-                If there is any confusion about your schedule, just message the Admin.
-            </p>
-
-            <button
-                class="acknowledge-schedule-btn"
-                onclick="acknowledgeDriverSchedule('${date}', this)">
-                Acknowledge Schedule
-            </button>
-        </div>
-        `
-        :
-        ""
-}
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Driver Name</th>
-                    <th>Time In</th>
-                    <th>Unit</th>
-                    <th>Assignment</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${tableRows}
-            </tbody>
-        </table>
-
-        
-
-        ${
-            approvalNotes[date] && approvalNotes[date].trim() !== ""
-            ?
-            `
-            <div class="schedule-notes-box">
-
-                <div class="schedule-notes-header">
-                    Schedule Notes
-                </div>
-
-                <div class="schedule-notes-body">
-                    ${approvalNotes[date].replace(/\n/g,"<br>")}
-                </div>
-
-            </div>
-            `
-            :
-            ""
+        if (/\bam\b/i.test(itineraryDisplay)) {
+            itineraryDisplay = itineraryDisplay.replace(
+                /\bam\b/gi,
+                `<span style="color: #b45309; font-weight: 800;">AM</span>`
+            );
         }
 
-    </div>`;
-}
-                Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
-                    const itinerary = (d.itinerary || "").trim();
-                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                    if (noAllowanceItineraries.includes(itinerary)) return;
+        if (/\bpm\b/i.test(itineraryDisplay)) {
+            itineraryDisplay = itineraryDisplay.replace(
+                /\bpm\b/gi,
+                `<span style="color: #1e40af; font-weight: 800;">PM</span>`
+            );
+        }
 
-                    let tripsHTML = "";
-                    d.trips.forEach((trip, index) => {
-                        with (trip) {
-                            tripsHTML += `
-                            <div class="trip">
-                                <div class="trip-title">Pick-Up ${index + 1}</div>
-                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                            </div>`;
-                        }
-                    });
+        tableRows += `
+            <tr class="${rowClass}">
+                <td>${driverNameDisplay}</td>
+                <td>${driver.timeIn}</td>
+                <td>${driver.vehicle}</td>
+                <td>${itineraryDisplay}</td>
+            </tr>`;
+    });
 
-                    pageHTML += `
-                  <div class="driver-card ${
-    role === "driver" &&
-    status === "approved" &&
-    !isScheduleAcknowledged(date, getLoggedInDriverName())
-        ? "schedule-locked"
-        : ""
-}">
-                        <div class="driver-header">
-                            <h2>${d.driver}</h2>
-                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+    if (tableRows !== "") {
+        pageHTML += `
+            <div class="summary-card ${
+                role === "driver" &&
+                status === "approved" &&
+                !isScheduleAcknowledged(date, getLoggedInDriverName())
+                    ? "schedule-locked"
+                    : ""
+            }">
+
+                ${pendingBadgeHeaderHtml}
+
+                <div class="summary-header">
+                    <h2>${dayName} | ${date}</h2>
+                </div>
+
+                ${
+                    role === "driver" &&
+                    status === "approved" &&
+                    !isScheduleAcknowledged(date, getLoggedInDriverName())
+                        ?
+                        `
+                        <div class="acknowledge-schedule-box">
+                            <p class="acknowledge-message">
+                                Kindly acknowledge this schedule.
+                            </p>
+
+                            <p class="acknowledge-submessage">
+                                If there is any confusion about your schedule, just message the Admin.
+                            </p>
+
+                            <button
+                                class="acknowledge-schedule-btn"
+                                onclick="acknowledgeDriverSchedule('${date}', this)">
+                                Acknowledge Schedule
+                            </button>
                         </div>
-                        ${tripsHTML}
-                    </div>`;
-                });
+                        `
+                        :
+                        ""
+                }
+
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Driver Name</th>
+                            <th>Time In</th>
+                            <th>Unit</th>
+                            <th>Assignment</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+
+                ${
+                    approvalNotes[date] &&
+                    approvalNotes[date].trim() !== ""
+                        ?
+                        `
+                        <div class="schedule-notes-box">
+
+                            <div class="schedule-notes-header">
+                                Schedule Notes
+                            </div>
+
+                            <div class="schedule-notes-body">
+                                ${approvalNotes[date].replace(/\n/g, "<br>")}
+                            </div>
+
+                        </div>
+                        `
+                        :
+                        ""
+                }
+
+            </div>`;
+    }
+
+    Object.values(grouped)
+        .sort()
+        .filter(d => d.date === date)
+        .forEach(d => {
+
+            const itinerary = (d.itinerary || "").trim();
+
+            const noAllowanceItineraries = [
+                "AM",
+                "PM",
+                "AM / Banking",
+                "Banking / PM",
+                "Rest Day",
+                "Standby",
+                "ED",
+                "AM / ED",
+                "ED / PM",
+                "ED / Banking",
+                "Banking"
+            ];
+
+            if (noAllowanceItineraries.includes(itinerary)) return;
+
+            let tripsHTML = "";
+
+            d.trips.forEach((trip, index) => {
+                with (trip) {
+                    tripsHTML += `
+                        <div class="trip">
+
+                            <div class="trip-title">
+                                Pick-Up ${index + 1}
+                            </div>
+
+                            ${
+                                pickupTime
+                                    ? `
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            Pick Up Time
+                                        </div>
+                                        <div class="info-value">
+                                            ${pickupTime}
+                                        </div>
+                                    </div>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                requestedBy
+                                    ? `
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            Requested By
+                                        </div>
+                                        <div class="info-value">
+                                            ${requestedBy}
+                                            ${
+                                                !passengerName && contactNumber
+                                                    ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>`
+                                                    : ""
+                                            }
+                                        </div>
+                                    </div>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                passengerName
+                                    ? `
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            Passenger
+                                        </div>
+                                        <div class="info-value">
+                                            ${passengerName}
+                                            ${
+                                                contactNumber
+                                                    ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>`
+                                                    : ""
+                                            }
+                                        </div>
+                                    </div>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                origin
+                                    ? `
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            Origin
+                                        </div>
+                                        <div class="info-value">
+                                            <a
+                                                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}"
+                                                target="_blank"
+                                                class="phone-link">
+                                                ${origin}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                destination
+                                    ? `
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            Destination
+                                        </div>
+                                        <div class="info-value">
+                                            <a
+                                                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}"
+                                                target="_blank"
+                                                class="phone-link">
+                                                ${destination}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                remarks
+                                    ? `
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            Remarks
+                                        </div>
+                                        <div class="info-value">
+                                            ${remarks}
+                                        </div>
+                                    </div>
+                                    `
+                                    : ""
+                            }
+
+                        </div>`;
+                }
+            });
+
+            /*
+             * Register passenger information for this
+             * future schedule so Notify Passenger can
+             * find the correct trips.
+             */
+            if (!window.passengerMessageData) {
+                window.passengerMessageData = {};
             }
+
+            const messageKey =
+                `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+
+            window.passengerMessageData[messageKey] = {
+                driver: d.driver,
+                date: d.date,
+                trips: d.trips
+            };
+
+            pageHTML += `
+                <div class="driver-card ${
+                    role === "driver" &&
+                    status === "approved" &&
+                    !isScheduleAcknowledged(
+                        date,
+                        getLoggedInDriverName()
+                    )
+                        ? "schedule-locked"
+                        : ""
+                }">
+
+                    <div class="driver-header">
+
+                        <h2>${d.driver}</h2>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                Date
+                            </div>
+                            <div class="info-value">
+                                ${d.date}
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                Time In
+                            </div>
+                            <div class="info-value">
+                                ${d.timeIn}
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                Unit
+                            </div>
+                            <div class="info-value">
+                                ${d.vehicle}
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                Assignment
+                            </div>
+                            <div class="info-value">
+                                ${d.itinerary}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    ${tripsHTML}
+
+                    ${
+                        role !== "organic"
+                            ?
+                            `
+                            <div class="driver-action-buttons">
+
+                                <button
+                                    type="button"
+                                    class="message-passenger-btn"
+                                    onclick="openPassengerMessage('${d.driver}','${d.date}')">
+                                    Notify Passenger
+                                </button>
+
+                            </div>
+                            `
+                            :
+                            ""
+                    }
+
+                </div>`;
+        });
+}
 
             // PAST UNSUBMITTED ALLOWANCE CARDS
             if (isPast && role !== "organic") {
@@ -3815,6 +4837,38 @@ document.getElementById("adminBtn").addEventListener("click", () => {
     showAdminDashboard();
 });
 
+    const MANUAL_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=441234750#gid=441234750";
+
+document.getElementById("manualBtn").addEventListener("click", () => {
+    openManualConfirmModal();
+});
+
+function openManualConfirmModal() {
+    const modal = document.getElementById("manualConfirmModal");
+
+    if (!modal) return;
+
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+function closeManualConfirmModal() {
+    const modal = document.getElementById("manualConfirmModal");
+
+    if (!modal) return;
+
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+}
+
+function continueToManualSheet() {
+    closeManualConfirmModal();
+
+    window.open(MANUAL_SHEET_URL, "_blank");
+}
+
+
 document.getElementById("loginBtn").addEventListener("click", loginDriver);
 
 function showLoginSpinner(title, message) {
@@ -3920,21 +4974,22 @@ await loadMainSchedulesAndApprovals();
 
     <div class="modal-content reminder-modal">
 
-        <h2>Welcome!</h2>
+        <h2>Hi <strong id="driverNameText"></strong>,</h2>
 
         <p style="margin-bottom:18px;">
-            Hi <strong id="driverNameText"></strong>,
-        </p>
-
-        <p style="margin-bottom:18px;">
-            A gentle reminder before you begin your duty:
+          <strong>Mahalagang Paalala sa Ating SOP:</strong>,
         </p>
 
         <ul class="reminder-list">
-            <li>Ensure the vehicle is fully fueled before returning it to the Feedmill.</li>
-            <li>Notify your passengers before their scheduled trips.</li>
-            <li>Submit your meal allowance immediately after completing your duty.</li>
-            <li>Drive safely and responsibly at all times.</li>
+            <li>I-acknowledge at suriin ang inyong schedule.</li>
+            <li>Ipaalam sa pamamagitan ng text o tawag sa mga pasahero ang kanilang nakatakdang biyahe.</li>
+            <li>Kumpletuhin nang maayos ang vehicle checklist bago bumiyahe.</li>
+            <li>Ipaalam sa Admin ang anumang pagbabago sa schedule na hindi niya ginawa.</li>
+            <li>Agad ipaalam sa pamamagitan ng Messenger o text sa Admin/TL/SUP ang anumang abala o problema habang nasa biyahe.</li>
+            <li>Siguraduhing fully fueled ang sasakyan bago umalis at bago ito ibalik sa Feedmill.</li>
+            <li>Mag-In at Out sa Biometric at Facial Recognition.</li>
+            <li>Isumite agad ang meal allowance pagkatapos ng inyong duty.</li>
+            <li>Magmaneho nang ligtas at responsable sa lahat ng oras.</li>
         </ul>
 
         <button id="confirmReminderBtn" class="allowance-btn">
@@ -3954,6 +5009,47 @@ await loadMainSchedulesAndApprovals();
         <p id="loadingMessage">
             Please wait...
         </p>
+    </div>
+</div>
+
+    <!-- MANUAL GOOGLE SHEET CONFIRMATION MODAL -->
+<div id="manualConfirmModal" class="modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+
+        <div style="font-size: 40px; margin-bottom: 8px;">📊</div>
+
+        <h3 class="modal-title"
+            style="color:#14532d; margin-bottom:10px;">
+            Manual Logging
+        </h3>
+
+        <p style="
+            color:#4b5563;
+            font-size:14px;
+            margin:0 0 24px;
+            line-height:1.5;
+        ">
+            Do you want to proceed in Google Sheet?
+        </p>
+
+        <div class="modal-buttons" style="margin-top:0;">
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                style="margin:0; height:44px;"
+                onclick="closeManualConfirmModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn"
+                style="margin:0; height:44px; background:#14532d;"
+                onclick="continueToManualSheet()">
+                Continue
+            </button>
+        </div>
+
     </div>
 </div>
     
