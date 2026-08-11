@@ -4653,12 +4653,36 @@ document.getElementById("adminBtn").addEventListener("click", () => {
     showAdminDashboard();
 });
 
-    document.getElementById("manualBtn").addEventListener("click", () => {
-    window.open(
-        "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=441234750#gid=441234750",
-        "_blank"
-    );
+    const MANUAL_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=441234750#gid=441234750";
+
+document.getElementById("manualBtn").addEventListener("click", () => {
+    openManualConfirmModal();
 });
+
+function openManualConfirmModal() {
+    const modal = document.getElementById("manualConfirmModal");
+
+    if (!modal) return;
+
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+function closeManualConfirmModal() {
+    const modal = document.getElementById("manualConfirmModal");
+
+    if (!modal) return;
+
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+}
+
+function continueToManualSheet() {
+    closeManualConfirmModal();
+
+    window.open(MANUAL_SHEET_URL, "_blank");
+}
 
 
 document.getElementById("loginBtn").addEventListener("click", loginDriver);
@@ -4801,6 +4825,47 @@ await loadMainSchedulesAndApprovals();
         <p id="loadingMessage">
             Please wait...
         </p>
+    </div>
+</div>
+
+    <!-- MANUAL GOOGLE SHEET CONFIRMATION MODAL -->
+<div id="manualConfirmModal" class="modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+
+        <div style="font-size: 40px; margin-bottom: 8px;">📊</div>
+
+        <h3 class="modal-title"
+            style="color:#14532d; margin-bottom:10px;">
+            Manual Schedule
+        </h3>
+
+        <p style="
+            color:#4b5563;
+            font-size:14px;
+            margin:0 0 24px;
+            line-height:1.5;
+        ">
+            Do you want to proceed in Google Sheet?
+        </p>
+
+        <div class="modal-buttons" style="margin-top:0;">
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                style="margin:0; height:44px;"
+                onclick="closeManualConfirmModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn"
+                style="margin:0; height:44px; background:#14532d;"
+                onclick="continueToManualSheet()">
+                Continue
+            </button>
+        </div>
+
     </div>
 </div>
     
