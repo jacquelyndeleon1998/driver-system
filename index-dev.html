@@ -4340,22 +4340,57 @@ ${
                     });
 
                     pageHTML += `
-                  <div class="driver-card ${
-    role === "driver" &&
-    status === "approved" &&
-    !isScheduleAcknowledged(date, getLoggedInDriverName())
-        ? "schedule-locked"
-        : ""
-}">
-                        <div class="driver-header">
-                            <h2>${d.driver}</h2>
-                            <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                            <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                            <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                            <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                        </div>
-                        ${tripsHTML}
-                    </div>`;
+    <div class="driver-card ${
+        role === "driver" &&
+        status === "approved" &&
+        !isScheduleAcknowledged(date, getLoggedInDriverName())
+            ? "schedule-locked"
+            : ""
+    }">
+        <div class="driver-header">
+            <h2>${d.driver}</h2>
+
+            <div class="info-item">
+                <div class="info-label">Date</div>
+                <div class="info-value">${d.date}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Time In</div>
+                <div class="info-value">${d.timeIn}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Unit</div>
+                <div class="info-value">${d.vehicle}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Assignment</div>
+                <div class="info-value">${d.itinerary}</div>
+            </div>
+        </div>
+
+        ${tripsHTML}
+
+        ${
+            role !== "organic"
+            ?
+            `
+            <div class="driver-action-buttons">
+                <button
+                    type="button"
+                    class="message-passenger-btn"
+                    onclick='openPassengerMessageCompose(${JSON.stringify(d)}, ${JSON.stringify(d.trips)})'>
+                    Notify Passenger
+                </button>
+            </div>
+            `
+            :
+            ""
+        }
+
+    </div>`;
                 });
             }
 
