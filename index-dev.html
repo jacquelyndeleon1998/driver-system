@@ -401,6 +401,27 @@
         transform: scale(.99);
     }
 
+        .message-passenger-btn {
+    width: 100%;
+    height: 46px;
+    margin-top: 14px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.message-passenger-btn:hover {
+    background: #1d4ed8;
+}
+
+.message-passenger-btn:active {
+    tran
+
     .rest-day-row {
         background: #f8d7da;
         color: #721c24;
@@ -3530,10 +3551,17 @@ ${
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
 
+const messagePassengerBtnHtml = role === "organic" ? "" : `
+    <button class="message-passenger-btn"
+        onclick="openPassengerMessage('${d.driver}','${d.date}')">
+        Message Passenger
+    </button>
+`;
+                    
                     const allowanceBtnHtml = role === "organic" ? "" : (
                         isAlreadySubmitted
                             ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Meal Allowance</button>`
+                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Allowance</button>`
                     );
 
                     pageHTML += `
@@ -3545,8 +3573,9 @@ ${
                             <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                             <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                         </div>
-                        ${tripsHTML}
-                        ${allowanceBtnHtml}
+                       ${tripsHTML}
+${messagePassengerBtnHtml}
+${allowanceBtnHtml}
                     </div>`;
                 });
             }
