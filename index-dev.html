@@ -500,23 +500,40 @@
     background: #15803d;
 }
 
-        .passenger-message-option {
+        .passenger-message-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     width: 100%;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.passenger-message-checkbox {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.passenger-message-option {
+    flex: 0 1 420px;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    gap: 10px;
+    padding: 10px 12px;
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
-    border-radius: 10px;
+    border-radius: 9px;
     color: #14532d;
     font-size: 14px;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
     transition: background .2s ease, border-color .2s ease;
+    box-sizing: border-box;
 }
 
 .passenger-message-option:hover {
@@ -528,6 +545,7 @@
     color: #6b7280;
     font-size: 12px;
     font-weight: 500;
+    white-space: nowrap;
 }
 
         .driver-action-buttons {
@@ -2871,27 +2889,28 @@ document.addEventListener("DOMContentLoaded", function(){
         const contactNumber =
             (trip.contactNumber || "").trim();
 
-        const label = document.createElement("label");
+        const row = document.createElement("div");
 
-        label.className = "passenger-message-option";
+row.className = "passenger-message-row";
 
-        label.innerHTML = `
-            <span style="display:flex;align-items:center;gap:10px;">
-                <input
-                    type="checkbox"
-                    class="passenger-message-checkbox"
-                    value="${index}">
-                <span>${passengerName}</span>
-            </span>
+row.innerHTML = `
+    <input
+        type="checkbox"
+        class="passenger-message-checkbox"
+        value="${index}">
 
-            ${
-                contactNumber
-                    ? `<small>${contactNumber}</small>`
-                    : `<small>No contact number</small>`
-            }
-        `;
+    <label class="passenger-message-option">
+        <span>${passengerName}</span>
 
-        list.appendChild(label);
+        ${
+            contactNumber
+                ? `<small>${contactNumber}</small>`
+                : `<small>No contact number</small>`
+        }
+    </label>
+`;
+
+list.appendChild(row);
     });
 
     document.getElementById("passengerMessageModal").style.display = "block";
