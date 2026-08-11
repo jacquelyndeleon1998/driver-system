@@ -1756,12 +1756,18 @@
         <div id="passengerMessageList"></div>
 
         <div class="modal-buttons">
-            <button class="allowance-btn cancel-btn"
-                    onclick="closePassengerMessageModal()">
-                Cancel
-            </button>
-        </div>
+    <button
+        class="allowance-btn cancel-btn"
+        onclick="closePassengerMessageModal()">
+        Cancel
+    </button>
 
+    <button
+        class="allowance-btn submit-btn"
+        onclick="continuePassengerMessageSelection()">
+        Continue
+    </button>
+</div>
     </div>
 </div>
 
@@ -2874,12 +2880,23 @@ document.addEventListener("DOMContentLoaded", function(){
             }
         `;
 
-        button.onclick = function () {
-            selectPassengerForMessage(
-                data,
-                trip
-            );
-        };
+        button.type = "button";
+button.className = "passenger-message-option";
+
+button.innerHTML = `
+    <span>
+        <input
+            type="checkbox"
+            class="passenger-message-checkbox"
+            value="${index}">
+        ${passengerName}
+    </span>
+
+    ${contactNumber
+        ? `<small>${contactNumber}</small>`
+        : `<small>No contact number</small>`
+    }
+`;
 
         list.appendChild(button);
     });
