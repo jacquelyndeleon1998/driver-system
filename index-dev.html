@@ -427,6 +427,58 @@
     transform: scale(0.99);
 }
 
+        .message-compose-modal {
+    max-width: 520px;
+}
+
+.passenger-message-text {
+    width: 100%;
+    min-height: 300px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #f9fafb;
+    color: #374151;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.message-compose-buttons {
+    margin-top: 15px;
+}
+
+.message-edit-btn,
+.message-send-btn {
+    flex: 1;
+    height: 44px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.message-edit-btn {
+    background: #dcfce7;
+    color: #14532d;
+}
+
+.message-edit-btn:hover {
+    background: #bbf7d0;
+}
+
+.message-send-btn {
+    background: #16a34a;
+    color: #fff;
+}
+
+.message-send-btn:hover {
+    background: #15803d;
+}
+
         .passenger-message-option {
     width: 100%;
     display: flex;
@@ -1692,6 +1744,62 @@
     </div>
 </div>
 
+    <!-- MESSAGE COMPOSE MODAL -->
+<div id="messageComposeModal" class="modal">
+    <div class="modal-content message-compose-modal">
+
+        <h3 class="modal-title">Message Passenger</h3>
+
+        <p id="messageComposePassenger"
+           style="font-size:14px; font-weight:600; color:#14532d; margin-bottom:12px;">
+        </p>
+
+        <textarea
+            id="passengerMessageText"
+            class="passenger-message-text"
+            readonly>
+        </textarea>
+
+        <div class="modal-buttons message-compose-buttons">
+            <button
+                type="button"
+                class="message-edit-btn"
+                onclick="editPassengerMessage()">
+                Edit Message
+            </button>
+
+            <button
+                type="button"
+                class="message-send-btn"
+                onclick="sendPassengerMessage()">
+                Send Message
+            </button>
+        </div>
+
+        <div
+            id="messageEditButtons"
+            class="modal-buttons"
+            style="display:none;">
+
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                onclick="cancelPassengerMessageEdit()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn submit-btn"
+                onclick="savePassengerMessageEdit()">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
     <div class="modal-content">
@@ -2760,16 +2868,44 @@ function closePassengerMessageModal() {
 
 function selectPassengerForMessage(data, trip) {
 
-    console.log("Selected passenger for messaging:", {
-        driver: data.driver,
-        date: data.date,
-        passenger: trip.passengerName,
-        contactNumber: trip.contactNumber
-    });
+    const driverName = data.driver || "";
+    const tripDate = data.date || "";
+
+    const passengerName = (trip.passengerName || "").trim();
+    const pickupTime = (trip.pickupTime || "").trim();
+    const origin = (trip.origin || "").trim();
+    const destination = (trip.destination || "").trim();
+    const remarks = (trip.remarks || "").trim();
+
+    const message =
+`Hi, Ma'am/Sir!
+
+I am ${driverName}, your assigned driver for your trip on ${tripDate}.
+
+Here are your trip details:
+
+Passenger: ${passengerName}
+Pick-up Time: ${pickupTime}
+Origin: ${origin}
+Destination: ${destination}
+Remarks: ${remarks || "None"}
+
+If there are any changes or concerns regarding your trip, please message me here and notify the admin as well.
+
+Please be advised that the trip will proceed as scheduled even if I have not received your confirmation, unless you or the admin informs me that the trip has been cancelled or changed.
+
+Thank you, and see you!`;
+
+    document.getElementById("messageComposePassenger").textContent =
+        passengerName;
+
+    document.getElementById("passengerMessageText").value =
+        message;
 
     closePassengerMessageModal();
 
-    // Message composition will be added in Step 3.
+    document.getElementById("messageComposeModal").style.display = "block";
+    document.body.style.overflow = "hidden";
 }
 
 function submitAllowance(driver, date, reqBy, pass, tripType){
