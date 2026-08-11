@@ -2855,6 +2855,10 @@ document.addEventListener("DOMContentLoaded", function(){
         return;
     }
 
+    // Store the current messaging data for the Continue button
+    window.currentPassengerMessageData = data;
+    window.currentPassengerMessageTrips = passengerTrips;
+
     const list = document.getElementById("passengerMessageList");
 
     list.innerHTML = "";
@@ -2867,38 +2871,27 @@ document.addEventListener("DOMContentLoaded", function(){
         const contactNumber =
             (trip.contactNumber || "").trim();
 
-        const button = document.createElement("button");
+        const label = document.createElement("label");
 
-        button.type = "button";
-        button.className = "passenger-message-option";
+        label.className = "passenger-message-option";
 
-        button.innerHTML = `
-            <span>${passengerName}</span>
-            ${contactNumber
-                ? `<small>${contactNumber}</small>`
-                : `<small>No contact number</small>`
+        label.innerHTML = `
+            <span style="display:flex;align-items:center;gap:10px;">
+                <input
+                    type="checkbox"
+                    class="passenger-message-checkbox"
+                    value="${index}">
+                <span>${passengerName}</span>
+            </span>
+
+            ${
+                contactNumber
+                    ? `<small>${contactNumber}</small>`
+                    : `<small>No contact number</small>`
             }
         `;
 
-        button.type = "button";
-button.className = "passenger-message-option";
-
-button.innerHTML = `
-    <span>
-        <input
-            type="checkbox"
-            class="passenger-message-checkbox"
-            value="${index}">
-        ${passengerName}
-    </span>
-
-    ${contactNumber
-        ? `<small>${contactNumber}</small>`
-        : `<small>No contact number</small>`
-    }
-`;
-
-        list.appendChild(button);
+        list.appendChild(label);
     });
 
     document.getElementById("passengerMessageModal").style.display = "block";
@@ -2911,49 +2904,102 @@ function closePassengerMessageModal() {
     document.body.style.overflow = "";
 }
 
+    function continuePassengerMessageSelection() {
 
-function selectPassengerForMessage(data, trip) {
+    const checkboxes =
+        document.querySelectorAll(".passenger-message-checkbox:checked");
+
+    if (checkboxes.length === 0) {
+        alert("Please select at least one passenger.");
+        return;
+    }
+
+    const data = window.currentPassengerMessageData;
+    const trips = window.currentPassengerMessageTrips || [];
+
+    const selectedTrips = Array.from(checkboxes)
+        .map(checkbox => trips[Number(checkbox.value)])
+        .filter(Boolean);
+
+    if (selectedTrips.length === 0) {
+        alert("No passenger was selected.");
+        return;
+    }
+
+    // Store selected passengers for the next step
+    window.selectedPassengerMessageTrips = selectedTrips;
+
+    closePassengerMessageModal();
+
+    openPassengerMessageCompose(data, selectedTrips);
+}
+
+
+function openPassengerMessageCompose(data, selectedTrips) {
 
     const driverName = data.driver || "";
     const tripDate = data.date || "";
 
-    const passengerName = (trip.passengerName || "").trim();
-    const pickupTime = (trip.pickupTime || "").trim();
-    const origin = (trip.origin || "").trim();
-    const destination = (trip.destination || "").trim();
-    const remarks = (trip.remarks || "").trim();
+    let tripDetails = "";
+
+    selectedTrips.forEach((trip, index) => {
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const pickupTime =
+            (trip.pickupTime || "").trim();
+
+        const origin =
+            (trip.origin || "").trim();
+
+        const destination =
+            (trip.destination || "").trim();
+
+        const remarks =
+            (trip.remarks || "").trim();
+
+        tripDetails += `
+Passenger: ${passengerName}
+Pick-up Time: ${pickupTime}
+Origin: ${origin}
+Destination: ${destination}
+Remarks: ${remarks || "None"}
+`;
+
+        if (index < selectedTrips.length - 1) {
+            tripDetails += "\n";
+        }
+    });
 
     const message =
 `Hi, Ma'am/Sir!
 
 I am ${driverName}, your assigned driver for your trip on ${tripDate}.
 
-Here are your trip details:
+Here are the trip details:
 
-Passenger: ${passengerName}
-Pick-up Time: ${pickupTime}
-Origin: ${origin}
-Destination: ${destination}
-Remarks: ${remarks || "None"}
-
+${tripDetails}
 If there are any changes or concerns regarding your trip, please message me here and notify the admin as well.
 
-Please be advised that the trip will proceed as scheduled even if I have not received your confirmation, unless you or the admin informs me that the trip has been cancelled or changed.
+Please be advised that the trip will proceed as scheduled even if I have not received your confirmation, unless you or the admin informs you that the trip has been cancelled or changed.
 
 Thank you, and see you!`;
 
+    const passengerNames = selectedTrips
+        .map(trip => (trip.passengerName || "").trim())
+        .filter(Boolean)
+        .join(", ");
+
     document.getElementById("messageComposePassenger").textContent =
-        passengerName;
+        passengerNames;
 
     document.getElementById("passengerMessageText").value =
         message;
 
-    closePassengerMessageModal();
-
     document.getElementById("messageComposeModal").style.display = "block";
     document.body.style.overflow = "hidden";
 }
-
     function closeMessageComposeModal() {
     document.getElementById("messageComposeModal").style.display = "none";
     document.body.style.overflow = "";
