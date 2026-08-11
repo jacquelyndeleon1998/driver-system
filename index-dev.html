@@ -405,8 +405,8 @@
     width: 100%;
     height: 46px;
     margin-top: 14px;
-    background: #2563eb;
-    color: #fff;
+    background: #86efac;
+    color: #14532d;
     border: none;
     border-radius: 10px;
     font-size: 14px;
@@ -416,12 +416,11 @@
 }
 
 .message-passenger-btn:hover {
-       background: #1d4ed8;
+    background: #4ade80;
 }
 
 .message-passenger-btn:active {
     transform: scale(0.99);
-      background: #2563eb;;
 }
 
         .driver-action-buttons {
@@ -3590,8 +3589,11 @@ const messagePassengerBtnHtml = role === "organic" ? "" : `
                             <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                         </div>
                        ${tripsHTML}
-${messagePassengerBtnHtml}
-${allowanceBtnHtml}
+
+<div class="driver-action-buttons">
+    ${messagePassengerBtnHtml}
+    ${allowanceBtnHtml}
+</div>
                     </div>`;
                 });
             }
