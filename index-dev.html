@@ -1288,15 +1288,15 @@
 
     <button id="adminBtn" class="nav-btn">Admin</button>
 
-    <span id="sepAdminManual" class="nav-separator">|</span>
+<span id="sepAdminManual" class="nav-separator" style="display:none;">|</span>
 
-    <button id="manualBtn" class="nav-btn">Manual</button>
+<button id="manualBtn" class="nav-btn" style="display:none;">Manual</button>
 
-    <span id="sepManualLogout" class="nav-separator">|</span>
+<span id="sepManualLogout" class="nav-separator" style="display:none;">|</span>
 
-    <span id="sepAdminLogout" class="nav-separator">|</span>
+<span id="sepAdminLogout" class="nav-separator">|</span>
 
-    <button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
+<button id="logoutBtn" class="nav-btn" onclick="logoutUser()">Log Out</button>
 
 </div>
 </div>
@@ -1781,26 +1781,29 @@ function checkAdminSession() {
 }
 
 function configureNavigation(role) {
-    const allowanceBtn = document.getElementById("allowanceBtn");
-    const adminBtn = document.getElementById("adminBtn");
-    const manualBtn = document.getElementById("manualBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
+const allowanceBtn = document.getElementById("allowanceBtn");
+const adminBtn = document.getElementById("adminBtn");
+const manualBtn = document.getElementById("manualBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-    const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
-    const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
-    const sepAdminManual = document.getElementById("sepAdminManual");
-    const sepManualLogout = document.getElementById("sepManualLogout");
-    const sepAdminLogout = document.getElementById("sepAdminLogout");
+const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
+const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+const sepAdminManual = document.getElementById("sepAdminManual");
+const sepManualLogout = document.getElementById("sepManualLogout");
+const sepAdminLogout = document.getElementById("sepAdminLogout");
 
-    if (allowanceBtn) allowanceBtn.style.display = "";
-    if (adminBtn) adminBtn.style.display = "";
-    if (logoutBtn) logoutBtn.style.display = "";
+if (allowanceBtn) allowanceBtn.style.display = "";
+if (adminBtn) adminBtn.style.display = "";
+if (manualBtn) manualBtn.style.display = "none";
+if (logoutBtn) logoutBtn.style.display = "";
 
-    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
-    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-    if (sepAdminLogout) sepAdminLogout.style.display = "";
+if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
+if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+if (sepAdminManual) sepAdminManual.style.display = "none";
+if (sepManualLogout) sepManualLogout.style.display = "none";
+if (sepAdminLogout) sepAdminLogout.style.display = "";
 
-    switch (role) {
+switch (role) {
 
     case "driver":
         if (adminBtn) adminBtn.style.display = "none";
@@ -1837,6 +1840,7 @@ function configureNavigation(role) {
         break;
 }
 
+}
 function showAdminDashboard() {
     const role = localStorage.getItem("userRole");
 
