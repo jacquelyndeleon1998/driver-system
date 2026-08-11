@@ -3220,6 +3220,26 @@ Thank you, and see you!`;
     composeButtons.style.display = "flex";
 }
 
+    function savePassengerMessageEdit() {
+
+    const messageBox =
+        document.getElementById("passengerMessageText");
+
+    const composeButtons =
+        document.querySelector(".message-compose-buttons");
+
+    const editButtons =
+        document.getElementById("messageEditButtons");
+
+    window.originalPassengerMessage =
+        messageBox.value;
+
+    messageBox.readOnly = true;
+
+    editButtons.style.display = "none";
+    composeButtons.style.display = "flex";
+}
+
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
