@@ -3165,12 +3165,34 @@ Thank you, and see you!`;
     document.getElementById("passengerMessageText").value =
         message;
 
+    window.originalPassengerMessage = message;
+
     document.getElementById("messageComposeModal").style.display = "block";
     document.body.style.overflow = "hidden";
 }
+
+    
     function closeMessageComposeModal() {
     document.getElementById("messageComposeModal").style.display = "none";
     document.body.style.overflow = "";
+}
+
+    function editPassengerMessage() {
+
+    const messageBox =
+        document.getElementById("passengerMessageText");
+
+    const composeButtons =
+        document.querySelector(".message-compose-buttons");
+
+    const editButtons =
+        document.getElementById("messageEditButtons");
+
+    messageBox.readOnly = false;
+    messageBox.focus();
+
+    composeButtons.style.display = "none";
+    editButtons.style.display = "flex";
 }
 
 function submitAllowance(driver, date, reqBy, pass, tripType){
