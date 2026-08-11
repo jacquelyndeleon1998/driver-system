@@ -4339,6 +4339,19 @@ ${
                         }
                     });
 
+                    if (!window.passengerMessageData) {
+    window.passengerMessageData = {};
+}
+
+const messageKey =
+    `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+
+window.passengerMessageData[messageKey] = {
+    driver: d.driver,
+    date: d.date,
+    trips: d.trips
+};
+
                     pageHTML += `
     <div class="driver-card ${
         role === "driver" &&
@@ -4836,7 +4849,7 @@ await loadMainSchedulesAndApprovals();
 
         <h3 class="modal-title"
             style="color:#14532d; margin-bottom:10px;">
-            Manual Schedule
+            Manual Logging
         </h3>
 
         <p style="
