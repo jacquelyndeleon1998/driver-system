@@ -427,6 +427,36 @@
     transform: scale(0.99);
 }
 
+        .passenger-message-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    color: #14532d;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+}
+
+.passenger-message-option:hover {
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.passenger-message-option small {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 500;
+}
+
         .driver-action-buttons {
     display: flex;
     gap: 10px;
@@ -1639,7 +1669,28 @@
         </div>
     </div>
 </div>
+<!-- PASSENGER MESSAGE SELECTION MODAL -->
+<div id="passengerMessageModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
 
+        <h3 class="modal-title">Select Passenger to Proceed with Texting</h3>
+
+        <p id="passengerMessageInstruction"
+           style="font-size: 14px; color: #6b7280; margin-bottom: 18px;">
+            Click the passenger name to proceed with texting.
+        </p>
+
+        <div id="passengerMessageList"></div>
+
+        <div class="modal-buttons">
+            <button class="allowance-btn cancel-btn"
+                    onclick="closePassengerMessageModal()">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+</div>
 
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
@@ -2640,6 +2691,87 @@ document.addEventListener("DOMContentLoaded", function(){
     if (confirmReminderBtn) confirmReminderBtn.addEventListener("click", confirmReminder);
 });
 
+    function openPassengerMessage(driver, date) {
+
+    const messageKey =
+        `${driver.trim().toLowerCase()}|${standardizeDateStr(date)}`;
+
+    const data = window.passengerMessageData?.[messageKey];
+
+    if (!data || !Array.isArray(data.trips)) {
+        alert("Passenger information is not available.");
+        return;
+    }
+
+    const passengerTrips = data.trips.filter(trip =>
+        (trip.passengerName || "").trim() !== ""
+    );
+
+    if (passengerTrips.length === 0) {
+        alert("No passenger is available for messaging.");
+        return;
+    }
+
+    const list = document.getElementById("passengerMessageList");
+
+    list.innerHTML = "";
+
+    passengerTrips.forEach((trip, index) => {
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const contactNumber =
+            (trip.contactNumber || "").trim();
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "passenger-message-option";
+
+        button.innerHTML = `
+            <span>${passengerName}</span>
+            ${contactNumber
+                ? `<small>${contactNumber}</small>`
+                : `<small>No contact number</small>`
+            }
+        `;
+
+        button.onclick = function () {
+            selectPassengerForMessage(
+                data,
+                trip
+            );
+        };
+
+        list.appendChild(button);
+    });
+
+    document.getElementById("passengerMessageModal").style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+
+function closePassengerMessageModal() {
+    document.getElementById("passengerMessageModal").style.display = "none";
+    document.body.style.overflow = "";
+}
+
+
+function selectPassengerForMessage(data, trip) {
+
+    console.log("Selected passenger for messaging:", {
+        driver: data.driver,
+        date: data.date,
+        passenger: trip.passengerName,
+        contactNumber: trip.contactNumber
+    });
+
+    closePassengerMessageModal();
+
+    // Message composition will be added in Step 3.
+}
+
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
@@ -3569,11 +3701,21 @@ ${
 
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
+if (!window.passengerMessageData) {
+    window.passengerMessageData = {};
+}
 
+const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+
+window.passengerMessageData[messageKey] = {
+    driver: d.driver,
+    date: d.date,
+    trips: d.trips
+};
 const messagePassengerBtnHtml = role === "organic" ? "" : `
     <button class="message-passenger-btn"
         onclick="openPassengerMessage('${d.driver}','${d.date}')">
-        Message Passenger
+        Notify Passenger
     </button>
 `;
                     
