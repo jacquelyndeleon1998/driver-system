@@ -1974,7 +1974,7 @@
             <button
                 type="button"
                 class="message-send-btn"
-                onclick="sendPassengerMessage()">
+                onclick="openMessageRecipientModal()">
                 Send Message
             </button>
         </div>
@@ -2002,6 +2002,54 @@
 
     </div>
 </div>
+
+    <!-- MESSAGE RECIPIENT SELECTION MODAL -->
+<div id="messageRecipientModal" class="modal">
+
+    <div class="modal-content" style="max-width: 500px;">
+
+        <button
+            type="button"
+            class="message-modal-close"
+            onclick="closeMessageRecipientModal()"
+            aria-label="Close">
+            &times;
+        </button>
+
+        <h3 class="modal-title">
+            Choose Recipient
+        </h3>
+
+        <p
+            style="font-size:14px; color:#6b7280; margin-bottom:18px;">
+            We can only send 1 message at a time.<br>
+            Choose the recipient.
+        </p>
+
+        <div id="messageRecipientList"></div>
+
+        <div class="modal-buttons">
+
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                onclick="closeMessageRecipientModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn submit-btn"
+                onclick="confirmMessageRecipient()">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
@@ -3189,6 +3237,139 @@ Thank you, and see you!`;
     document.body.style.overflow = "hidden";
 }
 
+    function openMessageRecipientModal() {
+
+    const selectedTrips =
+        window.selectedPassengerMessageTrips || [];
+
+    if (selectedTrips.length === 0) {
+        alert("No passenger is available.");
+        return;
+    }
+
+    const list =
+        document.getElementById("messageRecipientList");
+
+    if (!list) {
+        console.error("Message recipient list not found.");
+        return;
+    }
+
+    list.innerHTML = "";
+
+    selectedTrips.forEach((trip, index) => {
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const contactNumber =
+            (trip.contactNumber || "").trim();
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "passenger-message-row";
+
+        row.innerHTML = `
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:10px;
+                width:100%;
+                padding:12px 14px;
+                margin-bottom:8px;
+                border:1px solid #bbf7d0;
+                border-radius:10px;
+                background:#f0fdf4;
+                cursor:pointer;
+            ">
+
+                <input
+                    type="radio"
+                    name="messageRecipient"
+                    class="message-recipient-radio"
+                    value="${index}">
+
+                <span style="flex:1;">
+                    <strong>${passengerName || "Unnamed Passenger"}</strong>
+                    ${
+                        contactNumber
+                            ? `<small style="display:block;color:#6b7280;margin-top:3px;">
+                                ${contactNumber}
+                               </small>`
+                            : `<small style="display:block;color:#9ca3af;margin-top:3px;">
+                                No contact number
+                               </small>`
+                    }
+                </span>
+
+            </label>
+        `;
+
+        list.appendChild(row);
+    });
+
+    document.getElementById(
+        "messageRecipientModal"
+    ).style.display = "block";
+
+    document.body.style.overflow = "hidden";
+}
+
+
+function closeMessageRecipientModal() {
+
+    const modal =
+        document.getElementById("messageRecipientModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+    document.body.style.overflow = "";
+}
+
+
+function confirmMessageRecipient() {
+
+    const selected =
+        document.querySelector(
+            ".message-recipient-radio:checked"
+        );
+
+    if (!selected) {
+        alert("Please choose a recipient.");
+        return;
+    }
+
+    const selectedTrips =
+        window.selectedPassengerMessageTrips || [];
+
+    const index =
+        Number(selected.value);
+
+    const trip =
+        selectedTrips[index];
+
+    if (!trip) {
+        alert("Passenger information is not available.");
+        return;
+    }
+
+    window.currentMessageRecipient = trip;
+
+    closeMessageRecipientModal();
+
+    const passengerName =
+        (trip.passengerName || "").trim();
+
+    alert(
+        `This message will be sent to ${passengerName}.`
+    );
+}
+
+    
     
     function closeMessageComposeModal() {
     document.getElementById("messageComposeModal").style.display = "none";
