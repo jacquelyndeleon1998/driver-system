@@ -3265,56 +3265,78 @@ Thank you, and see you!`;
         const contactNumber =
             (trip.contactNumber || "").trim();
 
-        const row =
-            document.createElement("div");
+        const row = document.createElement("label");
 
-        row.className =
-            "passenger-message-row";
+        row.style.display = "flex";
+        row.style.alignItems = "center";
+        row.style.gap = "10px";
+        row.style.width = "100%";
+        row.style.padding = "12px 14px";
+        row.style.marginBottom = "8px";
+        row.style.border = "1px solid #bbf7d0";
+        row.style.borderRadius = "10px";
+        row.style.background = "#f0fdf4";
+        row.style.cursor = "pointer";
+        row.style.boxSizing = "border-box";
 
-        row.innerHTML = `
-            <label style="
-                display:flex;
-                align-items:center;
-                gap:10px;
-                width:100%;
-                padding:12px 14px;
-                margin-bottom:8px;
-                border:1px solid #bbf7d0;
-                border-radius:10px;
-                background:#f0fdf4;
-                cursor:pointer;
-            ">
+        const radio = document.createElement("input");
 
-                <input
-                    type="radio"
-                    name="messageRecipient"
-                    class="message-recipient-radio"
-                    value="${index}">
+        radio.type = "radio";
+        radio.name = "messageRecipient";
+        radio.className = "message-recipient-radio";
+        radio.value = index;
 
-                <span style="flex:1;">
-                    <strong>${passengerName || "Unnamed Passenger"}</strong>
-                    ${
-                        contactNumber
-                            ? `<small style="display:block;color:#6b7280;margin-top:3px;">
-                                ${contactNumber}
-                               </small>`
-                            : `<small style="display:block;color:#9ca3af;margin-top:3px;">
-                                No contact number
-                               </small>`
-                    }
-                </span>
+        const info = document.createElement("span");
 
-            </label>
-        `;
+        info.style.flex = "1";
+
+        const name = document.createElement("strong");
+
+        name.textContent =
+            passengerName || "Unnamed Passenger";
+
+        info.appendChild(name);
+
+        if (contactNumber) {
+
+            const number =
+                document.createElement("small");
+
+            number.textContent = contactNumber;
+            number.style.display = "block";
+            number.style.color = "#6b7280";
+            number.style.marginTop = "3px";
+
+            info.appendChild(number);
+
+        } else {
+
+            const noNumber =
+                document.createElement("small");
+
+            noNumber.textContent =
+                "No contact number";
+
+            noNumber.style.display = "block";
+            noNumber.style.color = "#9ca3af";
+            noNumber.style.marginTop = "3px";
+
+            info.appendChild(noNumber);
+        }
+
+        row.appendChild(radio);
+        row.appendChild(info);
 
         list.appendChild(row);
     });
 
-    document.getElementById(
-        "messageRecipientModal"
-    ).style.display = "block";
+    const modal =
+        document.getElementById("messageRecipientModal");
 
-    document.body.style.overflow = "hidden";
+    if (modal) {
+        modal.style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
 }
 
 
@@ -3368,7 +3390,6 @@ function confirmMessageRecipient() {
         `This message will be sent to ${passengerName}.`
     );
 }
-
     
     
     function closeMessageComposeModal() {
