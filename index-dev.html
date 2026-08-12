@@ -2441,31 +2441,63 @@ function showAdminDashboard() {
 
 async function loadSubmittedAllowances() {
     try {
-        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`);
+        const res = await fetch(
+            `${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`
+        );
+
         if (!res.ok) {
-    console.warn("Submitted allowances could not be loaded. Keeping existing submitted state.");
-    return;
-}
+            console.warn(
+                "Submitted allowances could not be loaded. Keeping existing submitted state."
+            );
+            return;
+        }
+
         const text = await res.text();
-        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-    console.warn("Submitted allowances returned HTML instead of JSON. Keeping existing submitted state.");
-    return;
-}
+
+        if (
+            text.trim().startsWith("<!DOCTYPE") ||
+            text.trim().startsWith("<html")
+        ) {
+            console.warn(
+                "Submitted allowances returned HTML instead of JSON. Keeping existing submitted state."
+            );
+            return;
+        }
 
         const data = JSON.parse(text);
+
+        if (!Array.isArray(data.submitted)) {
+            console.warn(
+                "No submitted allowance data returned. Keeping existing submitted state."
+            );
+            return;
+        }
+
         submittedDrivers = {};
-        if (!Array.isArray(data.submitted)) return;
 
         data.submitted.forEach(item => {
             const [driver, rawDate] = item.split("|");
-            const cleanDriver = driver.trim().replace(/\s+/g, " ").toLowerCase();
-            const cleanKey = `${cleanDriver}|${standardizeDateStr(rawDate)}`;
-            submittedDrivers[cleanKey] = true; 
+
+            const cleanDriver =
+                driver.trim().replace(/\s+/g, " ").toLowerCase();
+
+            const cleanKey =
+                `${cleanDriver}|${standardizeDateStr(rawDate)}`;
+
+            submittedDrivers[cleanKey] = true;
         });
-        console.log("Submitted Drivers Loaded:", submittedDrivers);
-   } catch (err) {
-    console.warn("Error loading submitted allowances. Keeping existing submitted state:", err);
-}
+
+        console.log(
+            "Submitted Drivers Loaded:",
+            submittedDrivers
+        );
+
+    } catch (err) {
+        console.warn(
+            "Error loading submitted allowances. Keeping existing submitted state:",
+            err
+        );
+    }
 }
 
 async function fetchLiveAllowancesFromSheet() {
