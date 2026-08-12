@@ -3154,32 +3154,37 @@ function closePassengerMessageModal() {
 
     function continuePassengerMessageSelection() {
 
-    const checkboxes =
-        document.querySelectorAll(".passenger-message-checkbox:checked");
-
-    if (checkboxes.length === 0) {
-        alert("Please select at least one passenger.");
-        return;
-    }
-
     const data = window.currentPassengerMessageData;
     const trips = window.currentPassengerMessageTrips || [];
 
-    const selectedTrips = Array.from(checkboxes)
-        .map(checkbox => trips[Number(checkbox.value)])
-        .filter(Boolean);
-
-    if (selectedTrips.length === 0) {
-        alert("No passenger was selected.");
+    if (!trips.length) {
+        alert("No passenger is available.");
         return;
     }
 
-    // Store selected passengers for the next step
-    window.selectedPassengerMessageTrips = selectedTrips;
+    // Store all available passengers
+    window.selectedPassengerMessageTrips = trips;
 
+    // Close the old passenger selection modal
     closePassengerMessageModal();
 
-    openPassengerMessageCompose(data, selectedTrips);
+    // Only 1 passenger
+    if (trips.length === 1) {
+
+        window.currentMessageRecipient = trips[0];
+
+        const passengerName =
+            (trips[0].passengerName || "").trim();
+
+        alert(
+            `This message will be sent to ${passengerName}.`
+        );
+
+        return;
+    }
+
+    // Multiple passengers
+    openMessageRecipientModal();
 }
 
 
