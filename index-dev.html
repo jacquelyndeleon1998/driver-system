@@ -3324,42 +3324,43 @@ Thank you, and see you!`;
 
         const info = document.createElement("span");
 
-        info.style.flex = "1";
+info.style.flex = "1";
+info.style.display = "inline-flex";
+info.style.alignItems = "center";
+info.style.gap = "8px";
+info.style.whiteSpace = "nowrap";
+info.style.minWidth = "0";
 
-        const name = document.createElement("strong");
+const name = document.createElement("strong");
 
-        name.textContent =
-            passengerName || "Unnamed Passenger";
+name.textContent =
+    passengerName || "Unnamed Passenger";
 
-        info.appendChild(name);
+info.appendChild(name);
 
-        if (contactNumber) {
+if (contactNumber) {
 
-            const number =
-                document.createElement("small");
+    const number =
+        document.createElement("small");
 
-            number.textContent = contactNumber;
-            number.style.display = "block";
-            number.style.color = "#6b7280";
-            number.style.marginTop = "3px";
+    number.textContent = contactNumber;
+    number.style.color = "#6b7280";
 
-            info.appendChild(number);
+    info.appendChild(number);
 
-        } else {
+} else {
 
-            const noNumber =
-                document.createElement("small");
+    const noNumber =
+        document.createElement("small");
 
-            noNumber.textContent =
-                "No contact number";
+    noNumber.textContent =
+        "No contact number";
 
-            noNumber.style.display = "block";
-            noNumber.style.color = "#9ca3af";
-            noNumber.style.marginTop = "3px";
+    noNumber.style.color = "#9ca3af";
 
-            info.appendChild(noNumber);
-        }
-
+    info.appendChild(noNumber);
+}
+        
         row.appendChild(radio);
         row.appendChild(info);
 
