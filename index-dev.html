@@ -3588,24 +3588,27 @@ async function saveAllowance() {
         }
 
         document.getElementById("successModalTitle").textContent = "Submitted Successfully";
-        document.getElementById("successModalText").textContent = "Your meal allowance has been recorded for review and approval.";
-        
-        document.getElementById("successModal").style.display = "flex";
-        await loadSubmittedAllowances();
-        closeModal();
+document.getElementById("successModalText").textContent =
+    "Your meal allowance has been recorded for review and approval.";
+
+// Immediately mark this driver/date as submitted
+const submittedKey =
+    `${currentDriver.trim().toLowerCase()}|${standardizeDateStr(currentDate)}`;
+
+submittedDrivers[submittedKey] = true;
+
+// Close allowance modal
+closeModal();
+
+// Re-render the dashboard immediately
+await loadMainSchedulesAndApprovals();
+
+// Show success message
+document.getElementById("successModal").style.display = "flex";
 
         document.getElementById("successOK").onclick = async function () {
-            document.getElementById("successModal").style.display = "none";
-            document.getElementById("pageLoadingOverlay").style.display = "flex";
-
-            await Promise.all([
-                loadSubmittedAllowances(),
-                fetchLiveAllowancesFromSheet()
-            ]);
-            await loadMainSchedulesAndApprovals();
-
-            document.getElementById("pageLoadingOverlay").style.display = "none";
-        };
+    document.getElementById("successModal").style.display = "none";
+};
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
