@@ -3291,6 +3291,7 @@ Thank you, and see you!`;
         return;
     }
 
+    // Clear previous recipients
     list.innerHTML = "";
 
     selectedTrips.forEach((trip, index) => {
@@ -3301,20 +3302,30 @@ Thank you, and see you!`;
         const contactNumber =
             (trip.contactNumber || "").trim();
 
+        // Main row
         const row = document.createElement("label");
 
+        row.className = "passenger-message-row";
+
+        // IMPORTANT:
+        // Radio stays on the LEFT.
+        // Name + contact stay on the SAME LINE.
         row.style.display = "flex";
+        row.style.flexDirection = "row";
         row.style.alignItems = "center";
+        row.style.justifyContent = "flex-start";
         row.style.gap = "10px";
         row.style.width = "100%";
-        row.style.padding = "12px 14px";
+        row.style.boxSizing = "border-box";
+        row.style.padding = "10px 12px";
         row.style.marginBottom = "8px";
         row.style.border = "1px solid #bbf7d0";
         row.style.borderRadius = "10px";
         row.style.background = "#f0fdf4";
         row.style.cursor = "pointer";
-        row.style.boxSizing = "border-box";
+        row.style.textAlign = "left";
 
+        // Radio button
         const radio = document.createElement("input");
 
         radio.type = "radio";
@@ -3322,45 +3333,55 @@ Thank you, and see you!`;
         radio.className = "message-recipient-radio";
         radio.value = index;
 
+        radio.style.flex = "0 0 auto";
+        radio.style.width = "18px";
+        radio.style.height = "18px";
+        radio.style.margin = "0";
+        radio.style.padding = "0";
+        radio.style.position = "static";
+        radio.style.transform = "none";
+
+        // Passenger information
         const info = document.createElement("span");
 
-info.style.flex = "1";
-info.style.display = "inline-flex";
-info.style.alignItems = "center";
-info.style.gap = "8px";
-info.style.whiteSpace = "nowrap";
-info.style.minWidth = "0";
+        info.style.display = "flex";
+        info.style.flexDirection = "row";
+        info.style.alignItems = "center";
+        info.style.gap = "8px";
+        info.style.flex = "1";
+        info.style.minWidth = "0";
+        info.style.whiteSpace = "nowrap";
+        info.style.overflow = "hidden";
 
-const name = document.createElement("strong");
+        // Passenger name
+        const name = document.createElement("strong");
 
-name.textContent =
-    passengerName || "Unnamed Passenger";
+        name.textContent =
+            passengerName || "Unnamed Passenger";
 
-info.appendChild(name);
+        name.style.display = "inline";
+        name.style.flex = "0 1 auto";
+        name.style.whiteSpace = "nowrap";
+        name.style.overflow = "hidden";
+        name.style.textOverflow = "ellipsis";
 
-if (contactNumber) {
+        info.appendChild(name);
 
-    const number =
-        document.createElement("small");
+        // Contact number
+        const number = document.createElement("small");
 
-    number.textContent = contactNumber;
-    number.style.color = "#6b7280";
+        number.textContent =
+            contactNumber || "No contact number";
 
-    info.appendChild(number);
+        number.style.display = "inline";
+        number.style.flex = "0 0 auto";
+        number.style.color =
+            contactNumber ? "#6b7280" : "#9ca3af";
+        number.style.whiteSpace = "nowrap";
 
-} else {
+        info.appendChild(number);
 
-    const noNumber =
-        document.createElement("small");
-
-    noNumber.textContent =
-        "No contact number";
-
-    noNumber.style.color = "#9ca3af";
-
-    info.appendChild(noNumber);
-}
-        
+        // Add radio first, then passenger information
         row.appendChild(radio);
         row.appendChild(info);
 
@@ -3375,7 +3396,6 @@ if (contactNumber) {
         document.body.style.overflow = "hidden";
     }
 }
-
 
 function closeMessageRecipientModal() {
 
