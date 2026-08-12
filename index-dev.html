@@ -3106,8 +3106,8 @@ function closePassengerMessageModal() {
 
 function openPassengerMessageCompose(data, selectedTrips) {
 
-    const driverName = data.driver || "";
-    const tripDate = data.date || "";
+    const driverName = (data.driver || "").trim();
+    const tripDate = (data.date || "").trim();
 
     let tripDetails = "";
 
@@ -3128,16 +3128,32 @@ function openPassengerMessageCompose(data, selectedTrips) {
         const remarks =
             (trip.remarks || "").trim();
 
-        tripDetails += `
-Passenger: ${passengerName}
-Pick-up Time: ${pickupTime}
-Origin: ${origin}
-Destination: ${destination}
-Remarks: ${remarks || "None"}
-`;
+        let passengerDetails = [];
+
+        if (passengerName) {
+            passengerDetails.push(`Passenger: ${passengerName}`);
+        }
+
+        if (pickupTime) {
+            passengerDetails.push(`Pick-up Time: ${pickupTime}`);
+        }
+
+        if (origin) {
+            passengerDetails.push(`Origin: ${origin}`);
+        }
+
+        if (destination) {
+            passengerDetails.push(`Destination: ${destination}`);
+        }
+
+        if (remarks) {
+            passengerDetails.push(`Remarks: ${remarks}`);
+        }
+
+        tripDetails += passengerDetails.join("\n");
 
         if (index < selectedTrips.length - 1) {
-            tripDetails += "\n";
+            tripDetails += "\n\n";
         }
     });
 
@@ -3147,7 +3163,9 @@ Remarks: ${remarks || "None"}
 I am ${driverName}, your assigned driver for your trip on ${tripDate}.
 
 Here are the trip details:
+
 ${tripDetails}
+
 If there are any changes or concerns regarding your trip, please message me here and notify the admin as well.
 
 Please be advised that the trip will proceed as scheduled even if I have not received your confirmation, unless you or the admin informs you that the trip has been cancelled or changed.
