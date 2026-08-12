@@ -3303,21 +3303,18 @@ Thank you, and see you!`;
 
         const row = document.createElement("label");
 
-        // ROW LAYOUT
         row.style.display = "flex";
         row.style.alignItems = "center";
         row.style.gap = "10px";
         row.style.width = "100%";
-        row.style.boxSizing = "border-box";
         row.style.padding = "12px 14px";
         row.style.marginBottom = "8px";
         row.style.border = "1px solid #bbf7d0";
         row.style.borderRadius = "10px";
         row.style.background = "#f0fdf4";
         row.style.cursor = "pointer";
-        row.style.overflow = "hidden";
+        row.style.boxSizing = "border-box";
 
-        // RADIO — ALWAYS ON THE LEFT
         const radio = document.createElement("input");
 
         radio.type = "radio";
@@ -3325,62 +3322,45 @@ Thank you, and see you!`;
         radio.className = "message-recipient-radio";
         radio.value = index;
 
-        radio.style.flex = "0 0 auto";
-        radio.style.margin = "0";
-
-        // INFORMATION CONTAINER
         const info = document.createElement("span");
 
-        info.style.display = "flex";
-        info.style.alignItems = "center";
-        info.style.gap = "8px";
-        info.style.minWidth = "0";
-        info.style.flex = "1";
-        info.style.overflow = "hidden";
+info.style.flex = "1";
+info.style.display = "inline-flex";
+info.style.alignItems = "center";
+info.style.gap = "8px";
+info.style.whiteSpace = "nowrap";
+info.style.minWidth = "0";
 
-        // PASSENGER NAME
-        const name = document.createElement("strong");
+const name = document.createElement("strong");
 
-        name.textContent =
-            passengerName || "Unnamed Passenger";
+name.textContent =
+    passengerName || "Unnamed Passenger";
 
-        name.style.whiteSpace = "nowrap";
-        name.style.overflow = "hidden";
-        name.style.textOverflow = "ellipsis";
-        name.style.flex = "1";
-        name.style.minWidth = "0";
+info.appendChild(name);
 
-        info.appendChild(name);
+if (contactNumber) {
 
-        // CONTACT NUMBER
-        if (contactNumber) {
+    const number =
+        document.createElement("small");
 
-            const number =
-                document.createElement("small");
+    number.textContent = contactNumber;
+    number.style.color = "#6b7280";
 
-            number.textContent = contactNumber;
+    info.appendChild(number);
 
-            number.style.color = "#6b7280";
-            number.style.whiteSpace = "nowrap";
-            number.style.flex = "0 0 auto";
+} else {
 
-            info.appendChild(number);
+    const noNumber =
+        document.createElement("small");
 
-        } else {
+    noNumber.textContent =
+        "No contact number";
 
-            const noNumber =
-                document.createElement("small");
+    noNumber.style.color = "#9ca3af";
 
-            noNumber.textContent =
-                "No contact number";
-
-            noNumber.style.color = "#9ca3af";
-            noNumber.style.whiteSpace = "nowrap";
-            noNumber.style.flex = "0 0 auto";
-
-            info.appendChild(noNumber);
-        }
-
+    info.appendChild(noNumber);
+}
+        
         row.appendChild(radio);
         row.appendChild(info);
 
