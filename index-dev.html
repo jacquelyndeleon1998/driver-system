@@ -3291,7 +3291,6 @@ Thank you, and see you!`;
         return;
     }
 
-    // Clear previous recipients
     list.innerHTML = "";
 
     selectedTrips.forEach((trip, index) => {
@@ -3302,30 +3301,23 @@ Thank you, and see you!`;
         const contactNumber =
             (trip.contactNumber || "").trim();
 
-        // Main row
         const row = document.createElement("label");
 
-        row.className = "passenger-message-row";
-
-        // IMPORTANT:
-        // Radio stays on the LEFT.
-        // Name + contact stay on the SAME LINE.
+        // ROW LAYOUT
         row.style.display = "flex";
-        row.style.flexDirection = "row";
         row.style.alignItems = "center";
-        row.style.justifyContent = "flex-start";
         row.style.gap = "10px";
         row.style.width = "100%";
         row.style.boxSizing = "border-box";
-        row.style.padding = "10px 12px";
+        row.style.padding = "12px 14px";
         row.style.marginBottom = "8px";
         row.style.border = "1px solid #bbf7d0";
         row.style.borderRadius = "10px";
         row.style.background = "#f0fdf4";
         row.style.cursor = "pointer";
-        row.style.textAlign = "left";
+        row.style.overflow = "hidden";
 
-        // Radio button
+        // RADIO — ALWAYS ON THE LEFT
         const radio = document.createElement("input");
 
         radio.type = "radio";
@@ -3334,54 +3326,61 @@ Thank you, and see you!`;
         radio.value = index;
 
         radio.style.flex = "0 0 auto";
-        radio.style.width = "18px";
-        radio.style.height = "18px";
         radio.style.margin = "0";
-        radio.style.padding = "0";
-        radio.style.position = "static";
-        radio.style.transform = "none";
 
-        // Passenger information
+        // INFORMATION CONTAINER
         const info = document.createElement("span");
 
         info.style.display = "flex";
-        info.style.flexDirection = "row";
         info.style.alignItems = "center";
         info.style.gap = "8px";
-        info.style.flex = "1";
         info.style.minWidth = "0";
-        info.style.whiteSpace = "nowrap";
+        info.style.flex = "1";
         info.style.overflow = "hidden";
 
-        // Passenger name
+        // PASSENGER NAME
         const name = document.createElement("strong");
 
         name.textContent =
             passengerName || "Unnamed Passenger";
 
-        name.style.display = "inline";
-        name.style.flex = "0 1 auto";
         name.style.whiteSpace = "nowrap";
         name.style.overflow = "hidden";
         name.style.textOverflow = "ellipsis";
+        name.style.flex = "1";
+        name.style.minWidth = "0";
 
         info.appendChild(name);
 
-        // Contact number
-        const number = document.createElement("small");
+        // CONTACT NUMBER
+        if (contactNumber) {
 
-        number.textContent =
-            contactNumber || "No contact number";
+            const number =
+                document.createElement("small");
 
-        number.style.display = "inline";
-        number.style.flex = "0 0 auto";
-        number.style.color =
-            contactNumber ? "#6b7280" : "#9ca3af";
-        number.style.whiteSpace = "nowrap";
+            number.textContent = contactNumber;
 
-        info.appendChild(number);
+            number.style.color = "#6b7280";
+            number.style.whiteSpace = "nowrap";
+            number.style.flex = "0 0 auto";
 
-        // Add radio first, then passenger information
+            info.appendChild(number);
+
+        } else {
+
+            const noNumber =
+                document.createElement("small");
+
+            noNumber.textContent =
+                "No contact number";
+
+            noNumber.style.color = "#9ca3af";
+            noNumber.style.whiteSpace = "nowrap";
+            noNumber.style.flex = "0 0 auto";
+
+            info.appendChild(noNumber);
+        }
+
         row.appendChild(radio);
         row.appendChild(info);
 
@@ -3396,6 +3395,7 @@ Thank you, and see you!`;
         document.body.style.overflow = "hidden";
     }
 }
+
 
 function closeMessageRecipientModal() {
 
