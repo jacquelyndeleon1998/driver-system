@@ -2443,14 +2443,14 @@ async function loadSubmittedAllowances() {
     try {
         const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`);
         if (!res.ok) {
-            submittedDrivers = {};
-            return;
-        }
+    console.warn("Submitted allowances could not be loaded. Keeping existing submitted state.");
+    return;
+}
         const text = await res.text();
         if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            submittedDrivers = {};
-            return;
-        }
+    console.warn("Submitted allowances returned HTML instead of JSON. Keeping existing submitted state.");
+    return;
+}
 
         const data = JSON.parse(text);
         submittedDrivers = {};
@@ -2463,10 +2463,9 @@ async function loadSubmittedAllowances() {
             submittedDrivers[cleanKey] = true; 
         });
         console.log("Submitted Drivers Loaded:", submittedDrivers);
-    } catch (err) {
-        console.warn("Error loading submitted allowances safely handled:", err);
-        submittedDrivers = {};
-    }
+   } catch (err) {
+    console.warn("Error loading submitted allowances. Keeping existing submitted state:", err);
+}
 }
 
 async function fetchLiveAllowancesFromSheet() {
