@@ -5095,13 +5095,19 @@ if (scheduleNotes.trim() !== "") {
 }
 
 window.onload = async function () {
-    const role = localStorage.getItem("userRole");
-    const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
-    const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
 
-    const autoLogin = driverLoggedIn && Date.now() < driverExpires;
+    const role = localStorage.getItem("userRole");
+    const driverLoggedIn =
+        localStorage.getItem("driverLoggedIn") === "true";
+
+    const driverExpires =
+        Number(localStorage.getItem("loginExpires") || 0);
+
+    const autoLogin =
+        driverLoggedIn && Date.now() < driverExpires;
 
     if (!autoLogin) {
+
         localStorage.removeItem("driverLoggedIn");
         localStorage.removeItem("driverName");
         localStorage.removeItem("driverRole");
@@ -5111,59 +5117,59 @@ window.onload = async function () {
 
         document.getElementById("loginPage").style.display = "block";
         document.getElementById("pageLoadingOverlay").style.display = "none";
+
         return;
     }
 
     configureNavigation(role);
 
     document.getElementById("loginPage").style.display = "none";
-    showLoginSpinner("Welcome Back!", "Loading latest schedules...");
+
+    showLoginSpinner(
+        "Welcome Back!",
+        "Loading latest schedules..."
+    );
 
     try {
-    // Load the main schedule first so the dashboard can appear
-    // even if allowance-related endpoints are temporarily unavailable.
-    await loadMainSchedulesAndApprovals();
 
-    // These are supplementary data and should not block the dashboard.
-    loadSubmittedAllowances().catch(err => {
-        console.warn("Submitted allowances load skipped:", err);
-    });
+        console.log("STEP 1: Loading submitted allowances...");
 
-    fetchLiveAllowancesFromSheet().catch(err => {
-        console.warn("Live allowances load skipped:", err);
-    });
+        await loadSubmittedAllowances();
 
-    hideLoginSpinner();
-    showHomePage();
+        console.log("STEP 2: Loading main schedules...");
 
-} catch (err) {
-    hideLoginSpinner();
-    console.error("Initialization Error:", err);
-    alert("Failed to load dashboard data. Please refresh.");
+        await loadMainSchedulesAndApprovals();
 
-} finally {
-    document.getElementById("pageLoadingOverlay").style.display = "none";
-}
+        console.log("STEP 3: Loading live allowances...");
+
+        await fetchLiveAllowancesFromSheet();
+
+        console.log("STEP 4: Initialization complete.");
+
+        hideLoginSpinner();
+
+        showHomePage();
+
+    } catch (err) {
+
+        console.error(
+            "Initialization Error:",
+            err
+        );
+
+        hideLoginSpinner();
+
+        alert(
+            "Failed to load dashboard data. Please refresh."
+        );
+
+    } finally {
+
+        document.getElementById(
+            "pageLoadingOverlay"
+        ).style.display = "none";
+    }
 };
-
-document.getElementById("dashboardBtn").addEventListener("click", () => {
-    backToMainDashboard();
-});
-
-document.getElementById("allowanceBtn").addEventListener("click", () => {
-    showDriverAllowanceSummary();
-});
-
-document.getElementById("adminBtn").addEventListener("click", () => {
-    showAdminDashboard();
-});
-
-    const MANUAL_SHEET_URL =
-    "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=441234750#gid=441234750";
-
-document.getElementById("manualBtn").addEventListener("click", () => {
-    openManualConfirmModal();
-});
 
 function openManualConfirmModal() {
     const modal = document.getElementById("manualConfirmModal");
