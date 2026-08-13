@@ -3181,34 +3181,14 @@ function closePassengerMessageModal() {
     }
 
     // IMPORTANT:
-    // These are the passengers selected in the FIRST modal.
+    // Save ONLY the passengers selected in this modal.
     window.selectedPassengerMessageTrips = selectedTrips;
 
     closePassengerMessageModal();
 
-    // ----------------------------------------
-    // ONE PASSENGER
-    // ----------------------------------------
-    // Go directly to Compose.
-    // Do NOT show Choose Recipient.
-    if (selectedTrips.length === 1) {
-
-        window.currentMessageRecipient =
-            selectedTrips[0];
-
-        openPassengerMessageCompose(
-            data,
-            selectedTrips
-        );
-
-        return;
-    }
-
-    // ----------------------------------------
-    // MULTIPLE PASSENGERS
-    // ----------------------------------------
-    // Show Compose FIRST with all selected
-    // passengers.
+    // Go directly to Message Compose.
+    // Whether 1 or multiple passengers were selected,
+    // Compose should show exactly what was selected.
     openPassengerMessageCompose(
         data,
         selectedTrips
@@ -3463,16 +3443,13 @@ function confirmMessageRecipient() {
         return;
     }
 
-    // Store the ONE passenger who will receive
-    // this particular message.
+    // Save the ONE recipient chosen
     window.currentMessageRecipient = trip;
 
+    // Close Choose Recipient
     closeMessageRecipientModal();
 
-    // ----------------------------------------
-    // Re-open Compose using ONLY the selected
-    // recipient.
-    // ----------------------------------------
+    // Open compose again using ONLY the selected recipient
     const data =
         window.currentPassengerMessageData;
 
