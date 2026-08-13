@@ -5120,22 +5120,30 @@ window.onload = async function () {
     showLoginSpinner("Welcome Back!", "Loading latest schedules...");
 
     try {
-        // Fire all endpoints in parallel simultaneously
-        await loadSubmittedAllowances();
+    // Load the main schedule first so the dashboard can appear
+    // even if allowance-related endpoints are temporarily unavailable.
+    await loadMainSchedulesAndApprovals();
 
-await fetchLiveAllowancesFromSheet();
+    // These are supplementary data and should not block the dashboard.
+    loadSubmittedAllowances().catch(err => {
+        console.warn("Submitted allowances load skipped:", err);
+    });
 
-await loadMainSchedulesAndApprovals();
+    fetchLiveAllowancesFromSheet().catch(err => {
+        console.warn("Live allowances load skipped:", err);
+    });
 
-        hideLoginSpinner();
-        showHomePage();
-    } catch (err) {
-        hideLoginSpinner();
-        console.error("Initialization Error:", err);
-        alert("Failed to load dashboard data. Please refresh.");
-    } finally {
-        document.getElementById("pageLoadingOverlay").style.display = "none";
-    }
+    hideLoginSpinner();
+    showHomePage();
+
+} catch (err) {
+    hideLoginSpinner();
+    console.error("Initialization Error:", err);
+    alert("Failed to load dashboard data. Please refresh.");
+
+} finally {
+    document.getElementById("pageLoadingOverlay").style.display = "none";
+}
 };
 
 document.getElementById("dashboardBtn").addEventListener("click", () => {
