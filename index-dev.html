@@ -4200,10 +4200,42 @@ async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
     try {
-        const [scheduleResponse, approvalResponse] = await Promise.all([
-            fetch(sheetURL),
-            fetch(approvalURL)
-        ]);
+        const cacheBust = Date.now();
+
+const scheduleFetchURL =
+    `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
+
+const approvalFetchURL =
+    `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
+
+console.log("Fetching Schedule:", scheduleFetchURL);
+console.log("Fetching Approvals:", approvalFetchURL);
+
+const [scheduleResponse, approvalResponse] = await Promise.all([
+    fetch(scheduleFetchURL, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "omit"
+    }),
+
+    fetch(approvalFetchURL, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "omit"
+    })
+]);
+
+console.log(
+    "Schedule:",
+    scheduleResponse.status,
+    scheduleResponse.url
+);
+
+console.log(
+    "Approval:",
+    approvalResponse.status,
+    approvalResponse.url
+);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
             console.warn("Schedule CSV endpoints returned non-OK status.");
