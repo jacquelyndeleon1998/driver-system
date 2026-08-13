@@ -3165,25 +3165,22 @@ function closePassengerMessageModal() {
     // Store all available passengers
     window.selectedPassengerMessageTrips = trips;
 
-    // Close the old passenger selection modal
+    // Close the passenger selection modal
     closePassengerMessageModal();
 
-    // Only 1 passenger
+    // If there is only ONE passenger,
+    // go directly to the message compose modal.
     if (trips.length === 1) {
 
         window.currentMessageRecipient = trips[0];
 
-        const passengerName =
-            (trips[0].passengerName || "").trim();
-
-        alert(
-            `This message will be sent to ${passengerName}.`
-        );
+        openPassengerMessageCompose(data, [trips[0]]);
 
         return;
     }
 
-    // Multiple passengers
+    // If there are MULTIPLE passengers,
+    // show Choose Recipient.
     openMessageRecipientModal();
 }
 
