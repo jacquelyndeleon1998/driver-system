@@ -5138,6 +5138,11 @@ window.onload = async function () {
 
         console.log("STEP 2: Loading main schedules...");
 
+        console.log("WEBAPP_BASE:", WEBAPP_BASE);
+console.log("sheetURL:", sheetURL);
+console.log("approvalURL:", approvalURL);
+
+
         await loadMainSchedulesAndApprovals();
 
         console.log("STEP 3: Loading live allowances...");
