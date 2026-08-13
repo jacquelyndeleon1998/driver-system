@@ -3162,26 +3162,13 @@ function closePassengerMessageModal() {
         return;
     }
 
-    // Store all available passengers
+    // Keep all passengers available for the Send Message step
     window.selectedPassengerMessageTrips = trips;
 
-    // Close the passenger selection modal
     closePassengerMessageModal();
 
-    // If there is only ONE passenger,
-    // go directly to the message compose modal.
-    if (trips.length === 1) {
-
-        window.currentMessageRecipient = trips[0];
-
-        openPassengerMessageCompose(data, [trips[0]]);
-
-        return;
-    }
-
-    // If there are MULTIPLE passengers,
-    // show Choose Recipient.
-    openMessageRecipientModal();
+    // Always go to Message Compose first
+    openPassengerMessageCompose(data, trips);
 }
 
 
