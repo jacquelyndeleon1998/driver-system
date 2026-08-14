@@ -1972,11 +1972,11 @@
             </button>
 
             <button
-                type="button"
-                class="message-send-btn"
-                onclick="openMessageRecipientModal()">
-                Send Message
-            </button>
+    type="button"
+    class="message-send-btn"
+    onclick="handlePassengerMessageSend()">
+    Send Message
+</button>
         </div>
 
         <div
@@ -3476,6 +3476,39 @@ function confirmMessageRecipient() {
         data,
         [trip]
     );
+}
+
+    function handlePassengerMessageSend() {
+
+    const selectedTrips =
+        window.selectedPassengerMessageTrips || [];
+
+    if (selectedTrips.length === 0) {
+        alert("No passenger is selected.");
+        return;
+    }
+
+    // ONE passenger selected:
+    // Do NOT show Choose Recipient.
+    if (selectedTrips.length === 1) {
+
+        const trip = selectedTrips[0];
+
+        window.currentMessageRecipient = trip;
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        alert(
+            `This message will be sent to ${passengerName}.`
+        );
+
+        return;
+    }
+
+    // TWO OR MORE passengers selected:
+    // Show Choose Recipient.
+    openMessageRecipientModal();
 }
     
     function closeMessageComposeModal() {
