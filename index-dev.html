@@ -3463,17 +3463,55 @@ function confirmMessageRecipient() {
     const passengerName =
         (trip.passengerName || "").trim();
 
+    const contactNumber =
+        (trip.contactNumber || "").trim();
+
+    // Get the exact message currently shown in Message Compose
+    const messageElement =
+        document.getElementById("passengerMessageText");
+
+    const message =
+        messageElement
+            ? messageElement.value.trim()
+            : "";
+
+    if (!contactNumber) {
+        closeMessageRecipientModal();
+
+        setTimeout(function () {
+            alert(
+                `This message will be sent to ${passengerName}.\n\n` +
+                "No contact number is available for this passenger."
+            );
+        }, 50);
+
+        return;
+    }
+
     // Close Choose Recipient
     closeMessageRecipientModal();
 
-    // Show confirmation
+    // Show confirmation first
     setTimeout(function () {
-        alert(
+
+        const confirmed = window.confirm(
             `This message will be sent to ${passengerName}.`
         );
+
+        if (!confirmed) {
+            return;
+        }
+
+        // Open the phone's SMS app with:
+        // - selected passenger's number
+        // - current composed message
+        const smsURL =
+            `sms:${encodeURIComponent(contactNumber)}?body=${encodeURIComponent(message)}`;
+
+        window.location.href = smsURL;
+
     }, 50);
 }
-
     function handlePassengerMessageSend() {
 
     const selectedTrips =
