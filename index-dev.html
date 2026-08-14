@@ -3436,10 +3436,9 @@ function closeMessageRecipientModal() {
 
 function confirmMessageRecipient() {
 
-    const selected =
-        document.querySelector(
-            ".message-recipient-radio:checked"
-        );
+    const selected = document.querySelector(
+        ".message-recipient-radio:checked"
+    );
 
     if (!selected) {
         alert("Please choose a recipient.");
@@ -3449,33 +3448,30 @@ function confirmMessageRecipient() {
     const selectedTrips =
         window.selectedPassengerMessageTrips || [];
 
-    const index =
-        Number(selected.value);
+    const index = Number(selected.value);
 
-    const trip =
-        selectedTrips[index];
+    const trip = selectedTrips[index];
 
     if (!trip) {
         alert("Passenger information is not available.");
         return;
     }
 
-    // Save ONLY the chosen recipient
+    // Save the ONE passenger selected
     window.currentMessageRecipient = trip;
 
-    // Replace the selected passengers with ONLY this recipient
-    window.selectedPassengerMessageTrips = [trip];
+    const passengerName =
+        (trip.passengerName || "").trim();
 
+    // Close Choose Recipient
     closeMessageRecipientModal();
 
-    const data =
-        window.currentPassengerMessageData;
-
-    // Re-open compose with ONLY the chosen passenger
-    openPassengerMessageCompose(
-        data,
-        [trip]
-    );
+    // Show confirmation
+    setTimeout(function () {
+        alert(
+            `This message will be sent to ${passengerName}.`
+        );
+    }, 50);
 }
 
     function handlePassengerMessageSend() {
