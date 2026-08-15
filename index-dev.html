@@ -3350,12 +3350,20 @@ Thank you, and see you!`;
         row.style.textAlign = "left";
 
         // Radio button
-        const radio = document.createElement("input");
+       const radio = document.createElement("input");
 
-        radio.type = "radio";
-        radio.name = "messageRecipient";
-        radio.className = "message-recipient-radio";
-        radio.value = index;
+radio.type = "radio";
+radio.name = "messageRecipient";
+radio.className = "message-recipient-radio";
+radio.value = index;
+
+// Check whether this passenger was already messaged
+const alreadySent =
+    isPassengerMessageSent(trip);
+
+if (alreadySent) {
+    radio.disabled = true;
+}
 
         radio.style.flex = "0 0 auto";
         radio.style.width = "18px";
@@ -3407,7 +3415,28 @@ Thank you, and see you!`;
 
         // Add radio first, then passenger information
         row.appendChild(radio);
-        row.appendChild(info);
+row.appendChild(info);
+
+if (alreadySent) {
+
+    const sentLabel =
+        document.createElement("small");
+
+    sentLabel.textContent =
+        "✓ Message Sent";
+
+    sentLabel.style.color = "#16a34a";
+    sentLabel.style.fontWeight = "700";
+    sentLabel.style.marginLeft = "auto";
+    sentLabel.style.whiteSpace = "nowrap";
+
+    row.appendChild(sentLabel);
+
+    row.style.opacity = "0.65";
+    row.style.cursor = "not-allowed";
+    row.style.background = "#f3f4f6";
+    row.style.borderColor = "#d1d5db";
+}
 
         list.appendChild(row);
     });
@@ -3518,7 +3547,8 @@ function closeMessageRecipientModal() {
 
 function confirmMessageRecipient() {
 
-    const selected = document.querySelector(
+    const selected =
+    document.querySelector(
         ".message-recipient-radio:checked"
     );
 
