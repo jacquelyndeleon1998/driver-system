@@ -3433,27 +3433,43 @@ Thank you, and see you!`;
 
     if (!passengerName && !contactNumber) return;
 
+    const messageKey =
+        `${passengerName.toLowerCase()}|${contactNumber}`;
+
+    // Keep it in memory
     if (!window.messagedPassengers) {
         window.messagedPassengers = {};
     }
 
-    const key =
-        `${passengerName.toLowerCase()}|${contactNumber}`;
+    window.messagedPassengers[messageKey] = true;
 
-    window.messagedPassengers[key] = true;
+    // Save it so it survives leaving the SMS app / reload
+    let savedMessages = {};
+
+    try {
+        savedMessages =
+            JSON.parse(
+                localStorage.getItem("messagedPassengers") || "{}"
+            );
+    } catch (e) {
+        savedMessages = {};
+    }
+
+    savedMessages[messageKey] = true;
+
+    localStorage.setItem(
+        "messagedPassengers",
+        JSON.stringify(savedMessages)
+    );
 
     console.log(
-        "Passenger marked as messaged:",
-        passengerName,
-        contactNumber
+        "Passenger message saved:",
+        messageKey
     );
 }
-
     function isPassengerMessageSent(trip) {
 
-    if (!trip || !window.messagedPassengers) {
-        return false;
-    }
+    if (!trip) return false;
 
     const passengerName =
         (trip.passengerName || "").trim();
@@ -3461,12 +3477,32 @@ Thank you, and see you!`;
     const contactNumber =
         (trip.contactNumber || "").trim();
 
-    const key =
+    const messageKey =
         `${passengerName.toLowerCase()}|${contactNumber}`;
 
-    return window.messagedPassengers[key] === true;
-}
+    // Check memory first
+    if (
+        window.messagedPassengers &&
+        window.messagedPassengers[messageKey]
+    ) {
+        return true;
+    }
 
+    // Check persistent storage
+    try {
+
+        const savedMessages =
+            JSON.parse(
+                localStorage.getItem("messagedPassengers") || "{}"
+            );
+
+        return savedMessages[messageKey] === true;
+
+    } catch (e) {
+
+        return false;
+    }
+}
 function closeMessageRecipientModal() {
 
     const modal =
@@ -3548,8 +3584,18 @@ function confirmMessageRecipient() {
     return;
 }
 
-// Mark ONLY the selected recipient as messaged
+// Save the message status BEFORE leaving the webpage
 markPassengerMessageSent(trip);
+
+// Close ALL messaging-related modals
+closeMessageRecipientModal();
+closeMessageComposeModal();
+closePassengerMessageModal();
+
+// Restore normal page scrolling
+document.body.style.overflow = "";
+
+// Now open SMS
 
 
         /*
@@ -3668,8 +3714,17 @@ markPassengerMessageSent(trip);
     return;
 }
 
-// Mark ONLY the selected recipient as messaged
+// Save BEFORE opening SMS
 markPassengerMessageSent(trip);
+
+// Close every messaging modal
+closeMessageRecipientModal();
+closeMessageComposeModal();
+closePassengerMessageModal();
+
+document.body.style.overflow = "";
+
+// Then your existing SMS code continues
 
 // Open SMS app
 const smsURL =
