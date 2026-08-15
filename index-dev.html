@@ -1703,7 +1703,7 @@
 
     <span id="sepAllowanceAdmin" class="nav-separator">|</span>
 
-    <button id="adminBtn" class="nav-btn">Admin</button>
+    <button id="adminBtn" class="nav-btn" onclick="showAdminDashboard()">Admin</button>
 
 <span id="sepAdminManual" class="nav-separator" style="display:none;">|</span>
 
@@ -2397,46 +2397,83 @@ switch (role) {
 
 }
 function showAdminDashboard() {
-    const role = localStorage.getItem("userRole");
+    console.log("Admin button clicked");
 
-    document.getElementById("driverDashboard").style.display = "none";
-    document.getElementById("scheduleApprovalPage").style.display = "block";
-    document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("scheduleViewerPage").style.display = "none";
+    const driverDashboard = document.getElementById("driverDashboard");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+    const driverAllowancePage = document.getElementById("driverAllowancePage");
+    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
 
-    document.getElementById("dashboardBtn").classList.remove("active");
-    document.getElementById("adminBtn").classList.add("active");
-    document.getElementById("allowanceBtn").classList.remove("active");
+    // Hide other pages
+    if (driverDashboard) {
+        driverDashboard.style.display = "none";
+    }
 
-    const approvalContainers = document.querySelectorAll(".approval-container");
-    const headers = document.querySelectorAll(".schedule-header");
-    const footers = document.querySelectorAll(".approval-footer");
+    if (driverAllowancePage) {
+        driverAllowancePage.style.display = "none";
+    }
 
-    if (role === "organic") {
-        headers[0].style.display = "";
-        approvalContainers[0].style.display = "";
+    if (scheduleViewerPage) {
+        scheduleViewerPage.style.display = "none";
+    }
 
-        headers[1].style.display = "none";
-        approvalContainers[1].style.display = "none";
-
-        document.getElementById("driverAllowancePage").style.display = "none";
-        document.getElementById("driverAllowanceDetailsModal").style.display = "none";
-
-        if (footers[0]) footers[0].style.display = "none";
+    // Show Admin page
+    if (scheduleApprovalPage) {
+        scheduleApprovalPage.style.display = "block";
     } else {
-        approvalContainers.forEach(x => x.style.display = "");
-        headers.forEach(x => x.style.display = "");
-        footers.forEach(x => x.style.display = "");
+        console.error("scheduleApprovalPage was not found.");
+        return;
     }
 
-    sessionStorage.setItem("view", role === "organic" ? "organic" : "admin");
+    // Update active navigation
+    const dashboardBtn = document.getElementById("dashboardBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const allowanceBtn = document.getElementById("allowanceBtn");
 
-    if (role !== "organic") {
-        processAllowanceSummaryTable();
+    if (dashboardBtn) {
+        dashboardBtn.classList.remove("active");
     }
 
-    hideActionLoading();
-    window.scrollTo(0,0);
+    if (adminBtn) {
+        adminBtn.classList.add("active");
+    }
+
+    if (allowanceBtn) {
+        allowanceBtn.classList.remove("active");
+    }
+
+    // Show approval sections
+    document.querySelectorAll(".approval-container").forEach(function (el) {
+        el.style.display = "";
+    });
+
+    document.querySelectorAll(".schedule-header").forEach(function (el) {
+        el.style.display = "";
+    });
+
+    document.querySelectorAll(".approval-footer").forEach(function (el) {
+        el.style.display = "";
+    });
+
+    // Remember current view
+    sessionStorage.setItem("view", "admin");
+
+    // Refresh allowance summary if available
+    if (typeof processAllowanceSummaryTable === "function") {
+        try {
+            processAllowanceSummaryTable();
+        } catch (err) {
+            console.warn("Allowance summary refresh failed:", err);
+        }
+    }
+
+    if (typeof hideActionLoading === "function") {
+        hideActionLoading();
+    }
+
+    window.scrollTo(0, 0);
+
+    console.log("Admin Dashboard opened successfully");
 }
 
 async function loadSubmittedAllowances() {
