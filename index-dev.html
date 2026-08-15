@@ -1881,6 +1881,16 @@
             <div class="time-card"><label for="allowanceTimeOut">Time Out</label><input id="allowanceTimeOut" type="time"></div>
         </div>
 
+        <h4 class="section-title">Trip Type</h4>
+        <div class="meal-item" style="margin-bottom: 15px;">
+            <label for="allowanceTripType" style="display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 4px;">Trip Type</label>
+            <select id="allowanceTripType" onchange="handleTripTypeChange()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; font-size: 14px; box-sizing: border-box;">
+                <option value="Manila">Manila</option>
+                <option value="Province">Province</option>
+                <option value="Fix">Fix</option>
+            </select>
+        </div>
+
         <h4 class="section-title">Meal Allowance</h4>
         <div class="meal-grid">
             <div class="meal-item"><label>Breakfast</label><input id="allowanceBreakfast" type="number" placeholder="&#8369;0"></div>
@@ -3897,7 +3907,15 @@ window.location.href = smsURL;
 function submitAllowance(driver, date, reqBy, pass, tripType){
     currentDriver = driver;
     currentDate = date;
-    currentTripType = tripType;
+    currentTripType = tripType || "Manila";
+
+    const tripTypeSelect = document.getElementById("allowanceTripType");
+    const normalizedTripType = (currentTripType || "").trim().toLowerCase();
+    const matchingOption = Array.from(tripTypeSelect.options).find(
+        option => option.value.toLowerCase() === normalizedTripType
+    );
+    tripTypeSelect.value = matchingOption ? matchingOption.value : "Manila";
+    currentTripType = tripTypeSelect.value;
 
     document.getElementById("allowanceBreakfast").readOnly = false;
     document.getElementById("allowanceLunch").readOnly = false;
@@ -3945,9 +3963,43 @@ currentPassengerCombined =
 
     document.getElementById("allowanceModal").style.display = "block";
     document.body.style.overflow = "hidden";
+
+    // Fix allowance is always a flat ₱75 meal allowance.
+    handleTripTypeChange();
+}
+
+function handleTripTypeChange() {
+    const select = document.getElementById("allowanceTripType");
+    if (!select) return;
+
+    currentTripType = select.value;
+
+    const breakfast = document.getElementById("allowanceBreakfast");
+    const lunch = document.getElementById("allowanceLunch");
+    const dinner = document.getElementById("allowanceDinner");
+
+    if (currentTripType.toLowerCase() === "fix") {
+        // Fixed allowance: no matter what Time In / Time Out is,
+        // the meal total must be exactly ₱75. Put the ₱75 under Dinner.
+        breakfast.value = 0;
+        lunch.value = 0;
+        dinner.value = 75;
+
+        breakfast.readOnly = true;
+        lunch.readOnly = true;
+        dinner.readOnly = true;
+        return;
+    }
+
+    breakfast.readOnly = true;
+    lunch.readOnly = true;
+    dinner.readOnly = true;
+    autoComputeMeals();
 }
 
 function resetAllowanceForm(){
+    document.getElementById("allowanceTripType").value = "Manila";
+    currentTripType = "";
     document.getElementById("allowanceTimeIn").value = "";
     document.getElementById("allowanceTimeOut").value = "";
     document.getElementById("allowanceBreakfast").value = "";
@@ -4009,6 +4061,7 @@ async function saveAllowance() {
         breakfast: document.getElementById("allowanceBreakfast").value || 0,
         lunch: document.getElementById("allowanceLunch").value || 0,
         dinner: document.getElementById("allowanceDinner").value || 0,
+        tripType: currentTripType,
         parkingFee: parking,
         remarks: document.getElementById("allowanceRemarks").value.trim()
     };
@@ -4870,7 +4923,7 @@ ${
                 Object.values(grouped).filter(d => d.date === date).forEach(d => {
                     const itinerary = (d.itinerary || "").trim();
                     const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                    if (noAllowanceItineraries.includes(itinerary)) return;
+                    const isNoAllowanceItinerary = noAllowanceItineraries.includes(itinerary);
 
                     let tripsHTML = "";
                     d.trips.forEach((trip, index) => {
@@ -5317,7 +5370,7 @@ if (!isPast && !isToday) {
                         "AM / ED","ED / PM","ED / Banking","Banking"
                     ];
 
-                    if (noAllowanceItineraries.includes(itinerary)) return false;
+                    const isNoAllowanceItinerary = noAllowanceItineraries.includes(itinerary);
 
                     const cleanDriver = d.driver.trim().replace(/\s+/g, " ").toLowerCase();
                     const lookupKey = `${cleanDriver}|${standardizeDateStr(d.date)}`;
