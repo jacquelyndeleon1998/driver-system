@@ -4621,12 +4621,23 @@ approvalRows.forEach(row => {
             cols.push(current.trim());
             if (cols.length < 13) return;
 
-            const [
-                driver, date, timeIn, vehicle, itinerary, pickupTime,
-                requestedBy, passengerName, contactNumber, origin,
-                destination, remarks, tripType
-            ] = cols.map(v => (v || "").replace(/"/g, "").trim());
-
+const [
+    driver,
+    date,
+    timeIn,
+    vehicle,
+    itinerary,
+    pickupTime,
+    requestedBy,
+    passengerName,
+    contactNumber,
+    origin,
+    destination,
+    remarks,
+    tripType,
+    chargeTo,
+    messageSent
+] = cols.map(v => (v || "").replace(/"/g, "").trim());
             const key = driver + "_" + date;
 
             if (!summaryDrivers[date]) summaryDrivers[date] = {};
@@ -4639,7 +4650,17 @@ approvalRows.forEach(row => {
             }
 
             if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
-            grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
+            grouped[key].trips.push({
+    pickupTime,
+    requestedBy,
+    passengerName,
+    contactNumber,
+    origin,
+    destination,
+    remarks,
+    chargeTo,
+    messageSent
+});
         });
 
         scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
