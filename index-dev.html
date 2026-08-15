@@ -3502,16 +3502,59 @@ function confirmMessageRecipient() {
             return;
         }
 
-        // Open the phone's SMS app with:
-        // - selected passenger's number
-        // - current composed message
-        const smsURL =
-            `sms:${encodeURIComponent(contactNumber)}?body=${encodeURIComponent(message)}`;
+        /*
+         * OPEN SMS APP
+         *
+         * iOS:
+         *   sms:number?body=message
+         *
+         * Android:
+         *   sms:number?body=message
+         *
+         * We keep the number clean because Android devices
+         * can be sensitive to spaces, parentheses, and dashes.
+         */
+
+        const cleanNumber =
+            contactNumber.replace(/[^\d+]/g, "");
+
+        const encodedMessage =
+            encodeURIComponent(message);
+
+        const isAndroid =
+            /Android/i.test(navigator.userAgent);
+
+        const isIOS =
+            /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        let smsURL;
+
+        if (isAndroid) {
+
+            // Android SMS
+            smsURL =
+                `sms:${cleanNumber}?body=${encodedMessage}`;
+
+        } else if (isIOS) {
+
+            // Keep the currently working iOS format
+            smsURL =
+                `sms:${cleanNumber}?body=${encodedMessage}`;
+
+        } else {
+
+            // Fallback for other devices
+            smsURL =
+                `sms:${cleanNumber}?body=${encodedMessage}`;
+        }
+
+        console.log("Opening SMS:", smsURL);
 
         window.location.href = smsURL;
 
     }, 50);
 }
+    
     function handlePassengerMessageSend() {
 
     const selectedTrips =
