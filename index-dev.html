@@ -5416,10 +5416,26 @@ function showHomePage() {
 }
 
 function backToMainDashboard() {
-    document.getElementById("driverDashboard").style.display = "block";
-    document.getElementById("scheduleApprovalPage").style.display = "none";
-    document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("scheduleViewerPage").style.display = "none";
+    const driverDashboard = document.getElementById("driverDashboard");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+    const driverAllowancePage = document.getElementById("driverAllowancePage");
+    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+
+    if (driverDashboard) {
+        driverDashboard.style.display = "block";
+    }
+
+    if (scheduleApprovalPage) {
+        scheduleApprovalPage.style.display = "none";
+    }
+
+    if (driverAllowancePage) {
+        driverAllowancePage.style.display = "none";
+    }
+
+    if (scheduleViewerPage) {
+        scheduleViewerPage.style.display = "none";
+    }
 
     document.body.style.overflow = "";
 
@@ -5427,11 +5443,20 @@ function backToMainDashboard() {
     const adminBtn = document.getElementById("adminBtn");
     const allowanceBtn = document.getElementById("allowanceBtn");
 
-    if (dashboardBtn) dashboardBtn.classList.add("active");
-    if (adminBtn) adminBtn.classList.remove("active");
-    if (allowanceBtn) allowanceBtn.classList.remove("active");
+    if (dashboardBtn) {
+        dashboardBtn.classList.add("active");
+    }
+
+    if (adminBtn) {
+        adminBtn.classList.remove("active");
+    }
+
+    if (allowanceBtn) {
+        allowanceBtn.classList.remove("active");
+    }
 
     sessionStorage.removeItem("view");
+
     window.scrollTo(0, 0);
 }
     
