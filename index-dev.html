@@ -3436,7 +3436,7 @@ if (alreadySent) {
     }
 }
 
-    function markPassengerMessageSent(trip) {
+    async function markPassengerMessageSent(trip) {
 
     if (!trip) return;
 
@@ -3446,19 +3446,32 @@ if (alreadySent) {
     const contactNumber =
         (trip.contactNumber || "").trim();
 
+    const pickupTime =
+        (trip.pickupTime || "").trim();
+
+    const driver =
+        (window.currentPassengerMessageData?.driver || "").trim();
+
+    const date =
+        (window.currentPassengerMessageData?.date || "").trim();
+
     if (!passengerName && !contactNumber) return;
+
+    // ==========================================
+    // EXISTING LOCAL MESSAGE STATUS
+    // Keep this so the current device still
+    // immediately knows the passenger was messaged.
+    // ==========================================
 
     const messageKey =
         `${passengerName.toLowerCase()}|${contactNumber}`;
 
-    // Keep it in memory
     if (!window.messagedPassengers) {
         window.messagedPassengers = {};
     }
 
     window.messagedPassengers[messageKey] = true;
 
-    // Save it so it survives leaving the SMS app / reload
     let savedMessages = {};
 
     try {
@@ -3478,10 +3491,63 @@ if (alreadySent) {
     );
 
     console.log(
-        "Passenger message saved:",
+        "Passenger message saved locally:",
         messageKey
     );
+
+
+    // ==========================================
+    // NEW: SAVE MESSAGE STATUS TO GOOGLE SHEET
+    // Driver Schedule Column O
+    // ==========================================
+
+    try {
+
+        const markURL =
+            `${WEBAPP_BASE}` +
+            `?action=markPassengerMessageSent` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}` +
+            `&driver=${encodeURIComponent(driver)}` +
+            `&date=${encodeURIComponent(date)}` +
+            `&passengerName=${encodeURIComponent(passengerName)}` +
+            `&contactNumber=${encodeURIComponent(contactNumber)}` +
+            `&pickupTime=${encodeURIComponent(pickupTime)}`;
+
+        console.log(
+            "Marking passenger message as Sent:",
+            markURL
+        );
+
+        const response =
+            await fetch(markURL);
+
+        const result =
+            await response.json();
+
+        console.log(
+            "Message Sent sheet response:",
+            result
+        );
+
+        if (!result.success) {
+
+            console.warn(
+                "Message was saved locally, but Column O was not updated:",
+                result.message
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not update Message Sent in Google Sheet:",
+            error
+        );
+
+    }
 }
+    
     function isPassengerMessageSent(trip) {
 
     if (!trip) return false;
