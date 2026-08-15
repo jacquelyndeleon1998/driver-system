@@ -3421,6 +3421,52 @@ Thank you, and see you!`;
     }
 }
 
+    function markPassengerMessageSent(trip) {
+
+    if (!trip) return;
+
+    const passengerName =
+        (trip.passengerName || "").trim();
+
+    const contactNumber =
+        (trip.contactNumber || "").trim();
+
+    if (!passengerName && !contactNumber) return;
+
+    if (!window.messagedPassengers) {
+        window.messagedPassengers = {};
+    }
+
+    const key =
+        `${passengerName.toLowerCase()}|${contactNumber}`;
+
+    window.messagedPassengers[key] = true;
+
+    console.log(
+        "Passenger marked as messaged:",
+        passengerName,
+        contactNumber
+    );
+}
+
+    function isPassengerMessageSent(trip) {
+
+    if (!trip || !window.messagedPassengers) {
+        return false;
+    }
+
+    const passengerName =
+        (trip.passengerName || "").trim();
+
+    const contactNumber =
+        (trip.contactNumber || "").trim();
+
+    const key =
+        `${passengerName.toLowerCase()}|${contactNumber}`;
+
+    return window.messagedPassengers[key] === true;
+}
+
 function closeMessageRecipientModal() {
 
     const modal =
@@ -3498,9 +3544,13 @@ function confirmMessageRecipient() {
             `This message will be sent to ${passengerName}.`
         );
 
-        if (!confirmed) {
-            return;
-        }
+       if (!confirmed) {
+    return;
+}
+
+// Mark ONLY the selected recipient as messaged
+markPassengerMessageSent(trip);
+
 
         /*
          * OPEN SMS APP
@@ -3615,14 +3665,17 @@ function confirmMessageRecipient() {
             );
 
             if (!confirmed) {
-                return;
-            }
+    return;
+}
 
-            // Open SMS app
-            const smsURL =
-                `sms:${encodeURIComponent(contactNumber)}?body=${encodeURIComponent(message)}`;
+// Mark ONLY the selected recipient as messaged
+markPassengerMessageSent(trip);
 
-            window.location.href = smsURL;
+// Open SMS app
+const smsURL =
+    `sms:${encodeURIComponent(contactNumber)}?body=${encodeURIComponent(message)}`;
+
+window.location.href = smsURL;
 
         }, 50);
 
@@ -4652,7 +4705,10 @@ ${
                         with (trip) {
                             tripsHTML += `
                             <div class="trip">
-                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                <div class="trip-title">
+    Pick-Up ${index + 1}
+    ${isPassengerMessageSent(trip) ? " ✉️" : ""}
+</div>
                                 ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                                 ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
                                 ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
