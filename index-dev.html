@@ -1695,7 +1695,7 @@
     </div>
   <div class="top-nav">
 
-    <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+    <button id="dashboardBtn" class="nav-btn active" onclick="backToMainDashboard()">Dashboard</button>
 
     <span id="sepDashboardAllowance" class="nav-separator">|</span>
 
@@ -5416,29 +5416,37 @@ function showHomePage() {
 }
 
 function backToMainDashboard() {
+    console.log("Dashboard button clicked");
+
     const driverDashboard = document.getElementById("driverDashboard");
     const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
     const driverAllowancePage = document.getElementById("driverAllowancePage");
     const scheduleViewerPage = document.getElementById("scheduleViewerPage");
 
+    // Show Main Dashboard
     if (driverDashboard) {
         driverDashboard.style.display = "block";
     }
 
+    // Hide Admin page
     if (scheduleApprovalPage) {
         scheduleApprovalPage.style.display = "none";
     }
 
+    // Hide Allowance page
     if (driverAllowancePage) {
         driverAllowancePage.style.display = "none";
     }
 
+    // Hide Schedule Viewer
     if (scheduleViewerPage) {
         scheduleViewerPage.style.display = "none";
     }
 
+    // Restore page scrolling
     document.body.style.overflow = "";
 
+    // Update navigation
     const dashboardBtn = document.getElementById("dashboardBtn");
     const adminBtn = document.getElementById("adminBtn");
     const allowanceBtn = document.getElementById("allowanceBtn");
@@ -5455,9 +5463,13 @@ function backToMainDashboard() {
         allowanceBtn.classList.remove("active");
     }
 
+    // Clear saved view
     sessionStorage.removeItem("view");
 
+    // Go to top
     window.scrollTo(0, 0);
+
+    console.log("Returned to Main Dashboard successfully");
 }
     
 function viewSchedule(date){
