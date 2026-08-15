@@ -3565,8 +3565,9 @@ function confirmMessageRecipient() {
         return;
     }
 
-    // ONE passenger selected:
-    // Do NOT show Choose Recipient.
+    // ==========================================
+    // ONE PASSENGER
+    // ==========================================
     if (selectedTrips.length === 1) {
 
         const trip = selectedTrips[0];
@@ -3576,15 +3577,62 @@ function confirmMessageRecipient() {
         const passengerName =
             (trip.passengerName || "").trim();
 
-        alert(
-            `This message will be sent to ${passengerName}.`
-        );
+        const contactNumber =
+            (trip.contactNumber || "").trim();
+
+        const messageElement =
+            document.getElementById("passengerMessageText");
+
+        const message =
+            messageElement
+                ? messageElement.value.trim()
+                : "";
+
+        if (!contactNumber) {
+
+            closeMessageComposeModal();
+
+            setTimeout(function () {
+
+                alert(
+                    `This message will be sent to ${passengerName}.\n\n` +
+                    "No contact number is available for this passenger."
+                );
+
+            }, 50);
+
+            return;
+        }
+
+        // Close Message Compose first
+        closeMessageComposeModal();
+
+        // Show confirmation
+        setTimeout(function () {
+
+            const confirmed = window.confirm(
+                `This message will be sent to ${passengerName}.`
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            // Open SMS app
+            const smsURL =
+                `sms:${encodeURIComponent(contactNumber)}?body=${encodeURIComponent(message)}`;
+
+            window.location.href = smsURL;
+
+        }, 50);
 
         return;
     }
 
-    // TWO OR MORE passengers selected:
-    // Show Choose Recipient.
+
+    // ==========================================
+    // TWO OR MORE PASSENGERS
+    // ==========================================
     openMessageRecipientModal();
 }
     
