@@ -5656,6 +5656,10 @@ function continueToManualSheet() {
 
 document.getElementById("loginBtn").addEventListener("click", loginDriver);
 
+document.getElementById("manualBtn").addEventListener("click", () => {
+    openManualConfirmModal();
+});
+
 function showLoginSpinner(title, message) {
     document.getElementById("loadingTitle").textContent = title;
     document.getElementById("loadingMessage").textContent = message;
