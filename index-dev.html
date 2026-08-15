@@ -2022,8 +2022,7 @@
 
         <p
             style="font-size:14px; color:#6b7280; margin-bottom:18px;">
-            We can only send 1 message at a time.<br>
-            Choose the recipient.
+            We can only send 1 message at a time.
         </p>
 
         <div id="messageRecipientList"></div>
@@ -3398,20 +3397,6 @@ if (alreadySent) {
         name.style.textOverflow = "ellipsis";
 
         info.appendChild(name);
-
-        // Contact number
-        const number = document.createElement("small");
-
-        number.textContent =
-            contactNumber || "No contact number";
-
-        number.style.display = "inline";
-        number.style.flex = "0 0 auto";
-        number.style.color =
-            contactNumber ? "#6b7280" : "#9ca3af";
-        number.style.whiteSpace = "nowrap";
-
-        info.appendChild(number);
 
         // Add radio first, then passenger information
         row.appendChild(radio);
