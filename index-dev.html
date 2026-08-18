@@ -2956,11 +2956,69 @@ async function approveItemInline(name, date, element) {
                 document.getElementById("successModal").style.display = "flex";
 
                 document.getElementById("successOK").onclick = async function () {
-                    document.getElementById("successModal").style.display = "none";
-                    document.getElementById("reviewAllowanceModal").style.display = "none";
-                    await fetchLiveAllowancesFromSheet();
-                    showAdminDashboard();
-                };
+
+    // Close success modal immediately
+    const successModal = document.getElementById("successModal");
+    if (successModal) {
+        successModal.style.display = "none";
+    }
+
+    // Close review modal immediately
+    const reviewModal = document.getElementById("reviewAllowanceModal");
+    if (reviewModal) {
+        reviewModal.style.display = "none";
+    }
+
+    // Restore normal page scrolling
+    document.body.style.overflow = "";
+
+    // Immediately update the allowance status in the current page
+    // so the Admin dashboard does not temporarily lose the record.
+    if (Array.isArray(globalParsedAllowances)) {
+
+        const targetDriver =
+            String(name || "").trim().toLowerCase();
+
+        const targetDate =
+            typeof standardizeDateStr === "function"
+                ? standardizeDateStr(date)
+                : String(date || "").trim();
+
+        globalParsedAllowances.forEach(record => {
+
+            const recordDriver =
+                String(record.name || "").trim().toLowerCase();
+
+            const recordDate =
+                typeof standardizeDateStr === "function"
+                    ? standardizeDateStr(record.date)
+                    : String(record.date || "").trim();
+
+            if (
+                recordDriver === targetDriver &&
+                recordDate === targetDate
+            ) {
+                record.status = "Pay";
+            }
+        });
+    }
+
+    // Return to Admin dashboard immediately
+    showAdminDashboard();
+
+    // Refresh from Google Sheet in the background.
+    // If the request is temporarily slow, the current
+    // "Pay" status above remains visible.
+    try {
+        await fetchLiveAllowancesFromSheet();
+        processAllowanceSummaryTable();
+    } catch (err) {
+        console.warn(
+            "Allowance refresh after approval failed. Keeping current display:",
+            err
+        );
+    }
+};
             } else {
                 alert("❌ Error: " + data.message);
                 element.disabled = false;
