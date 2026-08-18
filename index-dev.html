@@ -2940,98 +2940,186 @@ function closeDetailsModal() {
 }
 
 async function approveItemInline(name, date, element) {
-    if (confirm(`Approve allowance request for ${name} on ${date}?`)) {
+
+    if (!confirm(`Approve allowance request for ${name} on ${date}?`)) {
+        return;
+    }
+
+    // Prevent double-click while processing
+    if (element) {
         element.disabled = true;
         element.textContent = "Processing...";
-        showActionLoading("Approving Allowance...", "Please wait while we mark this allowance for payment.");
-        
-        try {
-            const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
-            const response = await fetch(targetUrl);
-            const data = await response.json();
-            
-            if (data.success) {
-                document.getElementById("successModalTitle").textContent = "Allowance Approved";
-                document.getElementById("successModalText").textContent = "Allowance marked for pay.";
-                document.getElementById("successModal").style.display = "flex";
-
-                document.getElementById("successOK").onclick = async function () {
-
-    // Close success modal immediately
-    const successModal = document.getElementById("successModal");
-    if (successModal) {
-        successModal.style.display = "none";
     }
 
-    // Close review modal immediately
-    const reviewModal = document.getElementById("reviewAllowanceModal");
-    if (reviewModal) {
-        reviewModal.style.display = "none";
-    }
+    showActionLoading(
+        "Approving Allowance...",
+        "Please wait while we mark this allowance for payment."
+    );
 
-    // Restore normal page scrolling
-    document.body.style.overflow = "";
-
-    // Immediately update the allowance status in the current page
-    // so the Admin dashboard does not temporarily lose the record.
-    if (Array.isArray(globalParsedAllowances)) {
-
-        const targetDriver =
-            String(name || "").trim().toLowerCase();
-
-        const targetDate =
-            typeof standardizeDateStr === "function"
-                ? standardizeDateStr(date)
-                : String(date || "").trim();
-
-        globalParsedAllowances.forEach(record => {
-
-            const recordDriver =
-                String(record.name || "").trim().toLowerCase();
-
-            const recordDate =
-                typeof standardizeDateStr === "function"
-                    ? standardizeDateStr(record.date)
-                    : String(record.date || "").trim();
-
-            if (
-                recordDriver === targetDriver &&
-                recordDate === targetDate
-            ) {
-                record.status = "Pay";
-            }
-        });
-    }
-
-    // Return to Admin dashboard immediately
-    showAdminDashboard();
-
-    // Refresh from Google Sheet in the background.
-    // If the request is temporarily slow, the current
-    // "Pay" status above remains visible.
     try {
-        await fetchLiveAllowancesFromSheet();
-        processAllowanceSummaryTable();
-    } catch (err) {
-        console.warn(
-            "Allowance refresh after approval failed. Keeping current display:",
-            err
-        );
-    }
-};
-            } else {
-                alert("❌ Error: " + data.message);
+
+        const targetUrl =
+            `${WEBAPP_BASE}?action=approveAllowanceItem` +
+            `&driver=${encodeURIComponent(name)}` +
+            `&date=${encodeURIComponent(date)}` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}`;
+
+        const response = await fetch(targetUrl);
+        const data = await response.json();
+
+        if (!data.success) {
+
+            // Restore button if approval failed
+            if (element) {
                 element.disabled = false;
                 element.textContent = "Approve";
             }
-        } catch(e) {
-            console.error(e);
-            alert("Network transmission failure.");
+
+            alert("❌ Error: " + (data.message || "Unable to approve allowance."));
+            return;
+        }
+
+        // =====================================================
+        // APPROVAL SUCCESSFUL
+        // =====================================================
+
+        // Immediately update the record already in browser memory.
+        // This prevents the allowance from temporarily disappearing.
+        if (Array.isArray(globalParsedAllowances)) {
+
+            const targetDriver =
+                String(name || "").trim().toLowerCase();
+
+            const targetDate =
+                typeof standardizeDateStr === "function"
+                    ? standardizeDateStr(date)
+                    : String(date || "").trim();
+
+            globalParsedAllowances.forEach(record => {
+
+                const recordDriver =
+                    String(record.name || "").trim().toLowerCase();
+
+                const recordDate =
+                    typeof standardizeDateStr === "function"
+                        ? standardizeDateStr(record.date)
+                        : String(record.date || "").trim();
+
+                if (
+                    recordDriver === targetDriver &&
+                    recordDate === targetDate
+                ) {
+                    record.status = "Pay";
+                }
+            });
+        }
+
+        // IMPORTANT:
+        // Reset the review modal's Approve button.
+        // The same button is reused for the next allowance review.
+        if (element) {
             element.disabled = false;
             element.textContent = "Approve";
-        } finally {
-            hideActionLoading();
         }
+
+        // Close the review modal immediately
+        const reviewModal =
+            document.getElementById("reviewAllowanceModal");
+
+        if (reviewModal) {
+            reviewModal.style.display = "none";
+        }
+
+        document.body.style.overflow = "";
+
+        // Stop the processing overlay
+        hideActionLoading();
+
+        // =====================================================
+        // SHOW SUCCESS MESSAGE
+        // =====================================================
+
+        const successModal =
+            document.getElementById("successModal");
+
+        const successTitle =
+            document.getElementById("successModalTitle");
+
+        const successText =
+            document.getElementById("successModalText");
+
+        const successOK =
+            document.getElementById("successOK");
+
+        if (successTitle) {
+            successTitle.textContent = "Allowance Approved";
+        }
+
+        if (successText) {
+            successText.textContent = "Allowance marked for pay.";
+        }
+
+        if (successModal) {
+            successModal.style.display = "flex";
+        }
+
+        // =====================================================
+        // SUCCESS MODAL OK
+        // =====================================================
+
+        if (successOK) {
+
+            successOK.onclick = function () {
+
+                // Close success modal immediately
+                if (successModal) {
+                    successModal.style.display = "none";
+                }
+
+                document.body.style.overflow = "";
+
+                // Return to Admin immediately using the already
+                // updated browser data.
+                showAdminDashboard();
+
+                // Refresh from Google Sheet in the background.
+                // We intentionally DO NOT await this.
+                fetchLiveAllowancesFromSheet()
+                    .then(() => {
+                        if (
+                            typeof processAllowanceSummaryTable ===
+                            "function"
+                        ) {
+                            processAllowanceSummaryTable();
+                        }
+                    })
+                    .catch(err => {
+                        console.warn(
+                            "Allowance background refresh failed. Keeping current data:",
+                            err
+                        );
+                    });
+            };
+        }
+
+    } catch (e) {
+
+        console.error("Allowance approval error:", e);
+
+        // Restore button after network/server failure
+        if (element) {
+            element.disabled = false;
+            element.textContent = "Approve";
+        }
+
+        hideActionLoading();
+
+        alert("Network transmission failure.");
+
+    } finally {
+
+        // Make absolutely sure the processing overlay is gone.
+        hideActionLoading();
     }
 }
 
