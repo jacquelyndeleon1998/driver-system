@@ -2540,67 +2540,129 @@ async function loadSubmittedAllowances() {
 async function fetchLiveAllowancesFromSheet() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s fallback limit
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
 
-        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`, {
-            signal: controller.signal
-        });
+        const response = await fetch(
+            `${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`,
+            {
+                signal: controller.signal
+            }
+        );
+
         clearTimeout(timeoutId);
 
+        // If the server request fails, KEEP the existing allowance data.
         if (!response.ok) {
-            globalParsedAllowances = [];
+            console.warn(
+                "Live allowances could not be refreshed. Keeping existing allowance data."
+            );
             return;
         }
 
         const text = await response.text();
-        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            globalParsedAllowances = [];
+
+        // If Apps Script returns HTML instead of JSON, KEEP existing data.
+        if (
+            text.trim().startsWith("<!DOCTYPE") ||
+            text.trim().startsWith("<html")
+        ) {
+            console.warn(
+                "Live allowances returned HTML instead of JSON. Keeping existing allowance data."
+            );
             return;
         }
 
         const jsonResult = JSON.parse(text);
-        globalParsedAllowances = [];
-        
-        if (jsonResult && jsonResult.success && jsonResult.data) {
-            jsonResult.data.forEach(row => {
-                const rawTripDate = row.date || "";      
-                const driverName = row.driver || "";    
-                const totalAllowance = parseFloat(row.total) || 0; 
-                const rawStatus = row.status || "";     
-                
-                const lowerStatus = (rawStatus || "").trim().toLowerCase();
-                let itemStatus = rawStatus || "For Review";
 
-                if (lowerStatus === "approved" || lowerStatus === "paid") {
-                    itemStatus = "Paid";
-                } else if (lowerStatus === "pay") {
-                    itemStatus = "Pay";
-                } else if (lowerStatus === "for review") {
-                    itemStatus = "For Review";
-                }
-
-                if (driverName && rawTripDate) {
-                    globalParsedAllowances.push({
-                        name: driverName,
-                        date: rawTripDate,
-                        passenger: row.passenger || "",
-                        timeIn: row.timeIn || "",
-                        timeOut: row.timeOut || "",
-                        breakfast: Number(row.breakfast) || 0,
-                        lunch: Number(row.lunch) || 0,
-                        dinner: Number(row.dinner) || 0,
-                        parking: Number(row.parking) || 0,
-                        receipt: row.receipt || "",
-                        remarks: row.remarks || "",
-                        amount: totalAllowance,
-                        status: itemStatus
-                    });
-                }
-            });
+        // Make sure the response actually contains allowance data.
+        if (
+            !jsonResult ||
+            !jsonResult.success ||
+            !Array.isArray(jsonResult.data)
+        ) {
+            console.warn(
+                "Invalid allowance data returned. Keeping existing allowance data."
+            );
+            return;
         }
+
+        // Build the new data FIRST.
+        // Do NOT clear globalParsedAllowances until the new data is ready.
+        const newParsedAllowances = [];
+
+        jsonResult.data.forEach(row => {
+            const rawTripDate = row.date || "";
+            const driverName = row.driver || "";
+            const totalAllowance = parseFloat(row.total) || 0;
+            const rawStatus = row.status || "";
+
+            const lowerStatus = (rawStatus || "").trim().toLowerCase();
+
+            let itemStatus = rawStatus || "For Review";
+
+            if (
+                lowerStatus === "approved" ||
+                lowerStatus === "paid"
+            ) {
+                itemStatus = "Paid";
+            } else if (lowerStatus === "pay") {
+                itemStatus = "Pay";
+            } else if (lowerStatus === "for review") {
+                itemStatus = "For Review";
+            }
+
+            if (driverName && rawTripDate) {
+                newParsedAllowances.push({
+                    name: driverName,
+                    date: rawTripDate,
+                    passenger: row.passenger || "",
+                    timeIn: row.timeIn || "",
+                    timeOut: row.timeOut || "",
+                    breakfast: Number(row.breakfast) || 0,
+                    lunch: Number(row.lunch) || 0,
+                    dinner: Number(row.dinner) || 0,
+                    parking: Number(row.parking) || 0,
+                    receipt: row.receipt || "",
+                    remarks: row.remarks || "",
+                    amount: totalAllowance,
+                    status: itemStatus
+                });
+            }
+        });
+
+        /*
+         * Replace the existing data only when the refresh
+         * returned usable records.
+         *
+         * If there are already records in memory and the server
+         * temporarily returns an empty result, keep the existing
+         * records instead of making the table appear empty.
+         */
+        if (
+            newParsedAllowances.length > 0 ||
+            globalParsedAllowances.length === 0
+        ) {
+            globalParsedAllowances = newParsedAllowances;
+        } else {
+            console.warn(
+                "Refresh returned no allowance records. Keeping existing allowance data."
+            );
+        }
+
+        console.log(
+            "Live allowances loaded:",
+            globalParsedAllowances
+        );
+
     } catch (err) {
-        console.warn("fetchLiveAllowancesFromSheet bypassed/timed out:", err);
-        globalParsedAllowances = [];
+        // IMPORTANT:
+        // Do NOT clear globalParsedAllowances here.
+        // A temporary timeout/network error must not erase
+        // allowance records already displayed in the dashboard.
+        console.warn(
+            "fetchLiveAllowancesFromSheet bypassed/timed out. Keeping existing allowance data:",
+            err
+        );
     }
 }
     
