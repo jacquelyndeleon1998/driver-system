@@ -550,6 +550,7 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 10px;
 }
 
 .passenger-message-option small {
@@ -1694,15 +1695,15 @@
     </div>
   <div class="top-nav">
 
-    <button id="dashboardBtn" class="nav-btn active">Dashboard</button>
+    <button id="dashboardBtn" class="nav-btn active" onclick="backToMainDashboard()">Dashboard</button>
 
     <span id="sepDashboardAllowance" class="nav-separator">|</span>
 
-    <button id="allowanceBtn" class="nav-btn">Allowances</button>
+    <button id="allowanceBtn" class="nav-btn" onclick="showDriverAllowanceSummary()">Allowances</button>
 
     <span id="sepAllowanceAdmin" class="nav-separator">|</span>
 
-    <button id="adminBtn" class="nav-btn">Admin</button>
+    <button id="adminBtn" class="nav-btn" onclick="showAdminDashboard()">Admin</button>
 
 <span id="sepAdminManual" class="nav-separator" style="display:none;">|</span>
 
@@ -1972,11 +1973,11 @@
             </button>
 
             <button
-                type="button"
-                class="message-send-btn"
-                onclick="sendPassengerMessage()">
-                Send Message
-            </button>
+    type="button"
+    class="message-send-btn"
+    onclick="handlePassengerMessageSend()">
+    Send Message
+</button>
         </div>
 
         <div
@@ -2002,6 +2003,53 @@
 
     </div>
 </div>
+
+    <!-- MESSAGE RECIPIENT SELECTION MODAL -->
+<div id="messageRecipientModal" class="modal">
+
+    <div class="modal-content" style="max-width: 500px;">
+
+        <button
+            type="button"
+            class="message-modal-close"
+            onclick="closeMessageRecipientModal()"
+            aria-label="Close">
+            &times;
+        </button>
+
+        <h3 class="modal-title">
+            Choose Recipient
+        </h3>
+
+        <p
+            style="font-size:14px; color:#6b7280; margin-bottom:18px;">
+            We can only send 1 message at a time.
+        </p>
+
+        <div id="messageRecipientList"></div>
+
+        <div class="modal-buttons">
+
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                onclick="closeMessageRecipientModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn submit-btn"
+                onclick="confirmMessageRecipient()">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <!-- NEW DRIVER LOGIN MODAL -->
 <div id="driverLoginModal" class="modal">
@@ -2349,142 +2397,272 @@ switch (role) {
 
 }
 function showAdminDashboard() {
-    const role = localStorage.getItem("userRole");
+    console.log("Admin button clicked");
 
-    document.getElementById("driverDashboard").style.display = "none";
-    document.getElementById("scheduleApprovalPage").style.display = "block";
-    document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("scheduleViewerPage").style.display = "none";
+    const driverDashboard = document.getElementById("driverDashboard");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+    const driverAllowancePage = document.getElementById("driverAllowancePage");
+    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
 
-    document.getElementById("dashboardBtn").classList.remove("active");
-    document.getElementById("adminBtn").classList.add("active");
-    document.getElementById("allowanceBtn").classList.remove("active");
+    // Hide other pages
+    if (driverDashboard) {
+        driverDashboard.style.display = "none";
+    }
 
-    const approvalContainers = document.querySelectorAll(".approval-container");
-    const headers = document.querySelectorAll(".schedule-header");
-    const footers = document.querySelectorAll(".approval-footer");
+    if (driverAllowancePage) {
+        driverAllowancePage.style.display = "none";
+    }
 
-    if (role === "organic") {
-        headers[0].style.display = "";
-        approvalContainers[0].style.display = "";
+    if (scheduleViewerPage) {
+        scheduleViewerPage.style.display = "none";
+    }
 
-        headers[1].style.display = "none";
-        approvalContainers[1].style.display = "none";
-
-        document.getElementById("driverAllowancePage").style.display = "none";
-        document.getElementById("driverAllowanceDetailsModal").style.display = "none";
-
-        if (footers[0]) footers[0].style.display = "none";
+    // Show Admin page
+    if (scheduleApprovalPage) {
+        scheduleApprovalPage.style.display = "block";
     } else {
-        approvalContainers.forEach(x => x.style.display = "");
-        headers.forEach(x => x.style.display = "");
-        footers.forEach(x => x.style.display = "");
+        console.error("scheduleApprovalPage was not found.");
+        return;
     }
 
-    sessionStorage.setItem("view", role === "organic" ? "organic" : "admin");
+    // Update active navigation
+    const dashboardBtn = document.getElementById("dashboardBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const allowanceBtn = document.getElementById("allowanceBtn");
 
-    if (role !== "organic") {
-        processAllowanceSummaryTable();
+    if (dashboardBtn) {
+        dashboardBtn.classList.remove("active");
     }
 
-    hideActionLoading();
-    window.scrollTo(0,0);
+    if (adminBtn) {
+        adminBtn.classList.add("active");
+    }
+
+    if (allowanceBtn) {
+        allowanceBtn.classList.remove("active");
+    }
+
+    // Show approval sections
+    document.querySelectorAll(".approval-container").forEach(function (el) {
+        el.style.display = "";
+    });
+
+    document.querySelectorAll(".schedule-header").forEach(function (el) {
+        el.style.display = "";
+    });
+
+    document.querySelectorAll(".approval-footer").forEach(function (el) {
+        el.style.display = "";
+    });
+
+    // Remember current view
+    sessionStorage.setItem("view", "admin");
+
+    // Refresh allowance summary if available
+    if (typeof processAllowanceSummaryTable === "function") {
+        try {
+            processAllowanceSummaryTable();
+        } catch (err) {
+            console.warn("Allowance summary refresh failed:", err);
+        }
+    }
+
+    if (typeof hideActionLoading === "function") {
+        hideActionLoading();
+    }
+
+    window.scrollTo(0, 0);
+
+    console.log("Admin Dashboard opened successfully");
 }
 
 async function loadSubmittedAllowances() {
     try {
-        const res = await fetch(`${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`);
+        const res = await fetch(
+            `${WEBAPP_BASE}?action=submitted&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`
+        );
+
         if (!res.ok) {
-            submittedDrivers = {};
+            console.warn(
+                "Submitted allowances could not be loaded. Keeping existing submitted state."
+            );
             return;
         }
+
         const text = await res.text();
-        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            submittedDrivers = {};
+
+        if (
+            text.trim().startsWith("<!DOCTYPE") ||
+            text.trim().startsWith("<html")
+        ) {
+            console.warn(
+                "Submitted allowances returned HTML instead of JSON. Keeping existing submitted state."
+            );
             return;
         }
 
         const data = JSON.parse(text);
+
+        if (!Array.isArray(data.submitted)) {
+            console.warn(
+                "No submitted allowance data returned. Keeping existing submitted state."
+            );
+            return;
+        }
+
         submittedDrivers = {};
-        if (!Array.isArray(data.submitted)) return;
 
         data.submitted.forEach(item => {
             const [driver, rawDate] = item.split("|");
-            const cleanDriver = driver.trim().replace(/\s+/g, " ").toLowerCase();
-            const cleanKey = `${cleanDriver}|${standardizeDateStr(rawDate)}`;
-            submittedDrivers[cleanKey] = true; 
+
+            const cleanDriver =
+                driver.trim().replace(/\s+/g, " ").toLowerCase();
+
+            const cleanKey =
+                `${cleanDriver}|${standardizeDateStr(rawDate)}`;
+
+            submittedDrivers[cleanKey] = true;
         });
-        console.log("Submitted Drivers Loaded:", submittedDrivers);
+
+        console.log(
+            "Submitted Drivers Loaded:",
+            submittedDrivers
+        );
+
     } catch (err) {
-        console.warn("Error loading submitted allowances safely handled:", err);
-        submittedDrivers = {};
+        console.warn(
+            "Error loading submitted allowances. Keeping existing submitted state:",
+            err
+        );
     }
 }
 
 async function fetchLiveAllowancesFromSheet() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s fallback limit
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
 
-        const response = await fetch(`${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`, {
-            signal: controller.signal
-        });
+        const response = await fetch(
+            `${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`,
+            {
+                signal: controller.signal
+            }
+        );
+
         clearTimeout(timeoutId);
 
+        // If the server request fails, KEEP the existing allowance data.
         if (!response.ok) {
-            globalParsedAllowances = [];
+            console.warn(
+                "Live allowances could not be refreshed. Keeping existing allowance data."
+            );
             return;
         }
 
         const text = await response.text();
-        if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-            globalParsedAllowances = [];
+
+        // If Apps Script returns HTML instead of JSON, KEEP existing data.
+        if (
+            text.trim().startsWith("<!DOCTYPE") ||
+            text.trim().startsWith("<html")
+        ) {
+            console.warn(
+                "Live allowances returned HTML instead of JSON. Keeping existing allowance data."
+            );
             return;
         }
 
         const jsonResult = JSON.parse(text);
-        globalParsedAllowances = [];
-        
-        if (jsonResult && jsonResult.success && jsonResult.data) {
-            jsonResult.data.forEach(row => {
-                const rawTripDate = row.date || "";      
-                const driverName = row.driver || "";    
-                const totalAllowance = parseFloat(row.total) || 0; 
-                const rawStatus = row.status || "";     
-                
-                const lowerStatus = (rawStatus || "").trim().toLowerCase();
-                let itemStatus = rawStatus || "For Review";
 
-                if (lowerStatus === "approved" || lowerStatus === "paid") {
-                    itemStatus = "Paid";
-                } else if (lowerStatus === "pay") {
-                    itemStatus = "Pay";
-                } else if (lowerStatus === "for review") {
-                    itemStatus = "For Review";
-                }
-
-                if (driverName && rawTripDate) {
-                    globalParsedAllowances.push({
-                        name: driverName,
-                        date: rawTripDate,
-                        passenger: row.passenger || "",
-                        timeIn: row.timeIn || "",
-                        timeOut: row.timeOut || "",
-                        breakfast: Number(row.breakfast) || 0,
-                        lunch: Number(row.lunch) || 0,
-                        dinner: Number(row.dinner) || 0,
-                        parking: Number(row.parking) || 0,
-                        receipt: row.receipt || "",
-                        remarks: row.remarks || "",
-                        amount: totalAllowance,
-                        status: itemStatus
-                    });
-                }
-            });
+        // Make sure the response actually contains allowance data.
+        if (
+            !jsonResult ||
+            !jsonResult.success ||
+            !Array.isArray(jsonResult.data)
+        ) {
+            console.warn(
+                "Invalid allowance data returned. Keeping existing allowance data."
+            );
+            return;
         }
+
+        // Build the new data FIRST.
+        // Do NOT clear globalParsedAllowances until the new data is ready.
+        const newParsedAllowances = [];
+
+        jsonResult.data.forEach(row => {
+            const rawTripDate = row.date || "";
+            const driverName = row.driver || "";
+            const totalAllowance = parseFloat(row.total) || 0;
+            const rawStatus = row.status || "";
+
+            const lowerStatus = (rawStatus || "").trim().toLowerCase();
+
+            let itemStatus = rawStatus || "For Review";
+
+            if (
+                lowerStatus === "approved" ||
+                lowerStatus === "paid"
+            ) {
+                itemStatus = "Paid";
+            } else if (lowerStatus === "pay") {
+                itemStatus = "Pay";
+            } else if (lowerStatus === "for review") {
+                itemStatus = "For Review";
+            }
+
+            if (driverName && rawTripDate) {
+                newParsedAllowances.push({
+                    name: driverName,
+                    date: rawTripDate,
+                    passenger: row.passenger || "",
+                    timeIn: row.timeIn || "",
+                    timeOut: row.timeOut || "",
+                    breakfast: Number(row.breakfast) || 0,
+                    lunch: Number(row.lunch) || 0,
+                    dinner: Number(row.dinner) || 0,
+                    parking: Number(row.parking) || 0,
+                    receipt: row.receipt || "",
+                    remarks: row.remarks || "",
+                    amount: totalAllowance,
+                    status: itemStatus
+                });
+            }
+        });
+
+        /*
+         * Replace the existing data only when the refresh
+         * returned usable records.
+         *
+         * If there are already records in memory and the server
+         * temporarily returns an empty result, keep the existing
+         * records instead of making the table appear empty.
+         */
+        if (
+            newParsedAllowances.length > 0 ||
+            globalParsedAllowances.length === 0
+        ) {
+            globalParsedAllowances = newParsedAllowances;
+        } else {
+            console.warn(
+                "Refresh returned no allowance records. Keeping existing allowance data."
+            );
+        }
+
+        console.log(
+            "Live allowances loaded:",
+            globalParsedAllowances
+        );
+
     } catch (err) {
-        console.warn("fetchLiveAllowancesFromSheet bypassed/timed out:", err);
-        globalParsedAllowances = [];
+        // IMPORTANT:
+        // Do NOT clear globalParsedAllowances here.
+        // A temporary timeout/network error must not erase
+        // allowance records already displayed in the dashboard.
+        console.warn(
+            "fetchLiveAllowancesFromSheet bypassed/timed out. Keeping existing allowance data:",
+            err
+        );
     }
 }
     
@@ -2762,40 +2940,186 @@ function closeDetailsModal() {
 }
 
 async function approveItemInline(name, date, element) {
-    if (confirm(`Approve allowance request for ${name} on ${date}?`)) {
+
+    if (!confirm(`Approve allowance request for ${name} on ${date}?`)) {
+        return;
+    }
+
+    // Prevent double-click while processing
+    if (element) {
         element.disabled = true;
         element.textContent = "Processing...";
-        showActionLoading("Approving Allowance...", "Please wait while we mark this allowance for payment.");
-        
-        try {
-            const targetUrl = `${WEBAPP_BASE}?action=approveAllowanceItem&driver=${encodeURIComponent(name)}&date=${encodeURIComponent(date)}&token=${encodeURIComponent(SECRET_TOKEN)}`;
-            const response = await fetch(targetUrl);
-            const data = await response.json();
-            
-            if (data.success) {
-                document.getElementById("successModalTitle").textContent = "Allowance Approved";
-                document.getElementById("successModalText").textContent = "Allowance marked for pay.";
-                document.getElementById("successModal").style.display = "flex";
+    }
 
-                document.getElementById("successOK").onclick = async function () {
-                    document.getElementById("successModal").style.display = "none";
-                    document.getElementById("reviewAllowanceModal").style.display = "none";
-                    await fetchLiveAllowancesFromSheet();
-                    showAdminDashboard();
-                };
-            } else {
-                alert("❌ Error: " + data.message);
+    showActionLoading(
+        "Approving Allowance...",
+        "Please wait while we mark this allowance for payment."
+    );
+
+    try {
+
+        const targetUrl =
+            `${WEBAPP_BASE}?action=approveAllowanceItem` +
+            `&driver=${encodeURIComponent(name)}` +
+            `&date=${encodeURIComponent(date)}` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}`;
+
+        const response = await fetch(targetUrl);
+        const data = await response.json();
+
+        if (!data.success) {
+
+            // Restore button if approval failed
+            if (element) {
                 element.disabled = false;
                 element.textContent = "Approve";
             }
-        } catch(e) {
-            console.error(e);
-            alert("Network transmission failure.");
+
+            alert("❌ Error: " + (data.message || "Unable to approve allowance."));
+            return;
+        }
+
+        // =====================================================
+        // APPROVAL SUCCESSFUL
+        // =====================================================
+
+        // Immediately update the record already in browser memory.
+        // This prevents the allowance from temporarily disappearing.
+        if (Array.isArray(globalParsedAllowances)) {
+
+            const targetDriver =
+                String(name || "").trim().toLowerCase();
+
+            const targetDate =
+                typeof standardizeDateStr === "function"
+                    ? standardizeDateStr(date)
+                    : String(date || "").trim();
+
+            globalParsedAllowances.forEach(record => {
+
+                const recordDriver =
+                    String(record.name || "").trim().toLowerCase();
+
+                const recordDate =
+                    typeof standardizeDateStr === "function"
+                        ? standardizeDateStr(record.date)
+                        : String(record.date || "").trim();
+
+                if (
+                    recordDriver === targetDriver &&
+                    recordDate === targetDate
+                ) {
+                    record.status = "Pay";
+                }
+            });
+        }
+
+        // IMPORTANT:
+        // Reset the review modal's Approve button.
+        // The same button is reused for the next allowance review.
+        if (element) {
             element.disabled = false;
             element.textContent = "Approve";
-        } finally {
-            hideActionLoading();
         }
+
+        // Close the review modal immediately
+        const reviewModal =
+            document.getElementById("reviewAllowanceModal");
+
+        if (reviewModal) {
+            reviewModal.style.display = "none";
+        }
+
+        document.body.style.overflow = "";
+
+        // Stop the processing overlay
+        hideActionLoading();
+
+        // =====================================================
+        // SHOW SUCCESS MESSAGE
+        // =====================================================
+
+        const successModal =
+            document.getElementById("successModal");
+
+        const successTitle =
+            document.getElementById("successModalTitle");
+
+        const successText =
+            document.getElementById("successModalText");
+
+        const successOK =
+            document.getElementById("successOK");
+
+        if (successTitle) {
+            successTitle.textContent = "Allowance Approved";
+        }
+
+        if (successText) {
+            successText.textContent = "Allowance marked for pay.";
+        }
+
+        if (successModal) {
+            successModal.style.display = "flex";
+        }
+
+        // =====================================================
+        // SUCCESS MODAL OK
+        // =====================================================
+
+        if (successOK) {
+
+            successOK.onclick = function () {
+
+                // Close success modal immediately
+                if (successModal) {
+                    successModal.style.display = "none";
+                }
+
+                document.body.style.overflow = "";
+
+                // Return to Admin immediately using the already
+                // updated browser data.
+                showAdminDashboard();
+
+                // Refresh from Google Sheet in the background.
+                // We intentionally DO NOT await this.
+                fetchLiveAllowancesFromSheet()
+                    .then(() => {
+                        if (
+                            typeof processAllowanceSummaryTable ===
+                            "function"
+                        ) {
+                            processAllowanceSummaryTable();
+                        }
+                    })
+                    .catch(err => {
+                        console.warn(
+                            "Allowance background refresh failed. Keeping current data:",
+                            err
+                        );
+                    });
+            };
+        }
+
+    } catch (e) {
+
+        console.error("Allowance approval error:", e);
+
+        // Restore button after network/server failure
+        if (element) {
+            element.disabled = false;
+            element.textContent = "Approve";
+        }
+
+        hideActionLoading();
+
+        alert("Network transmission failure.");
+
+    } finally {
+
+        // Make absolutely sure the processing overlay is gone.
+        hideActionLoading();
     }
 }
 
@@ -3076,34 +3400,63 @@ function closePassengerMessageModal() {
     function continuePassengerMessageSelection() {
 
     const checkboxes =
-        document.querySelectorAll(".passenger-message-checkbox:checked");
+        document.querySelectorAll(
+            ".passenger-message-checkbox:checked"
+        );
 
     if (checkboxes.length === 0) {
         alert("Please select at least one passenger.");
         return;
     }
 
-    const data = window.currentPassengerMessageData;
-    const trips = window.currentPassengerMessageTrips || [];
+    const data =
+        window.currentPassengerMessageData;
 
-    const selectedTrips = Array.from(checkboxes)
-        .map(checkbox => trips[Number(checkbox.value)])
-        .filter(Boolean);
+    const trips =
+        window.currentPassengerMessageTrips || [];
+
+    const selectedTrips =
+        Array.from(checkboxes)
+            .map(checkbox => trips[Number(checkbox.value)])
+            .filter(Boolean);
 
     if (selectedTrips.length === 0) {
         alert("No passenger was selected.");
         return;
     }
 
-    // Store selected passengers for the next step
+    // Save ONLY the passengers actually selected
     window.selectedPassengerMessageTrips = selectedTrips;
 
     closePassengerMessageModal();
 
-    openPassengerMessageCompose(data, selectedTrips);
+    // ==========================================
+    // ONLY 1 PASSENGER SELECTED
+    // ==========================================
+    if (selectedTrips.length === 1) {
+
+        window.currentMessageRecipient = selectedTrips[0];
+
+        // Go directly to compose.
+        // DO NOT show Choose Recipient.
+        openPassengerMessageCompose(
+            data,
+            selectedTrips
+        );
+
+        return;
+    }
+
+    // ==========================================
+    // 2 OR MORE PASSENGERS SELECTED
+    // ==========================================
+    // Show the compose message first.
+    openPassengerMessageCompose(
+        data,
+        selectedTrips
+    );
 }
-
-
+    
 function openPassengerMessageCompose(data, selectedTrips) {
 
     const driverName = (data.driver || "").trim();
@@ -3189,6 +3542,534 @@ Thank you, and see you!`;
     document.body.style.overflow = "hidden";
 }
 
+    function openMessageRecipientModal() {
+
+    const selectedTrips =
+        window.selectedPassengerMessageTrips || [];
+
+    if (selectedTrips.length === 0) {
+        alert("No passenger is available.");
+        return;
+    }
+
+    const list =
+        document.getElementById("messageRecipientList");
+
+    if (!list) {
+        console.error("Message recipient list not found.");
+        return;
+    }
+
+    // Clear previous recipients
+    list.innerHTML = "";
+
+    selectedTrips.forEach((trip, index) => {
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const contactNumber =
+            (trip.contactNumber || "").trim();
+
+        // Main row
+        const row = document.createElement("label");
+
+        row.className = "passenger-message-row";
+
+        // IMPORTANT:
+        // Radio stays on the LEFT.
+        // Name + contact stay on the SAME LINE.
+        row.style.display = "flex";
+        row.style.flexDirection = "row";
+        row.style.alignItems = "center";
+        row.style.justifyContent = "flex-start";
+        row.style.gap = "10px";
+        row.style.width = "100%";
+        row.style.boxSizing = "border-box";
+        row.style.padding = "10px 12px";
+        row.style.marginBottom = "8px";
+        row.style.border = "1px solid #bbf7d0";
+        row.style.borderRadius = "10px";
+        row.style.background = "#f0fdf4";
+        row.style.cursor = "pointer";
+        row.style.textAlign = "left";
+
+        // Radio button
+       const radio = document.createElement("input");
+
+radio.type = "radio";
+radio.name = "messageRecipient";
+radio.className = "message-recipient-radio";
+radio.value = index;
+
+// Check whether this passenger was already messaged
+const alreadySent =
+    isPassengerMessageSent(trip);
+
+if (alreadySent) {
+    radio.disabled = true;
+}
+
+        radio.style.flex = "0 0 auto";
+        radio.style.width = "18px";
+        radio.style.height = "18px";
+        radio.style.margin = "0";
+        radio.style.padding = "0";
+        radio.style.position = "static";
+        radio.style.transform = "none";
+
+        // Passenger information
+        const info = document.createElement("span");
+
+        info.style.display = "flex";
+        info.style.flexDirection = "row";
+        info.style.alignItems = "center";
+        info.style.gap = "8px";
+        info.style.flex = "1";
+        info.style.minWidth = "0";
+        info.style.whiteSpace = "nowrap";
+        info.style.overflow = "hidden";
+
+        // Passenger name
+        const name = document.createElement("strong");
+
+        name.textContent =
+            passengerName || "Unnamed Passenger";
+
+        name.style.display = "inline";
+        name.style.flex = "0 1 auto";
+        name.style.whiteSpace = "nowrap";
+        name.style.overflow = "hidden";
+        name.style.textOverflow = "ellipsis";
+
+        info.appendChild(name);
+
+        // Add radio first, then passenger information
+        row.appendChild(radio);
+row.appendChild(info);
+
+if (alreadySent) {
+
+    const sentLabel =
+        document.createElement("small");
+
+    sentLabel.textContent =
+        "✓ Message Sent";
+
+    sentLabel.style.color = "#16a34a";
+    sentLabel.style.fontWeight = "700";
+    sentLabel.style.marginLeft = "auto";
+    sentLabel.style.whiteSpace = "nowrap";
+
+    row.appendChild(sentLabel);
+
+    row.style.opacity = "0.65";
+    row.style.cursor = "not-allowed";
+    row.style.background = "#f3f4f6";
+    row.style.borderColor = "#d1d5db";
+}
+
+        list.appendChild(row);
+    });
+
+    const modal =
+        document.getElementById("messageRecipientModal");
+
+    if (modal) {
+        modal.style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+}
+
+    async function markPassengerMessageSent(trip) {
+
+    if (!trip) return;
+
+    const passengerName =
+        (trip.passengerName || "").trim();
+
+    const contactNumber =
+        (trip.contactNumber || "").trim();
+
+    const pickupTime =
+        (trip.pickupTime || "").trim();
+
+    const driver =
+        (window.currentPassengerMessageData?.driver || "").trim();
+
+    const date =
+        (window.currentPassengerMessageData?.date || "").trim();
+
+    if (!passengerName && !contactNumber) return;
+
+    // ==========================================
+    // EXISTING LOCAL MESSAGE STATUS
+    // Keep this so the current device still
+    // immediately knows the passenger was messaged.
+    // ==========================================
+
+    const messageKey =
+        `${passengerName.toLowerCase()}|${contactNumber}`;
+
+    if (!window.messagedPassengers) {
+        window.messagedPassengers = {};
+    }
+
+    window.messagedPassengers[messageKey] = true;
+
+    let savedMessages = {};
+
+    try {
+        savedMessages =
+            JSON.parse(
+                localStorage.getItem("messagedPassengers") || "{}"
+            );
+    } catch (e) {
+        savedMessages = {};
+    }
+
+    savedMessages[messageKey] = true;
+
+    localStorage.setItem(
+        "messagedPassengers",
+        JSON.stringify(savedMessages)
+    );
+
+    console.log(
+        "Passenger message saved locally:",
+        messageKey
+    );
+
+
+    // ==========================================
+    // NEW: SAVE MESSAGE STATUS TO GOOGLE SHEET
+    // Driver Schedule Column O
+    // ==========================================
+
+    try {
+
+        const markURL =
+            `${WEBAPP_BASE}` +
+            `?action=markPassengerMessageSent` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}` +
+            `&driver=${encodeURIComponent(driver)}` +
+            `&date=${encodeURIComponent(date)}` +
+            `&passengerName=${encodeURIComponent(passengerName)}` +
+            `&contactNumber=${encodeURIComponent(contactNumber)}` +
+            `&pickupTime=${encodeURIComponent(pickupTime)}`;
+
+        console.log(
+            "Marking passenger message as Sent:",
+            markURL
+        );
+
+        const response =
+            await fetch(markURL);
+
+        const result =
+            await response.json();
+
+        console.log(
+            "Message Sent sheet response:",
+            result
+        );
+
+        if (!result.success) {
+
+            console.warn(
+                "Message was saved locally, but Column O was not updated:",
+                result.message
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not update Message Sent in Google Sheet:",
+            error
+        );
+
+    }
+}
+    
+    function isPassengerMessageSent(trip) {
+
+    if (!trip) return false;
+
+    const passengerName =
+        (trip.passengerName || "").trim();
+
+    const contactNumber =
+        (trip.contactNumber || "").trim();
+
+    const messageKey =
+        `${passengerName.toLowerCase()}|${contactNumber}`;
+
+    // Check memory first
+    if (
+        window.messagedPassengers &&
+        window.messagedPassengers[messageKey]
+    ) {
+        return true;
+    }
+
+    // Check persistent storage
+    try {
+
+        const savedMessages =
+            JSON.parse(
+                localStorage.getItem("messagedPassengers") || "{}"
+            );
+
+        return savedMessages[messageKey] === true;
+
+    } catch (e) {
+
+        return false;
+    }
+}
+function closeMessageRecipientModal() {
+
+    const modal =
+        document.getElementById("messageRecipientModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+    document.body.style.overflow = "";
+}
+
+
+function confirmMessageRecipient() {
+
+    const selected =
+    document.querySelector(
+        ".message-recipient-radio:checked"
+    );
+
+    if (!selected) {
+        alert("Please choose a recipient.");
+        return;
+    }
+
+    const selectedTrips =
+        window.selectedPassengerMessageTrips || [];
+
+    const index = Number(selected.value);
+
+    const trip = selectedTrips[index];
+
+    if (!trip) {
+        alert("Passenger information is not available.");
+        return;
+    }
+
+    // Save the ONE passenger selected
+    window.currentMessageRecipient = trip;
+
+    const passengerName =
+        (trip.passengerName || "").trim();
+
+    const contactNumber =
+        (trip.contactNumber || "").trim();
+
+    // Get the exact message currently shown in Message Compose
+    const messageElement =
+        document.getElementById("passengerMessageText");
+
+    const message =
+        messageElement
+            ? messageElement.value.trim()
+            : "";
+
+    if (!contactNumber) {
+        closeMessageRecipientModal();
+
+        setTimeout(function () {
+            alert(
+                `This message will be sent to ${passengerName}.\n\n` +
+                "No contact number is available for this passenger."
+            );
+        }, 50);
+
+        return;
+    }
+
+    // Close Choose Recipient
+    closeMessageRecipientModal();
+
+    // Show confirmation first
+    setTimeout(function () {
+
+        const confirmed = window.confirm(
+            `This message will be sent to ${passengerName}.`
+        );
+
+       if (!confirmed) {
+    return;
+}
+
+// Save the message status BEFORE leaving the webpage
+markPassengerMessageSent(trip);
+
+// Close ALL messaging-related modals
+closeMessageRecipientModal();
+closeMessageComposeModal();
+closePassengerMessageModal();
+
+// Restore normal page scrolling
+document.body.style.overflow = "";
+
+// Now open SMS
+
+
+        /*
+         * OPEN SMS APP
+         *
+         * iOS:
+         *   sms:number?body=message
+         *
+         * Android:
+         *   sms:number?body=message
+         *
+         * We keep the number clean because Android devices
+         * can be sensitive to spaces, parentheses, and dashes.
+         */
+
+        const cleanNumber =
+            contactNumber.replace(/[^\d+]/g, "");
+
+        const encodedMessage =
+            encodeURIComponent(message);
+
+        const isAndroid =
+            /Android/i.test(navigator.userAgent);
+
+        const isIOS =
+            /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        let smsURL;
+
+        if (isAndroid) {
+
+            // Android SMS
+            smsURL =
+                `sms:${cleanNumber}?body=${encodedMessage}`;
+
+        } else if (isIOS) {
+
+            // Keep the currently working iOS format
+            smsURL =
+                `sms:${cleanNumber}?body=${encodedMessage}`;
+
+        } else {
+
+            // Fallback for other devices
+            smsURL =
+                `sms:${cleanNumber}?body=${encodedMessage}`;
+        }
+
+        console.log("Opening SMS:", smsURL);
+
+        window.location.href = smsURL;
+
+    }, 50);
+}
+    
+    function handlePassengerMessageSend() {
+
+    const selectedTrips =
+        window.selectedPassengerMessageTrips || [];
+
+    if (selectedTrips.length === 0) {
+        alert("No passenger is selected.");
+        return;
+    }
+
+    // ==========================================
+    // ONE PASSENGER
+    // ==========================================
+    if (selectedTrips.length === 1) {
+
+        const trip = selectedTrips[0];
+
+        window.currentMessageRecipient = trip;
+
+        const passengerName =
+            (trip.passengerName || "").trim();
+
+        const contactNumber =
+            (trip.contactNumber || "").trim();
+
+        const messageElement =
+            document.getElementById("passengerMessageText");
+
+        const message =
+            messageElement
+                ? messageElement.value.trim()
+                : "";
+
+        if (!contactNumber) {
+
+            closeMessageComposeModal();
+
+            setTimeout(function () {
+
+                alert(
+                    `This message will be sent to ${passengerName}.\n\n` +
+                    "No contact number is available for this passenger."
+                );
+
+            }, 50);
+
+            return;
+        }
+
+        // Close Message Compose first
+        closeMessageComposeModal();
+
+        // Show confirmation
+        setTimeout(function () {
+
+            const confirmed = window.confirm(
+                `This message will be sent to ${passengerName}.`
+            );
+
+            if (!confirmed) {
+    return;
+}
+
+// Save BEFORE opening SMS
+markPassengerMessageSent(trip);
+
+// Close every messaging modal
+closeMessageRecipientModal();
+closeMessageComposeModal();
+closePassengerMessageModal();
+
+document.body.style.overflow = "";
+
+// Then your existing SMS code continues
+
+// Open SMS app
+const smsURL =
+    `sms:${encodeURIComponent(contactNumber)}?body=${encodeURIComponent(message)}`;
+
+window.location.href = smsURL;
+
+        }, 50);
+
+        return;
+    }
+
+
+    // ==========================================
+    // TWO OR MORE PASSENGERS
+    // ==========================================
+    openMessageRecipientModal();
+}
     
     function closeMessageComposeModal() {
     document.getElementById("messageComposeModal").style.display = "none";
@@ -3271,10 +4152,24 @@ function submitAllowance(driver, date, reqBy, pass, tripType){
     document.getElementById("allowanceLunch").value = "";
     document.getElementById("allowanceDinner").value = "";
     
-    let infoPieces = [];
-    if(reqBy) infoPieces.push(reqBy);
-    if(pass) infoPieces.push(pass);
-    currentPassengerCombined = infoPieces.join(" , ") || "None";
+    const allowanceKey =
+    driver + "_" + date;
+
+const allowanceDuty =
+    grouped[allowanceKey];
+
+let chargeTo = "";
+
+if (allowanceDuty && allowanceDuty.trips) {
+
+    chargeTo =
+        allowanceDuty.trips
+            .map(trip => (trip.chargeTo || "").trim())
+            .find(Boolean) || "";
+}
+
+currentPassengerCombined =
+    chargeTo || "None";
 
     document.getElementById("modalDriver").textContent = driver;
     document.getElementById("modalDate").textContent = date;
@@ -3387,24 +4282,27 @@ async function saveAllowance() {
         }
 
         document.getElementById("successModalTitle").textContent = "Submitted Successfully";
-        document.getElementById("successModalText").textContent = "Your meal allowance has been recorded for review and approval.";
-        
-        document.getElementById("successModal").style.display = "flex";
-        await loadSubmittedAllowances();
-        closeModal();
+document.getElementById("successModalText").textContent =
+    "Your meal allowance has been recorded for review and approval.";
+
+// Immediately mark this driver/date as submitted
+const submittedKey =
+    `${currentDriver.trim().toLowerCase()}|${standardizeDateStr(currentDate)}`;
+
+submittedDrivers[submittedKey] = true;
+
+// Close allowance modal
+closeModal();
+
+// Re-render the dashboard immediately
+await loadMainSchedulesAndApprovals();
+
+// Show success message
+document.getElementById("successModal").style.display = "flex";
 
         document.getElementById("successOK").onclick = async function () {
-            document.getElementById("successModal").style.display = "none";
-            document.getElementById("pageLoadingOverlay").style.display = "flex";
-
-            await Promise.all([
-                loadSubmittedAllowances(),
-                fetchLiveAllowancesFromSheet()
-            ]);
-            await loadMainSchedulesAndApprovals();
-
-            document.getElementById("pageLoadingOverlay").style.display = "none";
-        };
+    document.getElementById("successModal").style.display = "none";
+};
     } catch (err) {
         console.error(err);
         alert("Submission Error:\n\n" + err.message);
@@ -3905,10 +4803,42 @@ async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
     try {
-        const [scheduleResponse, approvalResponse] = await Promise.all([
-            fetch(sheetURL),
-            fetch(approvalURL)
-        ]);
+        const cacheBust = Date.now();
+
+const scheduleFetchURL =
+    `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
+
+const approvalFetchURL =
+    `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
+
+console.log("Fetching Schedule:", scheduleFetchURL);
+console.log("Fetching Approvals:", approvalFetchURL);
+
+const [scheduleResponse, approvalResponse] = await Promise.all([
+    fetch(scheduleFetchURL, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "omit"
+    }),
+
+    fetch(approvalFetchURL, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "omit"
+    })
+]);
+
+console.log(
+    "Schedule:",
+    scheduleResponse.status,
+    scheduleResponse.url
+);
+
+console.log(
+    "Approval:",
+    approvalResponse.status,
+    approvalResponse.url
+);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
             console.warn("Schedule CSV endpoints returned non-OK status.");
@@ -4016,12 +4946,23 @@ approvalRows.forEach(row => {
             cols.push(current.trim());
             if (cols.length < 13) return;
 
-            const [
-                driver, date, timeIn, vehicle, itinerary, pickupTime,
-                requestedBy, passengerName, contactNumber, origin,
-                destination, remarks, tripType
-            ] = cols.map(v => (v || "").replace(/"/g, "").trim());
-
+const [
+    driver,
+    date,
+    timeIn,
+    vehicle,
+    itinerary,
+    pickupTime,
+    requestedBy,
+    passengerName,
+    contactNumber,
+    origin,
+    destination,
+    remarks,
+    tripType,
+    chargeTo,
+    messageSent
+] = cols.map(v => (v || "").replace(/"/g, "").trim());
             const key = driver + "_" + date;
 
             if (!summaryDrivers[date]) summaryDrivers[date] = {};
@@ -4034,7 +4975,17 @@ approvalRows.forEach(row => {
             }
 
             if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
-            grouped[key].trips.push({ pickupTime, requestedBy, passengerName, contactNumber, origin, destination, remarks });
+            grouped[key].trips.push({
+    pickupTime,
+    requestedBy,
+    passengerName,
+    contactNumber,
+    origin,
+    destination,
+    remarks,
+    chargeTo,
+    messageSent
+});
         });
 
         scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
@@ -4090,7 +5041,7 @@ approvalRows.forEach(row => {
             if (role === "organic" && status !== "approved") {
                 pendingBadgeHeaderHtml = `
                 <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
-                    Pending Approval
+                    Pending for Approval
                 </div>`;
             }
 
@@ -4171,7 +5122,10 @@ ${
                         with (trip) {
                             tripsHTML += `
                             <div class="trip">
-                                <div class="trip-title">Pick-Up ${index + 1}</div>
+                                <div class="trip-title">
+    Pick-Up ${index + 1}
+    ${isPassengerMessageSent(trip) ? " ✉️" : ""}
+</div>
                                 ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                                 ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
                                 ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
@@ -4670,25 +5624,62 @@ function showHomePage() {
 }
 
 function backToMainDashboard() {
-    document.getElementById("driverDashboard").style.display = "block";
-    document.getElementById("scheduleApprovalPage").style.display = "none";
-    document.getElementById("driverAllowancePage").style.display = "none";
-    document.getElementById("scheduleViewerPage").style.display = "none";
+    console.log("Dashboard button clicked");
 
+    const driverDashboard = document.getElementById("driverDashboard");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+    const driverAllowancePage = document.getElementById("driverAllowancePage");
+    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+
+    // Show Main Dashboard
+    if (driverDashboard) {
+        driverDashboard.style.display = "block";
+    }
+
+    // Hide Admin page
+    if (scheduleApprovalPage) {
+        scheduleApprovalPage.style.display = "none";
+    }
+
+    // Hide Allowance page
+    if (driverAllowancePage) {
+        driverAllowancePage.style.display = "none";
+    }
+
+    // Hide Schedule Viewer
+    if (scheduleViewerPage) {
+        scheduleViewerPage.style.display = "none";
+    }
+
+    // Restore page scrolling
     document.body.style.overflow = "";
 
+    // Update navigation
     const dashboardBtn = document.getElementById("dashboardBtn");
     const adminBtn = document.getElementById("adminBtn");
     const allowanceBtn = document.getElementById("allowanceBtn");
 
-    if (dashboardBtn) dashboardBtn.classList.add("active");
-    if (adminBtn) adminBtn.classList.remove("active");
-    if (allowanceBtn) allowanceBtn.classList.remove("active");
+    if (dashboardBtn) {
+        dashboardBtn.classList.add("active");
+    }
 
+    if (adminBtn) {
+        adminBtn.classList.remove("active");
+    }
+
+    if (allowanceBtn) {
+        allowanceBtn.classList.remove("active");
+    }
+
+    // Clear saved view
     sessionStorage.removeItem("view");
-    window.scrollTo(0, 0);
-}
 
+    // Go to top
+    window.scrollTo(0, 0);
+
+    console.log("Returned to Main Dashboard successfully");
+}
+    
 function viewSchedule(date){
     document.querySelector(".approval-container").style.display = "none";
 
@@ -4766,7 +5757,9 @@ if (scheduleNotes.trim() !== "") {
                 with (trip) {
                     tripsHTML += `
                     <div class="trip">
-                        <div class="trip-title">Pick-Up ${index + 1}</div>
+                       <div class="trip-title">
+    Pick-Up ${index + 1}${messageSent ? " ✉️" : ""}
+</div>
                         ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                         ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
                         ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
@@ -4800,13 +5793,19 @@ if (scheduleNotes.trim() !== "") {
 }
 
 window.onload = async function () {
-    const role = localStorage.getItem("userRole");
-    const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
-    const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
 
-    const autoLogin = driverLoggedIn && Date.now() < driverExpires;
+    const role = localStorage.getItem("userRole");
+    const driverLoggedIn =
+        localStorage.getItem("driverLoggedIn") === "true";
+
+    const driverExpires =
+        Number(localStorage.getItem("loginExpires") || 0);
+
+    const autoLogin =
+        driverLoggedIn && Date.now() < driverExpires;
 
     if (!autoLogin) {
+
         localStorage.removeItem("driverLoggedIn");
         localStorage.removeItem("driverName");
         localStorage.removeItem("driverRole");
@@ -4816,51 +5815,64 @@ window.onload = async function () {
 
         document.getElementById("loginPage").style.display = "block";
         document.getElementById("pageLoadingOverlay").style.display = "none";
+
         return;
     }
 
     configureNavigation(role);
 
     document.getElementById("loginPage").style.display = "none";
-    showLoginSpinner("Welcome Back!", "Loading latest schedules...");
+
+    showLoginSpinner(
+        "Welcome Back!",
+        "Loading latest schedules..."
+    );
 
     try {
-        // Fire all endpoints in parallel simultaneously
+
+        console.log("STEP 1: Loading submitted allowances...");
+
         await loadSubmittedAllowances();
 
-await fetchLiveAllowancesFromSheet();
+        console.log("STEP 2: Loading main schedules...");
 
-await loadMainSchedulesAndApprovals();
+        console.log("WEBAPP_BASE:", WEBAPP_BASE);
+console.log("sheetURL:", sheetURL);
+console.log("approvalURL:", approvalURL);
+
+
+        await loadMainSchedulesAndApprovals();
+
+        console.log("STEP 3: Loading live allowances...");
+
+        await fetchLiveAllowancesFromSheet();
+
+        console.log("STEP 4: Initialization complete.");
 
         hideLoginSpinner();
+
         showHomePage();
+
     } catch (err) {
+
+        console.error(
+            "Initialization Error:",
+            err
+        );
+
         hideLoginSpinner();
-        console.error("Initialization Error:", err);
-        alert("Failed to load dashboard data. Please refresh.");
+
+        alert(
+            "Failed to load dashboard data. Please refresh."
+        );
+
     } finally {
-        document.getElementById("pageLoadingOverlay").style.display = "none";
+
+        document.getElementById(
+            "pageLoadingOverlay"
+        ).style.display = "none";
     }
 };
-
-document.getElementById("dashboardBtn").addEventListener("click", () => {
-    backToMainDashboard();
-});
-
-document.getElementById("allowanceBtn").addEventListener("click", () => {
-    showDriverAllowanceSummary();
-});
-
-document.getElementById("adminBtn").addEventListener("click", () => {
-    showAdminDashboard();
-});
-
-    const MANUAL_SHEET_URL =
-    "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=441234750#gid=441234750";
-
-document.getElementById("manualBtn").addEventListener("click", () => {
-    openManualConfirmModal();
-});
 
 function openManualConfirmModal() {
     const modal = document.getElementById("manualConfirmModal");
@@ -4883,11 +5895,18 @@ function closeManualConfirmModal() {
 function continueToManualSheet() {
     closeManualConfirmModal();
 
-    window.open(MANUAL_SHEET_URL, "_blank");
+    window.open(
+        "https://docs.google.com/spreadsheets/d/1FIwwERah3guTaW33JdkK0bp_oQ5qjqUdbiY1SjrGMRY/edit?gid=0#gid=0",
+        "_blank"
+    );
 }
 
 
 document.getElementById("loginBtn").addEventListener("click", loginDriver);
+
+document.getElementById("manualBtn").addEventListener("click", () => {
+    openManualConfirmModal();
+});
 
 function showLoginSpinner(title, message) {
     document.getElementById("loadingTitle").textContent = title;
