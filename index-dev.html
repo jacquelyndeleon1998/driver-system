@@ -2396,13 +2396,15 @@ switch (role) {
 }
 
 }
-function showAdminDashboard() {
+    
+async function showAdminDashboard() {
     console.log("Admin button clicked");
 
     const driverDashboard = document.getElementById("driverDashboard");
     const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
     const driverAllowancePage = document.getElementById("driverAllowancePage");
     const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+    const allowanceSummaryBody = document.getElementById("allowanceSummaryBody");
 
     // Hide other pages
     if (driverDashboard) {
@@ -2458,7 +2460,32 @@ function showAdminDashboard() {
     // Remember current view
     sessionStorage.setItem("view", "admin");
 
-    // Refresh allowance summary if available
+    // ---------------------------------------------------------
+    // IMPORTANT:
+    // Refresh allowance data FIRST before rendering the summary.
+    // ---------------------------------------------------------
+    if (allowanceSummaryBody) {
+        allowanceSummaryBody.innerHTML = `
+            <tr>
+                <td colspan="4"
+                    style="text-align:center; padding:16px; color:#6b7280;">
+                    Loading allowance summary...
+                </td>
+            </tr>
+        `;
+    }
+
+    try {
+        if (typeof fetchLiveAllowancesFromSheet === "function") {
+            await fetchLiveAllowancesFromSheet();
+        }
+    } catch (err) {
+        console.warn("Could not refresh live allowance data:", err);
+    }
+
+    // ---------------------------------------------------------
+    // NOW render the summary using the latest data.
+    // ---------------------------------------------------------
     if (typeof processAllowanceSummaryTable === "function") {
         try {
             processAllowanceSummaryTable();
