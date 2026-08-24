@@ -2103,6 +2103,16 @@
         </span>
     </div>
 
+          <div class="info-row">
+    <span class="info-label">Itinerary</span>
+    <span id="reviewItinerary" class="info-value"></span>
+</div>
+
+<div class="info-row">
+    <span class="info-label">Charge To</span>
+    <span id="reviewChargeTo" class="info-value"></span>
+</div>
+
 </div>
 
 
@@ -2919,6 +2929,29 @@ function openReviewModal(driverName, date, button) {
 
     document.getElementById("reviewTimeIn").textContent = record.timeIn || "";
     document.getElementById("reviewTimeOut").textContent = record.timeOut || "";
+
+    const scheduleKey = record.name + "_" + record.date;
+const scheduleRecord = grouped[scheduleKey];
+
+let reviewItinerary = "";
+let reviewChargeTo = "";
+
+if (scheduleRecord) {
+    reviewItinerary = (scheduleRecord.itinerary || "").trim();
+
+    if (scheduleRecord.trips && scheduleRecord.trips.length) {
+        reviewChargeTo =
+            scheduleRecord.trips
+                .map(trip => (trip.chargeTo || "").trim())
+                .find(Boolean) || "";
+    }
+}
+
+document.getElementById("reviewItinerary").textContent =
+    reviewItinerary || "None";
+
+document.getElementById("reviewChargeTo").textContent =
+    reviewChargeTo || "None";
 
     document.getElementById("reviewBreakfast").value = record.breakfast;
     document.getElementById("reviewLunch").value = record.lunch;
