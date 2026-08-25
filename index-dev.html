@@ -581,6 +581,13 @@
         font-weight: bold;
     }
 
+        .duty-tracker-rest-day {
+    background: #f8d7da;
+    color: #721c24;
+    font-weight: 800;
+    text-align: center;
+}
+
     .app-header {
         display: flex;
         flex-direction: column;
@@ -2956,7 +2963,14 @@ if (itinerary) {
                 }
             }
 
-            bodyHTML += `<td>${dutyHTML}</td>`;
+            const isRestDay =
+    dutyHTML.trim().toLowerCase() === "rest day";
+
+bodyHTML += `
+    <td class="${isRestDay ? "duty-tracker-rest-day" : ""}">
+        ${dutyHTML}
+    </td>
+`;
         });
 
         bodyHTML += "</tr>";
