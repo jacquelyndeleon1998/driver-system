@@ -3026,7 +3026,15 @@ function processAllowanceSummaryTable() {
     "Melvin Fausto"
 ];
 
-const driverKeys = driverOrder.filter(driver => aggregateGroup[driver]);
+const driverKeys = Object.keys(aggregateGroup).sort((a, b) => {
+    const indexA = driverOrder.indexOf(a.trim());
+    const indexB = driverOrder.indexOf(b.trim());
+
+    const safeA = indexA === -1 ? 999 : indexA;
+    const safeB = indexB === -1 ? 999 : indexB;
+
+    return safeA - safeB;
+});
 
     if(driverKeys.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:#6b7280;">No allowance records found for this cut-off window.</td></tr>`;
