@@ -2728,8 +2728,9 @@ function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
     const allowanceSelect = document.getElementById("allowanceCutoff");
     const driverViewSelect = document.getElementById("driverViewCutoff");
+    const dutyTrackerSelect = document.getElementById("dutyTrackerCutoff");
     
-    if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
+    if (!scheduleSelect || !allowanceSelect || !driverViewSelect || !dutyTrackerSelect) return;
 
     const activeCutoffs = new Set();
 
@@ -2750,8 +2751,9 @@ function updateCutoffDropdownsDynamically() {
     globalParsedAllowances.forEach(record => processDateString(record.date));
 
     scheduleSelect.innerHTML = "";
-    allowanceSelect.innerHTML = "";
-    driverViewSelect.innerHTML = "";
+allowanceSelect.innerHTML = "";
+driverViewSelect.innerHTML = "";
+dutyTrackerSelect.innerHTML = "";
 
     const sortedBuckets = Array.from(activeCutoffs).sort((a, b) => {
         const [yA, mA, bA] = a.split("-").map(Number);
@@ -2777,8 +2779,9 @@ function updateCutoffDropdownsDynamically() {
         }
 
         scheduleSelect.add(new Option(labelText, optionValue));
-        allowanceSelect.add(new Option(labelText, optionValue));
-        driverViewSelect.add(new Option(labelText, optionValue));
+allowanceSelect.add(new Option(labelText, optionValue));
+driverViewSelect.add(new Option(labelText, optionValue));
+dutyTrackerSelect.add(new Option(labelText, optionValue));
     });
 
     if (scheduleSelect.options.length === 0) {
@@ -2792,6 +2795,7 @@ function updateCutoffDropdownsDynamically() {
     if(scheduleSelect.querySelector(`option[value="${currentCutoff}"]`)) scheduleSelect.value = currentCutoff;
     if(allowanceSelect.querySelector(`option[value="${currentCutoff}"]`)) allowanceSelect.value = currentCutoff;
     if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)) driverViewSelect.value = currentCutoff;
+    if(dutyTrackerSelect.querySelector(`option[value="${currentCutoff}"]`)) dutyTrackerSelect.value = currentCutoff;
 }
 
 function getCurrentCutoffValue(){
