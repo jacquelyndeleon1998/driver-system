@@ -2785,11 +2785,12 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     });
 
     if (scheduleSelect.options.length === 0) {
-        const fallback = new Option("July 1 - 15, 2026", "07-1");
-        scheduleSelect.add(fallback);
-        allowanceSelect.add(fallback.cloneNode(true));
-        driverViewSelect.add(fallback.cloneNode(true));
-    }
+    const fallback = new Option("July 1 - 15, 2026", "07-1");
+    scheduleSelect.add(fallback);
+    allowanceSelect.add(fallback.cloneNode(true));
+    driverViewSelect.add(fallback.cloneNode(true));
+    dutyTrackerSelect.add(fallback.cloneNode(true));
+}
 
     const currentCutoff = getCurrentCutoffValue();
     if(scheduleSelect.querySelector(`option[value="${currentCutoff}"]`)) scheduleSelect.value = currentCutoff;
