@@ -2986,23 +2986,27 @@ let isAutomaticRestDay = false;
                 }
             }
 
-            /*
-             * Existing Rest Day resets the duty count.
-             */
-          if (isActualRestDay) {
+           /*
+ * Duty / Rest Day counting
+ */
+if (isActualRestDay) {
 
+    // Actual scheduled Rest Day resets the count.
     consecutiveDutyDays = 0;
 
 } else if (dutyHTML !== "") {
 
+    // Actual scheduled duty.
     consecutiveDutyDays++;
 
-} else {
+} else if (consecutiveDutyDays === 6) {
 
-    if (consecutiveDutyDays >= 6) {
-        isAutomaticRestDay = true;
-        consecutiveDutyDays = 0;
-    }
+    // No schedule, but this is the 7th day.
+    // Keep the cell blank, but highlight it.
+    isAutomaticRestDay = true;
+
+    // Reset after the automatic rest day.
+    consecutiveDutyDays = 0;
 }
             /*
              * Highlight Rest Day cell only.
