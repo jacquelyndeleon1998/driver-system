@@ -2801,7 +2801,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     renderDriverDutyTracker();
 }
 
-    function renderDriverDutyTracker() {
+  function renderDriverDutyTracker() {
     const cutoffSelect = document.getElementById("dutyTrackerCutoff");
     const head = document.getElementById("driverDutyTrackerHead");
     const body = document.getElementById("driverDutyTrackerBody");
@@ -2820,84 +2820,143 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const month = Number(monthString) - 1;
     const bucket = Number(bucketString);
 
-    const selectedYear = new Date().getFullYear();
+    /*
+     * Find the year from the actual schedule data.
+     * This avoids assuming the current year.
+     */
+    let selectedYear = new Date().getFullYear();
+
+    const scheduleDateList = Object.keys(summaryDrivers || {});
+
+    for (const dateKey of scheduleDateList) {
+        const parsed = new Date(dateKey);
+
+        if (isNaN(parsed.getTime())) continue;
+
+        const parsedMonth = parsed.getMonth();
+        const parsedDay = parsed.getDate();
+
+        const parsedBucket = parsedDay <= 15 ? 1 : 2;
+
+        if (parsedMonth === month && parsedBucket === bucket) {
+            selectedYear = parsed.getFullYear();
+            break;
+        }
+    }
 
     const startDay = bucket === 1 ? 1 : 16;
+
     const endDay = bucket === 1
         ? 15
         : new Date(selectedYear, month + 1, 0).getDate();
 
+    /*
+     * Build actual dates for the selected cut-off.
+     */
     const dates = [];
 
     for (let day = startDay; day <= endDay; day++) {
         dates.push(new Date(selectedYear, month, day));
     }
 
-    // -----------------------------
-    // HEADER
-    // -----------------------------
+    /*
+     * HEADER
+     */
     let headerHTML = "<tr>";
     headerHTML += "<th>Driver</th>";
 
     dates.forEach(date => {
-        const dayNumber = date.getDate();
-
-        headerHTML += `<th>${dayNumber}</th>`;
+        headerHTML += `<th>${date.getDate()}</th>`;
     });
 
     headerHTML += "</tr>";
 
     head.innerHTML = headerHTML;
 
-    // -----------------------------
-    // FIND ALL DRIVERS IN THIS CUT-OFF
-    // -----------------------------
+    /*
+     * Find drivers from the actual summaryDrivers data.
+     */
     const driverSet = new Set();
 
-    dates.forEach(date => {
-        const dateKey = formatDateKeyForDutyTracker(date);
-        const dateData = summaryDrivers[dateKey];
+    Object.keys(summaryDrivers || {}).forEach(dateKey => {
+        const parsedDate = new Date(dateKey);
 
-        if (!dateData) return;
+        if (isNaN(parsedDate.getTime())) return;
 
-        Object.keys(dateData).forEach(driverName => {
+        const parsedYear = parsedDate.getFullYear();
+        const parsedMonth = parsedDate.getMonth();
+        const parsedDay = parsedDate.getDate();
+        const parsedBucket = parsedDay <= 15 ? 1 : 2;
+
+        if (
+            parsedYear !== selectedYear ||
+            parsedMonth !== month ||
+            parsedBucket !== bucket
+        ) {
+            return;
+        }
+
+        Object.keys(summaryDrivers[dateKey] || {}).forEach(driverName => {
             driverSet.add(driverName);
         });
     });
 
     const drivers = Array.from(driverSet).sort();
 
-    // -----------------------------
-    // BODY
-    // -----------------------------
+    /*
+     * BODY
+     */
     let bodyHTML = "";
 
     drivers.forEach(driverName => {
         bodyHTML += "<tr>";
         bodyHTML += `<td><strong>${driverName}</strong></td>`;
 
-        dates.forEach(date => {
-            const dateKey = formatDateKeyForDutyTracker(date);
-            const dateData = summaryDrivers[dateKey];
+        dates.forEach(targetDate => {
 
-            let dutyText = "";
+            let dutyHTML = "";
 
-            if (dateData && dateData[driverName]) {
-                const record = dateData[driverName];
+            /*
+             * Find the matching date directly from summaryDrivers.
+             */
+            const matchingDateKey = Object.keys(summaryDrivers || {}).find(dateKey => {
+                const parsedDate = new Date(dateKey);
 
-                const timeIn = record.timeIn || "";
-                const tripType = record.tripType || "";
+                if (isNaN(parsedDate.getTime())) return false;
 
-                if (timeIn && tripType) {
-                    dutyText = `${timeIn} - ${tripType}`;
-                } else if (timeIn) {
-                    dutyText = timeIn;
-                } else if (tripType) {
-                    dutyText = tripType;
+                return (
+                    parsedDate.getFullYear() === targetDate.getFullYear() &&
+                    parsedDate.getMonth() === targetDate.getMonth() &&
+                    parsedDate.getDate() === targetDate.getDate()
+                );
+            });
+
+            if (matchingDateKey) {
+                const dateData = summaryDrivers[matchingDateKey];
+
+                const driverRecord = dateData
+                    ? dateData[driverName]
+                    : null;
+
+                if (driverRecord) {
+                    const timeIn = (driverRecord.timeIn || "").trim();
+                    const itinerary = (driverRecord.itinerary || "").trim();
+
+                    /*
+                     * For now, display:
+                     * Time In - Itinerary
+                     */
+                    if (timeIn && itinerary) {
+                        dutyHTML = `${timeIn} - ${itinerary}`;
+                    } else if (itinerary) {
+                        dutyHTML = itinerary;
+                    } else if (timeIn) {
+                        dutyHTML = timeIn;
+                    }
                 }
             }
 
-            bodyHTML += `<td>${dutyText}</td>`;
+            bodyHTML += `<td>${dutyHTML}</td>`;
         });
 
         bodyHTML += "</tr>";
