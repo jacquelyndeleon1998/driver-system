@@ -2797,6 +2797,121 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     if(allowanceSelect.querySelector(`option[value="${currentCutoff}"]`)) allowanceSelect.value = currentCutoff;
     if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)) driverViewSelect.value = currentCutoff;
     if(dutyTrackerSelect.querySelector(`option[value="${currentCutoff}"]`)) dutyTrackerSelect.value = currentCutoff;
+
+    renderDriverDutyTracker();
+}
+
+    function renderDriverDutyTracker() {
+    const cutoffSelect = document.getElementById("dutyTrackerCutoff");
+    const head = document.getElementById("driverDutyTrackerHead");
+    const body = document.getElementById("driverDutyTrackerBody");
+
+    if (!cutoffSelect || !head || !body) return;
+
+    const cutoffValue = cutoffSelect.value;
+
+    if (!cutoffValue) {
+        head.innerHTML = "";
+        body.innerHTML = "";
+        return;
+    }
+
+    const [monthString, bucketString] = cutoffValue.split("-");
+    const month = Number(monthString) - 1;
+    const bucket = Number(bucketString);
+
+    const selectedYear = new Date().getFullYear();
+
+    const startDay = bucket === 1 ? 1 : 16;
+    const endDay = bucket === 1
+        ? 15
+        : new Date(selectedYear, month + 1, 0).getDate();
+
+    const dates = [];
+
+    for (let day = startDay; day <= endDay; day++) {
+        dates.push(new Date(selectedYear, month, day));
+    }
+
+    // -----------------------------
+    // HEADER
+    // -----------------------------
+    let headerHTML = "<tr>";
+    headerHTML += "<th>Driver</th>";
+
+    dates.forEach(date => {
+        const dayNumber = date.getDate();
+
+        headerHTML += `<th>${dayNumber}</th>`;
+    });
+
+    headerHTML += "</tr>";
+
+    head.innerHTML = headerHTML;
+
+    // -----------------------------
+    // FIND ALL DRIVERS IN THIS CUT-OFF
+    // -----------------------------
+    const driverSet = new Set();
+
+    dates.forEach(date => {
+        const dateKey = formatDateKeyForDutyTracker(date);
+        const dateData = summaryDrivers[dateKey];
+
+        if (!dateData) return;
+
+        Object.keys(dateData).forEach(driverName => {
+            driverSet.add(driverName);
+        });
+    });
+
+    const drivers = Array.from(driverSet).sort();
+
+    // -----------------------------
+    // BODY
+    // -----------------------------
+    let bodyHTML = "";
+
+    drivers.forEach(driverName => {
+        bodyHTML += "<tr>";
+        bodyHTML += `<td><strong>${driverName}</strong></td>`;
+
+        dates.forEach(date => {
+            const dateKey = formatDateKeyForDutyTracker(date);
+            const dateData = summaryDrivers[dateKey];
+
+            let dutyText = "";
+
+            if (dateData && dateData[driverName]) {
+                const record = dateData[driverName];
+
+                const timeIn = record.timeIn || "";
+                const tripType = record.tripType || "";
+
+                if (timeIn && tripType) {
+                    dutyText = `${timeIn} - ${tripType}`;
+                } else if (timeIn) {
+                    dutyText = timeIn;
+                } else if (tripType) {
+                    dutyText = tripType;
+                }
+            }
+
+            bodyHTML += `<td>${dutyText}</td>`;
+        });
+
+        bodyHTML += "</tr>";
+    });
+
+    body.innerHTML = bodyHTML;
+}
+
+    function formatDateKeyForDutyTracker(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 }
 
 function getCurrentCutoffValue(){
