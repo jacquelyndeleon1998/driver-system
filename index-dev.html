@@ -2940,7 +2940,8 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         dates.forEach(targetDate => {
 
             let dutyHTML = "";
-            let isActualRestDay = false;
+let isActualRestDay = false;
+let isAutomaticRestDay = false;
 
             /*
              * Find the matching date in summaryDrivers.
@@ -2988,43 +2989,35 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             /*
              * Existing Rest Day resets the duty count.
              */
-            if (isActualRestDay) {
+          if (isActualRestDay) {
 
-                consecutiveDutyDays = 0;
+    consecutiveDutyDays = 0;
 
-            } else if (dutyHTML !== "") {
+} else if (dutyHTML !== "") {
 
-                /*
-                 * Existing duty.
-                 */
-                consecutiveDutyDays++;
+    consecutiveDutyDays++;
 
-            } else {
+} else {
 
-                /*
-                 * No schedule.
-                 *
-                 * If the driver has already completed
-                 * 6 consecutive duty days, this date
-                 * becomes the required 7th-day Rest Day.
-                 */
-                if (consecutiveDutyDays >= 6) {
-                    dutyHTML = "Rest Day";
-                    consecutiveDutyDays = 0;
-                }
-            }
-
+    if (consecutiveDutyDays >= 6) {
+        isAutomaticRestDay = true;
+        consecutiveDutyDays = 0;
+    }
+}
             /*
              * Highlight Rest Day cell only.
              */
             const isRestDay =
-                dutyHTML.trim().toLowerCase() === "rest day";
+    dutyHTML.trim().toLowerCase() === "rest day";
 
-            bodyHTML += `
-                <td class="${isRestDay ? "duty-tracker-rest-day" : ""}">
-                    ${dutyHTML}
-                </td>
-            `;
+const shouldHighlightRestDay =
+    isRestDay || isAutomaticRestDay;
+
+bodyHTML += `
+    <td class="${shouldHighlightRestDay ? "duty-tracker-rest-day" : ""}">
+        ${dutyHTML}
+    </td>
+`;
         });
 
         bodyHTML += "</tr>";
