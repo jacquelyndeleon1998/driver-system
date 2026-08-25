@@ -1817,6 +1817,27 @@
         </table>
     </div>
 
+      <!-- LAYOUT 4: DRIVER DUTY TRACKER -->
+    <div class="schedule-header bg-driver-allowance" style="margin-top: 30px;">
+        <h2>Driver Duty Tracker</h2>
+
+        <div class="month-selector">
+            <label for="dutyTrackerCutoff">Cut-off Period</label>
+            <select id="dutyTrackerCutoff"
+                    onchange="renderDriverDutyTracker()">
+            </select>
+        </div>
+    </div>
+
+    <div class="approval-container" style="margin-top: 15px;">
+        <div style="overflow-x: auto;">
+            <table class="approval-table" id="driverDutyTrackerTable">
+                <thead id="driverDutyTrackerHead"></thead>
+                <tbody id="driverDutyTrackerBody"></tbody>
+            </table>
+        </div>
+    </div>
+
     <div id="scheduleViewerPage" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px; padding: 20px;">
             <div class="summary-header" style="margin-top: 0;">
