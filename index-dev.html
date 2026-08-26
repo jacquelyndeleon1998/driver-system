@@ -2808,7 +2808,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     renderDriverDutyTracker();
 }
 
- function renderDriverDutyTracker() {
+function renderDriverDutyTracker() {
     const cutoffSelect = document.getElementById("dutyTrackerCutoff");
     const head = document.getElementById("driverDutyTrackerHead");
     const body = document.getElementById("driverDutyTrackerBody");
@@ -2828,140 +2828,81 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const bucket = Number(bucketString);
 
     /*
-     * ---------------------------------------------------------
-     * FIND YEAR
-     * ---------------------------------------------------------
+     * =========================================================
+     * DETERMINE YEAR
+     * =========================================================
      */
     let selectedYear = new Date().getFullYear();
 
-    const scheduleDateList = Object.keys(summaryDrivers || {});
+    const scheduleDateKeys = Object.keys(summaryDrivers || {});
 
-    for (const dateKey of scheduleDateList) {
+    for (const dateKey of scheduleDateKeys) {
 
-        const parts = dateKey.split("-");
-        let parsed;
+        const parsedDate = new Date(dateKey);
 
-        if (parts.length === 3) {
-            parsed = new Date(
-                Number(parts[0]),
-                Number(parts[1]) - 1,
-                Number(parts[2])
-            );
-        } else {
-            parsed = new Date(dateKey);
-        }
-
-        if (isNaN(parsed.getTime())) continue;
-
-        const parsedBucket =
-            parsed.getDate() <= 15 ? 1 : 2;
+        if (isNaN(parsedDate.getTime())) continue;
 
         if (
-            parsed.getMonth() === month &&
-            parsedBucket === bucket
+            parsedDate.getMonth() === month &&
+            (parsedDate.getDate() <= 15 ? 1 : 2) === bucket
         ) {
-            selectedYear = parsed.getFullYear();
+            selectedYear = parsedDate.getFullYear();
             break;
         }
     }
 
     /*
-     * ---------------------------------------------------------
-     * CUT-OFF DATES
-     * ---------------------------------------------------------
+     * =========================================================
+     * BUILD CUT-OFF DATES
+     * =========================================================
      */
     const startDay = bucket === 1 ? 1 : 16;
 
     const endDay =
         bucket === 1
             ? 15
-            : new Date(
-                selectedYear,
-                month + 1,
-                0
-            ).getDate();
+            : new Date(selectedYear, month + 1, 0).getDate();
 
     const dates = [];
 
-    for (
-        let day = startDay;
-        day <= endDay;
-        day++
-    ) {
-        dates.push(
-            new Date(
-                selectedYear,
-                month,
-                day
-            )
-        );
+    for (let day = startDay; day <= endDay; day++) {
+        dates.push(new Date(selectedYear, month, day));
     }
 
     /*
-     * ---------------------------------------------------------
+     * =========================================================
      * HEADER
-     * ---------------------------------------------------------
+     * =========================================================
      */
-    let headerHTML = "<tr>";
-
-    headerHTML += `
-        <th style="text-align:center;">
-            Driver
-        </th>
-    `;
+    let headerHTML = '<tr>';
+    headerHTML += '<th style="text-align:center;">Driver</th>';
 
     dates.forEach(date => {
 
         const dayNumber = date.getDate();
 
-        const dayName =
-            date.toLocaleDateString(
-                "en-US",
-                {
-                    weekday: "short"
-                }
-            );
+        const dayName = date.toLocaleDateString("en-US", {
+            weekday: "short"
+        });
 
         headerHTML += `
             <th style="text-align:center;">
                 <div>${dayNumber}</div>
-                <div style="
-                    font-size:11px;
-                    font-weight:600;
-                ">
+                <div style="font-size:11px;font-weight:600;">
                     ${dayName}
                 </div>
             </th>
         `;
     });
 
-    /*
-     * NEW COUNT COLUMNS
-     */
-    headerHTML += `
-        <th style="
-            text-align:center;
-            white-space:nowrap;
-        ">
-            Duty
-        </th>
-
-        <th style="
-            text-align:center;
-            white-space:nowrap;
-        ">
-            Rest Day
-        </th>
-    `;
-
     headerHTML += "</tr>";
 
     head.innerHTML = headerHTML;
 
     /*
-     * ---------------------------------------------------------
+     * =========================================================
      * DRIVER ORDER
-     * ---------------------------------------------------------
+     * =========================================================
      */
     const driverOrder = [
         "Jun Dela Pena",
@@ -2973,245 +2914,79 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     ];
 
     /*
-     * ---------------------------------------------------------
-     * FAST DATE LOOKUP
-     * ---------------------------------------------------------
+     * =========================================================
+     * BUILD DATE LOOKUP
+     *
+     * IMPORTANT:
+     * We parse the actual summaryDrivers date keys first,
+     * then store them by YEAR-MONTH-DAY.
+     *
+     * This means the original date format remains supported.
+     * =========================================================
      */
     const dutyLookup = {};
 
-    scheduleDateList.forEach(dateKey => {
+    scheduleDateKeys.forEach(dateKey => {
 
-        const parts = dateKey.split("-");
-        let parsed;
+        const parsedDate = new Date(dateKey);
 
-        if (parts.length === 3) {
-            parsed = new Date(
-                Number(parts[0]),
-                Number(parts[1]) - 1,
-                Number(parts[2])
-            );
-        } else {
-            parsed = new Date(dateKey);
-        }
+        if (isNaN(parsedDate.getTime())) return;
 
-        if (isNaN(parsed.getTime())) return;
+        const year = parsedDate.getFullYear();
+        const monthNumber = parsedDate.getMonth() + 1;
+        const day = parsedDate.getDate();
 
-        const year = parsed.getFullYear();
+        const normalizedKey =
+            `${year}-${String(monthNumber).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-        const monthNumber =
-            String(
-                parsed.getMonth() + 1
-            ).padStart(2, "0");
-
-        const day =
-            String(
-                parsed.getDate()
-            ).padStart(2, "0");
-
-        const formattedKey =
-            `${year}-${monthNumber}-${day}`;
-
-        dutyLookup[formattedKey] =
+        dutyLookup[normalizedKey] =
             summaryDrivers[dateKey] || {};
     });
 
     /*
-     * ---------------------------------------------------------
-     * FIND DRIVERS IN THIS CUT-OFF
-     * ---------------------------------------------------------
+     * =========================================================
+     * FIND EXISTING DRIVERS
+     * =========================================================
      */
     const driverSet = new Set();
 
-    scheduleDateList.forEach(dateKey => {
+    scheduleDateKeys.forEach(dateKey => {
 
-        const dateData =
-            dutyLookup[
-                formatDateKeyForDutyTracker(
-                    new Date(
-                        ...dateKey.split("-").map(
-                            (value, index) =>
-                                index === 1
-                                    ? Number(value) - 1
-                                    : Number(value)
-                        )
-                    )
-                )
-            ];
+        const dateData = summaryDrivers[dateKey];
 
         if (!dateData) return;
-
-        const parts = dateKey.split("-");
-
-        if (parts.length !== 3) return;
-
-        const year = Number(parts[0]);
-        const monthNumber = Number(parts[1]) - 1;
-        const day = Number(parts[2]);
-
-        const dateBucket = day <= 15 ? 1 : 2;
-
-        if (
-            year !== selectedYear ||
-            monthNumber !== month ||
-            dateBucket !== bucket
-        ) {
-            return;
-        }
 
         Object.keys(dateData).forEach(driverName => {
             driverSet.add(driverName);
         });
     });
 
-    const drivers =
-        driverOrder.filter(driverName =>
-            driverSet.has(driverName)
-        );
+    const drivers = driverOrder.filter(driverName =>
+        driverSet.has(driverName)
+    );
 
     /*
-     * ---------------------------------------------------------
+     * =========================================================
+     * PHILIPPINES TODAY
+     * =========================================================
+     */
+    const phToday = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Manila"
+        })
+    );
+
+    phToday.setHours(0, 0, 0, 0);
+
+    /*
+     * =========================================================
      * BODY
-     * ---------------------------------------------------------
+     * =========================================================
      */
     let bodyHTML = "";
 
     drivers.forEach(driverName => {
 
-        /*
-         * -----------------------------------------------
-         * FIRST PASS
-         * Calculate automatic 7th-day Rest Days
-         * -----------------------------------------------
-         */
-        const automaticRestDays = new Set();
-
-        let consecutiveDutyDays = 0;
-
-        dates.forEach(targetDate => {
-
-            const dateKey =
-                formatDateKeyForDutyTracker(
-                    targetDate
-                );
-
-            const dateData =
-                dutyLookup[dateKey] || {};
-
-            const driverRecord =
-                dateData[driverName];
-
-            const itinerary =
-                driverRecord
-                    ? (
-                        driverRecord.itinerary || ""
-                    ).trim()
-                    : "";
-
-            const normalized =
-                itinerary.toLowerCase();
-
-            /*
-             * Actual Rest Day
-             */
-            if (normalized === "rest day") {
-
-                consecutiveDutyDays = 0;
-
-            }
-
-            /*
-             * Actual Duty
-             */
-            else if (itinerary !== "") {
-
-                consecutiveDutyDays++;
-
-            }
-
-            /*
-             * Automatic 7th Day Rest
-             */
-            else if (consecutiveDutyDays >= 6) {
-
-                automaticRestDays.add(dateKey);
-
-                consecutiveDutyDays = 0;
-
-            }
-
-            /*
-             * Blank / Off Day
-             */
-            else {
-
-                consecutiveDutyDays = 0;
-            }
-        });
-
-        /*
-         * -----------------------------------------------
-         * SECOND PASS
-         * Calculate totals
-         * -----------------------------------------------
-         */
-        let dutyCount = 0;
-        let restDayCount = 0;
-
-        dates.forEach(targetDate => {
-
-            const dateKey =
-                formatDateKeyForDutyTracker(
-                    targetDate
-                );
-
-            const dateData =
-                dutyLookup[dateKey] || {};
-
-            const driverRecord =
-                dateData[driverName];
-
-            const itinerary =
-                driverRecord
-                    ? (
-                        driverRecord.itinerary || ""
-                    ).trim()
-                    : "";
-
-            const normalized =
-                itinerary.toLowerCase();
-
-            const isActualRestDay =
-                normalized === "rest day";
-
-            const isAutomaticRestDay =
-                automaticRestDays.has(dateKey);
-
-            /*
-             * Count Rest Days
-             */
-            if (
-                isActualRestDay ||
-                isAutomaticRestDay
-            ) {
-                restDayCount++;
-            }
-
-            /*
-             * Count Duty Days
-             *
-             * Any non-blank itinerary that is
-             * NOT "Rest Day" is considered duty.
-             */
-            else if (itinerary !== "") {
-                dutyCount++;
-            }
-        });
-
-        /*
-         * -----------------------------------------------
-         * DRIVER ROW
-         * -----------------------------------------------
-         */
         bodyHTML += "<tr>";
 
         bodyHTML += `
@@ -3220,29 +2995,97 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             </td>
         `;
 
+        let consecutiveDutyDays = 0;
+
+        const automaticRestDays = new Set();
+
         /*
-         * -----------------------------------------------
-         * DATE CELLS
-         * -----------------------------------------------
+         * =====================================================
+         * CALCULATE 7-DAY RULE
+         * =====================================================
          */
         dates.forEach(targetDate => {
 
             const dateKey =
-                formatDateKeyForDutyTracker(
-                    targetDate
-                );
+                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+
+            const dateData = dutyLookup[dateKey] || {};
+
+            const driverRecord =
+                dateData[driverName] || null;
+
+            const itinerary =
+                driverRecord
+                    ? String(driverRecord.itinerary || "").trim()
+                    : "";
+
+            const normalized =
+                itinerary.toLowerCase();
+
+            const isFuture =
+                targetDate.getTime() > phToday.getTime();
+
+            /*
+             * ACTUAL REST DAY
+             */
+            if (normalized === "rest day") {
+
+                consecutiveDutyDays = 0;
+            }
+
+            /*
+             * ACTUAL DUTY
+             */
+            else if (itinerary !== "") {
+
+                consecutiveDutyDays++;
+            }
+
+            /*
+             * FUTURE BLANK
+             */
+            else if (isFuture) {
+
+                if (consecutiveDutyDays >= 6) {
+
+                    automaticRestDays.add(dateKey);
+
+                    consecutiveDutyDays = 0;
+
+                } else {
+
+                    consecutiveDutyDays++;
+                }
+            }
+
+            /*
+             * PAST BLANK
+             */
+            else {
+
+                consecutiveDutyDays = 0;
+            }
+        });
+
+        /*
+         * =====================================================
+         * RENDER DATA
+         * =====================================================
+         */
+        dates.forEach(targetDate => {
+
+            const dateKey =
+                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
 
             const dateData =
                 dutyLookup[dateKey] || {};
 
             const driverRecord =
-                dateData[driverName];
+                dateData[driverName] || null;
 
             const itinerary =
                 driverRecord
-                    ? (
-                        driverRecord.itinerary || ""
-                    ).trim()
+                    ? String(driverRecord.itinerary || "").trim()
                     : "";
 
             const normalized =
@@ -3255,61 +3098,25 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
                 automaticRestDays.has(dateKey);
 
             const shouldHighlight =
-                isActualRestDay ||
-                isAutomaticRestDay;
+                isActualRestDay || isAutomaticRestDay;
 
             bodyHTML += `
                 <td
-                    class="${
-                        shouldHighlight
-                            ? "duty-tracker-rest-day"
-                            : ""
-                    }"
-                    style="
-                        text-align:center;
-                        vertical-align:middle;
-                    "
+                    class="${shouldHighlight ? "duty-tracker-rest-day" : ""}"
+                    style="text-align:center;"
                 >
                     ${itinerary}
                 </td>
             `;
         });
 
-        /*
-         * -----------------------------------------------
-         * DUTY COUNT
-         * -----------------------------------------------
-         */
-        bodyHTML += `
-            <td style="
-                text-align:center;
-                font-weight:800;
-                vertical-align:middle;
-            ">
-                ${dutyCount}
-            </td>
-        `;
-
-        /*
-         * -----------------------------------------------
-         * REST DAY COUNT
-         * -----------------------------------------------
-         */
-        bodyHTML += `
-            <td style="
-                text-align:center;
-                font-weight:800;
-                vertical-align:middle;
-            ">
-                ${restDayCount}
-            </td>
-        `;
-
         bodyHTML += "</tr>";
     });
 
     body.innerHTML = bodyHTML;
 }
+
+    
     function formatDateKeyForDutyTracker(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
