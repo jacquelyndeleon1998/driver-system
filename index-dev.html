@@ -2828,86 +2828,122 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const bucket = Number(bucketString);
 
     /*
-     * =========================================================
-     * DETERMINE YEAR
-     * =========================================================
+     * ---------------------------------------------------------
+     * FIND YEAR
+     * ---------------------------------------------------------
      */
     let selectedYear = new Date().getFullYear();
 
-    const scheduleDateKeys = Object.keys(summaryDrivers || {});
+    const scheduleDateList = Object.keys(summaryDrivers || {});
 
-    for (const dateKey of scheduleDateKeys) {
+    for (const dateKey of scheduleDateList) {
+        const parts = dateKey.split("-");
 
-        const parsedDate = new Date(dateKey);
+        let parsed;
 
-        if (isNaN(parsedDate.getTime())) continue;
+        if (parts.length === 3) {
+            parsed = new Date(
+                Number(parts[0]),
+                Number(parts[1]) - 1,
+                Number(parts[2])
+            );
+        } else {
+            parsed = new Date(dateKey);
+        }
+
+        if (isNaN(parsed.getTime())) continue;
+
+        const parsedMonth = parsed.getMonth();
+        const parsedDay = parsed.getDate();
+        const parsedBucket = parsedDay <= 15 ? 1 : 2;
 
         if (
-            parsedDate.getMonth() === month &&
-            (parsedDate.getDate() <= 15 ? 1 : 2) === bucket
+            parsedMonth === month &&
+            parsedBucket === bucket
         ) {
-            selectedYear = parsedDate.getFullYear();
+            selectedYear = parsed.getFullYear();
             break;
         }
     }
 
     /*
-     * =========================================================
-     * BUILD CUT-OFF DATES
-     * =========================================================
+     * ---------------------------------------------------------
+     * CUT-OFF DATES
+     * ---------------------------------------------------------
      */
     const startDay = bucket === 1 ? 1 : 16;
 
     const endDay =
         bucket === 1
             ? 15
-            : new Date(selectedYear, month + 1, 0).getDate();
+            : new Date(
+                selectedYear,
+                month + 1,
+                0
+            ).getDate();
 
     const dates = [];
 
-    for (let day = startDay; day <= endDay; day++) {
-        dates.push(new Date(selectedYear, month, day));
+    for (
+        let day = startDay;
+        day <= endDay;
+        day++
+    ) {
+        dates.push(
+            new Date(
+                selectedYear,
+                month,
+                day
+            )
+        );
     }
 
     /*
-     * =========================================================
+     * ---------------------------------------------------------
      * HEADER
-     * =========================================================
+     * ---------------------------------------------------------
      */
-    let headerHTML = '<tr>';
-    headerHTML += '<th style="text-align:center;">Driver</th>';
+    let headerHTML = "<tr>";
+
+    headerHTML += `
+        <th style="text-align: center;">
+            Driver
+        </th>
+    `;
 
     dates.forEach(date => {
 
         const dayNumber = date.getDate();
 
-        const dayName = date.toLocaleDateString("en-US", {
-            weekday: "short"
-        });
+        const dayName =
+            date.toLocaleDateString(
+                "en-US",
+                {
+                    weekday: "short"
+                }
+            );
 
         headerHTML += `
-            <th style="text-align:center;">
+            <th style="text-align: center;">
                 <div>${dayNumber}</div>
-                <div style="font-size:11px;font-weight:600;">
+                <div style="
+                    font-size: 11px;
+                    font-weight: 600;
+                ">
                     ${dayName}
                 </div>
             </th>
         `;
     });
 
-   headerHTML += `
-    <th style="text-align: center;">Duty</th>
-    <th style="text-align: center;">Rest Day</th>
-`;
+    headerHTML += "</tr>";
 
-headerHTML += "</tr>";
-
-head.innerHTML = headerHTML;
+    head.innerHTML = headerHTML;
 
     /*
-     * =========================================================
+     * ---------------------------------------------------------
      * DRIVER ORDER
-     * =========================================================
+     * ---------------------------------------------------------
      */
     const driverOrder = [
         "Jun Dela Pena",
@@ -2919,74 +2955,105 @@ head.innerHTML = headerHTML;
     ];
 
     /*
-     * =========================================================
-     * BUILD DATE LOOKUP
-     *
-     * IMPORTANT:
-     * We parse the actual summaryDrivers date keys first,
-     * then store them by YEAR-MONTH-DAY.
-     *
-     * This means the original date format remains supported.
-     * =========================================================
+     * ---------------------------------------------------------
+     * FIND DRIVERS IN THIS CUT-OFF
+     * ---------------------------------------------------------
+     */
+    const driverSet = new Set();
+
+    for (const dateKey of scheduleDateList) {
+
+        const parts = dateKey.split("-");
+
+        let parsed;
+
+        if (parts.length === 3) {
+            parsed = new Date(
+                Number(parts[0]),
+                Number(parts[1]) - 1,
+                Number(parts[2])
+            );
+        } else {
+            parsed = new Date(dateKey);
+        }
+
+        if (isNaN(parsed.getTime())) continue;
+
+        const parsedYear = parsed.getFullYear();
+        const parsedMonth = parsed.getMonth();
+        const parsedDay = parsed.getDate();
+        const parsedBucket =
+            parsedDay <= 15 ? 1 : 2;
+
+        if (
+            parsedYear !== selectedYear ||
+            parsedMonth !== month ||
+            parsedBucket !== bucket
+        ) {
+            continue;
+        }
+
+        Object.keys(
+            summaryDrivers[dateKey] || {}
+        ).forEach(driverName => {
+            driverSet.add(driverName);
+        });
+    }
+
+    const drivers =
+        driverOrder.filter(driverName =>
+            driverSet.has(driverName)
+        );
+
+    /*
+     * ---------------------------------------------------------
+     * FAST DATE LOOKUP
+     * ---------------------------------------------------------
      */
     const dutyLookup = {};
 
-    scheduleDateKeys.forEach(dateKey => {
+    scheduleDateList.forEach(dateKey => {
 
-        const parsedDate = new Date(dateKey);
+        const parts = dateKey.split("-");
 
-        if (isNaN(parsedDate.getTime())) return;
+        let parsed;
 
-        const year = parsedDate.getFullYear();
-        const monthNumber = parsedDate.getMonth() + 1;
-        const day = parsedDate.getDate();
+        if (parts.length === 3) {
+            parsed = new Date(
+                Number(parts[0]),
+                Number(parts[1]) - 1,
+                Number(parts[2])
+            );
+        } else {
+            parsed = new Date(dateKey);
+        }
 
-        const normalizedKey =
-            `${year}-${String(monthNumber).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        if (isNaN(parsed.getTime())) return;
 
-        dutyLookup[normalizedKey] =
+        const year =
+            parsed.getFullYear();
+
+        const monthNumber =
+            String(
+                parsed.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                parsed.getDate()
+            ).padStart(2, "0");
+
+        const formattedKey =
+            `${year}-${monthNumber}-${day}`;
+
+        dutyLookup[formattedKey] =
             summaryDrivers[dateKey] || {};
     });
 
     /*
-     * =========================================================
-     * FIND EXISTING DRIVERS
-     * =========================================================
-     */
-    const driverSet = new Set();
-
-    scheduleDateKeys.forEach(dateKey => {
-
-        const dateData = summaryDrivers[dateKey];
-
-        if (!dateData) return;
-
-        Object.keys(dateData).forEach(driverName => {
-            driverSet.add(driverName);
-        });
-    });
-
-    const drivers = driverOrder.filter(driverName =>
-        driverSet.has(driverName)
-    );
-
-    /*
-     * =========================================================
-     * PHILIPPINES TODAY
-     * =========================================================
-     */
-    const phToday = new Date(
-        new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Manila"
-        })
-    );
-
-    phToday.setHours(0, 0, 0, 0);
-
-    /*
-     * =========================================================
+     * ---------------------------------------------------------
      * BODY
-     * =========================================================
+     * ---------------------------------------------------------
      */
     let bodyHTML = "";
 
@@ -2995,40 +3062,58 @@ head.innerHTML = headerHTML;
         bodyHTML += "<tr>";
 
         bodyHTML += `
-            <td style="text-align:center;">
+            <td>
                 <strong>${driverName}</strong>
             </td>
         `;
 
+        /*
+         * Count consecutive duty days.
+         */
         let consecutiveDutyDays = 0;
 
+        /*
+         * Store automatically identified
+         * 7th-day Rest Days.
+         */
         const automaticRestDays = new Set();
 
         /*
-         * =====================================================
-         * CALCULATE 7-DAY RULE
-         * =====================================================
+         * -----------------------------------------------------
+         * CALCULATE DUTY / REST STATUS
+         * -----------------------------------------------------
          */
         dates.forEach(targetDate => {
 
-            const dateKey =
-                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+            const year =
+                targetDate.getFullYear();
 
-            const dateData = dutyLookup[dateKey] || {};
+            const monthNumber =
+                String(
+                    targetDate.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    targetDate.getDate()
+                ).padStart(2, "0");
+
+            const dateKey =
+                `${year}-${monthNumber}-${day}`;
+
+            const dateData =
+                dutyLookup[dateKey] || {};
 
             const driverRecord =
-                dateData[driverName] || null;
+                dateData[driverName];
 
             const itinerary =
                 driverRecord
-                    ? String(driverRecord.itinerary || "").trim()
+                    ? (driverRecord.itinerary || "").trim()
                     : "";
 
             const normalized =
                 itinerary.toLowerCase();
-
-            const isFuture =
-                targetDate.getTime() > phToday.getTime();
 
             /*
              * ACTUAL REST DAY
@@ -3036,6 +3121,7 @@ head.innerHTML = headerHTML;
             if (normalized === "rest day") {
 
                 consecutiveDutyDays = 0;
+
             }
 
             /*
@@ -3044,27 +3130,28 @@ head.innerHTML = headerHTML;
             else if (itinerary !== "") {
 
                 consecutiveDutyDays++;
+
             }
 
             /*
-             * FUTURE BLANK
+             * AUTOMATIC 7TH-DAY REST
+             *
+             * A blank date after 6 consecutive
+             * duty days becomes Rest Day.
              */
-            else if (isFuture) {
+            else if (consecutiveDutyDays >= 6) {
 
-                if (consecutiveDutyDays >= 6) {
+                automaticRestDays.add(dateKey);
 
-                    automaticRestDays.add(dateKey);
+                consecutiveDutyDays = 0;
 
-                    consecutiveDutyDays = 0;
-
-                } else {
-
-                    consecutiveDutyDays++;
-                }
             }
 
             /*
-             * PAST BLANK
+             * REGULAR BLANK DATE
+             *
+             * A blank date before reaching 6
+             * consecutive duty days resets the count.
              */
             else {
 
@@ -3073,24 +3160,37 @@ head.innerHTML = headerHTML;
         });
 
         /*
-         * =====================================================
-         * RENDER DATA
-         * =====================================================
+         * -----------------------------------------------------
+         * RENDER THE DATES
+         * -----------------------------------------------------
          */
         dates.forEach(targetDate => {
 
+            const year =
+                targetDate.getFullYear();
+
+            const monthNumber =
+                String(
+                    targetDate.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    targetDate.getDate()
+                ).padStart(2, "0");
+
             const dateKey =
-                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+                `${year}-${monthNumber}-${day}`;
 
             const dateData =
                 dutyLookup[dateKey] || {};
 
             const driverRecord =
-                dateData[driverName] || null;
+                dateData[driverName];
 
             const itinerary =
                 driverRecord
-                    ? String(driverRecord.itinerary || "").trim()
+                    ? (driverRecord.itinerary || "").trim()
                     : "";
 
             const normalized =
@@ -3103,12 +3203,17 @@ head.innerHTML = headerHTML;
                 automaticRestDays.has(dateKey);
 
             const shouldHighlight =
-                isActualRestDay || isAutomaticRestDay;
+                isActualRestDay ||
+                isAutomaticRestDay;
 
             bodyHTML += `
                 <td
-                    class="${shouldHighlight ? "duty-tracker-rest-day" : ""}"
-                    style="text-align:center;"
+                    class="${
+                        shouldHighlight
+                            ? "duty-tracker-rest-day"
+                            : ""
+                    }"
+                    style="text-align: center;"
                 >
                     ${itinerary}
                 </td>
