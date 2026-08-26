@@ -2837,6 +2837,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const scheduleDates = Object.keys(summaryDrivers || {});
 
     for (const dateKey of scheduleDates) {
+
         const parts = dateKey.split("-");
 
         if (parts.length !== 3) continue;
@@ -2856,7 +2857,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
     /*
      * ---------------------------------------------------------
-     * BUILD CUT-OFF DATES
+     * CUT-OFF DATES
      * ---------------------------------------------------------
      */
     const startDay = bucket === 1 ? 1 : 16;
@@ -2881,6 +2882,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     headerHTML += '<th style="text-align:center;">Driver</th>';
 
     dates.forEach(date => {
+
         const dayNumber = date.getDate();
 
         const dayName = date.toLocaleDateString("en-US", {
@@ -2903,7 +2905,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
     /*
      * ---------------------------------------------------------
-     * FIXED DRIVER ORDER
+     * DRIVER ORDER
      * ---------------------------------------------------------
      */
     const driverOrder = [
@@ -2917,13 +2919,12 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
     /*
      * ---------------------------------------------------------
-     * BUILD FAST DATE LOOKUP
+     * BUILD ONE FAST DATE LOOKUP
      *
-     * Instead of searching summaryDrivers again and again,
-     * we create one lookup table.
-     *
-     * Example:
-     * dutyLookup["2026-08-25"]["Jun Dela Pena"]
+     * IMPORTANT:
+     * We keep ALL summaryDrivers dates here.
+     * This prevents existing Duty Tracker data
+     * from disappearing.
      * ---------------------------------------------------------
      */
     const dutyLookup = {};
@@ -2935,18 +2936,19 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         if (parts.length !== 3) return;
 
         const year = Number(parts[0]);
-        const monthNumber = Number(parts[1]) - 1;
+        const monthNumber = Number(parts[1]);
         const day = Number(parts[2]);
 
         if (
-            year !== selectedYear ||
-            monthNumber !== month
+            !Number.isFinite(year) ||
+            !Number.isFinite(monthNumber) ||
+            !Number.isFinite(day)
         ) {
             return;
         }
 
         const normalizedDateKey =
-            `${year}-${String(monthNumber + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            `${year}-${String(monthNumber).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
         dutyLookup[normalizedDateKey] =
             summaryDrivers[dateKey] || {};
@@ -2954,17 +2956,14 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
     /*
      * ---------------------------------------------------------
-     * FIND DRIVERS IN THIS CUT-OFF
+     * FIND DRIVERS
      * ---------------------------------------------------------
      */
     const driverSet = new Set();
 
-    dates.forEach(date => {
+    scheduleDates.forEach(dateKey => {
 
-        const dateKey =
-            `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-        const dateData = dutyLookup[dateKey];
+        const dateData = summaryDrivers[dateKey];
 
         if (!dateData) return;
 
@@ -2979,7 +2978,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
     /*
      * ---------------------------------------------------------
-     * TODAY - PHILIPPINES
+     * PHILIPPINES TODAY
      * ---------------------------------------------------------
      */
     const phToday = new Date(
@@ -3000,12 +2999,17 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     drivers.forEach(driverName => {
 
         bodyHTML += "<tr>";
-        bodyHTML += `<td style="text-align:center;"><strong>${driverName}</strong></td>`;
+
+        bodyHTML += `
+            <td style="text-align:center;">
+                <strong>${driverName}</strong>
+            </td>
+        `;
 
         let consecutiveDutyDays = 0;
 
         /*
-         * Store automatically detected 7th-day rest dates.
+         * Automatic 7th-day Rest Days
          */
         const automaticRestDays = new Set();
 
@@ -3016,10 +3020,19 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
          */
         dates.forEach(targetDate => {
 
-            const dateKey =
-                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+            const year = targetDate.getFullYear();
 
-            const dateData = dutyLookup[dateKey] || {};
+            const monthNumber =
+                String(targetDate.getMonth() + 1).padStart(2, "0");
+
+            const day =
+                String(targetDate.getDate()).padStart(2, "0");
+
+            const dateKey =
+                `${year}-${monthNumber}-${day}`;
+
+            const dateData =
+                dutyLookup[dateKey] || {};
 
             const driverRecord =
                 dateData[driverName] || null;
@@ -3052,10 +3065,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             }
 
             /*
-             * FUTURE BLANK DATE
-             *
-             * If 6 consecutive duty days have already happened,
-             * this blank date becomes the projected 7th-day Rest Day.
+             * FUTURE BLANK
              */
             else if (isFuture) {
 
@@ -3072,9 +3082,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             }
 
             /*
-             * PAST BLANK DATE
-             *
-             * We do not assume a blank historical date was duty.
+             * PAST BLANK
              */
             else {
 
@@ -3089,8 +3097,16 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
          */
         dates.forEach(targetDate => {
 
+            const year = targetDate.getFullYear();
+
+            const monthNumber =
+                String(targetDate.getMonth() + 1).padStart(2, "0");
+
+            const day =
+                String(targetDate.getDate()).padStart(2, "0");
+
             const dateKey =
-                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+                `${year}-${monthNumber}-${day}`;
 
             const dateData =
                 dutyLookup[dateKey] || {};
