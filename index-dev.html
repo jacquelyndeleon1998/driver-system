@@ -2887,6 +2887,29 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         "Melvin Fausto"
     ];
 
+      console.log("=== DUTY TRACKER DATA CHECK ===");
+
+["Jun Dela Pena", "Jerome Natividad"].forEach(driverName => {
+
+    console.log("DRIVER:", driverName);
+
+    Object.keys(summaryDrivers || {})
+        .sort()
+        .forEach(dateKey => {
+
+            const record = summaryDrivers[dateKey]?.[driverName];
+
+            if (record) {
+                console.log(
+                    dateKey,
+                    driverName,
+                    "ITINERARY:",
+                    record.itinerary
+                );
+            }
+        });
+});
+
     let bodyHTML = "";
 
     driverOrder.forEach(driverName => {
