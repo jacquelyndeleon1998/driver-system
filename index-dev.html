@@ -2827,17 +2827,24 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const month = Number(monthString) - 1;
     const bucket = Number(bucketString);
 
+    /*
+     * ---------------------------------------------------------
+     * FIND YEAR
+     * ---------------------------------------------------------
+     */
     let selectedYear = new Date().getFullYear();
 
     Object.keys(summaryDrivers || {}).some(dateKey => {
-        const d = parseLocalDate(dateKey);
+
+        const d = new Date(dateKey);
 
         if (isNaN(d.getTime())) return false;
 
-        if (
-            d.getMonth() === month &&
-            (d.getDate() <= 15 ? 1 : 2) === bucket
-        ) {
+        const dMonth = d.getMonth();
+        const dDay = d.getDate();
+        const dBucket = dDay <= 15 ? 1 : 2;
+
+        if (dMonth === month && dBucket === bucket) {
             selectedYear = d.getFullYear();
             return true;
         }
@@ -2845,6 +2852,11 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         return false;
     });
 
+    /*
+     * ---------------------------------------------------------
+     * CUT-OFF DATES
+     * ---------------------------------------------------------
+     */
     const startDay = bucket === 1 ? 1 : 16;
 
     const endDay =
@@ -2859,9 +2871,12 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     }
 
     /*
+     * ---------------------------------------------------------
      * HEADER
+     * ---------------------------------------------------------
      */
-    let headerHTML = "<tr><th>Driver</th>";
+    let headerHTML = "<tr>";
+    headerHTML += "<th>Driver</th>";
 
     dates.forEach(date => {
         headerHTML += `<th>${date.getDate()}</th>`;
@@ -2872,7 +2887,9 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     head.innerHTML = headerHTML;
 
     /*
+     * ---------------------------------------------------------
      * FIXED DRIVER ORDER
+     * ---------------------------------------------------------
      */
     const driverOrder = [
         "Jun Dela Pena",
@@ -2884,11 +2901,18 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     ];
 
     /*
-     * FIND AVAILABLE DRIVERS
+     * ---------------------------------------------------------
+     * FIND DRIVERS
+     * ---------------------------------------------------------
      */
     const driverSet = new Set();
 
     Object.keys(summaryDrivers || {}).forEach(dateKey => {
+
+        const d = new Date(dateKey);
+
+        if (isNaN(d.getTime())) return;
+
         Object.keys(summaryDrivers[dateKey] || {}).forEach(driverName => {
             driverSet.add(driverName);
         });
@@ -2899,7 +2923,9 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     );
 
     /*
-     * GET ITINERARY
+     * ---------------------------------------------------------
+     * GET DRIVER ITINERARY FOR ANY DATE
+     * ---------------------------------------------------------
      */
     function getDriverItinerary(driverName, targetDate) {
 
@@ -2907,18 +2933,19 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         const targetMonth = targetDate.getMonth();
         const targetDay = targetDate.getDate();
 
-        const matchingDateKey = Object.keys(summaryDrivers || {}).find(dateKey => {
+        const matchingDateKey =
+            Object.keys(summaryDrivers || {}).find(dateKey => {
 
-            const d = parseLocalDate(dateKey);
+                const d = new Date(dateKey);
 
-            if (isNaN(d.getTime())) return false;
+                if (isNaN(d.getTime())) return false;
 
-            return (
-                d.getFullYear() === targetYear &&
-                d.getMonth() === targetMonth &&
-                d.getDate() === targetDay
-            );
-        });
+                return (
+                    d.getFullYear() === targetYear &&
+                    d.getMonth() === targetMonth &&
+                    d.getDate() === targetDay
+                );
+            });
 
         if (!matchingDateKey) return "";
 
@@ -2927,11 +2954,13 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
         if (!record) return "";
 
-        return String(record.itinerary || "").trim();
+        return (record.itinerary || "").trim();
     }
 
     /*
+     * ---------------------------------------------------------
      * BODY
+     * ---------------------------------------------------------
      */
     let bodyHTML = "";
 
@@ -2940,25 +2969,36 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         bodyHTML += "<tr>";
         bodyHTML += `<td><strong>${driverName}</strong></td>`;
 
+        /*
+         * IMPORTANT:
+         *
+         * Start counting from the beginning of the month.
+         * This makes the automatic 7th day deterministic.
+         */
         let consecutiveDutyDays = 0;
 
         /*
-         * Store automatically calculated 7th-day rest dates.
+         * We calculate from DAY 1 of the month,
+         * not just from the selected cutoff.
+         *
+         * This prevents the counter from resetting
+         * when moving from Aug 1-15 to Aug 16-31.
+         */
+        const calculationStartDate =
+            new Date(selectedYear, month, 1);
+
+        const calculationEndDate =
+            new Date(selectedYear, month + 1, 0);
+
+        /*
+         * Calculate the driver's duty sequence
+         * from Day 1 through the end of the month.
          */
         const automaticRestDays = new Set();
 
-        /*
-         * Calculate the ENTIRE MONTH.
-         */
-        const monthStart =
-            new Date(selectedYear, month, 1);
-
-        const monthEnd =
-            new Date(selectedYear, month + 1, 0);
-
         for (
-            let calcDate = new Date(monthStart);
-            calcDate <= monthEnd;
+            let calcDate = new Date(calculationStartDate);
+            calcDate <= calculationEndDate;
             calcDate.setDate(calcDate.getDate() + 1)
         ) {
 
@@ -2969,7 +3009,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
                 itinerary.toLowerCase();
 
             /*
-             * ACTUAL REST DAY
+             * Actual Rest Day
              */
             if (normalized === "rest day") {
 
@@ -2978,7 +3018,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             }
 
             /*
-             * ACTUAL DUTY
+             * Scheduled duty
              */
             if (itinerary !== "") {
 
@@ -2987,37 +3027,25 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             }
 
             /*
-             * BLANK DATE
+             * Blank schedule after 6 consecutive duty days
              *
-             * If 6 duty days have already happened,
-             * this blank date becomes the 7th-day Rest Day.
+             * This is the automatic 7th-day Rest Day.
              */
             if (consecutiveDutyDays >= 6) {
 
-                const dateKey =
+                const automaticRestKey =
                     `${calcDate.getFullYear()}-${String(calcDate.getMonth() + 1).padStart(2, "0")}-${String(calcDate.getDate()).padStart(2, "0")}`;
 
-                automaticRestDays.add(dateKey);
+                automaticRestDays.add(automaticRestKey);
 
                 consecutiveDutyDays = 0;
-
-            } else {
-
-                /*
-                 * IMPORTANT:
-                 *
-                 * Blank future dates are NOT immediately
-                 * treated as a reset.
-                 *
-                 * We keep counting so the next 7th day
-                 * can be identified.
-                 */
-                consecutiveDutyDays++;
             }
         }
 
         /*
-         * RENDER
+         * -----------------------------------------------------
+         * RENDER SELECTED CUT-OFF
+         * -----------------------------------------------------
          */
         dates.forEach(targetDate => {
 
@@ -3036,12 +3064,11 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             const isAutomaticRestDay =
                 automaticRestDays.has(dateKey);
 
-            const shouldHighlight =
-                isActualRestDay ||
-                isAutomaticRestDay;
+            const shouldHighlightRestDay =
+                isActualRestDay || isAutomaticRestDay;
 
             bodyHTML += `
-                <td class="${shouldHighlight ? "duty-tracker-rest-day" : ""}">
+                <td class="${shouldHighlightRestDay ? "duty-tracker-rest-day" : ""}">
                     ${itinerary}
                 </td>
             `;
