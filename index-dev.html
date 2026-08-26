@@ -2895,9 +2895,18 @@ function renderDriverDutyTracker() {
         `;
     });
 
-    headerHTML += "</tr>";
+    headerHTML += `
+    <th style="text-align:center;">
+        Duty Days
+    </th>
+    <th style="text-align:center;">
+        Rest Days
+    </th>
+`;
 
-    head.innerHTML = headerHTML;
+headerHTML += "</tr>";
+
+head.innerHTML = headerHTML;
 
     /*
      * =========================================================
@@ -2999,6 +3008,9 @@ function renderDriverDutyTracker() {
 
         const automaticRestDays = new Set();
 
+        let dutyDayCount = 0;
+let restDayCount = 0;
+
         /*
          * =====================================================
          * CALCULATE 7-DAY RULE
@@ -3028,29 +3040,33 @@ function renderDriverDutyTracker() {
             /*
              * ACTUAL REST DAY
              */
-            if (normalized === "rest day") {
+           if (normalized === "rest day") {
 
-                consecutiveDutyDays = 0;
-            }
+    restDayCount++;
+    consecutiveDutyDays = 0;
+}
 
             /*
              * ACTUAL DUTY
              */
-            else if (itinerary !== "") {
+        else if (itinerary !== "") {
 
-                consecutiveDutyDays++;
-            }
+    dutyDayCount++;
+    consecutiveDutyDays++;
+}
 
             /*
              * FUTURE BLANK
              */
             else if (isFuture) {
 
-                if (consecutiveDutyDays >= 6) {
+               if (consecutiveDutyDays >= 6) {
 
-                    automaticRestDays.add(dateKey);
+    automaticRestDays.add(dateKey);
 
-                    consecutiveDutyDays = 0;
+    restDayCount++;
+
+    consecutiveDutyDays = 0;
 
                 } else {
 
@@ -3110,7 +3126,14 @@ function renderDriverDutyTracker() {
             `;
         });
 
-        bodyHTML += "</tr>";
+        bodyHTML += `
+            <td style="text-align:center; font-weight:700;">
+                ${dutyDayCount}
+            </td>
+            <td style="text-align:center; font-weight:700;">
+                ${restDayCount}
+            </td>
+        </tr>`;
     });
 
     body.innerHTML = bodyHTML;
