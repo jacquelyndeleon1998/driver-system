@@ -3013,40 +3013,27 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             /*
              * ACTUAL REST DAY
              */
+           /*
+             * DETERMINE REST DAY
+             */
+
             if (isActualRestDay) {
 
+                // Actual Rest Day from the schedule
                 consecutiveDutyDays = 0;
 
-            }
+            } else if (itinerary !== "") {
 
-            /*
-             * ACTUAL DUTY
-             */
-            else if (itinerary !== "") {
-
+                // Driver has a scheduled duty
                 consecutiveDutyDays++;
 
-            }
+            } else if (consecutiveDutyDays >= 6) {
 
-            /*
-             * NO SCHEDULE
-             *
-             * If the driver already completed 6 consecutive
-             * duty days, this blank date becomes the
-             * automatic 7th-day rest day.
-             */
-            else {
+                // No schedule, but this is the 7th day
+                isAutomaticRestDay = true;
 
-                if (consecutiveDutyDays >= 6) {
-
-                    isAutomaticRestDay = true;
-
-                    /*
-                     * The automatic rest day resets
-                     * the sequence.
-                     */
-                    consecutiveDutyDays = 0;
-                }
+                // Reset after automatic Rest Day
+                consecutiveDutyDays = 0;
             }
 
             const shouldHighlightRestDay =
@@ -3056,8 +3043,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
                 <td class="${shouldHighlightRestDay ? "duty-tracker-rest-day" : ""}">
                     ${itinerary}
                 </td>
-            `;
-        });
+            `;        });
 
         bodyHTML += "</tr>";
     });
