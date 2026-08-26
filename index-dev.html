@@ -5250,6 +5250,46 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         }
     }
 }
+
+    async function fetchDataWithRetry(url, options = {}, retries = 3, delay = 800) {
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
+
+        try {
+
+            const response = await fetch(url, options);
+
+            console.log(
+                `Fetch attempt ${attempt + 1}:`,
+                response.status,
+                response.url
+            );
+
+            if (response.ok) {
+                return response;
+            }
+
+            throw new Error(
+                `HTTP ${response.status}: ${response.statusText}`
+            );
+
+        } catch (error) {
+
+            console.warn(
+                `Fetch attempt ${attempt + 1} failed:`,
+                error
+            );
+
+            if (attempt === retries) {
+                throw error;
+            }
+
+            await new Promise(resolve =>
+                setTimeout(resolve, delay)
+            );
+        }
+    }
+}
     
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
@@ -5267,17 +5307,19 @@ console.log("Fetching Schedule:", scheduleFetchURL);
 console.log("Fetching Approvals:", approvalFetchURL);
 
 const [scheduleResponse, approvalResponse] = await Promise.all([
-    fetch(scheduleFetchURL, {
+
+    fetchDataWithRetry(scheduleFetchURL, {
         method: "GET",
         cache: "no-store",
         credentials: "omit"
     }),
 
-    fetch(approvalFetchURL, {
+    fetchDataWithRetry(approvalFetchURL, {
         method: "GET",
         cache: "no-store",
         credentials: "omit"
     })
+
 ]);
 
 console.log(
