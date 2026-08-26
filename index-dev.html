@@ -2808,13 +2808,26 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     renderDriverDutyTracker();
 }
 
-  function parseLocalDate(dateStr) {
+  /*
+ * Safe date parser (iwas timezone offset / UTC shifts)
+ */
+function parseLocalDate(dateStr) {
     if (!dateStr) return new Date(NaN);
     const parts = dateStr.split("-");
     if (parts.length === 3) {
         return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
     }
     return new Date(dateStr);
+}
+
+/*
+ * Safe YYYY-MM-DD formatter
+ */
+function formatDateToYYYYMMDD(d) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
 }
 
 function renderDriverDutyTracker() {
@@ -2911,7 +2924,7 @@ function renderDriverDutyTracker() {
 
         if (isNaN(parsedDate.getTime())) return;
 
-        const formattedDate = formatDateKeyForDutyTracker(parsedDate);
+        const formattedDate = formatDateToYYYYMMDD(parsedDate);
         dutyLookup[formattedDate] = summaryDrivers[dateKey] || {};
     });
 
@@ -2950,7 +2963,7 @@ function renderDriverDutyTracker() {
             calcDate <= cutoffEndDate;
             calcDate.setDate(calcDate.getDate() + 1)
         ) {
-            const dateKey = formatDateKeyForDutyTracker(calcDate);
+            const dateKey = formatDateToYYYYMMDD(calcDate);
             const dateData = dutyLookup[dateKey] || {};
             const driverRecord = dateData[driverName];
 
@@ -2996,7 +3009,7 @@ function renderDriverDutyTracker() {
          * RENDER CELLS FOR THE CUTOFF
          */
         dates.forEach(targetDate => {
-            const dateKey = formatDateKeyForDutyTracker(targetDate);
+            const dateKey = formatDateToYYYYMMDD(targetDate);
             const dateData = dutyLookup[dateKey] || {};
             const driverRecord = dateData[driverName];
 
