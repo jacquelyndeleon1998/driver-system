@@ -2827,6 +2827,9 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const month = Number(monthString) - 1;
     const bucket = Number(bucketString);
 
+    /*
+     * Determine the correct year from the schedule data.
+     */
     let selectedYear = new Date().getFullYear();
 
     Object.keys(summaryDrivers || {}).forEach(dateKey => {
@@ -2849,16 +2852,18 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
             ? 15
             : new Date(selectedYear, month + 1, 0).getDate();
 
+    /*
+     * Build every calendar date in the cut-off.
+     */
     const dates = [];
 
     for (let day = startDay; day <= endDay; day++) {
         dates.push(new Date(selectedYear, month, day));
     }
 
-    /* =========================
-       HEADER
-       ========================= */
-
+    /*
+     * HEADER
+     */
     let headerHTML = "<tr>";
     headerHTML += "<th>Driver</th>";
 
@@ -2870,10 +2875,9 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
     head.innerHTML = headerHTML;
 
-    /* =========================
-       DRIVER ORDER
-       ========================= */
-
+    /*
+     * FIXED DRIVER ORDER
+     */
     const driverOrder = [
         "Jun Dela Pena",
         "Jerome Natividad",
@@ -2883,15 +2887,9 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         "Melvin Fausto"
     ];
 
-    const drivers = driverOrder;
-
-    /* =========================
-       BODY
-       ========================= */
-
     let bodyHTML = "";
 
-    drivers.forEach(driverName => {
+    driverOrder.forEach(driverName => {
 
         bodyHTML += "<tr>";
         bodyHTML += `<td><strong>${driverName}</strong></td>`;
@@ -2900,85 +2898,92 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
 
         dates.forEach(targetDate => {
 
+            const targetYear = targetDate.getFullYear();
+            const targetMonth = targetDate.getMonth();
+            const targetDay = targetDate.getDate();
+
             let dutyHTML = "";
             let isActualRestDay = false;
             let isAutomaticRestDay = false;
 
-            /* =========================
-               FIND DRIVER SCHEDULE
-               ========================= */
-
-            const matchingDateKey = Object.keys(summaryDrivers || {}).find(dateKey => {
+            /*
+             * Find this exact driver's schedule
+             * for this exact calendar date.
+             */
+            Object.keys(summaryDrivers || {}).some(dateKey => {
 
                 const parsedDate = new Date(dateKey);
 
                 if (isNaN(parsedDate.getTime())) return false;
 
-                return (
-                    parsedDate.getFullYear() === targetDate.getFullYear() &&
-                    parsedDate.getMonth() === targetDate.getMonth() &&
-                    parsedDate.getDate() === targetDate.getDate()
-                );
-            });
-
-            if (matchingDateKey) {
-
-                const dateData = summaryDrivers[matchingDateKey];
+                if (
+                    parsedDate.getFullYear() !== targetYear ||
+                    parsedDate.getMonth() !== targetMonth ||
+                    parsedDate.getDate() !== targetDay
+                ) {
+                    return false;
+                }
 
                 const driverRecord =
-                    dateData
-                        ? dateData[driverName]
-                        : null;
+                    summaryDrivers[dateKey]?.[driverName];
 
-                if (driverRecord) {
+                if (!driverRecord) return false;
 
-                    dutyHTML =
-                        (driverRecord.itinerary || "").trim();
+                dutyHTML =
+                    (driverRecord.itinerary || "").trim();
 
-                    if (
-                        dutyHTML.toLowerCase() === "rest day"
-                    ) {
-                        isActualRestDay = true;
-                    }
+                if (
+                    dutyHTML.toLowerCase() === "rest day"
+                ) {
+                    isActualRestDay = true;
                 }
-            }
 
-            /* =========================
-               7-DAY DUTY RULE
-               ========================= */
+                return true;
+            });
+
+            /*
+             * ================================
+             * 7-DAY DUTY RULE
+             * ================================
+             */
 
             if (isActualRestDay) {
 
-                // Existing Rest Day
+                /*
+                 * Existing scheduled Rest Day.
+                 */
                 consecutiveDutyDays = 0;
 
             } else if (dutyHTML !== "") {
 
-                // Driver has an actual schedule
+                /*
+                 * Actual scheduled duty.
+                 */
                 consecutiveDutyDays++;
 
-            } else {
+            } else if (consecutiveDutyDays >= 6) {
 
-                // No schedule.
-                // If six previous days were duty,
-                // this blank date is the required Rest Day.
-                if (consecutiveDutyDays === 6) {
+                /*
+                 * No schedule exists for this date,
+                 * but the driver already completed
+                 * six consecutive duty days.
+                 *
+                 * Therefore this blank date is
+                 * the required 7th-day Rest Day.
+                 */
+                isAutomaticRestDay = true;
 
-                    isAutomaticRestDay = true;
-
-                    consecutiveDutyDays = 0;
-                }
+                consecutiveDutyDays = 0;
             }
 
-            /* =========================
-               HIGHLIGHTING
-               ========================= */
-
-            const isRestDay =
-                dutyHTML.toLowerCase() === "rest day";
-
+            /*
+             * Highlight either:
+             *
+             * 1. Existing Rest Day
+             * 2. Automatic 7th-day Rest Day
+             */
             const shouldHighlight =
-                isRestDay || isAutomaticRestDay;
+                isActualRestDay || isAutomaticRestDay;
 
             bodyHTML += `
                 <td class="${shouldHighlight ? "duty-tracker-rest-day" : ""}">
