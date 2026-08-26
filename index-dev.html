@@ -2868,15 +2868,27 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
      * HEADER
      */
     let headerHTML = "<tr>";
-    headerHTML += "<th>Driver</th>";
+headerHTML += '<th style="text-align: center;">Driver</th>';
 
-    dates.forEach(date => {
-        headerHTML += `<th>${date.getDate()}</th>`;
+dates.forEach(date => {
+    const dayNumber = date.getDate();
+    const dayName = date.toLocaleDateString("en-US", {
+        weekday: "short"
     });
 
-    headerHTML += "</tr>";
+    headerHTML += `
+        <th style="text-align: center;">
+            <div>${dayNumber}</div>
+            <div style="font-size: 11px; font-weight: 600;">
+                ${dayName}
+            </div>
+        </th>
+    `;
+});
 
-    head.innerHTML = headerHTML;
+headerHTML += "</tr>";
+
+head.innerHTML = headerHTML;
 
     /*
      * Driver order
