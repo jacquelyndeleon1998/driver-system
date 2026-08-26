@@ -2828,35 +2828,32 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     const bucket = Number(bucketString);
 
     /*
-     * Find the correct year.
+     * Determine the correct year from the schedule data.
      */
     let selectedYear = new Date().getFullYear();
 
-    Object.keys(summaryDrivers || {}).some(dateKey => {
-        const parsed = new Date(dateKey);
+    Object.keys(summaryDrivers || {}).forEach(dateKey => {
+        const d = new Date(dateKey);
 
-        if (isNaN(parsed.getTime())) return false;
+        if (isNaN(d.getTime())) return;
 
-        const parsedMonth = parsed.getMonth();
-        const parsedDay = parsed.getDate();
-        const parsedBucket = parsedDay <= 15 ? 1 : 2;
-
-        if (parsedMonth === month && parsedBucket === bucket) {
-            selectedYear = parsed.getFullYear();
-            return true;
+        if (
+            d.getMonth() === month &&
+            (d.getDate() <= 15 ? 1 : 2) === bucket
+        ) {
+            selectedYear = d.getFullYear();
         }
-
-        return false;
     });
 
     const startDay = bucket === 1 ? 1 : 16;
 
-    const endDay = bucket === 1
-        ? 15
-        : new Date(selectedYear, month + 1, 0).getDate();
+    const endDay =
+        bucket === 1
+            ? 15
+            : new Date(selectedYear, month + 1, 0).getDate();
 
     /*
-     * Dates displayed in the tracker.
+     * Build every calendar date in the cut-off.
      */
     const dates = [];
 
@@ -2890,160 +2887,110 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         "Melvin Fausto"
     ];
 
-    /*
-     * Find drivers existing in this cut-off.
-     */
-    const driverSet = new Set();
-
-    Object.keys(summaryDrivers || {}).forEach(dateKey => {
-        const parsedDate = new Date(dateKey);
-
-        if (isNaN(parsedDate.getTime())) return;
-
-        if (
-            parsedDate.getFullYear() === selectedYear &&
-            parsedDate.getMonth() === month
-        ) {
-            Object.keys(summaryDrivers[dateKey] || {}).forEach(driverName => {
-                driverSet.add(driverName);
-            });
-        }
-    });
-
-    const drivers = driverOrder.filter(driverName =>
-        driverSet.has(driverName)
-    );
-
-    /*
-     * Helper:
-     * Get itinerary for a driver on a specific date.
-     */
-    function getDriverItinerary(driverName, targetDate) {
-
-        const targetYear = targetDate.getFullYear();
-        const targetMonth = targetDate.getMonth();
-        const targetDay = targetDate.getDate();
-
-        const matchingDateKey = Object.keys(summaryDrivers || {}).find(dateKey => {
-
-            const parsedDate = new Date(dateKey);
-
-            if (isNaN(parsedDate.getTime())) return false;
-
-            return (
-                parsedDate.getFullYear() === targetYear &&
-                parsedDate.getMonth() === targetMonth &&
-                parsedDate.getDate() === targetDay
-            );
-        });
-
-        if (!matchingDateKey) return "";
-
-        const record =
-            summaryDrivers[matchingDateKey]
-                ? summaryDrivers[matchingDateKey][driverName]
-                : null;
-
-        if (!record) return "";
-
-        return (record.itinerary || "").trim();
-    }
-
-    /*
-     * BODY
-     */
     let bodyHTML = "";
 
-    drivers.forEach(driverName => {
+    driverOrder.forEach(driverName => {
 
         bodyHTML += "<tr>";
         bodyHTML += `<td><strong>${driverName}</strong></td>`;
 
-        /*
-         * IMPORTANT:
-         *
-         * We start counting BEFORE the selected cutoff.
-         *
-         * This allows the 7-day rule to continue correctly
-         * across July 31 -> August 1.
-         */
         let consecutiveDutyDays = 0;
 
-        /*
-         * Look back up to 6 days before the cutoff.
-         */
-        for (let i = 1; i <= 6; i++) {
-
-            const previousDate =
-                new Date(selectedYear, month, startDay - i);
-
-            const previousItinerary =
-                getDriverItinerary(driverName, previousDate);
-
-            if (!previousItinerary) {
-                break;
-            }
-
-            if (
-                previousItinerary.toLowerCase() === "rest day"
-            ) {
-                consecutiveDutyDays = 0;
-                break;
-            }
-
-            consecutiveDutyDays++;
-        }
-
-        /*
-         * Render each date.
-         */
         dates.forEach(targetDate => {
 
-            const itinerary =
-                getDriverItinerary(driverName, targetDate);
+            const targetYear = targetDate.getFullYear();
+            const targetMonth = targetDate.getMonth();
+            const targetDay = targetDate.getDate();
 
-            const normalizedItinerary =
-                itinerary.toLowerCase();
-
-            const isActualRestDay =
-                normalizedItinerary === "rest day";
-
+            let dutyHTML = "";
+            let isActualRestDay = false;
             let isAutomaticRestDay = false;
 
             /*
-             * ACTUAL REST DAY
+             * Find this exact driver's schedule
+             * for this exact calendar date.
              */
-           /*
-             * DETERMINE REST DAY
+            Object.keys(summaryDrivers || {}).some(dateKey => {
+
+                const parsedDate = new Date(dateKey);
+
+                if (isNaN(parsedDate.getTime())) return false;
+
+                if (
+                    parsedDate.getFullYear() !== targetYear ||
+                    parsedDate.getMonth() !== targetMonth ||
+                    parsedDate.getDate() !== targetDay
+                ) {
+                    return false;
+                }
+
+                const driverRecord =
+                    summaryDrivers[dateKey]?.[driverName];
+
+                if (!driverRecord) return false;
+
+                dutyHTML =
+                    (driverRecord.itinerary || "").trim();
+
+                if (
+                    dutyHTML.toLowerCase() === "rest day"
+                ) {
+                    isActualRestDay = true;
+                }
+
+                return true;
+            });
+
+            /*
+             * ================================
+             * 7-DAY DUTY RULE
+             * ================================
              */
 
             if (isActualRestDay) {
 
-                // Actual Rest Day from the schedule
+                /*
+                 * Existing scheduled Rest Day.
+                 */
                 consecutiveDutyDays = 0;
 
-            } else if (itinerary !== "") {
+            } else if (dutyHTML !== "") {
 
-                // Driver has a scheduled duty
+                /*
+                 * Actual scheduled duty.
+                 */
                 consecutiveDutyDays++;
 
             } else if (consecutiveDutyDays >= 6) {
 
-                // No schedule, but this is the 7th day
+                /*
+                 * No schedule exists for this date,
+                 * but the driver already completed
+                 * six consecutive duty days.
+                 *
+                 * Therefore this blank date is
+                 * the required 7th-day Rest Day.
+                 */
                 isAutomaticRestDay = true;
 
-                // Reset after automatic Rest Day
                 consecutiveDutyDays = 0;
             }
 
-            const shouldHighlightRestDay =
+            /*
+             * Highlight either:
+             *
+             * 1. Existing Rest Day
+             * 2. Automatic 7th-day Rest Day
+             */
+            const shouldHighlight =
                 isActualRestDay || isAutomaticRestDay;
 
             bodyHTML += `
-                <td class="${shouldHighlightRestDay ? "duty-tracker-rest-day" : ""}">
-                    ${itinerary}
+                <td class="${shouldHighlight ? "duty-tracker-rest-day" : ""}">
+                    ${dutyHTML}
                 </td>
-            `;        });
+            `;
+        });
 
         bodyHTML += "</tr>";
     });
