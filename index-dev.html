@@ -2895,9 +2895,14 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
         `;
     });
 
-    headerHTML += "</tr>";
+   headerHTML += `
+    <th style="text-align: center;">Duty</th>
+    <th style="text-align: center;">Rest Day</th>
+`;
 
-    head.innerHTML = headerHTML;
+headerHTML += "</tr>";
+
+head.innerHTML = headerHTML;
 
     /*
      * =========================================================
