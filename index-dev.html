@@ -3030,8 +3030,11 @@ const shouldHighlightRestDay =
     isRestDay || isAutomaticRestDay;
 
 bodyHTML += `
-    <td class="${shouldHighlightRestDay ? "duty-tracker-rest-day" : ""}">
-        ${dutyHTML}
+    <td
+        class="${shouldHighlight ? "duty-tracker-rest-day" : ""}"
+        style="text-align: center;"
+    >
+        ${itinerary}
     </td>
 `;
         });
