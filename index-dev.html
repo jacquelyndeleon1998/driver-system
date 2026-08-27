@@ -6515,17 +6515,18 @@ window.onload = async function () {
 
     await loadSubmittedAllowances();
 
-    await loadMainSchedulesAndApprovals();
+await loadMainSchedulesAndApprovals();
 
-    await fetchLiveAllowancesFromSheet();
+await fetchLiveAllowancesFromSheet();
 
-    if (role === "admin") {
-        loadDriverRequests();
-    }
+hideLoginSpinner();
 
-    hideLoginSpinner();
+showHomePage();
 
-    showHomePage();
+// Load Driver Requests separately for Admin
+if (role === "admin") {
+    loadDriverRequests();
+}
 
     } catch (err) {
 
