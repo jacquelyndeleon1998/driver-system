@@ -2953,6 +2953,12 @@ const driverRequestSelect = document.getElementById("driverRequestCutoff");
     scheduleDates.forEach(date => processDateString(date));
     globalParsedAllowances.forEach(record => processDateString(record.date));
 
+    if (window.driverRequestRecords) {
+    window.driverRequestRecords.forEach(record => {
+        processDateString(record.date);
+    });
+}
+
     scheduleSelect.innerHTML = "";
 allowanceSelect.innerHTML = "";
 driverViewSelect.innerHTML = "";
@@ -3006,6 +3012,7 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     if(driverRequestSelect.querySelector(`option[value="${currentCutoff}"]`)) driverRequestSelect.value = currentCutoff;
 
     renderDriverDutyTracker();
+    renderDriverRequests();
 }
 
 function renderDriverDutyTracker() {
