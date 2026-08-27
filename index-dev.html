@@ -1763,9 +1763,93 @@
     </div>
 </div>
 
-    <!-- DRIVER REQUEST PAGE --> <div id="driverRequestsPage" style="display:none;"> <div class="page-header"> <h2>Request</h2> </div> <div style="margin-bottom:20px;"> <button type="button" class="nav-btn" onclick="openRequestScheduleModal()"> Request Schedule </button> </div> <div class="request-section"> <h3>Your Request/s</h3> <div class="table-responsive"> <table id="driverRequestsTable"> <thead> <tr> <th>Date Request</th> <th>Reason Duty</th> <th>Requested Time</th> <th>Request Status</th> </tr> </thead> <tbody id="driverRequestsTableBody"> <tr> <td colspan="4" style="text-align:center;"> No requests yet. </td> </tr> </tbody> </table> </div> </div> </div>
+    <!-- DRIVER REQUEST PAGE -->
+<div id="driverRequestsPage" style="display:none;">
 
-<div id="scheduleApprovalPage" style="display:none;">
+    <div class="schedule-header bg-schedule-admin" style="margin-top:0;">
+        <h2>Driver Request</h2>
+    </div>
+
+    <div class="approval-container" style="margin-top:15px;">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            flex-wrap:wrap;
+            margin-bottom:20px;
+        ">
+            <div>
+                <h3 style="margin:0 0 5px 0;">Request Schedule</h3>
+                <div style="font-size:13px; color:#6b7280;">
+                    Submit a request for leave or additional duty.
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class="allowance-btn"
+                onclick="openRequestScheduleModal()">
+                + Request Schedule
+            </button>
+        </div>
+
+        <div class="request-section">
+
+            <h3>Your Request/s</h3>
+
+            <div class="table-responsive">
+
+                <table id="driverRequestsTable" class="approval-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date Request</th>
+                            <th>Reason / Duty</th>
+                            <th>Requested Time</th>
+                            <th>Request Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="driverRequestsTableBody">
+
+                        <tr>
+                            <td
+                                colspan="4"
+                                style="
+                                    text-align:center;
+                                    padding:25px;
+                                    color:#6b7280;
+                                ">
+                                No requests yet.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="approval-footer">
+
+        <button
+            type="button"
+            class="allowance-btn cancel-btn"
+            onclick="backToMainDashboard()">
+            &larr; Back to Dashboard
+        </button>
+
+    </div>
+
+</div>
+    
+    <div id="scheduleApprovalPage" style="display:none;">
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
     <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
         <h2>Driver Schedule</h2>
