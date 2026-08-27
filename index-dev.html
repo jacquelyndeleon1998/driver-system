@@ -1861,12 +1861,13 @@
         <table class="approval-table" id="driverRequestTable">
             <thead>
                 <tr>
-                     <th>Driver Name</th>
-        <th>Request</th>
-        <th>Reason / Duty</th>
-        <th>Requested Time</th>
-        <th>Request Status</th>
-                </tr>
+    <th>Date</th>
+    <th>Driver Name</th>
+    <th>Request</th>
+    <th>Reason / Duty</th>
+    <th>Requested Time</th>
+    <th>Request Status</th>
+</tr>
             </thead>
 
             <tbody id="driverRequestBody">
@@ -2910,22 +2911,19 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
     }
 
     body.innerHTML = filtered.map(record => `
-        <tr>
-            <td>${record.driverName || ""}</td>
-
-            <td>${record.request || ""}</td>
-
-            <td>${record.reason || ""}</td>
-
-            <td>${record.requestedTime || ""}</td>
-
-            <td>
-                <span class="driver-request-status">
-                    ${record.requestStatus || "Pending"}
-                </span>
-            </td>
-        </tr>
-    `).join("");
+    <tr>
+        <td>${record.date || ""}</td>
+        <td>${record.driverName || ""}</td>
+        <td>${record.request || ""}</td>
+        <td>${record.reason || ""}</td>
+        <td>${record.requestedTime || ""}</td>
+        <td>
+            <span class="driver-request-status">
+                ${record.requestStatus || "Pending"}
+            </span>
+        </td>
+    </tr>
+`).join("");
 }
     
 function updateCutoffDropdownsDynamically() {
