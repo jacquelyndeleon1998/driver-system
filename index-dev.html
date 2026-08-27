@@ -2832,7 +2832,7 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
         );
 
         window.driverRequestRecords = records;
-
+alert("Driver Requests loaded: " + records.length);
         renderDriverRequests();
 
     } catch (error) {
