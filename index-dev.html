@@ -2915,7 +2915,11 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
             <td>${record.request || ""}</td>
             <td>${record.reason || ""}</td>
             <td>${record.requestedTime || ""}</td>
-            <td>${record.requestStatus || ""}</td>
+           <td>
+    <span class="driver-request-status">
+        ${record.requestStatus || "Pending"}
+    </span>
+</td>
         </tr>
     `).join("");
 }
