@@ -2415,67 +2415,82 @@ function checkAdminSession() {
 }
 
 function configureNavigation(role) {
-const allowanceBtn = document.getElementById("allowanceBtn");
-const adminBtn = document.getElementById("adminBtn");
-const manualBtn = document.getElementById("manualBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+    const allowanceBtn = document.getElementById("allowanceBtn");
+    const requestBtn = document.getElementById("requestBtn");
+    const sepAllowanceRequest = document.getElementById("sepAllowanceRequest");
+    const adminBtn = document.getElementById("adminBtn");
+    const manualBtn = document.getElementById("manualBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
-const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
-const sepAdminManual = document.getElementById("sepAdminManual");
-const sepManualLogout = document.getElementById("sepManualLogout");
-const sepAdminLogout = document.getElementById("sepAdminLogout");
+    const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
+    const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+    const sepAdminManual = document.getElementById("sepAdminManual");
+    const sepManualLogout = document.getElementById("sepManualLogout");
+    const sepAdminLogout = document.getElementById("sepAdminLogout");
 
-if (allowanceBtn) allowanceBtn.style.display = "";
-if (adminBtn) adminBtn.style.display = "";
-if (manualBtn) manualBtn.style.display = "none";
-if (logoutBtn) logoutBtn.style.display = "";
+    // Default navigation
+    if (allowanceBtn) allowanceBtn.style.display = "";
+    if (requestBtn) requestBtn.style.display = "none";
+    if (adminBtn) adminBtn.style.display = "";
+    if (manualBtn) manualBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "";
 
-if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
-if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-if (sepAdminManual) sepAdminManual.style.display = "none";
-if (sepManualLogout) sepManualLogout.style.display = "none";
-if (sepAdminLogout) sepAdminLogout.style.display = "";
+    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
+    if (sepAllowanceRequest) sepAllowanceRequest.style.display = "none";
+    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+    if (sepAdminManual) sepAdminManual.style.display = "none";
+    if (sepManualLogout) sepManualLogout.style.display = "none";
+    if (sepAdminLogout) sepAdminLogout.style.display = "";
 
-switch (role) {
+    switch (role) {
 
-    case "driver":
-        if (adminBtn) adminBtn.style.display = "none";
-        if (manualBtn) manualBtn.style.display = "none";
+        case "driver":
+            // Driver: Dashboard | Allowances | Request | Log Out
+            if (requestBtn) requestBtn.style.display = "";
+            if (sepAllowanceRequest) sepAllowanceRequest.style.display = "";
 
-        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-        if (sepAdminManual) sepAdminManual.style.display = "none";
-        if (sepManualLogout) sepManualLogout.style.display = "none";
-        break;
+            if (adminBtn) adminBtn.style.display = "none";
+            if (manualBtn) manualBtn.style.display = "none";
 
-    case "admin":
-        if (allowanceBtn) allowanceBtn.style.display = "none";
-        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            if (sepAdminManual) sepAdminManual.style.display = "none";
+            if (sepManualLogout) sepManualLogout.style.display = "none";
+            if (sepAdminLogout) sepAdminLogout.style.display = "";
+            break;
 
-        if (adminBtn) adminBtn.style.display = "";
-        if (manualBtn) manualBtn.style.display = "";
+        case "admin":
+            // Admin: Dashboard | Admin | Manual | Log Out
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (requestBtn) requestBtn.style.display = "none";
 
-        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-        if (sepAdminManual) sepAdminManual.style.display = "";
-        if (sepManualLogout) sepManualLogout.style.display = "";
-        if (sepAdminLogout) sepAdminLogout.style.display = "none";
-        break;
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceRequest) sepAllowanceRequest.style.display = "none";
 
-    case "organic":
-        if (allowanceBtn) allowanceBtn.style.display = "none";
-        if (adminBtn) adminBtn.style.display = "none";
-        if (manualBtn) manualBtn.style.display = "none";
+            if (adminBtn) adminBtn.style.display = "";
+            if (manualBtn) manualBtn.style.display = "";
 
-        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-        if (sepAdminManual) sepAdminManual.style.display = "none";
-        if (sepManualLogout) sepManualLogout.style.display = "none";
-        if (sepAdminLogout) sepAdminLogout.style.display = "none";
-        break;
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+            if (sepAdminManual) sepAdminManual.style.display = "";
+            if (sepManualLogout) sepManualLogout.style.display = "";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
+            break;
+
+        case "organic":
+            // Organic: Dashboard | Log Out
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (requestBtn) requestBtn.style.display = "none";
+            if (adminBtn) adminBtn.style.display = "none";
+            if (manualBtn) manualBtn.style.display = "none";
+
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceRequest) sepAllowanceRequest.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            if (sepAdminManual) sepAdminManual.style.display = "none";
+            if (sepManualLogout) sepManualLogout.style.display = "none";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
+            break;
+    }
 }
-
-}
-    
 async function showAdminDashboard() {
   
 
