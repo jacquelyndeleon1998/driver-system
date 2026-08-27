@@ -4353,18 +4353,18 @@ async function confirmMessageRecipient() {
     closeMessageRecipientModal();
 
     // Show confirmation first
-    setTimeout(function () {
+    setTimeout(async function () {
 
-        const confirmed = window.confirm(
-            `This message will be sent to ${passengerName}.`
-        );
+    const confirmed = window.confirm(
+        `This message will be sent to ${passengerName}.`
+    );
 
-       if (!confirmed) {
-    return;
-}
+    if (!confirmed) {
+        return;
+    }
 
-// Save the message status BEFORE leaving the webpage
-await markPassengerMessageSent(trip);
+    // Save the message status BEFORE leaving the webpage
+    await markPassengerMessageSent(trip);
 
 // Close ALL messaging-related modals
 closeMessageRecipientModal();
