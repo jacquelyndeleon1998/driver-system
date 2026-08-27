@@ -1763,6 +1763,8 @@
     </div>
 </div>
 
+    <!-- DRIVER REQUEST PAGE --> <div id="driverRequestsPage" style="display:none;"> <div class="page-header"> <h2>Request</h2> </div> <div style="margin-bottom:20px;"> <button type="button" class="nav-btn" onclick="openRequestScheduleModal()"> Request Schedule </button> </div> <div class="request-section"> <h3>Your Request/s</h3> <div class="table-responsive"> <table id="driverRequestsTable"> <thead> <tr> <th>Date Request</th> <th>Reason Duty</th> <th>Requested Time</th> <th>Request Status</th> </tr> </thead> <tbody id="driverRequestsTableBody"> <tr> <td colspan="4" style="text-align:center;"> No requests yet. </td> </tr> </tbody> </table> </div> </div> </div>
+
 <div id="scheduleApprovalPage" style="display:none;">
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
     <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
@@ -5009,6 +5011,8 @@ function showDriverAllowanceSummary() {
     renderDriverViewTable();
     window.scrollTo(0, 0);
 }
+
+    function showDriverRequestsPage() { const dashboardPage = document.getElementById("driverDashboard"); const allowancePage = document.getElementById("driverAllowancePage"); const requestPage = document.getElementById("driverRequestsPage"); const scheduleApprovalPage = document.getElementById("scheduleApprovalPage"); if (dashboardPage) { dashboardPage.style.display = "none"; } if (allowancePage) { allowancePage.style.display = "none"; } if (scheduleApprovalPage) { scheduleApprovalPage.style.display = "none"; } if (requestPage) { requestPage.style.display = "block"; } // Update navigation active state document.querySelectorAll(".nav-btn").forEach(btn => { btn.classList.remove("active"); }); const requestBtn = document.getElementById("requestBtn"); if (requestBtn) { requestBtn.classList.add("active"); } }
 
 function renderDriverViewTable() {
     const loggedInDriverName = localStorage.getItem("driverName") || "";
