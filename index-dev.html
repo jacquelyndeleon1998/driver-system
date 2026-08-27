@@ -5302,7 +5302,7 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
     }
 }
 
-    async function fetchDataWithRetry(url, options = {}, retries = 3, delay = 800) {
+    async function fetchDataWithRetry(url, options = {}, retries = 1, delay = 300) {
 
     for (let attempt = 0; attempt <= retries; attempt++) {
 
