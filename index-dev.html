@@ -5310,11 +5310,7 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
 
             const response = await fetch(url, options);
 
-            console.log(
-                `Fetch attempt ${attempt + 1}:`,
-                response.status,
-                response.url
-            );
+          
 
             if (response.ok) {
                 return response;
@@ -5326,10 +5322,7 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
 
         } catch (error) {
 
-            console.warn(
-                `Fetch attempt ${attempt + 1} failed:`,
-                error
-            );
+           
 
             if (attempt === retries) {
                 throw error;
@@ -5354,8 +5347,6 @@ const scheduleFetchURL =
 const approvalFetchURL =
     `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
 
-console.log("Fetching Schedule:", scheduleFetchURL);
-console.log("Fetching Approvals:", approvalFetchURL);
 
 const [scheduleResponse, approvalResponse] = await Promise.all([
 
@@ -5373,17 +5364,6 @@ const [scheduleResponse, approvalResponse] = await Promise.all([
 
 ]);
 
-console.log(
-    "Schedule:",
-    scheduleResponse.status,
-    scheduleResponse.url
-);
-
-console.log(
-    "Approval:",
-    approvalResponse.status,
-    approvalResponse.url
-);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
             console.warn("Schedule CSV endpoints returned non-OK status.");
@@ -6388,11 +6368,9 @@ console.log("approvalURL:", approvalURL);
 
         await loadMainSchedulesAndApprovals();
 
-        console.log("STEP 3: Loading live allowances...");
-
         await fetchLiveAllowancesFromSheet();
 
-        console.log("STEP 4: Initialization complete.");
+        await loadDriverRequests();
 
         hideLoginSpinner();
 
