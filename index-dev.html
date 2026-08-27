@@ -1845,6 +1845,42 @@
         </div>
     </div>
 
+    <!-- LAYOUT 5: DRIVER REQUESTS -->
+<div class="schedule-header bg-driver-allowance" style="margin-top: 30px;">
+    <h2>Driver Requests</h2>
+
+    <div class="month-selector">
+        <label for="driverRequestCutoff">Cut-off Period</label>
+        <select id="driverRequestCutoff">
+        </select>
+    </div>
+</div>
+
+<div class="approval-container" style="margin-top: 15px;">
+    <div style="overflow-x: auto;">
+        <table class="approval-table" id="driverRequestTable">
+            <thead>
+                <tr>
+                    <th>Driver Name</th>
+                    <th>Reason / Duty</th>
+                    <th>Requested Time</th>
+                    <th>Request Status</th>
+                    <th>Request</th>
+                </tr>
+            </thead>
+
+            <tbody id="driverRequestBody">
+                <tr>
+                    <td colspan="5"
+                        style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                        No driver requests found for this cut-off window.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
     <div id="scheduleViewerPage" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px; padding: 20px;">
             <div class="summary-header" style="margin-top: 0;">
