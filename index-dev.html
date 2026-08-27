@@ -2472,7 +2472,7 @@ switch (role) {
 }
     
 async function showAdminDashboard() {
-    console.log("Admin button clicked");
+  
 
     const driverDashboard = document.getElementById("driverDashboard");
     const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
@@ -2574,7 +2574,7 @@ async function showAdminDashboard() {
 
     window.scrollTo(0, 0);
 
-    console.log("Admin Dashboard opened successfully");
+ 
 }
 
 async function loadSubmittedAllowances() {
@@ -2625,10 +2625,7 @@ async function loadSubmittedAllowances() {
             submittedDrivers[cleanKey] = true;
         });
 
-        console.log(
-            "Submitted Drivers Loaded:",
-            submittedDrivers
-        );
+      
 
     } catch (err) {
         console.warn(
@@ -2750,10 +2747,7 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
             );
         }
 
-        console.log(
-            "Live allowances loaded:",
-            globalParsedAllowances
-        );
+      
 
     } catch (err) {
         // IMPORTANT:
@@ -4398,10 +4392,7 @@ if (alreadySent) {
         JSON.stringify(savedMessages)
     );
 
-    console.log(
-        "Passenger message saved locally:",
-        messageKey
-    );
+  
 
 
     // ==========================================
@@ -4421,10 +4412,7 @@ if (alreadySent) {
             `&contactNumber=${encodeURIComponent(contactNumber)}` +
             `&pickupTime=${encodeURIComponent(pickupTime)}`;
 
-        console.log(
-            "Marking passenger message as Sent:",
-            markURL
-        );
+      
 
         const response =
             await fetch(markURL);
@@ -4432,10 +4420,7 @@ if (alreadySent) {
         const result =
             await response.json();
 
-        console.log(
-            "Message Sent sheet response:",
-            result
-        );
+      
 
         if (!result.success) {
 
@@ -4634,8 +4619,7 @@ document.body.style.overflow = "";
                 `sms:${cleanNumber}?body=${encodedMessage}`;
         }
 
-        console.log("Opening SMS:", smsURL);
-
+     
         window.location.href = smsURL;
 
     }, 50);
@@ -5427,7 +5411,6 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
 
         const result = await response.json();
 
-        console.log("Acknowledgment result:", result);
 
         if (!result.success) {
             throw new Error(
@@ -6313,7 +6296,7 @@ function showHomePage() {
 }
 
 function backToMainDashboard() {
-    console.log("Dashboard button clicked");
+ 
 
     const driverDashboard = document.getElementById("driverDashboard");
     const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
@@ -6366,7 +6349,7 @@ function backToMainDashboard() {
     // Go to top
     window.scrollTo(0, 0);
 
-    console.log("Returned to Main Dashboard successfully");
+ 
 }
     
 function viewSchedule(date){
@@ -6377,9 +6360,7 @@ function viewSchedule(date){
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
-    console.log("Viewing Date:", date);
-console.log("approvalNotes Object:", approvalNotes);
-console.log("Current Note:", approvalNotes[date]);
+  
     let viewerHTML = "";
 
     const scheduleDate = new Date(date);
@@ -6412,12 +6393,11 @@ console.log("Current Note:", approvalNotes[date]);
                 <tbody>${tableRows}</tbody>
             </table>
         </div>`;
-        console.log("Current Date:", date);
-console.log("approvalNotes:", approvalNotes);
+  
 
 const scheduleNotes = approvalNotes[date] || "";
 
-console.log("Notes Found:", scheduleNotes);
+
 
 if (scheduleNotes.trim() !== "") {
 
@@ -6678,28 +6658,21 @@ window.onload = async function () {
         "Loading latest schedules..."
     );
 
-    try {
+  try {
 
-        console.log("STEP 1: Loading submitted allowances...");
+    await loadSubmittedAllowances();
 
-        await loadSubmittedAllowances();
+    await loadMainSchedulesAndApprovals();
 
-        console.log("STEP 2: Loading main schedules...");
+    await fetchLiveAllowancesFromSheet();
 
-        console.log("WEBAPP_BASE:", WEBAPP_BASE);
-console.log("sheetURL:", sheetURL);
-console.log("approvalURL:", approvalURL);
+    if (role === "admin") {
+        loadDriverRequests();
+    }
 
+    hideLoginSpinner();
 
-        await loadMainSchedulesAndApprovals();
-
-        await fetchLiveAllowancesFromSheet();
-
-        await loadDriverRequests();
-
-        hideLoginSpinner();
-
-        showHomePage();
+    showHomePage();
 
     } catch (err) {
 
