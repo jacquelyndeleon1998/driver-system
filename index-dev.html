@@ -1786,7 +1786,7 @@
                     font-size:13px;
                     color:#6b7280;
                 ">
-                    Submit a request for leave or additional duty.
+                    Submit a request for leave or specific duty.
                 </div>
             </div>
 
@@ -1857,6 +1857,223 @@
 
 </div>
 <!-- DRIVER REQUEST END PAGE -->
+
+    <!-- REQUEST SCHEDULE MODAL -->
+<div id="requestScheduleModal" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+">
+
+    <div style="
+        background:#ffffff;
+        width:100%;
+        max-width:500px;
+        max-height:90vh;
+        overflow-y:auto;
+        border-radius:12px;
+        padding:22px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    ">
+
+        <h2 style="
+            margin:0 0 20px 0;
+            text-align:center;
+        ">
+            Request Schedule
+        </h2>
+
+        <!-- DATE -->
+        <div style="margin-bottom:15px;">
+            <label
+                for="requestDate"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Date
+            </label>
+
+            <input
+                type="date"
+                id="requestDate"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                ">
+        </div>
+
+        <!-- REQUEST TYPE -->
+        <div style="margin-bottom:15px;">
+            <label
+                for="requestType"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Request
+            </label>
+
+            <select
+                id="requestType"
+                onchange="handleRequestTypeChange()"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                    background:#fff;
+                ">
+
+                <option value="">Choose Request</option>
+                <option value="Leave">Leave</option>
+                <option value="Request Duty">Request Duty</option>
+
+            </select>
+        </div>
+
+        <!-- DUTY TYPE -->
+        <div
+            id="requestDutyOptions"
+            style="display:none;margin-bottom:15px;">
+
+            <label
+                for="requestDutyType"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Duty Type
+            </label>
+
+            <select
+                id="requestDutyType"
+                onchange="handleDutyTypeChange()"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                    background:#fff;
+                ">
+
+                <option value="">Choose Duty</option>
+                <option value="AM Carpool">AM Carpool</option>
+                <option value="PM Carpool">PM Carpool</option>
+                <option value="Others">Others</option>
+
+            </select>
+
+        </div>
+
+        <!-- REASON / DUTY -->
+        <div style="margin-bottom:15px;">
+
+            <label
+                for="requestReason"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Reason / Duty
+            </label>
+
+            <input
+                type="text"
+                id="requestReason"
+                placeholder="Enter reason or duty"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                ">
+
+        </div>
+
+        <!-- TIME -->
+        <div
+            id="requestTimeFields"
+            style="display:none;">
+
+            <div style="
+                display:flex;
+                gap:12px;
+                margin-bottom:20px;
+            ">
+
+                <div style="flex:1;">
+
+                    <label
+                        for="requestTimeIn"
+                        style="display:block;font-weight:600;margin-bottom:6px;">
+                        Time In
+                    </label>
+
+                    <input
+                        type="time"
+                        id="requestTimeIn"
+                        style="
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:10px;
+                            border:1px solid #d1d5db;
+                            border-radius:7px;
+                        ">
+
+                </div>
+
+                <div style="flex:1;">
+
+                    <label
+                        for="requestTimeOut"
+                        style="display:block;font-weight:600;margin-bottom:6px;">
+                        Time Out
+                    </label>
+
+                    <input
+                        type="time"
+                        id="requestTimeOut"
+                        style="
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:10px;
+                            border:1px solid #d1d5db;
+                            border-radius:7px;
+                        ">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div style="
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:10px;
+        ">
+
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                onclick="closeRequestScheduleModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn"
+                onclick="submitDriverRequest()">
+                Submit
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
     
     <div id="scheduleApprovalPage" style="display:none;">
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
@@ -5208,6 +5425,152 @@ function showDriverAllowanceSummary() {
         <td></td>
     `;
     tableBody.appendChild(totalRow);
+}
+
+    function openRequestScheduleModal() {
+    const modal = document.getElementById("requestScheduleModal");
+
+    if (!modal) return;
+
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+
+    // Reset fields
+    const requestDate = document.getElementById("requestDate");
+    const requestType = document.getElementById("requestType");
+    const requestDutyType = document.getElementById("requestDutyType");
+    const requestReason = document.getElementById("requestReason");
+    const requestTimeIn = document.getElementById("requestTimeIn");
+    const requestTimeOut = document.getElementById("requestTimeOut");
+
+    if (requestDate) requestDate.value = "";
+    if (requestType) requestType.value = "";
+    if (requestDutyType) requestDutyType.value = "";
+    if (requestReason) requestReason.value = "";
+    if (requestTimeIn) requestTimeIn.value = "";
+    if (requestTimeOut) requestTimeOut.value = "";
+
+    const dutyOptions = document.getElementById("requestDutyOptions");
+    const timeFields = document.getElementById("requestTimeFields");
+
+    if (dutyOptions) dutyOptions.style.display = "none";
+    if (timeFields) timeFields.style.display = "none";
+}
+
+
+function closeRequestScheduleModal() {
+    const modal = document.getElementById("requestScheduleModal");
+
+    if (!modal) return;
+
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+}
+
+
+function handleRequestTypeChange() {
+
+    const requestType =
+        document.getElementById("requestType").value;
+
+    const dutyOptions =
+        document.getElementById("requestDutyOptions");
+
+    const timeFields =
+        document.getElementById("requestTimeFields");
+
+    const dutyType =
+        document.getElementById("requestDutyType");
+
+    const reason =
+        document.getElementById("requestReason");
+
+    if (requestType === "Request Duty") {
+
+        if (dutyOptions) {
+            dutyOptions.style.display = "block";
+        }
+
+        if (timeFields) {
+            timeFields.style.display = "block";
+        }
+
+        if (reason) {
+            reason.placeholder =
+                "Enter reason or schedule details";
+        }
+
+    } else if (requestType === "Leave") {
+
+        if (dutyOptions) {
+            dutyOptions.style.display = "none";
+        }
+
+        if (timeFields) {
+            timeFields.style.display = "none";
+        }
+
+        if (dutyType) {
+            dutyType.value = "";
+        }
+
+        if (reason) {
+            reason.placeholder =
+                "Enter reason for leave";
+        }
+
+    } else {
+
+        if (dutyOptions) {
+            dutyOptions.style.display = "none";
+        }
+
+        if (timeFields) {
+            timeFields.style.display = "none";
+        }
+
+        if (dutyType) {
+            dutyType.value = "";
+        }
+
+        if (reason) {
+            reason.placeholder =
+                "Enter reason or duty";
+        }
+    }
+}
+
+
+function handleDutyTypeChange() {
+
+    const dutyType =
+        document.getElementById("requestDutyType").value;
+
+    const reason =
+        document.getElementById("requestReason");
+
+    if (!reason) return;
+
+    if (dutyType === "AM Carpool") {
+
+        reason.placeholder =
+            "Enter reason / AM Carpool details";
+
+    } else if (dutyType === "PM Carpool") {
+
+        reason.placeholder =
+            "Enter reason / PM Carpool details";
+
+    } else if (dutyType === "Others") {
+
+        reason.placeholder =
+            "Please indicate the schedule / duty details";
+
+    } else {
+
+        reason.placeholder =
+            "Enter reason or schedule details";
+    }
 }
 
 function showActionLoading(title, message){
