@@ -4364,7 +4364,7 @@ function confirmMessageRecipient() {
 }
 
 // Save the message status BEFORE leaving the webpage
-markPassengerMessageSent(trip);
+await markPassengerMessageSent(trip);
 
 // Close ALL messaging-related modals
 closeMessageRecipientModal();
@@ -4494,7 +4494,11 @@ document.body.style.overflow = "";
 }
 
 // Save BEFORE opening SMS
-markPassengerMessageSent(trip);
+markPassengerMessageSent(trip).then(() => {
+    if (typeof loadMainSchedulesAndApprovals === "function") {
+        loadMainSchedulesAndApprovals();
+    }
+});
 
 // Close every messaging modal
 closeMessageRecipientModal();
