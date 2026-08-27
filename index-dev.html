@@ -2872,8 +2872,8 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const [monthString, bucketString] = cutoffValue.split("-");
 
-    const month = Number(monthString) - 1;
-    const bucket = Number(bucketString);
+    const selectedMonth = Number(monthString) - 1;
+    const selectedBucket = Number(bucketString);
 
     const records = window.driverRequestRecords || [];
 
@@ -2881,14 +2881,20 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
 
         const parsedDate = new Date(record.date);
 
-        if (isNaN(parsedDate.getTime())) return false;
+        if (isNaN(parsedDate.getTime())) {
+            return false;
+        }
 
-        if (parsedDate.getMonth() !== month) return false;
+        const recordMonth = parsedDate.getMonth();
+        const recordDay = parsedDate.getDate();
 
-        const recordBucket =
-            parsedDate.getDate() <= 15 ? 1 : 2;
+        if (recordMonth !== selectedMonth) {
+            return false;
+        }
 
-        return recordBucket === bucket;
+        const recordBucket = recordDay <= 15 ? 1 : 2;
+
+        return recordBucket === selectedBucket;
     });
 
     if (filtered.length === 0) {
@@ -2906,14 +2912,18 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
     body.innerHTML = filtered.map(record => `
         <tr>
             <td>${record.driverName || ""}</td>
+
             <td>${record.request || ""}</td>
+
             <td>${record.reason || ""}</td>
+
             <td>${record.requestedTime || ""}</td>
-           <td>
-    <span class="driver-request-status">
-        ${record.requestStatus || "Pending"}
-    </span>
-</td>
+
+            <td>
+                <span class="driver-request-status">
+                    ${record.requestStatus || "Pending"}
+                </span>
+            </td>
         </tr>
     `).join("");
 }
