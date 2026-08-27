@@ -2766,6 +2766,159 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
         );
     }
 }
+
+    async function loadDriverRequests() {
+    const cutoffSelect = document.getElementById("driverRequestCutoff");
+    const body = document.getElementById("driverRequestBody");
+
+    if (!cutoffSelect || !body) return;
+
+    try {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center; padding:16px;">
+                    Loading driver requests...
+                </td>
+            </tr>
+        `;
+
+        const url =
+            `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}` +
+            `&_nc=${Date.now()}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            cache: "no-store",
+            credentials: "omit"
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const csvText = await response.text();
+
+        if (!csvText || csvText.trim().startsWith("<!DOCTYPE")) {
+            throw new Error("Invalid Driver Requests response.");
+        }
+
+        const lines = csvText.trim().split("\n");
+
+        if (lines.length <= 1) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="5"
+                        style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                        No driver requests found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        const headers = parseCSVRow(lines[0]);
+
+        const records = lines.slice(1).map(line => {
+            const cols = parseCSVRow(line);
+
+            return {
+                date: (cols[0] || "").trim(),
+                driverName: (cols[9] || "").trim(),
+                request: (cols[10] || "").trim(),
+                reason: (cols[11] || "").trim(),
+                requestedTime: (cols[12] || "").trim(),
+                requestStatus: (cols[13] || "").trim()
+            };
+        }).filter(record =>
+            record.driverName ||
+            record.request ||
+            record.reason ||
+            record.requestedTime
+        );
+
+        window.driverRequestRecords = records;
+
+        renderDriverRequests();
+
+    } catch (error) {
+
+        console.error("Error loading Driver Requests:", error);
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="text-align:center; color:#b91c1c; padding:16px;">
+                    Unable to load Driver Requests.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+    function renderDriverRequests() {
+    const cutoffSelect = document.getElementById("driverRequestCutoff");
+    const body = document.getElementById("driverRequestBody");
+
+    if (!cutoffSelect || !body) return;
+
+    const cutoffValue = cutoffSelect.value;
+
+    if (!cutoffValue) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                    No cut-off period selected.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const [monthString, bucketString] = cutoffValue.split("-");
+
+    const month = Number(monthString) - 1;
+    const bucket = Number(bucketString);
+
+    const records = window.driverRequestRecords || [];
+
+    const filtered = records.filter(record => {
+
+        const parsedDate = new Date(record.date);
+
+        if (isNaN(parsedDate.getTime())) return false;
+
+        if (parsedDate.getMonth() !== month) return false;
+
+        const recordBucket =
+            parsedDate.getDate() <= 15 ? 1 : 2;
+
+        return recordBucket === bucket;
+    });
+
+    if (filtered.length === 0) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                    No driver requests found for this cut-off window.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    body.innerHTML = filtered.map(record => `
+        <tr>
+            <td>${record.driverName || ""}</td>
+            <td>${record.request || ""}</td>
+            <td>${record.reason || ""}</td>
+            <td>${record.requestedTime || ""}</td>
+            <td>${record.requestStatus || ""}</td>
+        </tr>
+    `).join("");
+}
     
 function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
