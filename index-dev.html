@@ -1928,7 +1928,7 @@
                     background:#fff;
                 ">
 
-                <option value="">Choose Request</option>
+
                 <option value="Leave">Leave</option>
                 <option value="Request Duty">Request Duty</option>
 
@@ -1958,7 +1958,7 @@
                     background:#fff;
                 ">
 
-                <option value="">Choose Duty</option>
+              
                 <option value="AM Carpool">AM Carpool</option>
                 <option value="PM Carpool">PM Carpool</option>
                 <option value="Others">Others</option>
@@ -1973,7 +1973,7 @@
             <label
                 for="requestReason"
                 style="display:block;font-weight:600;margin-bottom:6px;">
-                Reason / Duty
+                Reason
             </label>
 
             <input
@@ -5570,6 +5570,194 @@ function handleDutyTypeChange() {
 
         reason.placeholder =
             "Enter reason or schedule details";
+    }
+}
+
+    async function submitDriverRequest() {
+
+    const requestDate =
+        document.getElementById("requestDate")?.value.trim();
+
+    const requestType =
+        document.getElementById("requestType")?.value.trim();
+
+    const requestDutyType =
+        document.getElementById("requestDutyType")?.value.trim();
+
+    const requestReason =
+        document.getElementById("requestReason")?.value.trim();
+
+    const requestTimeIn =
+        document.getElementById("requestTimeIn")?.value.trim();
+
+    const requestTimeOut =
+        document.getElementById("requestTimeOut")?.value.trim();
+
+    const driverName =
+        localStorage.getItem("driverName") ||
+        localStorage.getItem("username") ||
+        "";
+
+    // -----------------------------
+    // VALIDATION
+    // -----------------------------
+
+    if (!requestDate) {
+        alert("Please select a date.");
+        return;
+    }
+
+    if (!requestType) {
+        alert("Please choose a request type.");
+        return;
+    }
+
+    if (!requestReason) {
+        alert("Please enter the reason or duty.");
+        return;
+    }
+
+    if (requestType === "Request Duty") {
+
+        if (!requestDutyType) {
+            alert("Please choose the duty type.");
+            return;
+        }
+
+        if (!requestTimeIn || !requestTimeOut) {
+            alert("Please enter Time In and Time Out.");
+            return;
+        }
+    }
+
+    if (!driverName) {
+        alert("Driver information could not be found. Please log in again.");
+        return;
+    }
+
+    // -----------------------------
+    // REQUESTED TIME
+    // -----------------------------
+
+    let requestedTime = "";
+
+    if (requestType === "Request Duty") {
+
+        requestedTime =
+            `${requestTimeIn} to ${requestTimeOut}`;
+
+    }
+
+    // -----------------------------
+    // REASON / DUTY
+    // -----------------------------
+
+    let reasonDuty = requestReason;
+
+    if (
+        requestType === "Request Duty" &&
+        requestDutyType
+    ) {
+        reasonDuty =
+            `${requestDutyType} - ${requestReason}`;
+    }
+
+    // -----------------------------
+    // CONFIRM
+    // -----------------------------
+
+    const confirmed = confirm(
+        `Submit this request?\n\n` +
+        `Date: ${requestDate}\n` +
+        `Request: ${requestType}\n` +
+        `Reason / Duty: ${reasonDuty}\n` +
+        `Requested Time: ${requestedTime || "N/A"}`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        showActionLoading(
+            "Submitting Request...",
+            "Please wait while your request is being submitted."
+        );
+
+        const requestURL =
+            `${WEBAPP_BASE}?action=submitDriverRequest`
+            + `&date=${encodeURIComponent(requestDate)}`
+            + `&driverName=${encodeURIComponent(driverName)}`
+            + `&request=${encodeURIComponent(requestType)}`
+            + `&reasonDuty=${encodeURIComponent(reasonDuty)}`
+            + `&requestedTime=${encodeURIComponent(requestedTime)}`
+            + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+            + `&_nc=${Date.now()}`;
+
+        const response = await fetch(
+            requestURL,
+            {
+                method: "GET",
+                cache: "no-store",
+                credentials: "omit"
+            }
+        );
+
+        const text = await response.text();
+
+        let result;
+
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+
+            console.error(
+                "Submit Driver Request returned non-JSON:",
+                text
+            );
+
+            throw new Error(
+                "The server returned an invalid response."
+            );
+        }
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "Unable to submit request."
+            );
+        }
+
+        alert("Request submitted successfully.");
+
+        closeRequestScheduleModal();
+
+        // Refresh the driver's request table
+        if (typeof loadDriverRequests === "function") {
+            await loadDriverRequests();
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Submit Driver Request Error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to submit request. Please try again."
+        );
+
+    } finally {
+
+        const overlay =
+            document.getElementById("actionLoadingOverlay");
+
+        if (overlay) {
+            overlay.style.display = "none";
+        }
     }
 }
 
