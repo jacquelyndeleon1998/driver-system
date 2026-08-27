@@ -5012,9 +5012,44 @@ function showDriverAllowanceSummary() {
     window.scrollTo(0, 0);
 }
 
-    function showDriverRequestsPage() { const dashboardPage = document.getElementById("driverDashboard"); const allowancePage = document.getElementById("driverAllowancePage"); const requestPage = document.getElementById("driverRequestsPage"); const scheduleApprovalPage = document.getElementById("scheduleApprovalPage"); if (dashboardPage) { dashboardPage.style.display = "none"; } if (allowancePage) { allowancePage.style.display = "none"; } if (scheduleApprovalPage) { scheduleApprovalPage.style.display = "none"; } if (requestPage) { requestPage.style.display = "block"; } // Update navigation active state document.querySelectorAll(".nav-btn").forEach(btn => { btn.classList.remove("active"); }); const requestBtn = document.getElementById("requestBtn"); if (requestBtn) { requestBtn.classList.add("active"); } }
+    function showDriverRequestsPage() {
 
-function renderDriverViewTable() {
+    const dashboardPage = document.getElementById("driverDashboard");
+    const allowancePage = document.getElementById("driverAllowancePage");
+    const requestPage = document.getElementById("driverRequestsPage");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+
+    if (dashboardPage) {
+        dashboardPage.style.display = "none";
+    }
+
+    if (allowancePage) {
+        allowancePage.style.display = "none";
+    }
+
+    if (scheduleApprovalPage) {
+        scheduleApprovalPage.style.display = "none";
+    }
+
+    if (requestPage) {
+        requestPage.style.display = "block";
+    }
+
+    // Update navigation active state
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    const requestBtn = document.getElementById("requestBtn");
+
+    if (requestBtn) {
+        requestBtn.classList.add("active");
+    }
+
+    window.scrollTo(0, 0);
+}
+    
+    function renderDriverViewTable() {
     const loggedInDriverName = localStorage.getItem("driverName") || "";
     let selectorValue = document.getElementById("driverViewCutoff").value || "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
