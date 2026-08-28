@@ -3534,7 +3534,11 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     if(driverRequestSelect.querySelector(`option[value="${currentCutoff}"]`)) driverRequestSelect.value = currentCutoff;
 
     renderDriverDutyTracker();
+
+if (window.driverRequestRecords) {
     renderDriverRequests();
+    renderDriverRequestsForDriver();
+}
 }
 
 function renderDriverDutyTracker() {
