@@ -7358,23 +7358,19 @@ const approvalFetchURL =
     `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
 
 
-const scheduleResponse = await fetchDataWithRetry(
-    scheduleFetchURL,
-    {
+const [scheduleResponse, approvalResponse] = await Promise.all([
+    fetchDataWithRetry(scheduleFetchURL, {
         method: "GET",
         cache: "no-store",
         credentials: "omit"
-    }
-);
+    }),
 
-const approvalResponse = await fetchDataWithRetry(
-    approvalFetchURL,
-    {
+    fetchDataWithRetry(approvalFetchURL, {
         method: "GET",
         cache: "no-store",
         credentials: "omit"
-    }
-);
+    })
+]);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
             console.warn("Schedule CSV endpoints returned non-OK status.");
