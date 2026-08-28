@@ -7773,10 +7773,7 @@ const messagePassengerBtnHtml = role === "organic" ? "" : `
                     pageHTML += `
                     <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
                         <div class="driver-header">
-                           <h2>
-    ${d.driver}
-    ${hasPassengerMessageSent(d.trips) ? " ✉️" : ""}
-</h2>
+                           <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                             <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                             <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
@@ -8383,10 +8380,7 @@ if (scheduleNotes.trim() !== "") {
             viewerHTML += `
             <div class="driver-card" style="margin-top: 15px;">
                 <div class="driver-header">
-                  <h2>
-    ${d.driver}
-    ${hasPassengerMessageSent(d.trips) ? " ✉️" : ""}
-</h2>
+                  <h2>${d.driver}</h2>
                     <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                     <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                     <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
