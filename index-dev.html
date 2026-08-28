@@ -3178,32 +3178,20 @@ async function showAdminDashboard() {
     });
 }
 
-function getCodingVehicleHTML(vehicle, date) {
-
-    const cleanVehicle = String(vehicle || "").trim();
-
-    if (!cleanVehicle) {
+function getCodingHighlightStyle(vehicle, date) {
+    if (!isVehicleCodingDay(vehicle, date)) {
         return "";
     }
 
-    if (!isVehicleCodingDay(cleanVehicle, date)) {
-        return cleanVehicle;
-    }
-
     return `
-        <span style="
-            background:#fee2e2;
-            color:#b91c1c;
-            padding:2px 7px;
-            border-radius:5px;
-            font-weight:800;
-            display:inline-block;
-        ">
-            ${cleanVehicle}
-        </span>
+        background:#fee2e2;
+        color:#b91c1c;
+        border-radius:5px;
+        padding:2px 7px;
+        font-weight:800;
+        display:inline-block;
     `;
 }
-
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(
