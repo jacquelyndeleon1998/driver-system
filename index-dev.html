@@ -3733,8 +3733,7 @@ async function loadDriverRequests() {
         </tr>
     `).join("");
 }
-
-    function renderDriverRequests() {
+function renderDriverRequests() {
 
     const body =
         document.getElementById("driverRequestBody");
@@ -3753,13 +3752,13 @@ async function loadDriverRequests() {
         window.driverRequestRecords || [];
 
     console.log(
-        "ADMIN ROLE - ALL REQUEST RECORDS:",
+        "ADMIN ROLE - ALL DRIVER REQUEST RECORDS:",
         records
     );
 
-    // ------------------------------------------
+    // ==========================================
     // GET SELECTED CUTOFF
-    // ------------------------------------------
+    // ==========================================
 
     const selectedCutoff =
         cutoffSelect?.value || "";
@@ -3769,9 +3768,10 @@ async function loadDriverRequests() {
         selectedCutoff
     );
 
-    // ------------------------------------------
+
+    // ==========================================
     // NO RECORDS
-    // ------------------------------------------
+    // ==========================================
 
     if (records.length === 0) {
 
@@ -3791,18 +3791,19 @@ async function loadDriverRequests() {
         return;
     }
 
-    // ------------------------------------------
-    // FILTER BY CUTOFF
-    // ------------------------------------------
 
-    let filteredRecords =
-        records;
+    // ==========================================
+    // PARSE SELECTED CUTOFF
+    // ==========================================
+
+    let cutoffStart = null;
+    let cutoffEnd = null;
 
     if (selectedCutoff) {
 
         const cutoffMatch =
             selectedCutoff.match(
-                /([A-Za-z]+)\s+(\d+)\s*-\s*(\d+),\s*(\d{4})/
+                /^([A-Za-z]+)\s+(\d+)\s*-\s*(\d+),\s*(\d{4})$/
             );
 
         if (cutoffMatch) {
@@ -3824,47 +3825,184 @@ async function loadDriverRequests() {
                     `${monthName} 1, ${year}`
                 ).getMonth();
 
-            filteredRecords =
-                records.filter(record => {
 
-                    const rawDate =
-                        String(
-                            record.date || ""
-                        ).trim();
+            cutoffStart =
+                new Date(
+                    year,
+                    monthIndex,
+                    startDay
+                );
 
-                    if (!rawDate) {
-                        return false;
-                    }
+            cutoffStart.setHours(
+                0, 0, 0, 0
+            );
 
-                    const requestDate =
-                        new Date(rawDate);
 
-                    if (
-                        Number.isNaN(
-                            requestDate.getTime()
-                        )
-                    ) {
-                        return false;
-                    }
+            cutoffEnd =
+                new Date(
+                    year,
+                    monthIndex,
+                    endDay
+                );
 
-                    return (
-                        requestDate.getFullYear() === year &&
-                        requestDate.getMonth() === monthIndex &&
-                        requestDate.getDate() >= startDay &&
-                        requestDate.getDate() <= endDay
-                    );
-                });
+            cutoffEnd.setHours(
+                23, 59, 59, 999
+            );
+
+
+            console.log(
+                "ADMIN DRIVER REQUEST CUTOFF START:",
+                cutoffStart
+            );
+
+            console.log(
+                "ADMIN DRIVER REQUEST CUTOFF END:",
+                cutoffEnd
+            );
+
+        } else {
+
+            console.warn(
+                "Unable to parse Driver Request cutoff:",
+                selectedCutoff
+            );
         }
     }
 
+
+    // ==========================================
+    // FILTER RECORDS
+    // ==========================================
+
+    let filteredRecords =
+        records;
+
+    if (
+        cutoffStart &&
+        cutoffEnd
+    ) {
+
+        filteredRecords =
+            records.filter(record => {
+
+                const rawDate =
+                    String(
+                        record.date || ""
+                    ).trim();
+
+                if (!rawDate) {
+                    return false;
+                }
+
+
+                let requestDate = null;
+
+
+                // ----------------------------------
+                // YYYY-MM-DD
+                // ----------------------------------
+
+                const isoMatch =
+                    rawDate.match(
+                        /^(\d{4})-(\d{1,2})-(\d{1,2})$/
+                    );
+
+                if (isoMatch) {
+
+                    requestDate =
+                        new Date(
+                            Number(isoMatch[1]),
+                            Number(isoMatch[2]) - 1,
+                            Number(isoMatch[3])
+                        );
+
+                } else {
+
+
+                    // ----------------------------------
+                    // MM/DD/YYYY
+                    // ----------------------------------
+
+                    const slashMatch =
+                        rawDate.match(
+                            /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+                        );
+
+                    if (slashMatch) {
+
+                        requestDate =
+                            new Date(
+                                Number(slashMatch[3]),
+                                Number(slashMatch[1]) - 1,
+                                Number(slashMatch[2])
+                            );
+
+                    } else {
+
+
+                        // ----------------------------------
+                        // GENERAL DATE FALLBACK
+                        // ----------------------------------
+
+                        const parsed =
+                            new Date(rawDate);
+
+                        if (
+                            !Number.isNaN(
+                                parsed.getTime()
+                            )
+                        ) {
+
+                            requestDate =
+                                new Date(
+                                    parsed.getFullYear(),
+                                    parsed.getMonth(),
+                                    parsed.getDate()
+                                );
+                        }
+                    }
+                }
+
+
+                if (!requestDate) {
+                    return false;
+                }
+
+
+                requestDate.setHours(
+                    0, 0, 0, 0
+                );
+
+
+                const matches =
+                    requestDate >= cutoffStart &&
+                    requestDate <= cutoffEnd;
+
+
+                console.log(
+                    "DRIVER REQUEST CUTOFF CHECK:",
+                    {
+                        rawDate: rawDate,
+                        requestDate: requestDate,
+                        matches: matches
+                    }
+                );
+
+
+                return matches;
+            });
+    }
+
+
     console.log(
-        "ADMIN ROLE - FILTERED REQUESTS:",
+        "ADMIN ROLE - FILTERED DRIVER REQUESTS:",
         filteredRecords
     );
 
-    // ------------------------------------------
-    // NO MATCH FOR CUTOFF
-    // ------------------------------------------
+
+    // ==========================================
+    // NO MATCH
+    // ==========================================
 
     if (filteredRecords.length === 0) {
 
@@ -3885,16 +4023,20 @@ async function loadDriverRequests() {
         return;
     }
 
-    // ------------------------------------------
+
+    // ==========================================
     // RENDER TABLE
-    // ------------------------------------------
+    // ==========================================
 
     body.innerHTML =
         filteredRecords.map(record => {
 
             const status =
-                record.requestStatus ||
-                "Pending";
+                String(
+                    record.requestStatus ||
+                    "Pending"
+                ).trim();
+
 
             return `
                 <tr>
@@ -3919,28 +4061,29 @@ async function loadDriverRequests() {
                         ${record.requestedTime || ""}
                     </td>
 
-                  <td>
-    ${
-        status.toLowerCase() === "pending"
-        ? `
-            <button
-                type="button"
-                class="driver-request-status pending"
-                onclick="showDriverRequestAction(
-                    '${encodeURIComponent(record.date || "")}',
-                    '${encodeURIComponent(record.driverName || "")}',
-                    '${encodeURIComponent(record.request || "")}'
-                )">
-                Pending
-            </button>
-        `
-        : `
-            <span class="driver-request-status ${status.toLowerCase()}">
-                ${status}
-            </span>
-        `
-    }
-</td>
+                    <td>
+                        ${
+                            status.toLowerCase() === "pending"
+                            ? `
+                                <button
+                                    type="button"
+                                    class="driver-request-status pending"
+                                    onclick="showDriverRequestAction(
+                                        '${encodeURIComponent(record.date || "")}',
+                                        '${encodeURIComponent(record.driverName || "")}',
+                                        '${encodeURIComponent(record.request || "")}'
+                                    )">
+                                    Pending
+                                </button>
+                            `
+                            : `
+                                <span
+                                    class="driver-request-status ${status.toLowerCase()}">
+                                    ${status}
+                                </span>
+                            `
+                        }
+                    </td>
 
                 </tr>
             `;
