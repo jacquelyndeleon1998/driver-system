@@ -8369,14 +8369,13 @@ if (scheduleNotes.trim() !== "") {
 
         // These two can load at the same time because
         // they do not depend on submittedDrivers.
-        await Promise.all([
-            loadMainSchedulesAndApprovals(),
-            loadDriverRequests()
-        ]);
+        await loadSubmittedAllowances();
 
-        // Refresh live allowance data after the initial
-        // submitted state and schedule data are ready.
-        await fetchLiveAllowancesFromSheet();
+await loadMainSchedulesAndApprovals();
+
+await loadDriverRequests();
+
+await fetchLiveAllowancesFromSheet();
 
         updateCutoffDropdownsDynamically();
 
@@ -8491,11 +8490,11 @@ async function loginDriver() {
             showReminderModal();
         } else {
             showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-           await Promise.all([
-    loadSubmittedAllowances(),
-    fetchLiveAllowancesFromSheet(),
-    loadMainSchedulesAndApprovals()
-]);
+           await loadSubmittedAllowances();
+
+await loadMainSchedulesAndApprovals();
+
+await fetchLiveAllowancesFromSheet();
 
 hideLoginSpinner();
 showHomePage();
@@ -8526,35 +8525,19 @@ async function confirmReminder() {
         // 1. LOAD SCHEDULE FIRST
         //    THIS IS THE ONLY DATA THAT BLOCKS THE DASHBOARD
         // =====================================================
-        await loadMainSchedulesAndApprovals();
+     await loadSubmittedAllowances();
 
-        // Update cutoff dropdowns using the schedule we already have
-        updateCutoffDropdownsDynamically();
+await loadMainSchedulesAndApprovals();
 
-        // =====================================================
-        // 2. SHOW DASHBOARD IMMEDIATELY
-        // =====================================================
-        hideLoginSpinner();
-        showHomePage();
+await fetchLiveAllowancesFromSheet();
 
-        // =====================================================
-        // 3. LOAD NON-CRITICAL DATA IN BACKGROUND
-        //    These must NOT delay the dashboard.
-        // =====================================================
-        Promise.allSettled([
-            loadSubmittedAllowances(),
-            fetchLiveAllowancesFromSheet(),
-            loadDriverRequests()
-        ]).then(() => {
-            // Refresh cutoff dropdowns after background data arrives
-            updateCutoffDropdownsDynamically();
-        }).catch(err => {
-            console.warn(
-                "Background dashboard data loading completed with errors:",
-                err
-            );
-        });
+await loadDriverRequests();
 
+updateCutoffDropdownsDynamically();
+
+hideLoginSpinner();
+showHomePage();
+        
     } catch (err) {
         console.error(
             "Error loading driver dashboard:",
