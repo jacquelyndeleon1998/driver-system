@@ -9,6 +9,179 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        /* ================================
+   DRIVER REQUEST MODALS
+================================ */
+
+.request-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.request-modal {
+    width: 100%;
+    max-width: 430px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.20);
+    overflow: hidden;
+    animation: requestModalIn 0.18s ease-out;
+}
+
+@keyframes requestModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.request-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.request-modal-details {
+    padding: 8px 24px 12px;
+}
+
+.request-detail-row {
+    display: grid;
+    grid-template-columns: 125px 1fr;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.request-detail-row:last-child {
+    border-bottom: none;
+}
+
+.request-detail-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.request-detail-row span:last-child {
+    color: #222;
+    word-break: break-word;
+}
+
+.request-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 24px 22px;
+    border-top: 1px solid #eeeeee;
+}
+
+.request-modal-buttons button {
+    border: none;
+    border-radius: 9px;
+    padding: 10px 17px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.request-modal-cancel {
+    background: #f1f1f1;
+    color: #444;
+}
+
+.request-modal-cancel:hover {
+    background: #e5e5e5;
+}
+
+.request-modal-submit {
+    background: #222;
+    color: #fff;
+}
+
+.request-modal-submit:hover {
+    background: #000;
+}
+
+
+/* Success Modal */
+
+.request-success-modal {
+    max-width: 400px;
+}
+
+.request-success-title {
+    padding: 24px 24px 10px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #222;
+}
+
+.request-success-message {
+    padding: 0 24px 22px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .request-modal {
+        max-width: 100%;
+        border-radius: 14px;
+    }
+
+    .request-modal-title {
+        font-size: 18px;
+        padding: 20px 20px 15px;
+    }
+
+    .request-modal-details {
+        padding: 6px 20px 10px;
+    }
+
+    .request-detail-row {
+        grid-template-columns: 105px 1fr;
+        font-size: 13px;
+        gap: 8px;
+    }
+
+    .request-modal-buttons {
+        padding: 16px 20px 20px;
+    }
+
+    .request-modal-buttons button {
+        flex: 1;
+    }
+
+    .request-success-title {
+        padding: 22px 20px 10px;
+        font-size: 18px;
+    }
+
+    .request-success-message {
+        padding: 0 20px 20px;
+    }
+}
+
         .login-container input {
     font-size: 16px;
 }
@@ -3441,6 +3614,67 @@ if (driverBody) {
         </tr>
     `).join("");
 }
+
+    let pendingDriverRequestSubmission = null;
+
+
+function openRequestConfirmModal(
+    requestDate,
+    requestType,
+    reasonDuty,
+    requestedTime,
+    submitFunction
+) {
+
+    document.getElementById("confirmRequestDate").textContent =
+        requestDate || "N/A";
+
+    document.getElementById("confirmRequestType").textContent =
+        requestType || "N/A";
+
+    document.getElementById("confirmReasonDuty").textContent =
+        reasonDuty || "N/A";
+
+    document.getElementById("confirmRequestedTime").textContent =
+        requestedTime || "N/A";
+
+    pendingDriverRequestSubmission = submitFunction;
+
+    document.getElementById("requestConfirmModal").style.display = "flex";
+}
+
+
+function closeRequestConfirmModal() {
+
+    document.getElementById("requestConfirmModal").style.display = "none";
+
+    pendingDriverRequestSubmission = null;
+}
+
+
+function confirmDriverRequestSubmission() {
+
+    if (typeof pendingDriverRequestSubmission === "function") {
+
+        const submitFunction = pendingDriverRequestSubmission;
+
+        closeRequestConfirmModal();
+
+        submitFunction();
+    }
+}
+
+
+function showRequestSuccessModal() {
+
+    document.getElementById("requestSuccessModal").style.display = "flex";
+}
+
+
+function closeRequestSuccessModal() {
+
+    document.getElementById("requestSuccessModal").style.display = "none";
+}
     
 function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
@@ -5855,19 +6089,14 @@ function handleDutyTypeChange() {
     // CONFIRM
     // -----------------------------
 
-    const confirmed = confirm(
-        `Submit this request?\n\n` +
-        `Date: ${requestDate}\n` +
-        `Request: ${requestType}\n` +
-        `Reason / Duty: ${reasonDuty}\n` +
-        `Requested Time: ${requestedTime || "N/A"}`
-    );
+    openRequestConfirmModal(
+    requestDate,
+    requestType,
+    reasonDuty,
+    requestedTime,
+    async function () {
 
-    if (!confirmed) {
-        return;
-    }
-
-    try {
+        try {
 
         showActionLoading(
             "Submitting Request...",
@@ -7672,6 +7901,82 @@ await loadMainSchedulesAndApprovals();
                 style="margin:0; height:44px; background:#14532d;"
                 onclick="continueToManualSheet()">
                 Continue
+            </button>
+        </div>
+
+    </div>
+</div>
+
+    <!-- Driver Request Confirmation Modal -->
+<div id="requestConfirmModal" class="request-modal-overlay" style="display:none;">
+    <div class="request-modal">
+
+        <div class="request-modal-title">
+            Submit Request?
+        </div>
+
+        <div class="request-modal-details">
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Date</span>
+                <span id="confirmRequestDate"></span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Request</span>
+                <span id="confirmRequestType"></span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Reason / Duty</span>
+                <span id="confirmReasonDuty"></span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Requested Time</span>
+                <span id="confirmRequestedTime"></span>
+            </div>
+
+        </div>
+
+        <div class="request-modal-buttons">
+            <button
+                type="button"
+                class="request-modal-cancel"
+                onclick="closeRequestConfirmModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="confirmDriverRequestSubmission()">
+                Submit Request
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Driver Request Success Modal -->
+<div id="requestSuccessModal" class="request-modal-overlay" style="display:none;">
+    <div class="request-modal request-success-modal">
+
+        <div class="request-success-title">
+            Request Submitted Successfully
+        </div>
+
+        <div class="request-success-message">
+            Your request has been submitted and is now waiting for Admin review.
+        </div>
+
+        <div class="request-modal-buttons">
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="closeRequestSuccessModal()">
+                OK
             </button>
         </div>
 
