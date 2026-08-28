@@ -6054,7 +6054,9 @@ function handleDutyTypeChange() {
     }
 
     if (!driverName) {
-        alert("Driver information could not be found. Please log in again.");
+        alert(
+            "Driver information could not be found. Please log in again."
+        );
         return;
     }
 
@@ -6068,7 +6070,6 @@ function handleDutyTypeChange() {
 
         requestedTime =
             `${requestTimeIn} to ${requestTimeOut}`;
-
     }
 
     // -----------------------------
@@ -6081,114 +6082,144 @@ function handleDutyTypeChange() {
         requestType === "Request Duty" &&
         requestDutyType
     ) {
+
         reasonDuty =
             `${requestDutyType} - ${requestReason}`;
     }
 
     // -----------------------------
-    // CONFIRM
+    // CUSTOM CONFIRMATION MODAL
     // -----------------------------
 
     openRequestConfirmModal(
-    requestDate,
-    requestType,
-    reasonDuty,
-    requestedTime,
-    async function () {
-
-        try {
-
-            showActionLoading(
-                "Submitting Request...",
-                "Please wait while your request is being submitted."
-            );
-
-            const requestURL =
-                `${WEBAPP_BASE}?action=submitDriverRequest`
-                + `&date=${encodeURIComponent(requestDate)}`
-                + `&driverName=${encodeURIComponent(driverName)}`
-                + `&request=${encodeURIComponent(requestType)}`
-                + `&reasonDuty=${encodeURIComponent(reasonDuty)}`
-                + `&requestedTime=${encodeURIComponent(requestedTime)}`
-                + `&token=${encodeURIComponent(SECRET_TOKEN)}`
-                + `&_nc=${Date.now()}`;
-
-            const response = await fetch(
-                requestURL,
-                {
-                    method: "GET",
-                    cache: "no-store",
-                    credentials: "omit"
-                }
-            );
-
-            const text = await response.text();
-
-            let result;
+        requestDate,
+        requestType,
+        reasonDuty,
+        requestedTime,
+        async function () {
 
             try {
-                result = JSON.parse(text);
-            } catch (parseError) {
+
+                showActionLoading(
+                    "Submitting Request...",
+                    "Please wait while your request is being submitted."
+                );
+
+                const requestURL =
+                    `${WEBAPP_BASE}?action=submitDriverRequest`
+                    + `&date=${encodeURIComponent(requestDate)}`
+                    + `&driverName=${encodeURIComponent(driverName)}`
+                    + `&request=${encodeURIComponent(requestType)}`
+                    + `&reasonDuty=${encodeURIComponent(reasonDuty)}`
+                    + `&requestedTime=${encodeURIComponent(requestedTime)}`
+                    + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+                    + `&_nc=${Date.now()}`;
+
+                const response = await fetch(
+                    requestURL,
+                    {
+                        method: "GET",
+                        cache: "no-store",
+                        credentials: "omit"
+                    }
+                );
+
+                const text = await response.text();
+
+                let result;
+
+                try {
+
+                    result = JSON.parse(text);
+
+                } catch (parseError) {
+
+                    console.error(
+                        "Submit Driver Request returned non-JSON:",
+                        text
+                    );
+
+                    throw new Error(
+                        "The server returned an invalid response."
+                    );
+                }
+
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        "Unable to submit request."
+                    );
+                }
+
+                // Close request schedule modal
+                closeRequestScheduleModal();
+
+                // Hide loading
+                const overlay =
+                    document.getElementById("actionLoadingOverlay");
+
+                if (overlay) {
+                    overlay.style.display = "none";
+                }
+
+                // Show success modal
+                showRequestSuccessModal();
+
+                // Refresh driver's request table
+                if (
+                    typeof loadDriverRequests === "function"
+                ) {
+
+                    await loadDriverRequests();
+                }
+
+            } catch (error) {
 
                 console.error(
-                    "Submit Driver Request returned non-JSON:",
-                    text
+                    "Submit Driver Request Error:",
+                    error
                 );
 
-                throw new Error(
-                    "The server returned an invalid response."
+                alert(
+                    error.message ||
+                    "Unable to submit request. Please try again."
                 );
-            }
 
-            if (!result.success) {
-                throw new Error(
-                    result.message ||
-                    "Unable to submit request."
-                );
-            }
+            } finally {
 
-            closeRequestScheduleModal();
+                const overlay =
+                    document.getElementById("actionLoadingOverlay");
 
-            // Hide loading before showing success
-            const overlay =
-                document.getElementById("actionLoadingOverlay");
-
-            if (overlay) {
-                overlay.style.display = "none";
-            }
-
-            // Show custom success modal
-            showRequestSuccessModal();
-
-            // Refresh the driver's request table
-            if (typeof loadDriverRequests === "function") {
-                await loadDriverRequests();
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Submit Driver Request Error:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "Unable to submit request. Please try again."
-            );
-
-        } finally {
-
-            const overlay =
-                document.getElementById("actionLoadingOverlay");
-
-            if (overlay) {
-                overlay.style.display = "none";
+                if (overlay) {
+                    overlay.style.display = "none";
+                }
             }
         }
+    );
+}
 
+
+function showActionLoading(title, message) {
+
+    const t =
+        document.getElementById("actionLoadingTitle");
+
+    const m =
+        document.getElementById("actionLoadingMessage");
+
+    if (t) {
+        t.textContent = title;
     }
-);
+
+    if (m) {
+        m.textContent = message;
+    }
+
+    document.getElementById(
+        "actionLoadingOverlay"
+    ).style.display = "flex";
+}
 
 function showActionLoading(title, message){
     const t = document.getElementById("actionLoadingTitle");
