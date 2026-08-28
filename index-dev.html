@@ -3178,14 +3178,29 @@ async function showAdminDashboard() {
     });
 }
 
-function getCodingHighlightStyle(vehicle, date) {
-    if (!isVehicleCodingDay(vehicle, date)) {
+function getCodingVehicleHTML(vehicle, date) {
+
+    const cleanVehicle = String(vehicle || "").trim();
+
+    if (!cleanVehicle) {
         return "";
     }
 
+    if (!isVehicleCodingDay(cleanVehicle, date)) {
+        return cleanVehicle;
+    }
+
     return `
-        background:#fee2e2 !important;
-        border-color:#fca5a5 !important;
+        <span style="
+            background:#fee2e2;
+            color:#b91c1c;
+            padding:2px 7px;
+            border-radius:5px;
+            font-weight:800;
+            display:inline-block;
+        ">
+            ${cleanVehicle}
+        </span>
     `;
 }
 
