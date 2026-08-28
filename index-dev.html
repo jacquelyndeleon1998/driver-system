@@ -4027,7 +4027,7 @@ function closeDriverRequestActionModal() {
     selectedDriverRequestAction = null;
 }
 
-    async function processDriverRequestAction(status) {
+  async function processDriverRequestAction(status) {
 
     if (!selectedDriverRequestAction) {
         console.error("No driver request selected.");
@@ -4054,14 +4054,10 @@ function closeDriverRequestActionModal() {
         return;
     }
 
-    try {
+    // Close modal immediately
+    closeDriverRequestActionModal();
 
-        showActionLoading(
-            status === "Approved"
-                ? "Approving Request..."
-                : "Denying Request...",
-            "Please wait while the request is being updated."
-        );
+    try {
 
         const requestURL =
             `${WEBAPP_BASE}?action=updateDriverRequestStatus`
@@ -4072,10 +4068,6 @@ function closeDriverRequestActionModal() {
             + `&token=${encodeURIComponent(SECRET_TOKEN)}`
             + `&_nc=${Date.now()}`;
 
-        console.log(
-            "UPDATE DRIVER REQUEST URL:",
-            requestURL
-        );
 
         const response =
             await fetch(
@@ -4087,19 +4079,17 @@ function closeDriverRequestActionModal() {
                 }
             );
 
+
         if (!response.ok) {
             throw new Error(
                 `HTTP ${response.status}`
             );
         }
 
+
         const text =
             await response.text();
 
-        console.log(
-            "UPDATE DRIVER REQUEST RESPONSE:",
-            text
-        );
 
         let result;
 
@@ -4115,6 +4105,7 @@ function closeDriverRequestActionModal() {
             );
         }
 
+
         if (!result.success) {
 
             throw new Error(
@@ -4123,17 +4114,53 @@ function closeDriverRequestActionModal() {
             );
         }
 
-        // Close action modal
-        closeDriverRequestActionModal();
 
-        // Refresh Driver Requests
-        await loadDriverRequests();
+        // ------------------------------------------
+        // UPDATE CURRENT ROW IMMEDIATELY
+        // ------------------------------------------
+
+        const records =
+            window.driverRequestRecords || [];
+
+        const matchingRecord =
+            records.find(record =>
+                String(record.date || "").trim() ===
+                    requestData.date &&
+                String(record.driverName || "").trim().toLowerCase() ===
+                    requestData.driverName.toLowerCase() &&
+                String(record.request || "").trim().toLowerCase() ===
+                    requestData.request.toLowerCase()
+            );
+
+
+        if (matchingRecord) {
+            matchingRecord.requestStatus =
+                status;
+        }
+
+
+        // ------------------------------------------
+        // RENDER IMMEDIATELY
+        // ------------------------------------------
+
+        if (
+            typeof renderDriverRequests ===
+            "function"
+        ) {
+            renderDriverRequests();
+        }
+
+
+        // ------------------------------------------
+        // SUCCESS MESSAGE
+        // ------------------------------------------
 
         alert(
             status === "Approved"
                 ? "Request approved successfully."
                 : "Request denied successfully."
         );
+
 
     } catch (error) {
 
@@ -4146,17 +4173,6 @@ function closeDriverRequestActionModal() {
             error.message ||
             "Unable to update request status. Please try again."
         );
-
-    } finally {
-
-        const overlay =
-            document.getElementById(
-                "actionLoadingOverlay"
-            );
-
-        if (overlay) {
-            overlay.style.display = "none";
-        }
     }
 }
 
