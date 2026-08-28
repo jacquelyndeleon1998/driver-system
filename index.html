@@ -9,6 +9,224 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        .request-action-message {
+    text-align: center;
+    font-size: 15px;
+    color: #4b5563;
+    padding: 4px 0 8px;
+}
+
+.request-modal-body {
+    padding: 20px 24px 8px;
+}
+
+#driverRequestActionModal .request-modal {
+    max-width: 420px;
+    width: calc(100% - 32px);
+}
+
+      .request-modal-deny {
+    background: #dc3545 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 9px !important;
+    padding: 10px 17px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.request-modal-deny:hover {
+    background: #c82333 !important;
+    color: #fff !important;
+}
+
+.request-modal-deny:active {
+    background: #bd2130 !important;
+    color: #fff !important;
+}
+
+        /* ================================
+   DRIVER REQUEST MODALS
+================================ */
+
+.request-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.request-modal {
+    width: 100%;
+    max-width: 430px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.20);
+    overflow: hidden;
+    animation: requestModalIn 0.18s ease-out;
+}
+
+@keyframes requestModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.request-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.request-modal-details {
+    padding: 8px 24px 12px;
+}
+
+.request-detail-row {
+    display: grid;
+    grid-template-columns: 125px 1fr;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.request-detail-row:last-child {
+    border-bottom: none;
+}
+
+.request-detail-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.request-detail-row span:last-child {
+    color: #222;
+    word-break: break-word;
+}
+
+.request-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 24px 22px;
+    border-top: 1px solid #eeeeee;
+}
+
+.request-modal-buttons button {
+    border: none;
+    border-radius: 9px;
+    padding: 10px 17px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.request-modal-cancel {
+    background: #f1f1f1;
+    color: #444;
+}
+
+.request-modal-cancel:hover {
+    background: #e5e5e5;
+}
+
+.request-modal-submit {
+    background: #28a745 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.request-modal-submit:hover {
+    background: #218838 !important;
+    color: #fff !important;
+}
+
+.request-modal-submit:active {
+    background: #1e7e34 !important;
+    color: #fff !important;
+}
+
+
+/* Success Modal */
+
+.request-success-modal {
+    max-width: 400px;
+}
+
+.request-success-title {
+    padding: 24px 24px 10px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #222;
+}
+
+.request-success-message {
+    padding: 0 24px 22px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .request-modal {
+        max-width: 100%;
+        border-radius: 14px;
+    }
+
+    .request-modal-title {
+        font-size: 18px;
+        padding: 20px 20px 15px;
+    }
+
+    .request-modal-details {
+        padding: 6px 20px 10px;
+    }
+
+    .request-detail-row {
+        grid-template-columns: 105px 1fr;
+        font-size: 13px;
+        gap: 8px;
+    }
+
+    .request-modal-buttons {
+        padding: 16px 20px 20px;
+    }
+
+    .request-modal-buttons button {
+        flex: 1;
+    }
+
+    .request-success-title {
+        padding: 22px 20px 10px;
+        font-size: 18px;
+    }
+
+    .request-success-message {
+        padding: 0 20px 20px;
+    }
+}
+
         .login-container input {
     font-size: 16px;
 }
@@ -50,7 +268,7 @@
 
 .review-title{
     color:#14532d;
-    font-size:28px;
+    font-size:24px;
     margin-bottom:5px;
 }
 
@@ -103,7 +321,7 @@
 }
 
 .review-total span:last-child{
-    font-size:26px;
+    font-size:20px;
     color:#15803d;
 }
 
@@ -580,6 +798,13 @@
         color: #721c24;
         font-weight: bold;
     }
+
+        .duty-tracker-rest-day {
+    background: #f8d7da;
+    color: #721c24;
+    font-weight: 800;
+    text-align: center;
+}
 
     .app-header {
         display: flex;
@@ -1699,9 +1924,13 @@
 
     <span id="sepDashboardAllowance" class="nav-separator">|</span>
 
-    <button id="allowanceBtn" class="nav-btn" onclick="showDriverAllowanceSummary()">Allowances</button>
+  <button id="allowanceBtn" class="nav-btn" onclick="showDriverAllowanceSummary()">Allowances</button>
 
-    <span id="sepAllowanceAdmin" class="nav-separator">|</span>
+<span id="sepAllowanceRequest" class="nav-separator" style="display:none;">|</span>
+
+<button id="requestBtn" class="nav-btn" style="display:none;" onclick="showDriverRequestsPage()">Request</button>
+
+<span id="sepAllowanceAdmin" class="nav-separator">|</span>
 
     <button id="adminBtn" class="nav-btn" onclick="showAdminDashboard()">Admin</button>
 
@@ -1722,6 +1951,7 @@
     <div id="driversContainer"></div>
 </div>
 
+  
 <!-- DRIVER ALLOWANCE SUMMARY VIEW CONTAINER -->
 <div id="driverAllowancePage" style="display:none;">
  <div id="driverAllowanceHeader" class="schedule-header bg-driver-allowance" style="margin-top: 0;">
@@ -1752,7 +1982,320 @@
     </div>
 </div>
 
-<div id="scheduleApprovalPage" style="display:none;">
+  <!-- DRIVER REQUEST PAGE -->
+<div id="driverRequestsPage" style="display:none;">
+
+    <div class="approval-container" style="margin-top:15px;">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            flex-wrap:wrap;
+            margin-bottom:20px;
+        ">
+
+            <div>
+                <h3 style="margin:0 0 5px 0;">
+                    Request Schedule
+                </h3>
+
+                <div style="
+                    font-size:13px;
+                    color:#6b7280;
+                ">
+                    Submit a request for leave or specific duty.
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class="allowance-btn"
+                onclick="openRequestScheduleModal()">
+                + Request Schedule
+            </button>
+
+        </div>
+
+
+        <div class="request-section">
+
+            <h3>Your Request/s</h3>
+
+            <div class="table-responsive">
+
+                <table
+                    id="driverRequestsTable"
+                    class="approval-table">
+
+                    <thead>
+                        <tr>
+        <th>Date Request</th>
+        <th>Request</th>
+        <th>Reason / Duty</th>
+        <th>Requested Time</th>
+        <th>Request Status</th>
+    </tr>
+                    </thead>
+
+                    <tbody id="driverRequestsTableBody">
+
+                        <tr>
+                            <td
+                                colspan="5"
+                                style="
+                                    text-align:center;
+                                    padding:25px;
+                                    color:#6b7280;
+                                ">
+                                No requests yet.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="approval-footer">
+
+        <button
+            type="button"
+            class="allowance-btn cancel-btn"
+            onclick="backToMainDashboard()">
+            &larr; Back to Dashboard
+        </button>
+
+    </div>
+
+</div>
+<!-- DRIVER REQUEST END PAGE -->
+
+    <!-- REQUEST SCHEDULE MODAL -->
+<div id="requestScheduleModal" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+">
+
+    <div style="
+        background:#ffffff;
+        width:100%;
+        max-width:500px;
+        max-height:90vh;
+        overflow-y:auto;
+        border-radius:12px;
+        padding:22px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    ">
+
+        <h2 style="
+            margin:0 0 20px 0;
+            text-align:center;
+        ">
+            Request Schedule
+        </h2>
+
+        <!-- DATE -->
+        <div style="margin-bottom:15px;">
+            <label
+                for="requestDate"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Date
+            </label>
+
+            <input
+                type="date"
+                id="requestDate"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                ">
+        </div>
+
+        <!-- REQUEST TYPE -->
+        <div style="margin-bottom:15px;">
+            <label
+                for="requestType"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Request
+            </label>
+
+            <select
+                id="requestType"
+                onchange="handleRequestTypeChange()"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                    background:#fff;
+                ">
+
+
+                <option value="Leave">Leave</option>
+                <option value="Request Duty">Request Duty</option>
+
+            </select>
+        </div>
+
+        <!-- DUTY TYPE -->
+        <div
+            id="requestDutyOptions"
+            style="display:none;margin-bottom:15px;">
+
+            <label
+                for="requestDutyType"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Duty Type
+            </label>
+
+            <select
+                id="requestDutyType"
+                onchange="handleDutyTypeChange()"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                    background:#fff;
+                ">
+
+              
+                <option value="AM Carpool">AM Carpool</option>
+                <option value="PM Carpool">PM Carpool</option>
+                <option value="Others">Others</option>
+
+            </select>
+
+        </div>
+
+        <!-- REASON / DUTY -->
+        <div style="margin-bottom:15px;">
+
+            <label
+                for="requestReason"
+                style="display:block;font-weight:600;margin-bottom:6px;">
+                Reason
+            </label>
+
+            <input
+                type="text"
+                id="requestReason"
+                placeholder="Enter reason or duty"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:10px;
+                    border:1px solid #d1d5db;
+                    border-radius:7px;
+                ">
+
+        </div>
+
+        <!-- TIME -->
+        <div
+            id="requestTimeFields"
+            style="display:none;">
+
+            <div style="
+                display:flex;
+                gap:12px;
+                margin-bottom:20px;
+            ">
+
+                <div style="flex:1;">
+
+                    <label
+                        for="requestTimeIn"
+                        style="display:block;font-weight:600;margin-bottom:6px;">
+                        Time In
+                    </label>
+
+                    <input
+                        type="time"
+                        id="requestTimeIn"
+                        style="
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:10px;
+                            border:1px solid #d1d5db;
+                            border-radius:7px;
+                        ">
+
+                </div>
+
+                <div style="flex:1;">
+
+                    <label
+                        for="requestTimeOut"
+                        style="display:block;font-weight:600;margin-bottom:6px;">
+                        Time Out
+                    </label>
+
+                    <input
+                        type="time"
+                        id="requestTimeOut"
+                        style="
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:10px;
+                            border:1px solid #d1d5db;
+                            border-radius:7px;
+                        ">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div style="
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:10px;
+        ">
+
+            <button
+                type="button"
+                class="allowance-btn cancel-btn"
+                onclick="closeRequestScheduleModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="allowance-btn"
+                onclick="submitDriverRequest()">
+                Submit
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+    
+    <div id="scheduleApprovalPage" style="display:none;">
     <!-- LAYOUT 1: DRIVER SCHEDULE ADMIN -->
     <div class="schedule-header bg-schedule-admin" style="margin-top: 0;">
         <h2>Driver Schedule</h2>
@@ -1816,6 +2359,65 @@
             <tbody id="allowanceSummaryBody"></tbody>
         </table>
     </div>
+
+      <!-- LAYOUT 4: DRIVER DUTY TRACKER -->
+    <div class="schedule-header bg-driver-allowance" style="margin-top: 30px;">
+        <h2>Driver Duty Tracker</h2>
+
+        <div class="month-selector">
+            <label for="dutyTrackerCutoff">Cut-off Period</label>
+            <select id="dutyTrackerCutoff"
+                    onchange="renderDriverDutyTracker()">
+            </select>
+        </div>
+    </div>
+
+    <div class="approval-container" style="margin-top: 15px;">
+        <div style="overflow-x: auto;">
+            <table class="approval-table" id="driverDutyTrackerTable">
+                <thead id="driverDutyTrackerHead"></thead>
+                <tbody id="driverDutyTrackerBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- LAYOUT 5: DRIVER REQUESTS -->
+<div class="schedule-header bg-driver-allowance" style="margin-top: 30px;">
+    <h2>Driver Requests</h2>
+
+    <div class="month-selector">
+        <label for="driverRequestCutoff">Cut-off Period</label>
+       <select id="driverRequestCutoff"
+        onchange="renderDriverRequests()">
+        </select>
+    </div>
+</div>
+
+<div class="approval-container" style="margin-top: 15px;">
+    <div style="overflow-x: auto;">
+        <table class="approval-table" id="driverRequestTable">
+            <thead>
+                <tr>
+    <th>Date</th>
+    <th>Driver Name</th>
+    <th>Request</th>
+    <th>Reason</th>
+    <th>Requested Time</th>
+    <th>Request Status</th>
+</tr>
+            </thead>
+
+            <tbody id="driverRequestBody">
+                <tr>
+                    <td colspan="5"
+                        style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                        No driver requests found for this cut-off window.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
     <div id="scheduleViewerPage" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px; padding: 20px;">
@@ -2103,6 +2705,16 @@
         </span>
     </div>
 
+          <div class="info-row">
+    <span class="info-label">Itinerary</span>
+    <span id="reviewItinerary" class="info-value"></span>
+</div>
+
+<div class="info-row">
+    <span class="info-label">Charge To</span>
+    <span id="reviewChargeTo" class="info-value"></span>
+</div>
+
 </div>
 
 
@@ -2336,73 +2948,90 @@ function checkAdminSession() {
 }
 
 function configureNavigation(role) {
-const allowanceBtn = document.getElementById("allowanceBtn");
-const adminBtn = document.getElementById("adminBtn");
-const manualBtn = document.getElementById("manualBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+    const allowanceBtn = document.getElementById("allowanceBtn");
+    const requestBtn = document.getElementById("requestBtn");
+    const sepAllowanceRequest = document.getElementById("sepAllowanceRequest");
+    const adminBtn = document.getElementById("adminBtn");
+    const manualBtn = document.getElementById("manualBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
-const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
-const sepAdminManual = document.getElementById("sepAdminManual");
-const sepManualLogout = document.getElementById("sepManualLogout");
-const sepAdminLogout = document.getElementById("sepAdminLogout");
+    const sepDashboardAllowance = document.getElementById("sepDashboardAllowance");
+    const sepAllowanceAdmin = document.getElementById("sepAllowanceAdmin");
+    const sepAdminManual = document.getElementById("sepAdminManual");
+    const sepManualLogout = document.getElementById("sepManualLogout");
+    const sepAdminLogout = document.getElementById("sepAdminLogout");
 
-if (allowanceBtn) allowanceBtn.style.display = "";
-if (adminBtn) adminBtn.style.display = "";
-if (manualBtn) manualBtn.style.display = "none";
-if (logoutBtn) logoutBtn.style.display = "";
+    // Default navigation
+    if (allowanceBtn) allowanceBtn.style.display = "";
+    if (requestBtn) requestBtn.style.display = "none";
+    if (adminBtn) adminBtn.style.display = "";
+    if (manualBtn) manualBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "";
 
-if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
-if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-if (sepAdminManual) sepAdminManual.style.display = "none";
-if (sepManualLogout) sepManualLogout.style.display = "none";
-if (sepAdminLogout) sepAdminLogout.style.display = "";
+    if (sepDashboardAllowance) sepDashboardAllowance.style.display = "";
+    if (sepAllowanceRequest) sepAllowanceRequest.style.display = "none";
+    if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+    if (sepAdminManual) sepAdminManual.style.display = "none";
+    if (sepManualLogout) sepManualLogout.style.display = "none";
+    if (sepAdminLogout) sepAdminLogout.style.display = "";
 
-switch (role) {
+    switch (role) {
 
-    case "driver":
-        if (adminBtn) adminBtn.style.display = "none";
-        if (manualBtn) manualBtn.style.display = "none";
+        case "driver":
+            // Driver: Dashboard | Allowances | Request | Log Out
+            if (requestBtn) requestBtn.style.display = "";
+            if (sepAllowanceRequest) sepAllowanceRequest.style.display = "";
 
-        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-        if (sepAdminManual) sepAdminManual.style.display = "none";
-        if (sepManualLogout) sepManualLogout.style.display = "none";
-        break;
+            if (adminBtn) adminBtn.style.display = "none";
+            if (manualBtn) manualBtn.style.display = "none";
 
-    case "admin":
-        if (allowanceBtn) allowanceBtn.style.display = "none";
-        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            if (sepAdminManual) sepAdminManual.style.display = "none";
+            if (sepManualLogout) sepManualLogout.style.display = "none";
+            if (sepAdminLogout) sepAdminLogout.style.display = "";
+            break;
 
-        if (adminBtn) adminBtn.style.display = "";
-        if (manualBtn) manualBtn.style.display = "";
+        case "admin":
+            // Admin: Dashboard | Admin | Manual | Log Out
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (requestBtn) requestBtn.style.display = "none";
 
-        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
-        if (sepAdminManual) sepAdminManual.style.display = "";
-        if (sepManualLogout) sepManualLogout.style.display = "";
-        if (sepAdminLogout) sepAdminLogout.style.display = "none";
-        break;
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceRequest) sepAllowanceRequest.style.display = "none";
 
-    case "organic":
-        if (allowanceBtn) allowanceBtn.style.display = "none";
-        if (adminBtn) adminBtn.style.display = "none";
-        if (manualBtn) manualBtn.style.display = "none";
+            if (adminBtn) adminBtn.style.display = "";
+            if (manualBtn) manualBtn.style.display = "";
 
-        if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
-        if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
-        if (sepAdminManual) sepAdminManual.style.display = "none";
-        if (sepManualLogout) sepManualLogout.style.display = "none";
-        if (sepAdminLogout) sepAdminLogout.style.display = "none";
-        break;
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "";
+            if (sepAdminManual) sepAdminManual.style.display = "";
+            if (sepManualLogout) sepManualLogout.style.display = "";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
+            break;
+
+        case "organic":
+            // Organic: Dashboard | Log Out
+            if (allowanceBtn) allowanceBtn.style.display = "none";
+            if (requestBtn) requestBtn.style.display = "none";
+            if (adminBtn) adminBtn.style.display = "none";
+            if (manualBtn) manualBtn.style.display = "none";
+
+            if (sepDashboardAllowance) sepDashboardAllowance.style.display = "none";
+            if (sepAllowanceRequest) sepAllowanceRequest.style.display = "none";
+            if (sepAllowanceAdmin) sepAllowanceAdmin.style.display = "none";
+            if (sepAdminManual) sepAdminManual.style.display = "none";
+            if (sepManualLogout) sepManualLogout.style.display = "none";
+            if (sepAdminLogout) sepAdminLogout.style.display = "none";
+            break;
+    }
 }
-
-}
-function showAdminDashboard() {
-    console.log("Admin button clicked");
+async function showAdminDashboard() {
+  
 
     const driverDashboard = document.getElementById("driverDashboard");
     const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
     const driverAllowancePage = document.getElementById("driverAllowancePage");
     const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+    const allowanceSummaryBody = document.getElementById("allowanceSummaryBody");
 
     // Hide other pages
     if (driverDashboard) {
@@ -2458,7 +3087,32 @@ function showAdminDashboard() {
     // Remember current view
     sessionStorage.setItem("view", "admin");
 
-    // Refresh allowance summary if available
+    // ---------------------------------------------------------
+    // IMPORTANT:
+    // Refresh allowance data FIRST before rendering the summary.
+    // ---------------------------------------------------------
+    if (allowanceSummaryBody) {
+        allowanceSummaryBody.innerHTML = `
+            <tr>
+                <td colspan="4"
+                    style="text-align:center; padding:16px; color:#6b7280;">
+                    Loading allowance summary...
+                </td>
+            </tr>
+        `;
+    }
+
+    try {
+        if (typeof fetchLiveAllowancesFromSheet === "function") {
+            await fetchLiveAllowancesFromSheet();
+        }
+    } catch (err) {
+        console.warn("Could not refresh live allowance data:", err);
+    }
+
+    // ---------------------------------------------------------
+    // NOW render the summary using the latest data.
+    // ---------------------------------------------------------
     if (typeof processAllowanceSummaryTable === "function") {
         try {
             processAllowanceSummaryTable();
@@ -2473,9 +3127,69 @@ function showAdminDashboard() {
 
     window.scrollTo(0, 0);
 
-    console.log("Admin Dashboard opened successfully");
+ 
 }
 
+    function isVehicleCodingDay(vehicle, date) {
+    const cleanVehicle = String(vehicle || "").trim().toUpperCase();
+
+    if (!cleanVehicle || !date) return false;
+
+    const scheduleDate = new Date(date);
+    if (isNaN(scheduleDate.getTime())) return false;
+
+    const day = scheduleDate.getDay();
+
+    const codingVehicles = {
+        // Tuesday
+        2: [
+            "NCS",
+            "NCS 8464"
+        ],
+
+        // Wednesday
+        3: [
+            "NDJ",
+            "NDJ 7545",
+            "NIB",
+            "NIB 9125"
+        ],
+
+        // Thursday
+        4: [
+            "UOW",
+            "UOW 338",
+            "NKT",
+            "NKT 4238"
+        ],
+
+        // Friday
+        5: [
+            "NCJ",
+            "NCJ 3650"
+        ]
+    };
+
+    const vehiclesForDay = codingVehicles[day] || [];
+
+    return vehiclesForDay.some(codingVehicle => {
+        return cleanVehicle === codingVehicle ||
+               cleanVehicle.startsWith(codingVehicle + " ");
+    });
+}
+
+function getCodingHighlightStyle(vehicle, date) {
+    if (!isVehicleCodingDay(vehicle, date)) {
+        return "";
+    }
+
+    return `
+        background:#dcfce7;
+        border-radius:4px;
+        padding:2px 5px;
+    `;
+}
+    
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(
@@ -2524,10 +3238,7 @@ async function loadSubmittedAllowances() {
             submittedDrivers[cleanKey] = true;
         });
 
-        console.log(
-            "Submitted Drivers Loaded:",
-            submittedDrivers
-        );
+      
 
     } catch (err) {
         console.warn(
@@ -2540,7 +3251,7 @@ async function loadSubmittedAllowances() {
 async function fetchLiveAllowancesFromSheet() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500);
+const timeoutId = setTimeout(() => controller.abort(), 8000);
 
         const response = await fetch(
             `${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`,
@@ -2649,10 +3360,7 @@ async function fetchLiveAllowancesFromSheet() {
             );
         }
 
-        console.log(
-            "Live allowances loaded:",
-            globalParsedAllowances
-        );
+      
 
     } catch (err) {
         // IMPORTANT:
@@ -2665,13 +3373,968 @@ async function fetchLiveAllowancesFromSheet() {
         );
     }
 }
+
+async function loadDriverRequests() {
+    const cutoffSelect = document.getElementById("driverRequestCutoff");
+    const body = document.getElementById("driverRequestBody");
+    const driverBody = document.getElementById("driverRequestsTableBody");
+
+    if (!body && !driverBody) {
+        console.warn(
+            "Driver Request elements not found. Data loading will be skipped."
+        );
+        return;
+    }
+
+    try {
+        // ==========================================
+        // SHOW LOADING
+        // ==========================================
+        const loadingBody = body || driverBody;
+
+        if (loadingBody) {
+            loadingBody.innerHTML = `
+                <tr>
+                    <td colspan="${body ? 6 : 5}"
+                        style="text-align:center; padding:16px;">
+                        Loading driver requests...
+                    </td>
+                </tr>
+            `;
+        }
+
+        // ==========================================
+        // FETCH DRIVER REQUEST CSV
+        // ==========================================
+        const url = `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
+            `&token=${encodeURIComponent(SECRET_TOKEN)}` +
+            `&_nc=${Date.now()}`;
+
+        let response = null;
+
+        // Small retry only for Driver Requests.
+        // This does NOT block dashboard loading because
+        // this function is called in the background.
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                response = await fetch(url, {
+                    method: "GET",
+                    cache: "no-store",
+                    credentials: "omit"
+                });
+
+                if (response.ok) {
+                    break;
+                }
+
+                console.warn(
+                    `Driver Requests attempt ${attempt + 1} failed: HTTP ${response.status}`
+                );
+
+            } catch (fetchError) {
+                console.warn(
+                    `Driver Requests attempt ${attempt + 1} failed:`,
+                    fetchError
+                );
+            }
+
+            if (attempt === 0) {
+                await new Promise(resolve =>
+                    setTimeout(resolve, 500)
+                );
+            }
+        }
+
+        // ==========================================
+        // IF STILL FAILED
+        // ==========================================
+        if (!response || !response.ok) {
+            console.warn(
+                "Driver Requests could not be loaded. Keeping existing Driver Request data."
+            );
+
+            // IMPORTANT:
+            // DO NOT clear window.driverRequestRecords here.
+            return;
+        }
+
+        // ==========================================
+        // READ RESPONSE
+        // ==========================================
+        const csvText = await response.text();
+        const trimmedCSV = csvText.trim();
+
+        // ==========================================
+        // EMPTY RESPONSE
+        // ==========================================
+        if (!trimmedCSV) {
+            console.warn("Driver Requests returned an empty response.");
+
+            window.driverRequestRecords = [];
+
+            if (body) {
+                renderDriverRequests();
+            }
+
+            if (driverBody) {
+                renderDriverRequestsForDriver();
+            }
+
+            return;
+        }
+
+        // ==========================================
+        // INVALID HTML RESPONSE
+        // ==========================================
+        if (
+            trimmedCSV.startsWith("<!DOCTYPE") ||
+            trimmedCSV.startsWith("<html")
+        ) {
+            console.warn("Driver Requests returned HTML instead of CSV.");
+            return;
+        }
+
+        // ==========================================
+        // UNAUTHORIZED
+        // ==========================================
+        if (trimmedCSV === "UNAUTHORIZED") {
+            console.warn("Driver Requests fetch was unauthorized.");
+            return;
+        }
+
+        // ==========================================
+        // PARSE CSV
+        // ==========================================
+        const lines = trimmedCSV.split(/\r?\n/);
+
+        if (lines.length <= 1) {
+            window.driverRequestRecords = [];
+
+            if (body) {
+                renderDriverRequests();
+            }
+
+            if (driverBody) {
+                renderDriverRequestsForDriver();
+            }
+
+            return;
+        }
+
+        // ==========================================
+        // HEADERS
+        // ==========================================
+        const headers = parseCSVRow(lines[0]);
+
+        // ==========================================
+        // RECORDS
+        // ==========================================
+        const records = lines
+            .slice(1)
+            .map(line => {
+                const cols = parseCSVRow(line);
+
+                return {
+                    date: String(cols[0] || "").trim(),
+                    driverName: String(cols[1] || "").trim(),
+                    request: String(cols[2] || "").trim(),
+                    reason: String(cols[3] || "").trim(),
+                    requestedTime: String(cols[4] || "").trim(),
+                    requestStatus: String(cols[5] || "").trim()
+                };
+            })
+            .filter(record =>
+                record.date ||
+                record.driverName ||
+                record.request ||
+                record.reason ||
+                record.requestedTime ||
+                record.requestStatus
+            );
+
+        // ==========================================
+        // SAVE GLOBAL DATA
+        // ==========================================
+        window.driverRequestRecords = records;
+
+        console.log("Driver Requests loaded:", records.length);
+
+        // ==========================================
+        // RENDER ADMIN
+        // ==========================================
+        if (body) {
+            renderDriverRequests();
+        }
+
+        // ==========================================
+        // RENDER DRIVER
+        // ==========================================
+        if (driverBody) {
+            renderDriverRequestsForDriver();
+        }
+
+        // ==========================================
+        // UPDATE CUTOFF DROPDOWN
+        // ==========================================
+        if (typeof updateCutoffDropdownsDynamically === "function") {
+            updateCutoffDropdownsDynamically();
+        }
+
+    } catch (error) {
+        console.error("Error loading Driver Requests:", error);
+
+        // IMPORTANT:
+        // Do NOT erase existing Driver Request data.
+        // A temporary network/404 error should not
+        // make the Admin table disappear.
+        if (
+            body &&
+            (!window.driverRequestRecords ||
+             !window.driverRequestRecords.length)
+        ) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="6"
+                        style="text-align:center; color:#b91c1c; padding:16px;">
+                        Unable to load Driver Requests.
+                    </td>
+                </tr>
+            `;
+        }
+    }
+}
+
+   function renderDriverRequestsForDriver() {
+    const body = document.getElementById("driverRequestsTableBody");
+
+    if (!body) {
+        console.warn("Driver Role request table not found.");
+        return;
+    }
+
+    const driverName = (localStorage.getItem("username") || "").trim();
+
+  
+
+    if (!driverName) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="text-align:center; padding:16px; color:#b91c1c;">
+                    Driver name not found.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const records = window.driverRequestRecords || [];
+
+   
+
+    const driverRecords = records.filter(record => {
+        const sheetDriver = String(record.driverName || "").trim().toLowerCase();
+        const loggedInDriver = driverName.trim().toLowerCase();
+
+        return sheetDriver === loggedInDriver;
+    });
+
+   
+
+    if (driverRecords.length === 0) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="text-align:center; color:#6b7280; padding:25px;">
+                    No requests yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    body.innerHTML = driverRecords.map(record => `
+        <tr>
+            <td>
+                ${record.date || ""}
+            </td>
+            <td>
+                ${record.request || ""}
+            </td>
+            <td>
+                ${record.reason || ""}
+            </td>
+            <td>
+                ${record.requestedTime || ""}
+            </td>
+            <td>
+                <span class="driver-request-status">
+                    ${record.requestStatus || "Pending"}
+                </span>
+            </td>
+        </tr>
+    `).join("");
+}
+function renderDriverRequests() {
+
+    const body =
+        document.getElementById("driverRequestBody");
+
+    const cutoffSelect =
+        document.getElementById("driverRequestCutoff");
+
+    if (!body) {
+        console.warn(
+            "Admin Driver Request table not found."
+        );
+        return;
+    }
+
+    const records =
+        window.driverRequestRecords || [];
+
+ 
+    // ==========================================
+    // SELECTED CUTOFF
+    // ==========================================
+
+    const selectedCutoff =
+        cutoffSelect?.value || "";
+
+    // ==========================================
+    // NO RECORDS
+    // ==========================================
+
+    if (records.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    style="
+                        text-align:center;
+                        color:#6b7280;
+                        padding:25px;
+                    ">
+                    No driver requests found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    // ==========================================
+    // PARSE CUTOFF VALUE
+    //
+    // Example:
+    // 08-1 = August 1 - 15
+    // 08-2 = August 16 - 31
+    // ==========================================
+
+    let cutoffMonth = null;
+    let cutoffBucket = null;
+
+    if (selectedCutoff) {
+
+        const parts =
+            selectedCutoff.split("-");
+
+        if (parts.length === 2) {
+
+            cutoffMonth =
+                Number(parts[0]);
+
+            cutoffBucket =
+                Number(parts[1]);
+        }
+    }
+
+
+
+
+    // ==========================================
+    // FILTER
+    // ==========================================
+
+    let filteredRecords =
+        records;
+
+    if (
+        cutoffMonth &&
+        cutoffBucket
+    ) {
+
+        filteredRecords =
+            records.filter(record => {
+
+                const rawDate =
+                    String(
+                        record.date || ""
+                    ).trim();
+
+                if (!rawDate) {
+                    return false;
+                }
+
+
+                // ----------------------------------
+                // EXPECTED SHEET FORMAT:
+                // 2026-08-29
+                // ----------------------------------
+
+                const match =
+                    rawDate.match(
+                        /^(\d{4})-(\d{1,2})-(\d{1,2})$/
+                    );
+
+
+                if (!match) {
+
+                    console.warn(
+                        "Unable to parse Driver Request date:",
+                        rawDate
+                    );
+
+                    return false;
+                }
+
+
+                const year =
+                    Number(match[1]);
+
+                const month =
+                    Number(match[2]);
+
+                const day =
+                    Number(match[3]);
+
+
+                // ----------------------------------
+                // MONTH CHECK
+                // ----------------------------------
+
+                if (
+                    month !== cutoffMonth
+                ) {
+                    return false;
+                }
+
+
+                // ----------------------------------
+                // CUT-OFF CHECK
+                // ----------------------------------
+
+                if (
+                    cutoffBucket === 1
+                ) {
+
+                    return day >= 1 &&
+                           day <= 15;
+
+                }
+
+
+                if (
+                    cutoffBucket === 2
+                ) {
+
+                    return day >= 16;
+                }
+
+
+                return false;
+            });
+    }
+
+
+
+    // ==========================================
+    // NO MATCH
+    // ==========================================
+
+    if (filteredRecords.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    style="
+                        text-align:center;
+                        color:#6b7280;
+                        padding:25px;
+                    ">
+                    No driver requests found for this
+                    cut-off window.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+
+    body.innerHTML =
+        filteredRecords.map(record => {
+
+            const status =
+                String(
+                    record.requestStatus ||
+                    "Pending"
+                ).trim();
+
+
+            return `
+                <tr>
+
+                    <td>
+                        ${record.date || ""}
+                    </td>
+
+                    <td>
+                        ${record.driverName || ""}
+                    </td>
+
+                    <td>
+                        ${record.request || ""}
+                    </td>
+
+                    <td>
+                        ${record.reason || ""}
+                    </td>
+
+                    <td>
+                        ${record.requestedTime || ""}
+                    </td>
+
+                    <td>
+                        ${
+                            status.toLowerCase() === "pending"
+
+                            ? `
+                                <button
+                                    type="button"
+                                    class="driver-request-status pending"
+                                    onclick="showDriverRequestAction(
+                                        '${encodeURIComponent(record.date || "")}',
+                                        '${encodeURIComponent(record.driverName || "")}',
+                                        '${encodeURIComponent(record.request || "")}'
+                                    )">
+                                    Pending
+                                </button>
+                            `
+
+                            : `
+
+                                <span
+                                    class="driver-request-status ${status.toLowerCase()}">
+                                    ${status}
+                                </span>
+
+                            `
+                        }
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+}
+
+    let pendingDriverRequestSubmission = null;
+
+
+function openRequestConfirmModal(
+    requestDate,
+    requestType,
+    reasonDuty,
+    requestedTime,
+    submitFunction
+) {
+
+    document.getElementById("confirmRequestDate").textContent =
+        requestDate || "N/A";
+
+    document.getElementById("confirmRequestType").textContent =
+        requestType || "N/A";
+
+    document.getElementById("confirmReasonDuty").textContent =
+        reasonDuty || "N/A";
+
+    document.getElementById("confirmRequestedTime").textContent =
+        requestedTime || "N/A";
+
+    pendingDriverRequestSubmission = submitFunction;
+
+    document.getElementById("requestConfirmModal").style.display = "flex";
+}
+
+    let selectedDriverRequestAction = null;
+
+function showDriverRequestAction(
+    requestDate,
+    driverName,
+    requestType
+) {
+
+    selectedDriverRequestAction = {
+        date: decodeURIComponent(requestDate),
+        driverName: decodeURIComponent(driverName),
+        request: decodeURIComponent(requestType)
+    };
+
+    const modal =
+        document.getElementById(
+            "driverRequestActionModal"
+        );
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+
+function closeDriverRequestActionModal() {
+
+    const modal =
+        document.getElementById(
+            "driverRequestActionModal"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+    selectedDriverRequestAction = null;
+}
+
+let pendingDriverRequestStatus = "";
+
+function processDriverRequestAction(status) {
+
+    if (!selectedDriverRequestAction) {
+        console.error("No driver request selected.");
+        return;
+    }
+
+    pendingDriverRequestStatus = status;
+
+    const message =
+        document.getElementById(
+            "driverRequestConfirmMessage"
+        );
+
+    const button =
+        document.getElementById(
+            "driverRequestConfirmButton"
+        );
+
+    if (message) {
+        message.textContent =
+            status === "Approved"
+                ? "Are you sure you want to approve this request?"
+                : "Are you sure you want to deny this request?";
+    }
+
+    if (button) {
+
+        button.textContent =
+            status === "Approved"
+                ? "Approve"
+                : "Deny";
+
+        button.classList.remove(
+            "request-modal-submit",
+            "request-modal-deny"
+        );
+
+        if (status === "Approved") {
+            button.classList.add(
+                "request-modal-submit"
+            );
+        } else {
+            button.classList.add(
+                "request-modal-deny"
+            );
+        }
+    }
+
+    // Hide the first modal WITHOUT clearing the selected request
+    const actionModal =
+        document.getElementById(
+            "driverRequestActionModal"
+        );
+
+    if (actionModal) {
+        actionModal.style.display = "none";
+    }
+
+    // Show confirmation modal
+    const confirmModal =
+        document.getElementById(
+            "driverRequestConfirmModal"
+        );
+
+    if (confirmModal) {
+        confirmModal.style.display = "flex";
+    }
+}
+
+function closeDriverRequestConfirmModal() {
+
+    const modal =
+        document.getElementById(
+            "driverRequestConfirmModal"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+    pendingDriverRequestStatus = null;
+}
+
+
+async function confirmDriverRequestAction() {
+
+    if (
+        !selectedDriverRequestAction ||
+        !pendingDriverRequestStatus
+    ) {
+        console.error(
+            "Missing request or status."
+        );
+        return;
+    }
+
+    const requestData =
+        selectedDriverRequestAction;
+
+    const status =
+        pendingDriverRequestStatus;
+
+    const confirmModal =
+        document.getElementById(
+            "driverRequestConfirmModal"
+        );
+
+    if (confirmModal) {
+        confirmModal.style.display = "none";
+    }
+
+    try {
+
+        showActionLoading(
+            status === "Approved"
+                ? "Approving Request..."
+                : "Denying Request...",
+            "Please wait while the request is being updated."
+        );
+
+        const requestURL =
+            `${WEBAPP_BASE}?action=updateDriverRequestStatus`
+            + `&date=${encodeURIComponent(requestData.date)}`
+            + `&driverName=${encodeURIComponent(requestData.driverName)}`
+            + `&request=${encodeURIComponent(requestData.request)}`
+            + `&status=${encodeURIComponent(status)}`
+            + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+            + `&_nc=${Date.now()}`;
+
+        const response =
+            await fetch(
+                requestURL,
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    credentials: "omit"
+                }
+            );
+
+        const text =
+            await response.text();
+
+     
+
+        const result =
+            JSON.parse(text);
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "Unable to update request status."
+            );
+        }
+
+        // Update current record immediately
+        const records =
+            window.driverRequestRecords || [];
+
+        const matchingRecord =
+            records.find(record =>
+                String(record.date || "").trim() ===
+                    requestData.date &&
+                String(record.driverName || "").trim().toLowerCase() ===
+                    requestData.driverName.toLowerCase() &&
+                String(record.request || "").trim().toLowerCase() ===
+                    requestData.request.toLowerCase()
+            );
+
+        if (matchingRecord) {
+            matchingRecord.requestStatus = status;
+        }
+
+        if (
+            typeof renderDriverRequests ===
+            "function"
+        ) {
+            renderDriverRequests();
+        }
+
+        selectedDriverRequestAction = null;
+        pendingDriverRequestStatus = "";
+
+      showDriverRequestApprovalSuccessModal(status);
+
+    } catch (error) {
+
+        console.error(
+            "Driver Request Status Error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to update request status. Please try again."
+        );
+
+    } finally {
+
+        const overlay =
+            document.getElementById(
+                "actionLoadingOverlay"
+            );
+
+        if (overlay) {
+            overlay.style.display = "none";
+        }
+    }
+}
+
+    function showDriverRequestApprovalSuccessModal(status) {
+
+    const modal =
+        document.getElementById(
+            "driverRequestApprovalSuccessModal"
+        );
+
+    const title =
+        document.getElementById(
+            "driverRequestApprovalSuccessTitle"
+        );
+
+    const message =
+        document.getElementById(
+            "driverRequestApprovalSuccessMessage"
+        );
+
+    if (!modal) {
+        console.error(
+            "Driver Request Approval Success Modal not found."
+        );
+        return;
+    }
+
+    if (status === "Approved") {
+
+        if (title) {
+            title.textContent =
+                "Request Approved";
+        }
+
+        if (message) {
+            message.textContent =
+                "Request approved successfully.";
+        }
+
+    } else {
+
+        if (title) {
+            title.textContent =
+                "Request Denied";
+        }
+
+        if (message) {
+            message.textContent =
+                "Request denied successfully.";
+        }
+    }
+
+    modal.style.display = "flex";
+}
+
+
+function closeDriverRequestApprovalSuccessModal() {
+
+    const modal =
+        document.getElementById(
+            "driverRequestApprovalSuccessModal"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+function closeRequestConfirmModal() {
+
+    document.getElementById("requestConfirmModal").style.display = "none";
+
+    pendingDriverRequestSubmission = null;
+}
+
+
+function confirmDriverRequestSubmission() {
+
+    if (typeof pendingDriverRequestSubmission === "function") {
+
+        const submitFunction = pendingDriverRequestSubmission;
+
+        closeRequestConfirmModal();
+
+        submitFunction();
+    }
+}
+
+
+function showRequestSuccessModal() {
+
+    document.getElementById("requestSuccessModal").style.display = "flex";
+}
+
+
+function closeRequestSuccessModal() {
+
+    document.getElementById("requestSuccessModal").style.display = "none";
+}
     
 function updateCutoffDropdownsDynamically() {
     const scheduleSelect = document.getElementById("scheduleCutoff");
-    const allowanceSelect = document.getElementById("allowanceCutoff");
-    const driverViewSelect = document.getElementById("driverViewCutoff");
+const allowanceSelect = document.getElementById("allowanceCutoff");
+const driverViewSelect = document.getElementById("driverViewCutoff");
+const dutyTrackerSelect = document.getElementById("dutyTrackerCutoff");
+const driverRequestSelect = document.getElementById("driverRequestCutoff");
     
-    if (!scheduleSelect || !allowanceSelect || !driverViewSelect) return;
+    if (
+    !scheduleSelect ||
+    !allowanceSelect ||
+    !driverViewSelect ||
+    !dutyTrackerSelect ||
+    !driverRequestSelect
+) return;
 
     const activeCutoffs = new Set();
 
@@ -2691,9 +4354,17 @@ function updateCutoffDropdownsDynamically() {
     scheduleDates.forEach(date => processDateString(date));
     globalParsedAllowances.forEach(record => processDateString(record.date));
 
+    if (window.driverRequestRecords) {
+    window.driverRequestRecords.forEach(record => {
+        processDateString(record.date);
+    });
+}
+
     scheduleSelect.innerHTML = "";
-    allowanceSelect.innerHTML = "";
-    driverViewSelect.innerHTML = "";
+allowanceSelect.innerHTML = "";
+driverViewSelect.innerHTML = "";
+dutyTrackerSelect.innerHTML = "";
+driverRequestSelect.innerHTML = "";
 
     const sortedBuckets = Array.from(activeCutoffs).sort((a, b) => {
         const [yA, mA, bA] = a.split("-").map(Number);
@@ -2719,21 +4390,383 @@ function updateCutoffDropdownsDynamically() {
         }
 
         scheduleSelect.add(new Option(labelText, optionValue));
-        allowanceSelect.add(new Option(labelText, optionValue));
-        driverViewSelect.add(new Option(labelText, optionValue));
+allowanceSelect.add(new Option(labelText, optionValue));
+driverViewSelect.add(new Option(labelText, optionValue));
+dutyTrackerSelect.add(new Option(labelText, optionValue));
+        driverRequestSelect.add(new Option(labelText, optionValue));
     });
 
     if (scheduleSelect.options.length === 0) {
-        const fallback = new Option("July 1 - 15, 2026", "07-1");
-        scheduleSelect.add(fallback);
-        allowanceSelect.add(fallback.cloneNode(true));
-        driverViewSelect.add(fallback.cloneNode(true));
-    }
+    const fallback = new Option("July 1 - 15, 2026", "07-1");
+    scheduleSelect.add(fallback);
+    allowanceSelect.add(fallback.cloneNode(true));
+    driverViewSelect.add(fallback.cloneNode(true));
+    dutyTrackerSelect.add(fallback.cloneNode(true));
+        driverRequestSelect.add(fallback.cloneNode(true));
+}
 
     const currentCutoff = getCurrentCutoffValue();
     if(scheduleSelect.querySelector(`option[value="${currentCutoff}"]`)) scheduleSelect.value = currentCutoff;
     if(allowanceSelect.querySelector(`option[value="${currentCutoff}"]`)) allowanceSelect.value = currentCutoff;
     if(driverViewSelect.querySelector(`option[value="${currentCutoff}"]`)) driverViewSelect.value = currentCutoff;
+    if(dutyTrackerSelect.querySelector(`option[value="${currentCutoff}"]`)) dutyTrackerSelect.value = currentCutoff;
+    if(driverRequestSelect.querySelector(`option[value="${currentCutoff}"]`)) driverRequestSelect.value = currentCutoff;
+
+     // ==========================================
+    // REFRESH ALLOWANCE SUMMARY AFTER
+    // CURRENT CUTOFF IS SET
+    // ==========================================
+
+    if (typeof processAllowanceSummaryTable === "function") {
+        processAllowanceSummaryTable();
+    }
+
+    renderDriverDutyTracker();
+
+    if (window.driverRequestRecords) {
+        renderDriverRequests();
+        renderDriverRequestsForDriver();
+    }
+}
+
+function renderDriverDutyTracker() {
+    const cutoffSelect = document.getElementById("dutyTrackerCutoff");
+    const head = document.getElementById("driverDutyTrackerHead");
+    const body = document.getElementById("driverDutyTrackerBody");
+
+    if (!cutoffSelect || !head || !body) return;
+
+    const cutoffValue = cutoffSelect.value;
+
+    if (!cutoffValue) {
+        head.innerHTML = "";
+        body.innerHTML = "";
+        return;
+    }
+
+    const [monthString, bucketString] = cutoffValue.split("-");
+    const month = Number(monthString) - 1;
+    const bucket = Number(bucketString);
+
+    /*
+     * =========================================================
+     * DETERMINE YEAR
+     * =========================================================
+     */
+    let selectedYear = new Date().getFullYear();
+
+    const scheduleDateKeys = Object.keys(summaryDrivers || {});
+
+    for (const dateKey of scheduleDateKeys) {
+
+        const parsedDate = new Date(dateKey);
+
+        if (isNaN(parsedDate.getTime())) continue;
+
+        if (
+            parsedDate.getMonth() === month &&
+            (parsedDate.getDate() <= 15 ? 1 : 2) === bucket
+        ) {
+            selectedYear = parsedDate.getFullYear();
+            break;
+        }
+    }
+
+    /*
+     * =========================================================
+     * BUILD CUT-OFF DATES
+     * =========================================================
+     */
+    const startDay = bucket === 1 ? 1 : 16;
+
+    const endDay =
+        bucket === 1
+            ? 15
+            : new Date(selectedYear, month + 1, 0).getDate();
+
+    const dates = [];
+
+    for (let day = startDay; day <= endDay; day++) {
+        dates.push(new Date(selectedYear, month, day));
+    }
+
+    /*
+     * =========================================================
+     * HEADER
+     * =========================================================
+     */
+    let headerHTML = '<tr>';
+    headerHTML += '<th style="text-align:center;">Driver</th>';
+
+    dates.forEach(date => {
+
+        const dayNumber = date.getDate();
+
+        const dayName = date.toLocaleDateString("en-US", {
+            weekday: "short"
+        });
+
+        headerHTML += `
+            <th style="text-align:center;">
+                <div>${dayNumber}</div>
+                <div style="font-size:11px;font-weight:600;">
+                    ${dayName}
+                </div>
+            </th>
+        `;
+    });
+
+    headerHTML += `
+    <th style="text-align:center;">
+        Duty Days
+    </th>
+    <th style="text-align:center;">
+        Rest Days
+    </th>
+`;
+
+headerHTML += "</tr>";
+
+head.innerHTML = headerHTML;
+
+    /*
+     * =========================================================
+     * DRIVER ORDER
+     * =========================================================
+     */
+    const driverOrder = [
+        "Jun Dela Pena",
+        "Jerome Natividad",
+        "Julius Sta. Rita",
+        "Oscar Pangilinan",
+        "Michael Guanlao",
+        "Melvin Fausto"
+    ];
+
+    /*
+     * =========================================================
+     * BUILD DATE LOOKUP
+     *
+     * IMPORTANT:
+     * We parse the actual summaryDrivers date keys first,
+     * then store them by YEAR-MONTH-DAY.
+     *
+     * This means the original date format remains supported.
+     * =========================================================
+     */
+    const dutyLookup = {};
+
+    scheduleDateKeys.forEach(dateKey => {
+
+        const parsedDate = new Date(dateKey);
+
+        if (isNaN(parsedDate.getTime())) return;
+
+        const year = parsedDate.getFullYear();
+        const monthNumber = parsedDate.getMonth() + 1;
+        const day = parsedDate.getDate();
+
+        const normalizedKey =
+            `${year}-${String(monthNumber).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+        dutyLookup[normalizedKey] =
+            summaryDrivers[dateKey] || {};
+    });
+
+    /*
+     * =========================================================
+     * FIND EXISTING DRIVERS
+     * =========================================================
+     */
+    const driverSet = new Set();
+
+    scheduleDateKeys.forEach(dateKey => {
+
+        const dateData = summaryDrivers[dateKey];
+
+        if (!dateData) return;
+
+        Object.keys(dateData).forEach(driverName => {
+            driverSet.add(driverName);
+        });
+    });
+
+    const drivers = driverOrder.filter(driverName =>
+        driverSet.has(driverName)
+    );
+
+    /*
+     * =========================================================
+     * PHILIPPINES TODAY
+     * =========================================================
+     */
+    const phToday = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Manila"
+        })
+    );
+
+    phToday.setHours(0, 0, 0, 0);
+
+    /*
+     * =========================================================
+     * BODY
+     * =========================================================
+     */
+    let bodyHTML = "";
+
+    drivers.forEach(driverName => {
+
+        bodyHTML += "<tr>";
+
+        bodyHTML += `
+            <td style="text-align:center;">
+                <strong>${driverName}</strong>
+            </td>
+        `;
+
+        let consecutiveDutyDays = 0;
+
+        const automaticRestDays = new Set();
+
+        let dutyDayCount = 0;
+let restDayCount = 0;
+
+        /*
+         * =====================================================
+         * CALCULATE 7-DAY RULE
+         * =====================================================
+         */
+        dates.forEach(targetDate => {
+
+            const dateKey =
+                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+
+            const dateData = dutyLookup[dateKey] || {};
+
+            const driverRecord =
+                dateData[driverName] || null;
+
+            const itinerary =
+                driverRecord
+                    ? String(driverRecord.itinerary || "").trim()
+                    : "";
+
+            const normalized =
+                itinerary.toLowerCase();
+
+            const isFuture =
+                targetDate.getTime() > phToday.getTime();
+
+            /*
+             * ACTUAL REST DAY
+             */
+           if (normalized === "rest day") {
+
+    restDayCount++;
+    consecutiveDutyDays = 0;
+}
+
+            /*
+             * ACTUAL DUTY
+             */
+        else if (itinerary !== "") {
+
+    dutyDayCount++;
+    consecutiveDutyDays++;
+}
+
+            /*
+             * FUTURE BLANK
+             */
+            else if (isFuture) {
+
+               if (consecutiveDutyDays >= 6) {
+
+    automaticRestDays.add(dateKey);
+
+    restDayCount++;
+
+    consecutiveDutyDays = 0;
+
+                } else {
+
+                    consecutiveDutyDays++;
+                }
+            }
+
+            /*
+             * PAST BLANK
+             */
+            else {
+
+                consecutiveDutyDays = 0;
+            }
+        });
+
+        /*
+         * =====================================================
+         * RENDER DATA
+         * =====================================================
+         */
+        dates.forEach(targetDate => {
+
+            const dateKey =
+                `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+
+            const dateData =
+                dutyLookup[dateKey] || {};
+
+            const driverRecord =
+                dateData[driverName] || null;
+
+            const itinerary =
+                driverRecord
+                    ? String(driverRecord.itinerary || "").trim()
+                    : "";
+
+            const normalized =
+                itinerary.toLowerCase();
+
+            const isActualRestDay =
+                normalized === "rest day";
+
+            const isAutomaticRestDay =
+                automaticRestDays.has(dateKey);
+
+            const shouldHighlight =
+                isActualRestDay || isAutomaticRestDay;
+
+            bodyHTML += `
+                <td
+                    class="${shouldHighlight ? "duty-tracker-rest-day" : ""}"
+                    style="text-align:center;"
+                >
+                    ${itinerary}
+                </td>
+            `;
+        });
+
+        bodyHTML += `
+            <td style="text-align:center; font-weight:700;">
+                ${dutyDayCount}
+            </td>
+            <td style="text-align:center; font-weight:700;">
+                ${restDayCount}
+            </td>
+        </tr>`;
+    });
+
+    body.innerHTML = bodyHTML;
+}
+
+    
+    function formatDateKeyForDutyTracker(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 }
 
 function getCurrentCutoffValue(){
@@ -2780,7 +4813,24 @@ function processAllowanceSummaryTable() {
 
     let overallApprovedTotal = 0;
     let overallPendingTotal = 0;
-    const driverKeys = Object.keys(aggregateGroup);
+    const driverOrder = [
+    "Jun Dela Pena",
+    "Jerome Natividad",
+    "Julius Sta. Rita",
+    "Oscar Pangilinan",
+    "Michael Guanlao",
+    "Melvin Fausto"
+];
+
+const driverKeys = Object.keys(aggregateGroup).sort((a, b) => {
+    const indexA = driverOrder.indexOf(a.trim());
+    const indexB = driverOrder.indexOf(b.trim());
+
+    const safeA = indexA === -1 ? 999 : indexA;
+    const safeB = indexB === -1 ? 999 : indexB;
+
+    return safeA - safeB;
+});
 
     if(driverKeys.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:#6b7280;">No allowance records found for this cut-off window.</td></tr>`;
@@ -2892,6 +4942,29 @@ function openReviewModal(driverName, date, button) {
 
     document.getElementById("reviewTimeIn").textContent = record.timeIn || "";
     document.getElementById("reviewTimeOut").textContent = record.timeOut || "";
+
+    const scheduleKey = record.name + "_" + record.date;
+const scheduleRecord = grouped[scheduleKey];
+
+let reviewItinerary = "";
+let reviewChargeTo = "";
+
+if (scheduleRecord) {
+    reviewItinerary = (scheduleRecord.itinerary || "").trim();
+
+    if (scheduleRecord.trips && scheduleRecord.trips.length) {
+        reviewChargeTo =
+            scheduleRecord.trips
+                .map(trip => (trip.chargeTo || "").trim())
+                .find(Boolean) || "";
+    }
+}
+
+document.getElementById("reviewItinerary").textContent =
+    reviewItinerary || "None";
+
+document.getElementById("reviewChargeTo").textContent =
+    reviewChargeTo || "None";
 
     document.getElementById("reviewBreakfast").value = record.breakfast;
     document.getElementById("reviewLunch").value = record.lunch;
@@ -3542,18 +5615,15 @@ Thank you, and see you!`;
     document.body.style.overflow = "hidden";
 }
 
-    function openMessageRecipientModal() {
-
-    const selectedTrips =
-        window.selectedPassengerMessageTrips || [];
+  function openMessageRecipientModal() {
+    const selectedTrips = window.selectedPassengerMessageTrips || [];
 
     if (selectedTrips.length === 0) {
         alert("No passenger is available.");
         return;
     }
 
-    const list =
-        document.getElementById("messageRecipientList");
+    const list = document.getElementById("messageRecipientList");
 
     if (!list) {
         console.error("Message recipient list not found.");
@@ -3564,21 +5634,21 @@ Thank you, and see you!`;
     list.innerHTML = "";
 
     selectedTrips.forEach((trip, index) => {
+        const passengerName = (trip.passengerName || "").trim();
+        const contactNumber = (trip.contactNumber || "").trim();
 
-        const passengerName =
-            (trip.passengerName || "").trim();
+        // ==========================================
+        // COLUMN O = MESSAGE SENT
+        // ==========================================
+        const messageStatus = String(trip.messageSent || "").trim().toLowerCase();
+        const alreadySent = messageStatus === "sent";
 
-        const contactNumber =
-            (trip.contactNumber || "").trim();
-
-        // Main row
+        // ==========================================
+        // MAIN ROW
+        // ==========================================
         const row = document.createElement("label");
 
         row.className = "passenger-message-row";
-
-        // IMPORTANT:
-        // Radio stays on the LEFT.
-        // Name + contact stay on the SAME LINE.
         row.style.display = "flex";
         row.style.flexDirection = "row";
         row.style.alignItems = "center";
@@ -3594,21 +5664,20 @@ Thank you, and see you!`;
         row.style.cursor = "pointer";
         row.style.textAlign = "left";
 
-        // Radio button
-       const radio = document.createElement("input");
+        // ==========================================
+        // RADIO BUTTON
+        // ==========================================
+        const radio = document.createElement("input");
 
-radio.type = "radio";
-radio.name = "messageRecipient";
-radio.className = "message-recipient-radio";
-radio.value = index;
+        radio.type = "radio";
+        radio.name = "messageRecipient";
+        radio.className = "message-recipient-radio";
+        radio.value = index;
 
-// Check whether this passenger was already messaged
-const alreadySent =
-    isPassengerMessageSent(trip);
-
-if (alreadySent) {
-    radio.disabled = true;
-}
+        // Disable if Column O = Sent
+        if (alreadySent) {
+            radio.disabled = true;
+        }
 
         radio.style.flex = "0 0 auto";
         radio.style.width = "18px";
@@ -3618,7 +5687,9 @@ if (alreadySent) {
         radio.style.position = "static";
         radio.style.transform = "none";
 
-        // Passenger information
+        // ==========================================
+        // PASSENGER INFORMATION
+        // ==========================================
         const info = document.createElement("span");
 
         info.style.display = "flex";
@@ -3633,9 +5704,7 @@ if (alreadySent) {
         // Passenger name
         const name = document.createElement("strong");
 
-        name.textContent =
-            passengerName || "Unnamed Passenger";
-
+        name.textContent = passengerName || "Unnamed Passenger";
         name.style.display = "inline";
         name.style.flex = "0 1 auto";
         name.style.whiteSpace = "nowrap";
@@ -3644,43 +5713,45 @@ if (alreadySent) {
 
         info.appendChild(name);
 
-        // Add radio first, then passenger information
+        // ==========================================
+        // RADIO + PASSENGER INFO
+        // ==========================================
         row.appendChild(radio);
-row.appendChild(info);
+        row.appendChild(info);
 
-if (alreadySent) {
+        // ==========================================
+        // MESSAGE SENT LABEL
+        // ==========================================
+        if (alreadySent) {
+            const sentLabel = document.createElement("small");
 
-    const sentLabel =
-        document.createElement("small");
+            sentLabel.textContent = "✓ Message Sent";
+            sentLabel.style.color = "#16a34a";
+            sentLabel.style.fontWeight = "700";
+            sentLabel.style.marginLeft = "auto";
+            sentLabel.style.whiteSpace = "nowrap";
 
-    sentLabel.textContent =
-        "✓ Message Sent";
+            row.appendChild(sentLabel);
 
-    sentLabel.style.color = "#16a34a";
-    sentLabel.style.fontWeight = "700";
-    sentLabel.style.marginLeft = "auto";
-    sentLabel.style.whiteSpace = "nowrap";
-
-    row.appendChild(sentLabel);
-
-    row.style.opacity = "0.65";
-    row.style.cursor = "not-allowed";
-    row.style.background = "#f3f4f6";
-    row.style.borderColor = "#d1d5db";
-}
+            row.style.opacity = "0.65";
+            row.style.cursor = "not-allowed";
+            row.style.background = "#f3f4f6";
+            row.style.borderColor = "#d1d5db";
+        }
 
         list.appendChild(row);
     });
 
-    const modal =
-        document.getElementById("messageRecipientModal");
+    // ==========================================
+    // SHOW MODAL
+    // ==========================================
+    const modal = document.getElementById("messageRecipientModal");
 
     if (modal) {
         modal.style.display = "block";
         document.body.style.overflow = "hidden";
     }
 }
-
     async function markPassengerMessageSent(trip) {
 
     if (!trip) return;
@@ -3735,10 +5806,7 @@ if (alreadySent) {
         JSON.stringify(savedMessages)
     );
 
-    console.log(
-        "Passenger message saved locally:",
-        messageKey
-    );
+  
 
 
     // ==========================================
@@ -3758,10 +5826,7 @@ if (alreadySent) {
             `&contactNumber=${encodeURIComponent(contactNumber)}` +
             `&pickupTime=${encodeURIComponent(pickupTime)}`;
 
-        console.log(
-            "Marking passenger message as Sent:",
-            markURL
-        );
+      
 
         const response =
             await fetch(markURL);
@@ -3769,10 +5834,7 @@ if (alreadySent) {
         const result =
             await response.json();
 
-        console.log(
-            "Message Sent sheet response:",
-            result
-        );
+      
 
         if (!result.success) {
 
@@ -3842,7 +5904,7 @@ function closeMessageRecipientModal() {
 }
 
 
-function confirmMessageRecipient() {
+async function confirmMessageRecipient() {
 
     const selected =
     document.querySelector(
@@ -3901,18 +5963,18 @@ function confirmMessageRecipient() {
     closeMessageRecipientModal();
 
     // Show confirmation first
-    setTimeout(function () {
+    setTimeout(async function () {
 
-        const confirmed = window.confirm(
-            `This message will be sent to ${passengerName}.`
-        );
+    const confirmed = window.confirm(
+        `This message will be sent to ${passengerName}.`
+    );
 
-       if (!confirmed) {
-    return;
-}
+    if (!confirmed) {
+        return;
+    }
 
-// Save the message status BEFORE leaving the webpage
-markPassengerMessageSent(trip);
+    // Save the message status BEFORE leaving the webpage
+    await markPassengerMessageSent(trip);
 
 // Close ALL messaging-related modals
 closeMessageRecipientModal();
@@ -3971,8 +6033,7 @@ document.body.style.overflow = "";
                 `sms:${cleanNumber}?body=${encodedMessage}`;
         }
 
-        console.log("Opening SMS:", smsURL);
-
+     
         window.location.href = smsURL;
 
     }, 50);
@@ -4042,7 +6103,11 @@ document.body.style.overflow = "";
 }
 
 // Save BEFORE opening SMS
-markPassengerMessageSent(trip);
+markPassengerMessageSent(trip).then(() => {
+    if (typeof loadMainSchedulesAndApprovals === "function") {
+        loadMainSchedulesAndApprovals();
+    }
+});
 
 // Close every messaging modal
 closeMessageRecipientModal();
@@ -4332,7 +6397,44 @@ function showDriverAllowanceSummary() {
     window.scrollTo(0, 0);
 }
 
-function renderDriverViewTable() {
+    function showDriverRequestsPage() {
+
+    const dashboardPage = document.getElementById("driverDashboard");
+    const allowancePage = document.getElementById("driverAllowancePage");
+    const requestPage = document.getElementById("driverRequestsPage");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+
+    if (dashboardPage) {
+        dashboardPage.style.display = "none";
+    }
+
+    if (allowancePage) {
+        allowancePage.style.display = "none";
+    }
+
+    if (scheduleApprovalPage) {
+        scheduleApprovalPage.style.display = "none";
+    }
+
+    if (requestPage) {
+        requestPage.style.display = "block";
+    }
+
+    // Update navigation active state
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    const requestBtn = document.getElementById("requestBtn");
+
+    if (requestBtn) {
+        requestBtn.classList.add("active");
+    }
+
+    window.scrollTo(0, 0);
+}
+    
+    function renderDriverViewTable() {
     const loggedInDriverName = localStorage.getItem("driverName") || "";
     let selectorValue = document.getElementById("driverViewCutoff").value || "07-1";
     if(!selectorValue.includes("-")) selectorValue = "07-1";
@@ -4398,6 +6500,377 @@ function renderDriverViewTable() {
         <td></td>
     `;
     tableBody.appendChild(totalRow);
+}
+
+    function openRequestScheduleModal() {
+    const modal = document.getElementById("requestScheduleModal");
+
+    if (!modal) return;
+
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+
+    // Reset fields
+    const requestDate = document.getElementById("requestDate");
+    const requestType = document.getElementById("requestType");
+    const requestDutyType = document.getElementById("requestDutyType");
+    const requestReason = document.getElementById("requestReason");
+    const requestTimeIn = document.getElementById("requestTimeIn");
+    const requestTimeOut = document.getElementById("requestTimeOut");
+
+    if (requestDate) requestDate.value = "";
+    if (requestType) requestType.value = "";
+    if (requestDutyType) requestDutyType.value = "";
+    if (requestReason) requestReason.value = "";
+    if (requestTimeIn) requestTimeIn.value = "";
+    if (requestTimeOut) requestTimeOut.value = "";
+
+    const dutyOptions = document.getElementById("requestDutyOptions");
+    const timeFields = document.getElementById("requestTimeFields");
+
+    if (dutyOptions) dutyOptions.style.display = "none";
+    if (timeFields) timeFields.style.display = "none";
+}
+
+
+function closeRequestScheduleModal() {
+    const modal = document.getElementById("requestScheduleModal");
+
+    if (!modal) return;
+
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+}
+
+
+function handleRequestTypeChange() {
+
+    const requestType =
+        document.getElementById("requestType").value;
+
+    const dutyOptions =
+        document.getElementById("requestDutyOptions");
+
+    const timeFields =
+        document.getElementById("requestTimeFields");
+
+    const dutyType =
+        document.getElementById("requestDutyType");
+
+    const reason =
+        document.getElementById("requestReason");
+
+    if (requestType === "Request Duty") {
+
+        if (dutyOptions) {
+            dutyOptions.style.display = "block";
+        }
+
+        if (timeFields) {
+            timeFields.style.display = "block";
+        }
+
+        if (reason) {
+            reason.placeholder =
+                "Enter reason or schedule details";
+        }
+
+    } else if (requestType === "Leave") {
+
+        if (dutyOptions) {
+            dutyOptions.style.display = "none";
+        }
+
+        if (timeFields) {
+            timeFields.style.display = "none";
+        }
+
+        if (dutyType) {
+            dutyType.value = "";
+        }
+
+        if (reason) {
+            reason.placeholder =
+                "Enter reason for leave";
+        }
+
+    } else {
+
+        if (dutyOptions) {
+            dutyOptions.style.display = "none";
+        }
+
+        if (timeFields) {
+            timeFields.style.display = "none";
+        }
+
+        if (dutyType) {
+            dutyType.value = "";
+        }
+
+        if (reason) {
+            reason.placeholder =
+                "Enter reason or duty";
+        }
+    }
+}
+
+
+function handleDutyTypeChange() {
+
+    const dutyType =
+        document.getElementById("requestDutyType").value;
+
+    const reason =
+        document.getElementById("requestReason");
+
+    if (!reason) return;
+
+    if (dutyType === "AM Carpool") {
+
+        reason.placeholder =
+            "Enter reason / AM Carpool details";
+
+    } else if (dutyType === "PM Carpool") {
+
+        reason.placeholder =
+            "Enter reason / PM Carpool details";
+
+    } else if (dutyType === "Others") {
+
+        reason.placeholder =
+            "Please indicate the schedule / duty details";
+
+    } else {
+
+        reason.placeholder =
+            "Enter reason or schedule details";
+    }
+}
+
+    async function submitDriverRequest() {
+
+    const requestDate =
+        document.getElementById("requestDate")?.value.trim();
+
+    const requestType =
+        document.getElementById("requestType")?.value.trim();
+
+    const requestDutyType =
+        document.getElementById("requestDutyType")?.value.trim();
+
+    const requestReason =
+        document.getElementById("requestReason")?.value.trim();
+
+    const requestTimeIn =
+        document.getElementById("requestTimeIn")?.value.trim();
+
+    const requestTimeOut =
+        document.getElementById("requestTimeOut")?.value.trim();
+
+    const driverName =
+        localStorage.getItem("driverName") ||
+        localStorage.getItem("username") ||
+        "";
+
+    // -----------------------------
+    // VALIDATION
+    // -----------------------------
+
+    if (!requestDate) {
+        alert("Please select a date.");
+        return;
+    }
+
+    if (!requestType) {
+        alert("Please choose a request type.");
+        return;
+    }
+
+    if (!requestReason) {
+        alert("Please enter the reason or duty.");
+        return;
+    }
+
+    if (requestType === "Request Duty") {
+
+        if (!requestDutyType) {
+            alert("Please choose the duty type.");
+            return;
+        }
+
+        if (!requestTimeIn || !requestTimeOut) {
+            alert("Please enter Time In and Time Out.");
+            return;
+        }
+    }
+
+    if (!driverName) {
+        alert(
+            "Driver information could not be found. Please log in again."
+        );
+        return;
+    }
+
+    // -----------------------------
+    // REQUESTED TIME
+    // -----------------------------
+
+    let requestedTime = "";
+
+    if (requestType === "Request Duty") {
+
+        requestedTime =
+            `${requestTimeIn} to ${requestTimeOut}`;
+    }
+
+    // -----------------------------
+    // REASON / DUTY
+    // -----------------------------
+
+    let reasonDuty = requestReason;
+
+    if (
+        requestType === "Request Duty" &&
+        requestDutyType
+    ) {
+
+        reasonDuty =
+            `${requestDutyType} - ${requestReason}`;
+    }
+
+    // -----------------------------
+    // CUSTOM CONFIRMATION MODAL
+    // -----------------------------
+
+    openRequestConfirmModal(
+        requestDate,
+        requestType,
+        reasonDuty,
+        requestedTime,
+        async function () {
+
+            try {
+
+                showActionLoading(
+                    "Submitting Request...",
+                    "Please wait while your request is being submitted."
+                );
+
+                const requestURL =
+                    `${WEBAPP_BASE}?action=submitDriverRequest`
+                    + `&date=${encodeURIComponent(requestDate)}`
+                    + `&driverName=${encodeURIComponent(driverName)}`
+                    + `&request=${encodeURIComponent(requestType)}`
+                    + `&reasonDuty=${encodeURIComponent(reasonDuty)}`
+                    + `&requestedTime=${encodeURIComponent(requestedTime)}`
+                    + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+                    + `&_nc=${Date.now()}`;
+
+                const response = await fetch(
+                    requestURL,
+                    {
+                        method: "GET",
+                        cache: "no-store",
+                        credentials: "omit"
+                    }
+                );
+
+                const text = await response.text();
+
+                let result;
+
+                try {
+
+                    result = JSON.parse(text);
+
+                } catch (parseError) {
+
+                    console.error(
+                        "Submit Driver Request returned non-JSON:",
+                        text
+                    );
+
+                    throw new Error(
+                        "The server returned an invalid response."
+                    );
+                }
+
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        "Unable to submit request."
+                    );
+                }
+
+                // Close request schedule modal
+                closeRequestScheduleModal();
+
+                // Hide loading
+                const overlay =
+                    document.getElementById("actionLoadingOverlay");
+
+                if (overlay) {
+                    overlay.style.display = "none";
+                }
+
+                // Show success modal
+                showRequestSuccessModal();
+
+                // Refresh driver's request table
+                if (
+                    typeof loadDriverRequests === "function"
+                ) {
+
+                    await loadDriverRequests();
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Submit Driver Request Error:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to submit request. Please try again."
+                );
+
+            } finally {
+
+                const overlay =
+                    document.getElementById("actionLoadingOverlay");
+
+                if (overlay) {
+                    overlay.style.display = "none";
+                }
+            }
+        }
+    );
+}
+
+
+function showActionLoading(title, message) {
+
+    const t =
+        document.getElementById("actionLoadingTitle");
+
+    const m =
+        document.getElementById("actionLoadingMessage");
+
+    if (t) {
+        t.textContent = title;
+    }
+
+    if (m) {
+        m.textContent = message;
+    }
+
+    document.getElementById(
+        "actionLoadingOverlay"
+    ).style.display = "flex";
 }
 
 function showActionLoading(title, message){
@@ -4760,7 +7233,6 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
 
         const result = await response.json();
 
-        console.log("Acknowledgment result:", result);
 
         if (!result.success) {
             throw new Error(
@@ -4798,6 +7270,51 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         }
     }
 }
+
+    async function fetchDataWithRetry(url, options = {}, retries = 1, delay = 300) {
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
+
+        try {
+
+            const response = await fetch(url, options);
+
+          
+
+            if (response.ok) {
+                return response;
+            }
+
+            throw new Error(
+                `HTTP ${response.status}: ${response.statusText}`
+            );
+
+        } catch (error) {
+
+           
+
+            if (attempt === retries) {
+                throw error;
+            }
+
+            await new Promise(resolve =>
+                setTimeout(resolve, delay)
+            );
+        }
+    }
+}
+
+    function hasPassengerMessageSent(trips) {
+    if (!Array.isArray(trips)) return false;
+
+    return trips.some(trip => {
+        const value = String(trip.messageSent || "")
+            .trim()
+            .toLowerCase();
+
+        return value === "sent";
+    });
+}
     
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
@@ -4811,34 +7328,20 @@ const scheduleFetchURL =
 const approvalFetchURL =
     `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
 
-console.log("Fetching Schedule:", scheduleFetchURL);
-console.log("Fetching Approvals:", approvalFetchURL);
 
 const [scheduleResponse, approvalResponse] = await Promise.all([
-    fetch(scheduleFetchURL, {
+    fetchDataWithRetry(scheduleFetchURL, {
         method: "GET",
         cache: "no-store",
         credentials: "omit"
     }),
 
-    fetch(approvalFetchURL, {
+    fetchDataWithRetry(approvalFetchURL, {
         method: "GET",
         cache: "no-store",
         credentials: "omit"
     })
 ]);
-
-console.log(
-    "Schedule:",
-    scheduleResponse.status,
-    scheduleResponse.url
-);
-
-console.log(
-    "Approval:",
-    approvalResponse.status,
-    approvalResponse.url
-);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
             console.warn("Schedule CSV endpoints returned non-OK status.");
@@ -4898,9 +7401,21 @@ approvalRows.forEach(row => {
     const date = (cols[0] || "").replace(/"/g, "").trim();
     const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
     const notes = (cols[2] || "").replace(/"/g, "").trim();
-
+// Keep an existing approved status from being overwritten
+// by a blank/empty status from another row with the same date.
+if (
+    !approvalDates[date] ||
+    status === "approved"
+) {
     approvalDates[date] = status;
+}
+
+if (
+    !approvalNotes[date] ||
+    notes
+) {
     approvalNotes[date] = notes;
+}
 
     // -----------------------------
     // Driver confirmations
@@ -5025,17 +7540,25 @@ const [
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             const status = (approvalDates[date] || "").toLowerCase();
 
+       
+
             // -----------------------------------------------------------
             // ROLE FILTERING LOGIC
             // -----------------------------------------------------------
-            // Organic role: Hide past, show Today/Future even if pending
-            if (role === "organic") {
-                if (isPast) return; 
-            } 
-            // Driver & Admin Roles on Main Dashboard: Show ONLY APPROVED schedules for Today & Future
-            else {
-                if (status !== "approved" && !isPast) return;
-            }
+           // -----------------------------------------------------------
+// ROLE FILTERING LOGIC
+// -----------------------------------------------------------
+// Organic: hide past schedules
+// Driver/Admin: show approved schedules
+if (role === "organic") {
+    if (isPast) return; 
+} 
+else {
+    // Future schedules must be approved.
+    // Today's schedule may still be displayed even if
+    // the approval sheet does not yet contain an entry.
+    if (status !== "approved" && !isPast && !isToday) return;
+}
 
             let pendingBadgeHeaderHtml = "";
             if (role === "organic" && status !== "approved") {
@@ -5070,7 +7593,16 @@ tableRows += `
 <tr class="${rowClass}">
     <td>${driverNameDisplay}</td>
     <td>${driver.timeIn}</td>
-    <td>${driver.vehicle}</td>
+   <td>
+    <span style="
+        ${getCodingHighlightStyle(driver.vehicle, date)}
+        padding:2px 6px;
+        border-radius:5px;
+        font-weight:700;
+    ">
+        ${driver.vehicle}
+    </span>
+</td>
     <td>${itineraryDisplay}</td>
 </tr>`;
                 });
@@ -5124,7 +7656,7 @@ ${
                             <div class="trip">
                                 <div class="trip-title">
     Pick-Up ${index + 1}
-    ${isPassengerMessageSent(trip) ? " ✉️" : ""}
+  ${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}
 </div>
                                 ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                                 ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
@@ -5168,7 +7700,7 @@ const messagePassengerBtnHtml = role === "organic" ? "" : `
                     pageHTML += `
                     <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
                         <div class="driver-header">
-                            <h2>${d.driver}</h2>
+                           <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                             <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                             <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
@@ -5219,7 +7751,11 @@ if (!isPast && !isToday) {
             <tr class="${rowClass}">
                 <td>${driverNameDisplay}</td>
                 <td>${driver.timeIn}</td>
-                <td>${driver.vehicle}</td>
+               <td>
+    <span style="${getCodingHighlightStyle(driver.vehicle, date)}">
+        ${driver.vehicle}
+    </span>
+</td>
                 <td>${itineraryDisplay}</td>
             </tr>`;
     });
@@ -5485,7 +8021,10 @@ if (!isPast && !isToday) {
 
                     <div class="driver-header">
 
-                        <h2>${d.driver}</h2>
+                       <h2>
+    ${d.driver}
+    ${hasPassengerMessageSent(d.trips) ? " ✉️" : ""}
+</h2>
 
                         <div class="info-item">
                             <div class="info-label">
@@ -5594,6 +8133,8 @@ if (!isPast && !isToday) {
             }
         });
 
+       
+
         if (container) {
             container.style.visibility = "hidden";
             container.innerHTML = pageHTML;
@@ -5624,7 +8165,7 @@ function showHomePage() {
 }
 
 function backToMainDashboard() {
-    console.log("Dashboard button clicked");
+ 
 
     const driverDashboard = document.getElementById("driverDashboard");
     const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
@@ -5677,7 +8218,7 @@ function backToMainDashboard() {
     // Go to top
     window.scrollTo(0, 0);
 
-    console.log("Returned to Main Dashboard successfully");
+ 
 }
     
 function viewSchedule(date){
@@ -5688,9 +8229,7 @@ function viewSchedule(date){
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
-    console.log("Viewing Date:", date);
-console.log("approvalNotes Object:", approvalNotes);
-console.log("Current Note:", approvalNotes[date]);
+  
     let viewerHTML = "";
 
     const scheduleDate = new Date(date);
@@ -5723,12 +8262,11 @@ console.log("Current Note:", approvalNotes[date]);
                 <tbody>${tableRows}</tbody>
             </table>
         </div>`;
-        console.log("Current Date:", date);
-console.log("approvalNotes:", approvalNotes);
+  
 
 const scheduleNotes = approvalNotes[date] || "";
 
-console.log("Notes Found:", scheduleNotes);
+
 
 if (scheduleNotes.trim() !== "") {
 
@@ -5758,7 +8296,7 @@ if (scheduleNotes.trim() !== "") {
                     tripsHTML += `
                     <div class="trip">
                        <div class="trip-title">
-    Pick-Up ${index + 1}${messageSent ? " ✉️" : ""}
+    Pick-Up ${index + 1}${String(messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}
 </div>
                         ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                         ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
@@ -5773,7 +8311,7 @@ if (scheduleNotes.trim() !== "") {
             viewerHTML += `
             <div class="driver-card" style="margin-top: 15px;">
                 <div class="driver-header">
-                    <h2>${d.driver}</h2>
+                  <h2>${d.driver}</h2>
                     <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                     <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                     <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
@@ -5792,20 +8330,14 @@ if (scheduleNotes.trim() !== "") {
     document.body.style.overflow = "hidden"; 
 }
 
-window.onload = async function () {
-
+    window.onload = async function () {
     const role = localStorage.getItem("userRole");
-    const driverLoggedIn =
-        localStorage.getItem("driverLoggedIn") === "true";
+    const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
+    const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
 
-    const driverExpires =
-        Number(localStorage.getItem("loginExpires") || 0);
-
-    const autoLogin =
-        driverLoggedIn && Date.now() < driverExpires;
+    const autoLogin = driverLoggedIn && Date.now() < driverExpires;
 
     if (!autoLogin) {
-
         localStorage.removeItem("driverLoggedIn");
         localStorage.removeItem("driverName");
         localStorage.removeItem("driverRole");
@@ -5829,32 +8361,28 @@ window.onload = async function () {
     );
 
     try {
-
-        console.log("STEP 1: Loading submitted allowances...");
-
+        // IMPORTANT:
+        // Submitted allowances must finish loading FIRST.
+        // loadMainSchedulesAndApprovals() uses submittedDrivers
+        // to hide allowances that were already submitted.
         await loadSubmittedAllowances();
 
-        console.log("STEP 2: Loading main schedules...");
+        // These two can load at the same time because
+        // they do not depend on submittedDrivers.
+        await loadSubmittedAllowances();
 
-        console.log("WEBAPP_BASE:", WEBAPP_BASE);
-console.log("sheetURL:", sheetURL);
-console.log("approvalURL:", approvalURL);
+await loadMainSchedulesAndApprovals();
 
+await loadDriverRequests();
 
-        await loadMainSchedulesAndApprovals();
+await fetchLiveAllowancesFromSheet();
 
-        console.log("STEP 3: Loading live allowances...");
-
-        await fetchLiveAllowancesFromSheet();
-
-        console.log("STEP 4: Initialization complete.");
+        updateCutoffDropdownsDynamically();
 
         hideLoginSpinner();
-
         showHomePage();
 
     } catch (err) {
-
         console.error(
             "Initialization Error:",
             err
@@ -5867,13 +8395,11 @@ console.log("approvalURL:", approvalURL);
         );
 
     } finally {
-
-        document.getElementById(
-            "pageLoadingOverlay"
-        ).style.display = "none";
+        document.getElementById("pageLoadingOverlay").style.display = "none";
     }
 };
 
+    
 function openManualConfirmModal() {
     const modal = document.getElementById("manualConfirmModal");
 
@@ -5931,7 +8457,13 @@ async function loginDriver() {
     }
 
     try {
-        showLoginSpinner("Signing In...", "Checking your login credentials...");
+        // =====================================================
+        // 1. CHECK LOGIN CREDENTIALS
+        // =====================================================
+        showLoginSpinner(
+            "Signing In...",
+            "Checking your login credentials..."
+        );
 
         const response = await fetch(
             `${WEBAPP_BASE}?action=login`
@@ -5944,10 +8476,17 @@ async function loginDriver() {
 
         if (!result.success) {
             hideLoginSpinner();
-            errorDiv.textContent = result.message || "Invalid username or password.";
+
+            errorDiv.textContent =
+                result.message ||
+                "Invalid username or password.";
+
             return;
         }
 
+        // =====================================================
+        // 2. SAVE LOGIN SESSION
+        // =====================================================
         localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("username", result.name);
         localStorage.setItem("userRole", result.role);
@@ -5958,24 +8497,70 @@ async function loginDriver() {
         configureNavigation(result.role);
 
         hideLoginSpinner();
+
         document.getElementById("loginPage").style.display = "none";
 
+        // =====================================================
+        // 3. DRIVER LOGIN
+        //    Driver still gets the reminder first.
+        //    confirmReminder() handles the dashboard loading.
+        // =====================================================
         if (result.role === "driver") {
             showReminderModal();
-        } else {
-            showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-           await loadSubmittedAllowances();
-
-await fetchLiveAllowancesFromSheet();
-
-await loadMainSchedulesAndApprovals();
-            hideLoginSpinner();
-            showHomePage();
+            return;
         }
+
+        // =====================================================
+        // 4. ADMIN / OTHER ROLES
+        // =====================================================
+        showLoginSpinner(
+            "Loading Dashboard...",
+            "Fetching latest schedules..."
+        );
+
+        // =====================================================
+        // IMPORTANT:
+        // LOAD SUBMITTED ALLOWANCES FIRST.
+        //
+        // loadMainSchedulesAndApprovals() checks:
+        //
+        // submittedDrivers[lookupKey]
+        //
+        // Therefore submittedDrivers MUST already be populated
+        // before the schedule cards are rendered.
+        // =====================================================
+        await loadSubmittedAllowances();
+
+        // =====================================================
+        // LOAD LIVE ALLOWANCE DATA
+        // =====================================================
+        await fetchLiveAllowancesFromSheet();
+
+        // =====================================================
+        // ONLY AFTER SUBMITTED DATA IS READY,
+        // RENDER THE SCHEDULES.
+        // =====================================================
+        await loadMainSchedulesAndApprovals();
+
+        // =====================================================
+        // REFRESH CUTOFF DROPDOWNS
+        // =====================================================
+        updateCutoffDropdownsDynamically();
+
+        // =====================================================
+        // SHOW DASHBOARD
+        // =====================================================
+        hideLoginSpinner();
+        showHomePage();
 
     } catch (err) {
         hideLoginSpinner();
-        console.error(err);
+
+        console.error(
+            "Login / Dashboard loading error:",
+            err
+        );
+
         errorDiv.textContent = "Unable to connect to the server.";
     }
 }
@@ -5988,17 +8573,35 @@ function showReminderModal() {
 
 async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-    showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+    showLoginSpinner(
+        "Loading Dashboard...",
+        "Fetching latest schedules..."
+    );
 
     try {
-      await loadSubmittedAllowances();
+        // =====================================================
+        // 1. LOAD SCHEDULE FIRST
+        //    THIS IS THE ONLY DATA THAT BLOCKS THE DASHBOARD
+        // =====================================================
+     await loadSubmittedAllowances();
+
+await loadMainSchedulesAndApprovals();
 
 await fetchLiveAllowancesFromSheet();
 
-await loadMainSchedulesAndApprovals();
+await loadDriverRequests();
+
+updateCutoffDropdownsDynamically();
+
+hideLoginSpinner();
+showHomePage();
+        
     } catch (err) {
-        console.error("Error loading driver dashboard:", err);
-    } finally {
+        console.error(
+            "Error loading driver dashboard:",
+            err
+        );
+
         hideLoginSpinner();
         showHomePage();
     }
@@ -6085,6 +8688,151 @@ await loadMainSchedulesAndApprovals();
                 onclick="continueToManualSheet()">
                 Continue
             </button>
+        </div>
+
+    </div>
+</div>
+
+ <!-- Driver Request Confirmation Modal -->
+<div id="driverRequestConfirmModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
+    <div class="request-modal">
+
+        <div class="request-modal-title">
+            Confirm Request
+        </div>
+
+        <div class="request-modal-body">
+
+            <div id="driverRequestConfirmMessage"
+                 class="request-action-message">
+                Are you sure you want to approve this request?
+            </div>
+
+        </div>
+
+        <div class="request-modal-buttons">
+
+            <button
+                type="button"
+                class="request-modal-cancel"
+                onclick="closeDriverRequestConfirmModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="driverRequestConfirmButton"
+                class="request-modal-submit"
+                onclick="confirmDriverRequestAction()">
+                Approve
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Driver Request Success Modal -->
+<div id="requestSuccessModal" class="request-modal-overlay" style="display:none;">
+    <div class="request-modal request-success-modal">
+
+        <div class="request-success-title">
+            Request Submitted Successfully
+        </div>
+
+        <div class="request-success-message">
+            Your request has been submitted and is now waiting for Admin review.
+        </div>
+
+        <div class="request-modal-buttons">
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="closeRequestSuccessModal()">
+                OK
+            </button>
+        </div>
+
+    </div>
+</div>
+
+  <!-- Driver Request Action Modal -->
+<div id="driverRequestActionModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
+    <div class="request-modal">
+
+        <div class="request-modal-title">
+            Request Action
+        </div>
+
+        <div class="request-modal-body">
+
+            <div class="request-action-message">
+                Choose an action for this request.
+            </div>
+
+        </div>
+
+        <div class="request-modal-buttons">
+
+            <button
+                type="button"
+                class="request-modal-cancel"
+                onclick="closeDriverRequestActionModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-deny"
+                onclick="processDriverRequestAction('Denied')">
+                Deny
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="processDriverRequestAction('Approved')">
+                Approve
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+
+    <!-- Driver Request Approval Success Modal -->
+<div id="driverRequestApprovalSuccessModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
+    <div class="request-modal request-success-modal">
+
+        <div id="driverRequestApprovalSuccessTitle"
+             class="request-success-title">
+            Request Approved
+        </div>
+
+        <div id="driverRequestApprovalSuccessMessage"
+             class="request-success-message">
+            Request approved successfully.
+        </div>
+
+        <div class="request-modal-buttons">
+
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="closeDriverRequestApprovalSuccessModal()">
+                OK
+            </button>
+
         </div>
 
     </div>
