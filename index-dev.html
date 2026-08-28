@@ -4011,6 +4011,139 @@ function closeDriverRequestActionModal() {
     selectedDriverRequestAction = null;
 }
 
+    async function processDriverRequestAction(status) {
+
+    if (!selectedDriverRequestAction) {
+        console.error("No driver request selected.");
+        return;
+    }
+
+    const requestData =
+        selectedDriverRequestAction;
+
+    const actionText =
+        status === "Approved"
+            ? "approve"
+            : "deny";
+
+    const confirmed = confirm(
+        `Are you sure you want to ${actionText} this request?\n\n` +
+        `Date: ${requestData.date}\n` +
+        `Driver: ${requestData.driverName}\n` +
+        `Request: ${requestData.request}\n` +
+        `Action: ${status}`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        showActionLoading(
+            status === "Approved"
+                ? "Approving Request..."
+                : "Denying Request...",
+            "Please wait while the request is being updated."
+        );
+
+        const requestURL =
+            `${WEBAPP_BASE}?action=updateDriverRequestStatus`
+            + `&date=${encodeURIComponent(requestData.date)}`
+            + `&driverName=${encodeURIComponent(requestData.driverName)}`
+            + `&request=${encodeURIComponent(requestData.request)}`
+            + `&status=${encodeURIComponent(status)}`
+            + `&token=${encodeURIComponent(SECRET_TOKEN)}`
+            + `&_nc=${Date.now()}`;
+
+        console.log(
+            "UPDATE DRIVER REQUEST URL:",
+            requestURL
+        );
+
+        const response =
+            await fetch(
+                requestURL,
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    credentials: "omit"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+        const text =
+            await response.text();
+
+        console.log(
+            "UPDATE DRIVER REQUEST RESPONSE:",
+            text
+        );
+
+        let result;
+
+        try {
+
+            result =
+                JSON.parse(text);
+
+        } catch (parseError) {
+
+            throw new Error(
+                "The server returned an invalid response."
+            );
+        }
+
+        if (!result.success) {
+
+            throw new Error(
+                result.message ||
+                "Unable to update request status."
+            );
+        }
+
+        // Close action modal
+        closeDriverRequestActionModal();
+
+        // Refresh Driver Requests
+        await loadDriverRequests();
+
+        alert(
+            status === "Approved"
+                ? "Request approved successfully."
+                : "Request denied successfully."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Driver Request Status Error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to update request status. Please try again."
+        );
+
+    } finally {
+
+        const overlay =
+            document.getElementById(
+                "actionLoadingOverlay"
+            );
+
+        if (overlay) {
+            overlay.style.display = "none";
+        }
+    }
+}
+
 
 function closeRequestConfirmModal() {
 
