@@ -3149,13 +3149,15 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
             const cols = parseCSVRow(line);
 
             return {
-                date: (cols[0] || "").trim(),
-                driverName: (cols[9] || "").trim(),
-                request: (cols[10] || "").trim(),
-                reason: (cols[11] || "").trim(),
-                requestedTime: (cols[12] || "").trim(),
-                requestStatus: (cols[13] || "").trim()
-            };
+    date: (cols[0] || "").trim(),
+    driverName: (cols[1] || "").trim(),
+    request: (cols[2] || "").trim(),
+    reason: (cols[3] || "").trim(),
+    requestedTime: (cols[4] || "").trim(),
+    requestStatus: (cols[5] || "").trim()
+};
+
+            
         }).filter(record =>
             record.driverName ||
             record.request ||
