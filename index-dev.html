@@ -3893,11 +3893,28 @@ async function loadDriverRequests() {
                         ${record.requestedTime || ""}
                     </td>
 
-                    <td>
-                        <span class="driver-request-status">
-                            ${status}
-                        </span>
-                    </td>
+                  <td>
+    ${
+        status.toLowerCase() === "pending"
+        ? `
+            <button
+                type="button"
+                class="driver-request-status pending"
+                onclick="showDriverRequestAction(
+                    '${encodeURIComponent(record.date || "")}',
+                    '${encodeURIComponent(record.driverName || "")}',
+                    '${encodeURIComponent(record.request || "")}'
+                )">
+                Pending
+            </button>
+        `
+        : `
+            <span class="driver-request-status ${status.toLowerCase()}">
+                ${status}
+            </span>
+        `
+    }
+</td>
 
                 </tr>
             `;
