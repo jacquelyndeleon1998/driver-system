@@ -4027,35 +4027,95 @@ function closeDriverRequestActionModal() {
     selectedDriverRequestAction = null;
 }
 
-  async function processDriverRequestAction(status) {
+ let pendingDriverRequestStatus = null;
+
+function processDriverRequestAction(status) {
 
     if (!selectedDriverRequestAction) {
         console.error("No driver request selected.");
         return;
     }
 
-    const requestData =
-        selectedDriverRequestAction;
+    pendingDriverRequestStatus = status;
 
-    const actionText =
-        status === "Approved"
-            ? "approve"
-            : "deny";
+    const message =
+        document.getElementById(
+            "driverRequestConfirmMessage"
+        );
 
-    const confirmed = confirm(
-        `Are you sure you want to ${actionText} this request?\n\n` +
-        `Date: ${requestData.date}\n` +
-        `Driver: ${requestData.driverName}\n` +
-        `Request: ${requestData.request}\n` +
-        `Action: ${status}`
-    );
+    const button =
+        document.getElementById(
+            "driverRequestConfirmButton"
+        );
 
-    if (!confirmed) {
+    if (message) {
+
+        message.textContent =
+            status === "Approved"
+                ? "Are you sure you want to approve this request?"
+                : "Are you sure you want to deny this request?";
+    }
+
+    if (button) {
+
+        button.textContent =
+            status === "Approved"
+                ? "Approve"
+                : "Deny";
+
+        if (status === "Denied") {
+            button.classList.add("request-modal-deny");
+            button.classList.remove("request-modal-submit");
+        } else {
+            button.classList.add("request-modal-submit");
+            button.classList.remove("request-modal-deny");
+        }
+    }
+
+    closeDriverRequestActionModal();
+
+    const modal =
+        document.getElementById(
+            "driverRequestConfirmModal"
+        );
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+
+function closeDriverRequestConfirmModal() {
+
+    const modal =
+        document.getElementById(
+            "driverRequestConfirmModal"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+    pendingDriverRequestStatus = null;
+}
+
+
+async function confirmDriverRequestAction() {
+
+    if (
+        !selectedDriverRequestAction ||
+        !pendingDriverRequestStatus
+    ) {
         return;
     }
 
-    // Close modal immediately
-    closeDriverRequestActionModal();
+    const requestData =
+        selectedDriverRequestAction;
+
+    const status =
+        pendingDriverRequestStatus;
+
+    closeDriverRequestConfirmModal();
 
     try {
 
@@ -4068,7 +4128,6 @@ function closeDriverRequestActionModal() {
             + `&token=${encodeURIComponent(SECRET_TOKEN)}`
             + `&_nc=${Date.now()}`;
 
-
         const response =
             await fetch(
                 requestURL,
@@ -4079,45 +4138,24 @@ function closeDriverRequestActionModal() {
                 }
             );
 
-
         if (!response.ok) {
             throw new Error(
                 `HTTP ${response.status}`
             );
         }
 
-
         const text =
             await response.text();
 
-
-        let result;
-
-        try {
-
-            result =
-                JSON.parse(text);
-
-        } catch (parseError) {
-
-            throw new Error(
-                "The server returned an invalid response."
-            );
-        }
-
+        const result =
+            JSON.parse(text);
 
         if (!result.success) {
-
             throw new Error(
                 result.message ||
                 "Unable to update request status."
             );
         }
-
-
-        // ------------------------------------------
-        // UPDATE CURRENT ROW IMMEDIATELY
-        // ------------------------------------------
 
         const records =
             window.driverRequestRecords || [];
@@ -4132,16 +4170,9 @@ function closeDriverRequestActionModal() {
                     requestData.request.toLowerCase()
             );
 
-
         if (matchingRecord) {
-            matchingRecord.requestStatus =
-                status;
+            matchingRecord.requestStatus = status;
         }
-
-
-        // ------------------------------------------
-        // RENDER IMMEDIATELY
-        // ------------------------------------------
 
         if (
             typeof renderDriverRequests ===
@@ -4150,17 +4181,13 @@ function closeDriverRequestActionModal() {
             renderDriverRequests();
         }
 
-
-        // ------------------------------------------
-        // SUCCESS MESSAGE
-        // ------------------------------------------
-
         alert(
             status === "Approved"
                 ? "Request approved successfully."
                 : "Request denied successfully."
         );
 
+        selectedDriverRequestAction = null;
 
     } catch (error) {
 
@@ -8490,52 +8517,43 @@ async function confirmReminder() {
     </div>
 </div>
 
-    <!-- Driver Request Confirmation Modal -->
-<div id="requestConfirmModal" class="request-modal-overlay" style="display:none;">
+  <!-- Driver Request Confirmation Modal -->
+<div id="driverRequestConfirmModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
     <div class="request-modal">
 
         <div class="request-modal-title">
-            Submit Request?
+            Confirm Request
         </div>
 
-        <div class="request-modal-details">
+        <div class="request-modal-body">
 
-            <div class="request-detail-row">
-                <span class="request-detail-label">Date</span>
-                <span id="confirmRequestDate"></span>
-            </div>
-
-            <div class="request-detail-row">
-                <span class="request-detail-label">Request</span>
-                <span id="confirmRequestType"></span>
-            </div>
-
-            <div class="request-detail-row">
-                <span class="request-detail-label">Reason / Duty</span>
-                <span id="confirmReasonDuty"></span>
-            </div>
-
-            <div class="request-detail-row">
-                <span class="request-detail-label">Requested Time</span>
-                <span id="confirmRequestedTime"></span>
+            <div id="driverRequestConfirmMessage"
+                 class="request-action-message">
+                Are you sure you want to approve this request?
             </div>
 
         </div>
 
         <div class="request-modal-buttons">
+
             <button
                 type="button"
                 class="request-modal-cancel"
-                onclick="closeRequestConfirmModal()">
+                onclick="closeDriverRequestConfirmModal()">
                 Cancel
             </button>
 
             <button
                 type="button"
                 class="request-modal-submit"
-                onclick="confirmDriverRequestSubmission()">
-                Submit Request
+                id="driverRequestConfirmButton"
+                onclick="confirmDriverRequestAction()">
+                Approve
             </button>
+
         </div>
 
     </div>
