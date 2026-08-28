@@ -8390,12 +8390,13 @@ window.onload = async function () {
     );
 
  try {
-   await Promise.all([
-    loadSubmittedAllowances(),
-    loadMainSchedulesAndApprovals(),
-    fetchLiveAllowancesFromSheet(),
-    loadDriverRequests()
+  await Promise.all([
+loadSubmittedAllowances(),
+loadMainSchedulesAndApprovals(),
+loadDriverRequests()
 ]);
+
+await fetchLiveAllowancesFromSheet();
 
 updateCutoffDropdownsDynamically();
 
