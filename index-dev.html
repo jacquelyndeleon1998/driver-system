@@ -8609,22 +8609,25 @@ function showReminderModal() {
 
 async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-    showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
 
-   try {
-    await loadSubmittedAllowances();
+    showLoginSpinner(
+        "Loading Dashboard...",
+        "Preparing your dashboard..."
+    );
 
-    await fetchLiveAllowancesFromSheet();
+    try {
 
-    await loadMainSchedulesAndApprovals();
+        updateCutoffDropdownsDynamically();
 
-    await loadDriverRequests();
+    } catch (err) {
 
-    updateCutoffDropdownsDynamically();
+        console.error(
+            "Error preparing driver dashboard:",
+            err
+        );
 
-} catch (err) {
-        console.error("Error loading driver dashboard:", err);
     } finally {
+
         hideLoginSpinner();
         showHomePage();
     }
