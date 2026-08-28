@@ -9,6 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        .request-modal-deny {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 10px 17px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.request-modal-deny:hover {
+    background: #c82333;
+}
+
         /* ================================
    DRIVER REQUEST MODALS
 ================================ */
@@ -3948,6 +3963,45 @@ function openRequestConfirmModal(
     pendingDriverRequestSubmission = submitFunction;
 
     document.getElementById("requestConfirmModal").style.display = "flex";
+}
+
+    let selectedDriverRequestAction = null;
+
+function showDriverRequestAction(
+    requestDate,
+    driverName,
+    requestType
+) {
+
+    selectedDriverRequestAction = {
+        date: decodeURIComponent(requestDate),
+        driverName: decodeURIComponent(driverName),
+        request: decodeURIComponent(requestType)
+    };
+
+    const modal =
+        document.getElementById(
+            "driverRequestActionModal"
+        );
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+
+function closeDriverRequestActionModal() {
+
+    const modal =
+        document.getElementById(
+            "driverRequestActionModal"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+    selectedDriverRequestAction = null;
 }
 
 
@@ -8335,6 +8389,54 @@ async function confirmReminder() {
                 onclick="closeRequestSuccessModal()">
                 OK
             </button>
+        </div>
+
+    </div>
+</div>
+
+    <!-- Driver Request Action Modal -->
+<div id="driverRequestActionModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
+    <div class="request-modal">
+
+        <div class="request-modal-title">
+            Request Action
+        </div>
+
+        <div style="
+            padding:20px 24px;
+            color:#555;
+            line-height:1.6;
+            text-align:center;
+        ">
+            What would you like to do with this request?
+        </div>
+
+        <div class="request-modal-buttons">
+
+            <button
+                type="button"
+                class="request-modal-cancel"
+                onclick="closeDriverRequestActionModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-deny"
+                onclick="processDriverRequestAction('Denied')">
+                Deny
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="processDriverRequestAction('Approved')">
+                Approve
+            </button>
+
         </div>
 
     </div>
