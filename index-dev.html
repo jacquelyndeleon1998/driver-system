@@ -6408,18 +6408,15 @@ const [
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             const status = (approvalDates[date] || "").toLowerCase();
 
-            console.log(
-    "RENDER CHECK:",
-    date,
-    "| today:",
-    today.toDateString(),
-    "| isPast:",
-    isPast,
-    "| isToday:",
-    isToday,
-    "| status:",
-    status
-);
+            if (date === "August 28, 2026") {
+    console.log("AUGUST 28 DEBUG:", {
+        scheduleDate: date,
+        approvalStatus: approvalDates[date],
+        allApprovalDates: Object.keys(approvalDates).filter(d => d.includes("August 28"))
+    });
+}
+
+           
 
             // -----------------------------------------------------------
             // ROLE FILTERING LOGIC
