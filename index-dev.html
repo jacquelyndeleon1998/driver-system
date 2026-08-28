@@ -4215,11 +4215,7 @@ async function confirmDriverRequestAction() {
         selectedDriverRequestAction = null;
         pendingDriverRequestStatus = "";
 
-        alert(
-            status === "Approved"
-                ? "Request approved successfully."
-                : "Request denied successfully."
-        );
+      showDriverRequestApprovalSuccessModal(status);
 
     } catch (error) {
 
@@ -4243,6 +4239,71 @@ async function confirmDriverRequestAction() {
         if (overlay) {
             overlay.style.display = "none";
         }
+    }
+}
+
+    function showDriverRequestApprovalSuccessModal(status) {
+
+    const modal =
+        document.getElementById(
+            "driverRequestApprovalSuccessModal"
+        );
+
+    const title =
+        document.getElementById(
+            "driverRequestApprovalSuccessTitle"
+        );
+
+    const message =
+        document.getElementById(
+            "driverRequestApprovalSuccessMessage"
+        );
+
+    if (!modal) {
+        console.error(
+            "Driver Request Approval Success Modal not found."
+        );
+        return;
+    }
+
+    if (status === "Approved") {
+
+        if (title) {
+            title.textContent =
+                "Request Approved";
+        }
+
+        if (message) {
+            message.textContent =
+                "Request approved successfully.";
+        }
+
+    } else {
+
+        if (title) {
+            title.textContent =
+                "Request Denied";
+        }
+
+        if (message) {
+            message.textContent =
+                "Request denied successfully.";
+        }
+    }
+
+    modal.style.display = "flex";
+}
+
+
+function closeDriverRequestApprovalSuccessModal() {
+
+    const modal =
+        document.getElementById(
+            "driverRequestApprovalSuccessModal"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
     }
 }
 
