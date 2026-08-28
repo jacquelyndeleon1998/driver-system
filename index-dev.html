@@ -3097,21 +3097,33 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
     const cutoffSelect = document.getElementById("driverRequestCutoff");
     const body = document.getElementById("driverRequestBody");
 
-    if (!cutoffSelect || !body) return;
+    if (!cutoffSelect || !body) {
+        console.warn("Driver Request elements not found.");
+        return;
+    }
 
     try {
+        // ==========================================
+        // LOADING
+        // ==========================================
         body.innerHTML = `
             <tr>
-                <td colspan="5" style="text-align:center; padding:16px;">
+                <td colspan="6"
+                    style="text-align:center; padding:16px;">
                     Loading driver requests...
                 </td>
             </tr>
         `;
 
-        const url =
-            `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
+        // ==========================================
+        // FETCH DRIVER REQUESTS
+        // ==========================================
+        const url = `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
             `&token=${encodeURIComponent(SECRET_TOKEN)}` +
             `&_nc=${Date.now()}`;
+
+        console.log("===== LOADING DRIVER REQUESTS =====");
+        console.log("Driver Request URL:", url);
 
         const response = await fetch(url, {
             method: "GET",
@@ -3119,63 +3131,118 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
             credentials: "omit"
         });
 
+        console.log("Driver Request HTTP status:", response.status);
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
 
+        // ==========================================
+        // GET CSV
+        // ==========================================
         const csvText = await response.text();
 
+        console.log("===== DRIVER REQUEST RAW CSV =====");
+        console.log(csvText);
+        console.log("==================================");
+
+        // ==========================================
+        // VALIDATE RESPONSE
+        // ==========================================
         if (!csvText || csvText.trim().startsWith("<!DOCTYPE")) {
             throw new Error("Invalid Driver Requests response.");
         }
 
-        const lines = csvText.trim().split("\n");
+        const lines = csvText.trim().split(/\r?\n/);
 
+        console.log("Driver Request CSV lines:", lines.length);
+
+        // ==========================================
+        // NO DATA
+        // ==========================================
         if (lines.length <= 1) {
+            window.driverRequestRecords = [];
+
             body.innerHTML = `
                 <tr>
-                    <td colspan="5"
+                    <td colspan="6"
                         style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
                         No driver requests found.
                     </td>
                 </tr>
             `;
+
+            console.log("NO DRIVER REQUEST RECORDS FOUND.");
             return;
         }
 
+        // ==========================================
+        // HEADERS
+        // ==========================================
         const headers = parseCSVRow(lines[0]);
 
-        const records = lines.slice(1).map(line => {
-            const cols = parseCSVRow(line);
+        console.log("===== DRIVER REQUEST HEADERS =====");
+        console.log(headers);
 
-            return {
-    date: (cols[0] || "").trim(),
-    driverName: (cols[1] || "").trim(),
-    request: (cols[2] || "").trim(),
-    reason: (cols[3] || "").trim(),
-    requestedTime: (cols[4] || "").trim(),
-    requestStatus: (cols[5] || "").trim()
-};
+        // ==========================================
+        // PARSE RECORDS
+        // ==========================================
+        const records = lines
+            .slice(1)
+            .map(line => {
+                const cols = parseCSVRow(line);
 
-            
-        }).filter(record =>
-            record.driverName ||
-            record.request ||
-            record.reason ||
-            record.requestedTime
-        );
+                console.log("Driver Request CSV row:", cols);
 
+                return {
+                    // A - Date
+                    date: (cols[0] || "").trim(),
+                    // B - Driver Name
+                    driverName: (cols[1] || "").trim(),
+                    // C - Request
+                    request: (cols[2] || "").trim(),
+                    // D - Reason / Duty
+                    reason: (cols[3] || "").trim(),
+                    // E - Requested Time
+                    requestedTime: (cols[4] || "").trim(),
+                    // F - Request Status
+                    requestStatus: (cols[5] || "").trim()
+                };
+            })
+            .filter(record =>
+                record.date ||
+                record.driverName ||
+                record.request ||
+                record.reason ||
+                record.requestedTime ||
+                record.requestStatus
+            );
+
+        // ==========================================
+        // SAVE RECORDS
+        // ==========================================
         window.driverRequestRecords = records;
 
+        // ==========================================
+        // DEBUG
+        // ==========================================
+        console.log("===== DRIVER REQUEST DATA RECEIVED =====");
+        console.log("Total records:", records.length);
+        console.table(records);
+        console.log("Current cutoff:", cutoffSelect.value);
+        console.log("========================================");
+
+        // ==========================================
+        // RENDER
+        // ==========================================
         renderDriverRequests();
 
     } catch (error) {
-
         console.error("Error loading Driver Requests:", error);
 
         body.innerHTML = `
             <tr>
-                <td colspan="5"
+                <td colspan="6"
                     style="text-align:center; color:#b91c1c; padding:16px;">
                     Unable to load Driver Requests.
                 </td>
