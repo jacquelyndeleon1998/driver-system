@@ -4078,8 +4078,17 @@ function processDriverRequestAction(status) {
         }
     }
 
-    closeDriverRequestActionModal();
+    // Hide the first modal WITHOUT clearing the selected request
+    const actionModal =
+        document.getElementById(
+            "driverRequestActionModal"
+        );
 
+    if (actionModal) {
+        actionModal.style.display = "none";
+    }
+
+    // Show confirmation modal
     const confirmModal =
         document.getElementById(
             "driverRequestConfirmModal"
@@ -4089,7 +4098,6 @@ function processDriverRequestAction(status) {
         confirmModal.style.display = "flex";
     }
 }
-
 
 function closeDriverRequestConfirmModal() {
 
