@@ -3375,31 +3375,24 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
 }
 
 async function loadDriverRequests() {
-
-    const cutoffSelect =
-        document.getElementById("driverRequestCutoff");
-
-    const body =
-        document.getElementById("driverRequestBody");
-
-    const driverBody =
-        document.getElementById("driverRequestsTableBody");
+    const cutoffSelect = document.getElementById("driverRequestCutoff");
+    const body = document.getElementById("driverRequestBody");
+    const driverBody = document.getElementById("driverRequestsTableBody");
 
     if (!body && !driverBody) {
-        console.warn("Driver Request elements not found.");
+        console.warn(
+            "Driver Request elements not found. Data loading will be skipped."
+        );
         return;
     }
 
     try {
-
         // ==========================================
         // SHOW LOADING
         // ==========================================
-
         const loadingBody = body || driverBody;
 
         if (loadingBody) {
-
             loadingBody.innerHTML = `
                 <tr>
                     <td colspan="${body ? 6 : 5}"
@@ -3410,56 +3403,72 @@ async function loadDriverRequests() {
             `;
         }
 
-
         // ==========================================
         // FETCH DRIVER REQUEST CSV
         // ==========================================
-
-        const url =
-            `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
+        const url = `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
             `&token=${encodeURIComponent(SECRET_TOKEN)}` +
             `&_nc=${Date.now()}`;
 
-     
-        const response = await fetch(
-            url,
-            {
-                method: "GET",
-                cache: "no-store",
-                credentials: "omit"
+        let response = null;
+
+        // Small retry only for Driver Requests.
+        // This does NOT block dashboard loading because
+        // this function is called in the background.
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                response = await fetch(url, {
+                    method: "GET",
+                    cache: "no-store",
+                    credentials: "omit"
+                });
+
+                if (response.ok) {
+                    break;
+                }
+
+                console.warn(
+                    `Driver Requests attempt ${attempt + 1} failed: HTTP ${response.status}`
+                );
+
+            } catch (fetchError) {
+                console.warn(
+                    `Driver Requests attempt ${attempt + 1} failed:`,
+                    fetchError
+                );
             }
-        );
 
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
-            );
+            if (attempt === 0) {
+                await new Promise(resolve =>
+                    setTimeout(resolve, 500)
+                );
+            }
         }
 
+        // ==========================================
+        // IF STILL FAILED
+        // ==========================================
+        if (!response || !response.ok) {
+            console.warn(
+                "Driver Requests could not be loaded. Keeping existing Driver Request data."
+            );
+
+            // IMPORTANT:
+            // DO NOT clear window.driverRequestRecords here.
+            return;
+        }
 
         // ==========================================
         // READ RESPONSE
         // ==========================================
-
-        const csvText =
-            await response.text();
-
-      
-       
+        const csvText = await response.text();
+        const trimmedCSV = csvText.trim();
 
         // ==========================================
         // EMPTY RESPONSE
         // ==========================================
-
-        if (
-            !csvText ||
-            !csvText.trim()
-        ) {
-
-            console.warn(
-                "Driver Requests returned an empty response."
-            );
+        if (!trimmedCSV) {
+            console.warn("Driver Requests returned an empty response.");
 
             window.driverRequestRecords = [];
 
@@ -3473,54 +3482,32 @@ async function loadDriverRequests() {
 
             return;
         }
-
 
         // ==========================================
         // INVALID HTML RESPONSE
         // ==========================================
-
-        const trimmedCSV =
-            csvText.trim();
-
         if (
             trimmedCSV.startsWith("<!DOCTYPE") ||
             trimmedCSV.startsWith("<html")
         ) {
-
-            throw new Error(
-                "Driver Requests returned an HTML response."
-            );
+            console.warn("Driver Requests returned HTML instead of CSV.");
+            return;
         }
-
 
         // ==========================================
         // UNAUTHORIZED
         // ==========================================
-
-        if (
-            trimmedCSV === "UNAUTHORIZED"
-        ) {
-
-            throw new Error(
-                "Driver Requests fetch was unauthorized."
-            );
+        if (trimmedCSV === "UNAUTHORIZED") {
+            console.warn("Driver Requests fetch was unauthorized.");
+            return;
         }
-
 
         // ==========================================
         // PARSE CSV
         // ==========================================
-
-        const lines =
-            trimmedCSV.split(/\r?\n/);
-
-       
-
+        const lines = trimmedCSV.split(/\r?\n/);
 
         if (lines.length <= 1) {
-
-        
-
             window.driverRequestRecords = [];
 
             if (body) {
@@ -3534,166 +3521,81 @@ async function loadDriverRequests() {
             return;
         }
 
-
         // ==========================================
         // HEADERS
         // ==========================================
-
-        const headers =
-            parseCSVRow(lines[0]);
-
-      
+        const headers = parseCSVRow(lines[0]);
 
         // ==========================================
         // RECORDS
         // ==========================================
+        const records = lines
+            .slice(1)
+            .map(line => {
+                const cols = parseCSVRow(line);
 
-        const records =
-            lines
-                .slice(1)
-                .map(line => {
-
-                    const cols =
-                        parseCSVRow(line);
-
-                    
-
-
-                    return {
-
-                        date:
-                            String(
-                                cols[0] || ""
-                            ).trim(),
-
-                        driverName:
-                            String(
-                                cols[1] || ""
-                            ).trim(),
-
-                        request:
-                            String(
-                                cols[2] || ""
-                            ).trim(),
-
-                        reason:
-                            String(
-                                cols[3] || ""
-                            ).trim(),
-
-                        requestedTime:
-                            String(
-                                cols[4] || ""
-                            ).trim(),
-
-                        requestStatus:
-                            String(
-                                cols[5] || ""
-                            ).trim()
-                    };
-                })
-                .filter(record =>
-                    record.date ||
-                    record.driverName ||
-                    record.request ||
-                    record.reason ||
-                    record.requestedTime ||
-                    record.requestStatus
-                );
-
-
-        // ==========================================
-        // FINAL DEBUG
-        // ==========================================
-
-    
+                return {
+                    date: String(cols[0] || "").trim(),
+                    driverName: String(cols[1] || "").trim(),
+                    request: String(cols[2] || "").trim(),
+                    reason: String(cols[3] || "").trim(),
+                    requestedTime: String(cols[4] || "").trim(),
+                    requestStatus: String(cols[5] || "").trim()
+                };
+            })
+            .filter(record =>
+                record.date ||
+                record.driverName ||
+                record.request ||
+                record.reason ||
+                record.requestedTime ||
+                record.requestStatus
+            );
 
         // ==========================================
         // SAVE GLOBAL DATA
         // ==========================================
+        window.driverRequestRecords = records;
 
-        window.driverRequestRecords =
-            records;
-
+        console.log("Driver Requests loaded:", records.length);
 
         // ==========================================
         // RENDER ADMIN
         // ==========================================
-
         if (body) {
-
             renderDriverRequests();
         }
-
 
         // ==========================================
         // RENDER DRIVER
         // ==========================================
-
         if (driverBody) {
-
             renderDriverRequestsForDriver();
         }
-
 
         // ==========================================
         // UPDATE CUTOFF DROPDOWN
         // ==========================================
-
-        if (
-            typeof updateCutoffDropdownsDynamically ===
-            "function"
-        ) {
-
+        if (typeof updateCutoffDropdownsDynamically === "function") {
             updateCutoffDropdownsDynamically();
         }
 
-
     } catch (error) {
+        console.error("Error loading Driver Requests:", error);
 
-        console.error(
-            "Error loading Driver Requests:",
-            error
-        );
-
-        window.driverRequestRecords = [];
-
-
-        // ==========================================
-        // SHOW ERROR IN ADMIN
-        // ==========================================
-
-        if (body) {
-
+        // IMPORTANT:
+        // Do NOT erase existing Driver Request data.
+        // A temporary network/404 error should not
+        // make the Admin table disappear.
+        if (
+            body &&
+            (!window.driverRequestRecords ||
+             !window.driverRequestRecords.length)
+        ) {
             body.innerHTML = `
                 <tr>
                     <td colspan="6"
-                        style="
-                            text-align:center;
-                            color:#b91c1c;
-                            padding:16px;
-                        ">
-                        Unable to load Driver Requests.
-                    </td>
-                </tr>
-            `;
-        }
-
-
-        // ==========================================
-        // SHOW ERROR IN DRIVER
-        // ==========================================
-
-        if (driverBody) {
-
-            driverBody.innerHTML = `
-                <tr>
-                    <td colspan="5"
-                        style="
-                            text-align:center;
-                            color:#b91c1c;
-                            padding:16px;
-                        ">
+                        style="text-align:center; color:#b91c1c; padding:16px;">
                         Unable to load Driver Requests.
                     </td>
                 </tr>
