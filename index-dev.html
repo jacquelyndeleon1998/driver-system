@@ -3370,30 +3370,23 @@ if (driverBody) {
         `).join("");
 }
 
-    function renderDriverRequestsForDriver() {
-
-    const body =
-        document.getElementById("driverRequestsTableBody");
+   function renderDriverRequestsForDriver() {
+    const body = document.getElementById("driverRequestsTableBody");
 
     if (!body) {
-        console.warn(
-            "driverRequestsTableBody not found."
-        );
+        console.warn("Driver Role request table not found.");
         return;
     }
 
-    const driverName =
-        (localStorage.getItem("username") || "").trim();
+    const driverName = (localStorage.getItem("username") || "").trim();
+
+    console.log("DRIVER ROLE - LOGGED IN USERNAME:", driverName);
 
     if (!driverName) {
         body.innerHTML = `
             <tr>
                 <td colspan="5"
-                    style="
-                        text-align:center;
-                        padding:16px;
-                        color:#b91c1c;
-                    ">
+                    style="text-align:center; padding:16px; color:#b91c1c;">
                     Driver name not found.
                 </td>
             </tr>
@@ -3401,82 +3394,51 @@ if (driverBody) {
         return;
     }
 
-    const records =
-        window.driverRequestRecords || [];
+    const records = window.driverRequestRecords || [];
 
-    // ==========================================
-    // FILTER BY LOGGED-IN DRIVER
-    // ==========================================
+    console.log("DRIVER ROLE - ALL REQUEST RECORDS:", records);
+
     const driverRecords = records.filter(record => {
+        const sheetDriver = String(record.driverName || "").trim().toLowerCase();
+        const loggedInDriver = driverName.trim().toLowerCase();
 
-        return String(record.driverName || "")
-            .trim()
-            .toLowerCase() ===
-            driverName.toLowerCase();
-
+        return sheetDriver === loggedInDriver;
     });
 
-    console.log(
-        "DRIVER ROLE REQUESTS:",
-        {
-            loggedInDriver: driverName,
-            totalRecords: records.length,
-            driverRecords
-        }
-    );
+    console.log("DRIVER ROLE - MATCHED REQUESTS:", driverRecords);
 
-    // ==========================================
-    // NO REQUESTS
-    // ==========================================
     if (driverRecords.length === 0) {
-
         body.innerHTML = `
             <tr>
                 <td colspan="5"
-                    style="
-                        text-align:center;
-                        color:#6b7280;
-                        padding:16px;
-                    ">
+                    style="text-align:center; color:#6b7280; padding:25px;">
                     No requests yet.
                 </td>
             </tr>
         `;
-
         return;
     }
 
-    // ==========================================
-    // DISPLAY DRIVER REQUESTS
-    // ==========================================
     body.innerHTML = driverRecords.map(record => `
-
         <tr>
-
             <td>
                 ${record.date || ""}
             </td>
-
             <td>
                 ${record.request || ""}
             </td>
-
             <td>
                 ${record.reason || ""}
             </td>
-
             <td>
                 ${record.requestedTime || ""}
             </td>
-
             <td>
                 <span class="driver-request-status">
                     ${record.requestStatus || "Pending"}
                 </span>
             </td>
-
         </tr>
-
     `).join("");
 }
     
