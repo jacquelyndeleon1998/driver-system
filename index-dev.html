@@ -4027,7 +4027,7 @@ function closeDriverRequestActionModal() {
     selectedDriverRequestAction = null;
 }
 
- let pendingDriverRequestStatus = null;
+let pendingDriverRequestStatus = "";
 
 function processDriverRequestAction(status) {
 
@@ -4049,7 +4049,6 @@ function processDriverRequestAction(status) {
         );
 
     if (message) {
-
         message.textContent =
             status === "Approved"
                 ? "Are you sure you want to approve this request?"
@@ -4063,24 +4062,31 @@ function processDriverRequestAction(status) {
                 ? "Approve"
                 : "Deny";
 
-        if (status === "Denied") {
-            button.classList.add("request-modal-deny");
-            button.classList.remove("request-modal-submit");
+        button.classList.remove(
+            "request-modal-submit",
+            "request-modal-deny"
+        );
+
+        if (status === "Approved") {
+            button.classList.add(
+                "request-modal-submit"
+            );
         } else {
-            button.classList.add("request-modal-submit");
-            button.classList.remove("request-modal-deny");
+            button.classList.add(
+                "request-modal-deny"
+            );
         }
     }
 
     closeDriverRequestActionModal();
 
-    const modal =
+    const confirmModal =
         document.getElementById(
             "driverRequestConfirmModal"
         );
 
-    if (modal) {
-        modal.style.display = "flex";
+    if (confirmModal) {
+        confirmModal.style.display = "flex";
     }
 }
 
@@ -4106,6 +4112,9 @@ async function confirmDriverRequestAction() {
         !selectedDriverRequestAction ||
         !pendingDriverRequestStatus
     ) {
+        console.error(
+            "Missing request or status."
+        );
         return;
     }
 
@@ -4115,9 +4124,23 @@ async function confirmDriverRequestAction() {
     const status =
         pendingDriverRequestStatus;
 
-    closeDriverRequestConfirmModal();
+    const confirmModal =
+        document.getElementById(
+            "driverRequestConfirmModal"
+        );
+
+    if (confirmModal) {
+        confirmModal.style.display = "none";
+    }
 
     try {
+
+        showActionLoading(
+            status === "Approved"
+                ? "Approving Request..."
+                : "Denying Request...",
+            "Please wait while the request is being updated."
+        );
 
         const requestURL =
             `${WEBAPP_BASE}?action=updateDriverRequestStatus`
@@ -4138,14 +4161,13 @@ async function confirmDriverRequestAction() {
                 }
             );
 
-        if (!response.ok) {
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-        }
-
         const text =
             await response.text();
+
+        console.log(
+            "DRIVER REQUEST STATUS RESPONSE:",
+            text
+        );
 
         const result =
             JSON.parse(text);
@@ -4157,6 +4179,7 @@ async function confirmDriverRequestAction() {
             );
         }
 
+        // Update current record immediately
         const records =
             window.driverRequestRecords || [];
 
@@ -4181,13 +4204,14 @@ async function confirmDriverRequestAction() {
             renderDriverRequests();
         }
 
+        selectedDriverRequestAction = null;
+        pendingDriverRequestStatus = "";
+
         alert(
             status === "Approved"
                 ? "Request approved successfully."
                 : "Request denied successfully."
         );
-
-        selectedDriverRequestAction = null;
 
     } catch (error) {
 
@@ -4200,6 +4224,17 @@ async function confirmDriverRequestAction() {
             error.message ||
             "Unable to update request status. Please try again."
         );
+
+    } finally {
+
+        const overlay =
+            document.getElementById(
+                "actionLoadingOverlay"
+            );
+
+        if (overlay) {
+            overlay.style.display = "none";
+        }
     }
 }
 
@@ -8517,7 +8552,7 @@ async function confirmReminder() {
     </div>
 </div>
 
-  <!-- Driver Request Confirmation Modal -->
+ <!-- Driver Request Confirmation Modal -->
 <div id="driverRequestConfirmModal"
      class="request-modal-overlay"
      style="display:none;">
@@ -8548,8 +8583,8 @@ async function confirmReminder() {
 
             <button
                 type="button"
-                class="request-modal-submit"
                 id="driverRequestConfirmButton"
+                class="request-modal-submit"
                 onclick="confirmDriverRequestAction()">
                 Approve
             </button>
@@ -8558,7 +8593,6 @@ async function confirmReminder() {
 
     </div>
 </div>
-
 
 <!-- Driver Request Success Modal -->
 <div id="requestSuccessModal" class="request-modal-overlay" style="display:none;">
