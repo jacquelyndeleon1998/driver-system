@@ -8458,31 +8458,20 @@ window.onload = async function () {
         "Loading latest schedules..."
     );
 
- try {
-  await Promise.all([
-loadSubmittedAllowances(),
-loadMainSchedulesAndApprovals(),
-loadDriverRequests()
-]);
+    try {
 
-await fetchLiveAllowancesFromSheet();
+        await Promise.all([
+            loadSubmittedAllowances(),
+            loadMainSchedulesAndApprovals(),
+            loadDriverRequests()
+        ]);
 
-updateCutoffDropdownsDynamically();
+        await fetchLiveAllowancesFromSheet();
 
-    hideLoginSpinner();
-    showHomePage();
+        updateCutoffDropdownsDynamically();
 
-    // Load Driver Requests separately
-    // Do not make dashboard loading wait for it.
-    setTimeout(() => {
-        loadDriverRequests();
-    }, 0);
-
-// Load Driver Requests separately
-// Do not make dashboard loading wait for it.
-setTimeout(() => {
-    loadDriverRequests();
-}, 0);
+        hideLoginSpinner();
+        showHomePage();
 
     } catch (err) {
 
