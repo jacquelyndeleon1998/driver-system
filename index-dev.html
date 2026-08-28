@@ -3192,11 +3192,17 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const cutoffValue = cutoffSelect.value;
 
+    // ==========================================
+    // NO CUTOFF SELECTED
+    // ==========================================
     if (!cutoffValue) {
         body.innerHTML = `
             <tr>
-                <td colspan="5"
-                    style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                <td colspan="6"
+                    style="text-align:center;
+                           color:#14532d;
+                           opacity:0.6;
+                           padding:16px;">
                     No cut-off period selected.
                 </td>
             </tr>
@@ -3204,38 +3210,77 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
         return;
     }
 
-    const [monthString, bucketString] = cutoffValue.split("-");
-
-    const selectedMonth = Number(monthString) - 1;
-    const selectedBucket = Number(bucketString);
+    // ==========================================
+    // GET SELECTED CUTOFF
+    // ==========================================
+    const parts = cutoffValue.split("-");
+    const selectedMonth = Number(parts[0]) - 1;
+    const selectedBucket = Number(parts[1]);
 
     const records = window.driverRequestRecords || [];
 
-    const filtered = records.filter(record => {
+    console.log(
+        "DRIVER REQUEST RENDER:",
+        {
+            cutoffValue,
+            selectedMonth,
+            selectedBucket,
+            totalRecords: records.length,
+            records
+        }
+    );
 
-        const parsedDate = new Date(record.date);
+    // ==========================================
+    // FILTER REQUESTS
+    // ==========================================
+    const filtered = records.filter(record => {
+        const dateText = String(record.date || "").trim();
+
+        if (!dateText) {
+            return false;
+        }
+
+        const parsedDate = new Date(dateText);
 
         if (isNaN(parsedDate.getTime())) {
+            console.warn(
+                "Invalid Driver Request date:",
+                dateText
+            );
             return false;
         }
 
         const recordMonth = parsedDate.getMonth();
         const recordDay = parsedDate.getDate();
 
+        // Correct month
         if (recordMonth !== selectedMonth) {
             return false;
         }
 
+        // 1-15 = first cutoff
+        // 16-end = second cutoff
         const recordBucket = recordDay <= 15 ? 1 : 2;
 
         return recordBucket === selectedBucket;
     });
 
+    console.log(
+        "DRIVER REQUEST FILTERED:",
+        filtered
+    );
+
+    // ==========================================
+    // NO REQUESTS
+    // ==========================================
     if (filtered.length === 0) {
         body.innerHTML = `
             <tr>
-                <td colspan="5"
-                    style="text-align:center; color:#14532d; opacity:0.6; padding:16px;">
+                <td colspan="6"
+                    style="text-align:center;
+                           color:#14532d;
+                           opacity:0.6;
+                           padding:16px;">
                     No driver requests found for this cut-off window.
                 </td>
             </tr>
@@ -3243,20 +3288,33 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
         return;
     }
 
+    // ==========================================
+    // DISPLAY REQUESTS
+    // ==========================================
     body.innerHTML = filtered.map(record => `
-    <tr>
-        <td>${record.date || ""}</td>
-        <td>${record.driverName || ""}</td>
-        <td>${record.request || ""}</td>
-        <td>${record.reason || ""}</td>
-        <td>${record.requestedTime || ""}</td>
-        <td>
-            <span class="driver-request-status">
-                ${record.requestStatus || "Pending"}
-            </span>
-        </td>
-    </tr>
-`).join("");
+            <tr>
+                <td>
+                    ${record.date || ""}
+                </td>
+                <td>
+                    ${record.driverName || ""}
+                </td>
+                <td>
+                    ${record.request || ""}
+                </td>
+                <td>
+                    ${record.reason || ""}
+                </td>
+                <td>
+                    ${record.requestedTime || ""}
+                </td>
+                <td>
+                    <span class="driver-request-status">
+                        ${record.requestStatus || "Pending"}
+                    </span>
+                </td>
+            </tr>
+        `).join("");
 }
     
 function updateCutoffDropdownsDynamically() {
