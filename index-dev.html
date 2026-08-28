@@ -3096,24 +3096,32 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
 }
 
    async function loadDriverRequests() {
-    const cutoffSelect = document.getElementById("driverRequestCutoff");
-    const body = document.getElementById("driverRequestBody");
+   const cutoffSelect =
+    document.getElementById("driverRequestCutoff");
 
-    if (!cutoffSelect || !body) {
-        console.warn("Driver Request elements not found.");
-        return;
-    }
+const body =
+    document.getElementById("driverRequestBody");
 
+const driverBody =
+    document.getElementById("driverRequestsTableBody");
+
+if (!body && !driverBody) {
+    console.warn("Driver Request elements not found.");
+    return;
+}
     try {
-        body.innerHTML = `
-            <tr>
-                <td colspan="6"
-                    style="text-align:center; padding:16px;">
-                    Loading driver requests...
-                </td>
-            </tr>
-        `;
+      const loadingBody = body || driverBody;
 
+if (loadingBody) {
+    loadingBody.innerHTML = `
+        <tr>
+            <td colspan="${body ? 6 : 5}"
+                style="text-align:center; padding:16px;">
+                Loading driver requests...
+            </td>
+        </tr>
+    `;
+}
         const url = `${WEBAPP_BASE}?action=fetchDriverRequestsCSV` +
             `&token=${encodeURIComponent(SECRET_TOKEN)}` +
             `&_nc=${Date.now()}`;
@@ -3204,10 +3212,14 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
 
         window.driverRequestRecords = records;
 
-renderDriverRequests();
+if (body) {
+    renderDriverRequests();
+}
 
-// Driver Role table
-renderDriverRequestsForDriver();
+if (driverBody) {
+    renderDriverRequestsForDriver();
+}
+
 
     } catch (error) {
         console.error("Error loading Driver Requests:", error);
