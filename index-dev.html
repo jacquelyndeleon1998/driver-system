@@ -3708,6 +3708,203 @@ async function loadDriverRequests() {
     `).join("");
 }
 
+    function renderDriverRequests() {
+
+    const body =
+        document.getElementById("driverRequestBody");
+
+    const cutoffSelect =
+        document.getElementById("driverRequestCutoff");
+
+    if (!body) {
+        console.warn(
+            "Admin Driver Request table not found."
+        );
+        return;
+    }
+
+    const records =
+        window.driverRequestRecords || [];
+
+    console.log(
+        "ADMIN ROLE - ALL REQUEST RECORDS:",
+        records
+    );
+
+    // ------------------------------------------
+    // GET SELECTED CUTOFF
+    // ------------------------------------------
+
+    const selectedCutoff =
+        cutoffSelect?.value || "";
+
+    console.log(
+        "ADMIN ROLE - SELECTED CUTOFF:",
+        selectedCutoff
+    );
+
+    // ------------------------------------------
+    // NO RECORDS
+    // ------------------------------------------
+
+    if (records.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    style="
+                        text-align:center;
+                        color:#6b7280;
+                        padding:25px;
+                    ">
+                    No driver requests found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    // ------------------------------------------
+    // FILTER BY CUTOFF
+    // ------------------------------------------
+
+    let filteredRecords =
+        records;
+
+    if (selectedCutoff) {
+
+        const cutoffMatch =
+            selectedCutoff.match(
+                /([A-Za-z]+)\s+(\d+)\s*-\s*(\d+),\s*(\d{4})/
+            );
+
+        if (cutoffMatch) {
+
+            const monthName =
+                cutoffMatch[1];
+
+            const startDay =
+                Number(cutoffMatch[2]);
+
+            const endDay =
+                Number(cutoffMatch[3]);
+
+            const year =
+                Number(cutoffMatch[4]);
+
+            const monthIndex =
+                new Date(
+                    `${monthName} 1, ${year}`
+                ).getMonth();
+
+            filteredRecords =
+                records.filter(record => {
+
+                    const rawDate =
+                        String(
+                            record.date || ""
+                        ).trim();
+
+                    if (!rawDate) {
+                        return false;
+                    }
+
+                    const requestDate =
+                        new Date(rawDate);
+
+                    if (
+                        Number.isNaN(
+                            requestDate.getTime()
+                        )
+                    ) {
+                        return false;
+                    }
+
+                    return (
+                        requestDate.getFullYear() === year &&
+                        requestDate.getMonth() === monthIndex &&
+                        requestDate.getDate() >= startDay &&
+                        requestDate.getDate() <= endDay
+                    );
+                });
+        }
+    }
+
+    console.log(
+        "ADMIN ROLE - FILTERED REQUESTS:",
+        filteredRecords
+    );
+
+    // ------------------------------------------
+    // NO MATCH FOR CUTOFF
+    // ------------------------------------------
+
+    if (filteredRecords.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    style="
+                        text-align:center;
+                        color:#6b7280;
+                        padding:25px;
+                    ">
+                    No driver requests found for this
+                    cut-off window.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    // ------------------------------------------
+    // RENDER TABLE
+    // ------------------------------------------
+
+    body.innerHTML =
+        filteredRecords.map(record => {
+
+            const status =
+                record.requestStatus ||
+                "Pending";
+
+            return `
+                <tr>
+
+                    <td>
+                        ${record.date || ""}
+                    </td>
+
+                    <td>
+                        ${record.driverName || ""}
+                    </td>
+
+                    <td>
+                        ${record.request || ""}
+                    </td>
+
+                    <td>
+                        ${record.reason || ""}
+                    </td>
+
+                    <td>
+                        ${record.requestedTime || ""}
+                    </td>
+
+                    <td>
+                        <span class="driver-request-status">
+                            ${status}
+                        </span>
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+}
+
     let pendingDriverRequestSubmission = null;
 
 
