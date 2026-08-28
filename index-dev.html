@@ -7842,7 +7842,11 @@ if (!isPast && !isToday) {
             <tr class="${rowClass}">
                 <td>${driverNameDisplay}</td>
                 <td>${driver.timeIn}</td>
-                <td>${driver.vehicle}</td>
+               <td>
+    <span style="${getCodingHighlightStyle(driver.vehicle, date)}">
+        ${driver.vehicle}
+    </span>
+</td>
                 <td>${itineraryDisplay}</td>
             </tr>`;
     });
