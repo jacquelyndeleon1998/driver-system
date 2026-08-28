@@ -3251,7 +3251,7 @@ async function loadSubmittedAllowances() {
 async function fetchLiveAllowancesFromSheet() {
     try {
         const controller = new AbortController();
-const timeoutId = setTimeout(() => controller.abort(), 8000);
+const timeoutId = setTimeout(() => controller.abort(), 20000);
 
         const response = await fetch(
             `${WEBAPP_BASE}?action=getAllowancesData&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${Date.now()}`,
@@ -8609,25 +8609,22 @@ function showReminderModal() {
 
 async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-
-    showLoginSpinner(
-        "Loading Dashboard...",
-        "Preparing your dashboard..."
-    );
+    showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
 
     try {
+        await loadSubmittedAllowances();
+
+        await fetchLiveAllowancesFromSheet();
+
+        await loadMainSchedulesAndApprovals();
+
+        await loadDriverRequests();
 
         updateCutoffDropdownsDynamically();
 
     } catch (err) {
-
-        console.error(
-            "Error preparing driver dashboard:",
-            err
-        );
-
+        console.error("Error loading driver dashboard:", err);
     } finally {
-
         hideLoginSpinner();
         showHomePage();
     }
