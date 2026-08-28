@@ -8436,20 +8436,33 @@ window.onload = async function () {
         "Loading latest schedules..."
     );
 
-  try {
+ try {
+    console.time("LOAD submitted allowances");
+    await loadSubmittedAllowances();
+    console.timeEnd("LOAD submitted allowances");
 
-   await loadSubmittedAllowances();
+    console.time("LOAD main schedules");
+    await loadMainSchedulesAndApprovals();
+    console.timeEnd("LOAD main schedules");
 
-await loadMainSchedulesAndApprovals();
+    console.time("LOAD live allowances");
+    await fetchLiveAllowancesFromSheet();
+    console.timeEnd("LOAD live allowances");
 
-await fetchLiveAllowancesFromSheet();
+    console.time("LOAD driver requests");
+    await loadDriverRequests();
+    console.timeEnd("LOAD driver requests");
 
-await loadDriverRequests();
+    updateCutoffDropdownsDynamically();
 
-updateCutoffDropdownsDynamically();
+    hideLoginSpinner();
+    showHomePage();
 
-hideLoginSpinner();
-showHomePage();
+    // Load Driver Requests separately
+    // Do not make dashboard loading wait for it.
+    setTimeout(() => {
+        loadDriverRequests();
+    }, 0);
 
 // Load Driver Requests separately
 // Do not make dashboard loading wait for it.
