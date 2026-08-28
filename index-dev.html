@@ -3203,7 +3203,11 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
         console.log("DRIVER REQUEST PARSED RECORDS:", records);
 
         window.driverRequestRecords = records;
-        renderDriverRequests();
+
+renderDriverRequests();
+
+// Driver Role table
+renderDriverRequestsForDriver();
 
     } catch (error) {
         console.error("Error loading Driver Requests:", error);
@@ -3352,6 +3356,116 @@ const timeoutId = setTimeout(() => controller.abort(), 8000);
                 </td>
             </tr>
         `).join("");
+}
+
+    function renderDriverRequestsForDriver() {
+
+    const body =
+        document.getElementById("driverRequestsTableBody");
+
+    if (!body) {
+        console.warn(
+            "driverRequestsTableBody not found."
+        );
+        return;
+    }
+
+    const driverName =
+        (localStorage.getItem("username") || "").trim();
+
+    if (!driverName) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="
+                        text-align:center;
+                        padding:16px;
+                        color:#b91c1c;
+                    ">
+                    Driver name not found.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const records =
+        window.driverRequestRecords || [];
+
+    // ==========================================
+    // FILTER BY LOGGED-IN DRIVER
+    // ==========================================
+    const driverRecords = records.filter(record => {
+
+        return String(record.driverName || "")
+            .trim()
+            .toLowerCase() ===
+            driverName.toLowerCase();
+
+    });
+
+    console.log(
+        "DRIVER ROLE REQUESTS:",
+        {
+            loggedInDriver: driverName,
+            totalRecords: records.length,
+            driverRecords
+        }
+    );
+
+    // ==========================================
+    // NO REQUESTS
+    // ==========================================
+    if (driverRecords.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="
+                        text-align:center;
+                        color:#6b7280;
+                        padding:16px;
+                    ">
+                    No requests yet.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    // ==========================================
+    // DISPLAY DRIVER REQUESTS
+    // ==========================================
+    body.innerHTML = driverRecords.map(record => `
+
+        <tr>
+
+            <td>
+                ${record.date || ""}
+            </td>
+
+            <td>
+                ${record.request || ""}
+            </td>
+
+            <td>
+                ${record.reason || ""}
+            </td>
+
+            <td>
+                ${record.requestedTime || ""}
+            </td>
+
+            <td>
+                <span class="driver-request-status">
+                    ${record.requestStatus || "Pending"}
+                </span>
+            </td>
+
+        </tr>
+
+    `).join("");
 }
     
 function updateCutoffDropdownsDynamically() {
