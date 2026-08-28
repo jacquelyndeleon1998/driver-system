@@ -7435,13 +7435,11 @@ hideLoginSpinner();
 
 showHomePage();
 
-// Load Driver Requests separately for Admin
+// Load Driver Requests separately
 // Do not make dashboard loading wait for it.
-if (role === "admin") {
-    setTimeout(() => {
-        loadDriverRequests();
-    }, 0);
-}
+setTimeout(() => {
+    loadDriverRequests();
+}, 0);
 
     } catch (err) {
 
