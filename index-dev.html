@@ -6411,14 +6411,16 @@ const [
             // -----------------------------------------------------------
             // ROLE FILTERING LOGIC
             // -----------------------------------------------------------
-            // Organic role: Hide past, show Today/Future even if pending
-            if (role === "organic") {
-                if (isPast) return; 
-            } 
-            // Driver & Admin Roles on Main Dashboard: Show ONLY APPROVED schedules for Today & Future
-            else {
-                if (status !== "approved" && !isPast) return;
-            }
+           // -----------------------------------------------------------
+// ROLE FILTERING LOGIC
+// -----------------------------------------------------------
+// Organic: hide past schedules
+// Driver/Admin: show approved schedules
+if (role === "organic") {
+    if (isPast) return;
+} else {
+    if (status !== "approved") return;
+}
 
             let pendingBadgeHeaderHtml = "";
             if (role === "organic" && status !== "approved") {
