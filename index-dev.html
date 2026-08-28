@@ -3130,6 +3130,65 @@ async function showAdminDashboard() {
  
 }
 
+    function isVehicleCodingDay(vehicle, date) {
+    const cleanVehicle = String(vehicle || "").trim().toUpperCase();
+
+    if (!cleanVehicle || !date) return false;
+
+    const scheduleDate = new Date(date);
+    if (isNaN(scheduleDate.getTime())) return false;
+
+    const day = scheduleDate.getDay();
+
+    const codingVehicles = {
+        // Tuesday
+        2: [
+            "NCS",
+            "NCS 8464"
+        ],
+
+        // Wednesday
+        3: [
+            "NDJ",
+            "NDJ 7545",
+            "NIB",
+            "NIB 9125"
+        ],
+
+        // Thursday
+        4: [
+            "UOW",
+            "UOW 338",
+            "NKT",
+            "NKT 4238"
+        ],
+
+        // Friday
+        5: [
+            "NCJ",
+            "NCJ 3650"
+        ]
+    };
+
+    const vehiclesForDay = codingVehicles[day] || [];
+
+    return vehiclesForDay.some(codingVehicle => {
+        return cleanVehicle === codingVehicle ||
+               cleanVehicle.startsWith(codingVehicle + " ");
+    });
+}
+
+function getCodingHighlightStyle(vehicle, date) {
+    if (!isVehicleCodingDay(vehicle, date)) {
+        return "";
+    }
+
+    return `
+        background:#fee2e2 !important;
+        border-color:#fca5a5 !important;
+    `;
+}
+
 async function loadSubmittedAllowances() {
     try {
         const res = await fetch(
@@ -7622,7 +7681,16 @@ tableRows += `
 <tr class="${rowClass}">
     <td>${driverNameDisplay}</td>
     <td>${driver.timeIn}</td>
-    <td>${driver.vehicle}</td>
+   <td>
+    <span style="
+        ${getCodingHighlightStyle(driver.vehicle, date)}
+        padding:2px 6px;
+        border-radius:5px;
+        font-weight:700;
+    ">
+        ${driver.vehicle}
+    </span>
+</td>
     <td>${itineraryDisplay}</td>
 </tr>`;
                 });
