@@ -4412,12 +4412,21 @@ dutyTrackerSelect.add(new Option(labelText, optionValue));
     if(dutyTrackerSelect.querySelector(`option[value="${currentCutoff}"]`)) dutyTrackerSelect.value = currentCutoff;
     if(driverRequestSelect.querySelector(`option[value="${currentCutoff}"]`)) driverRequestSelect.value = currentCutoff;
 
+     // ==========================================
+    // REFRESH ALLOWANCE SUMMARY AFTER
+    // CURRENT CUTOFF IS SET
+    // ==========================================
+
+    if (typeof processAllowanceSummaryTable === "function") {
+        processAllowanceSummaryTable();
+    }
+
     renderDriverDutyTracker();
 
-if (window.driverRequestRecords) {
-    renderDriverRequests();
-    renderDriverRequestsForDriver();
-}
+    if (window.driverRequestRecords) {
+        renderDriverRequests();
+        renderDriverRequestsForDriver();
+    }
 }
 
 function renderDriverDutyTracker() {
