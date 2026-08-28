@@ -7703,14 +7703,17 @@ window.onload = async function () {
 
   try {
 
-    await loadSubmittedAllowances();
+   await loadSubmittedAllowances();
 
 await loadMainSchedulesAndApprovals();
 
 await fetchLiveAllowancesFromSheet();
 
-hideLoginSpinner();
+await loadDriverRequests();
 
+updateCutoffDropdownsDynamically();
+
+hideLoginSpinner();
 showHomePage();
 
 // Load Driver Requests separately
@@ -7856,13 +7859,18 @@ async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
     showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
 
-    try {
-      await loadSubmittedAllowances();
+   try {
+    await loadSubmittedAllowances();
 
-await fetchLiveAllowancesFromSheet();
+    await fetchLiveAllowancesFromSheet();
 
-await loadMainSchedulesAndApprovals();
-    } catch (err) {
+    await loadMainSchedulesAndApprovals();
+
+    await loadDriverRequests();
+
+    updateCutoffDropdownsDynamically();
+
+} catch (err) {
         console.error("Error loading driver dashboard:", err);
     } finally {
         hideLoginSpinner();
