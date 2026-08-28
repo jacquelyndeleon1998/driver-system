@@ -6408,6 +6408,19 @@ const [
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             const status = (approvalDates[date] || "").toLowerCase();
 
+            console.log(
+    "RENDER CHECK:",
+    date,
+    "| today:",
+    today.toDateString(),
+    "| isPast:",
+    isPast,
+    "| isToday:",
+    isToday,
+    "| status:",
+    status
+);
+
             // -----------------------------------------------------------
             // ROLE FILTERING LOGIC
             // -----------------------------------------------------------
