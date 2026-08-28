@@ -6281,9 +6281,21 @@ approvalRows.forEach(row => {
     const date = (cols[0] || "").replace(/"/g, "").trim();
     const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
     const notes = (cols[2] || "").replace(/"/g, "").trim();
-
+// Keep an existing approved status from being overwritten
+// by a blank/empty status from another row with the same date.
+if (
+    !approvalDates[date] ||
+    status === "approved"
+) {
     approvalDates[date] = status;
+}
+
+if (
+    !approvalNotes[date] ||
+    notes
+) {
     approvalNotes[date] = notes;
+}
 
     // -----------------------------
     // Driver confirmations
