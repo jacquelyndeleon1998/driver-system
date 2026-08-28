@@ -9,6 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
 
+        .request-action-message {
+    text-align: center;
+    font-size: 15px;
+    color: #4b5563;
+    padding: 4px 0 8px;
+}
+
+.request-modal-body {
+    padding: 20px 24px 8px;
+}
+
+#driverRequestActionModal .request-modal {
+    max-width: 420px;
+    width: calc(100% - 32px);
+}
+
       .request-modal-deny {
     background: #dc3545 !important;
     color: #fff !important;
@@ -8534,7 +8550,7 @@ async function confirmReminder() {
     </div>
 </div>
 
-    <!-- Driver Request Action Modal -->
+  <!-- Driver Request Action Modal -->
 <div id="driverRequestActionModal"
      class="request-modal-overlay"
      style="display:none;">
@@ -8545,13 +8561,12 @@ async function confirmReminder() {
             Request Action
         </div>
 
-        <div style="
-            padding:20px 24px;
-            color:#555;
-            line-height:1.6;
-            text-align:center;
-        ">
-            What would you like to do with this request?
+        <div class="request-modal-body">
+
+            <div class="request-action-message">
+                Choose an action for this request.
+            </div>
+
         </div>
 
         <div class="request-modal-buttons">
