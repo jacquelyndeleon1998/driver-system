@@ -3359,11 +3359,7 @@ async function loadDriverRequests() {
             `&token=${encodeURIComponent(SECRET_TOKEN)}` +
             `&_nc=${Date.now()}`;
 
-        console.log(
-            "DRIVER REQUEST FETCH URL:",
-            url
-        );
-
+     
         const response = await fetch(
             url,
             {
@@ -3388,16 +3384,8 @@ async function loadDriverRequests() {
         const csvText =
             await response.text();
 
-        console.log(
-            "===== DRIVER REQUEST RAW CSV ====="
-        );
-
-        console.log(csvText);
-
-        console.log(
-            "===== END DRIVER REQUEST RAW CSV ====="
-        );
-
+      
+       
 
         // ==========================================
         // EMPTY RESPONSE
@@ -8121,8 +8109,7 @@ if (!isPast && !isToday) {
             }
         });
 
-        console.log("FINAL PAGE HTML LENGTH:", pageHTML.length);
-console.log("FINAL PAGE HTML PREVIEW:", pageHTML.substring(0, 500));
+       
 
         if (container) {
             container.style.visibility = "hidden";
