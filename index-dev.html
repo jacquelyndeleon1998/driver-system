@@ -2387,7 +2387,8 @@
 
     <div class="month-selector">
         <label for="driverRequestCutoff">Cut-off Period</label>
-        <select id="driverRequestCutoff">
+       <select id="driverRequestCutoff"
+        onchange="renderDriverRequests()">
         </select>
     </div>
 </div>
@@ -3752,19 +3753,20 @@ function renderDriverRequests() {
         window.driverRequestRecords || [];
 
     console.log(
-        "ADMIN ROLE - ALL DRIVER REQUEST RECORDS:",
+        "ADMIN DRIVER REQUEST RECORDS:",
         records
     );
 
+
     // ==========================================
-    // GET SELECTED CUTOFF
+    // SELECTED CUTOFF
     // ==========================================
 
     const selectedCutoff =
         cutoffSelect?.value || "";
 
     console.log(
-        "ADMIN ROLE - SELECTED CUTOFF:",
+        "ADMIN DRIVER REQUEST SELECTED CUTOFF:",
         selectedCutoff
     );
 
@@ -3793,93 +3795,51 @@ function renderDriverRequests() {
 
 
     // ==========================================
-    // PARSE SELECTED CUTOFF
+    // PARSE CUTOFF VALUE
+    //
+    // Example:
+    // 08-1 = August 1 - 15
+    // 08-2 = August 16 - 31
     // ==========================================
 
-    let cutoffStart = null;
-    let cutoffEnd = null;
+    let cutoffMonth = null;
+    let cutoffBucket = null;
 
     if (selectedCutoff) {
 
-        const cutoffMatch =
-            selectedCutoff.match(
-                /^([A-Za-z]+)\s+(\d+)\s*-\s*(\d+),\s*(\d{4})$/
-            );
+        const parts =
+            selectedCutoff.split("-");
 
-        if (cutoffMatch) {
+        if (parts.length === 2) {
 
-            const monthName =
-                cutoffMatch[1];
+            cutoffMonth =
+                Number(parts[0]);
 
-            const startDay =
-                Number(cutoffMatch[2]);
-
-            const endDay =
-                Number(cutoffMatch[3]);
-
-            const year =
-                Number(cutoffMatch[4]);
-
-            const monthIndex =
-                new Date(
-                    `${monthName} 1, ${year}`
-                ).getMonth();
-
-
-            cutoffStart =
-                new Date(
-                    year,
-                    monthIndex,
-                    startDay
-                );
-
-            cutoffStart.setHours(
-                0, 0, 0, 0
-            );
-
-
-            cutoffEnd =
-                new Date(
-                    year,
-                    monthIndex,
-                    endDay
-                );
-
-            cutoffEnd.setHours(
-                23, 59, 59, 999
-            );
-
-
-            console.log(
-                "ADMIN DRIVER REQUEST CUTOFF START:",
-                cutoffStart
-            );
-
-            console.log(
-                "ADMIN DRIVER REQUEST CUTOFF END:",
-                cutoffEnd
-            );
-
-        } else {
-
-            console.warn(
-                "Unable to parse Driver Request cutoff:",
-                selectedCutoff
-            );
+            cutoffBucket =
+                Number(parts[1]);
         }
     }
 
 
+    console.log(
+        "DRIVER REQUEST CUTOFF:",
+        {
+            month: cutoffMonth,
+            bucket: cutoffBucket
+        }
+    );
+
+
     // ==========================================
-    // FILTER RECORDS
+    // FILTER
     // ==========================================
 
     let filteredRecords =
         records;
 
     if (
-        cutoffStart &&
-        cutoffEnd
+        cutoffMonth &&
+        cutoffBucket
     ) {
 
         filteredRecords =
@@ -3895,107 +3855,78 @@ function renderDriverRequests() {
                 }
 
 
-                let requestDate = null;
-
-
                 // ----------------------------------
-                // YYYY-MM-DD
+                // EXPECTED SHEET FORMAT:
+                // 2026-08-29
                 // ----------------------------------
 
-                const isoMatch =
+                const match =
                     rawDate.match(
                         /^(\d{4})-(\d{1,2})-(\d{1,2})$/
                     );
 
-                if (isoMatch) {
 
-                    requestDate =
-                        new Date(
-                            Number(isoMatch[1]),
-                            Number(isoMatch[2]) - 1,
-                            Number(isoMatch[3])
-                        );
+                if (!match) {
 
-                } else {
+                    console.warn(
+                        "Unable to parse Driver Request date:",
+                        rawDate
+                    );
 
-
-                    // ----------------------------------
-                    // MM/DD/YYYY
-                    // ----------------------------------
-
-                    const slashMatch =
-                        rawDate.match(
-                            /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
-                        );
-
-                    if (slashMatch) {
-
-                        requestDate =
-                            new Date(
-                                Number(slashMatch[3]),
-                                Number(slashMatch[1]) - 1,
-                                Number(slashMatch[2])
-                            );
-
-                    } else {
-
-
-                        // ----------------------------------
-                        // GENERAL DATE FALLBACK
-                        // ----------------------------------
-
-                        const parsed =
-                            new Date(rawDate);
-
-                        if (
-                            !Number.isNaN(
-                                parsed.getTime()
-                            )
-                        ) {
-
-                            requestDate =
-                                new Date(
-                                    parsed.getFullYear(),
-                                    parsed.getMonth(),
-                                    parsed.getDate()
-                                );
-                        }
-                    }
-                }
-
-
-                if (!requestDate) {
                     return false;
                 }
 
 
-                requestDate.setHours(
-                    0, 0, 0, 0
-                );
+                const year =
+                    Number(match[1]);
+
+                const month =
+                    Number(match[2]);
+
+                const day =
+                    Number(match[3]);
 
 
-                const matches =
-                    requestDate >= cutoffStart &&
-                    requestDate <= cutoffEnd;
+                // ----------------------------------
+                // MONTH CHECK
+                // ----------------------------------
+
+                if (
+                    month !== cutoffMonth
+                ) {
+                    return false;
+                }
 
 
-                console.log(
-                    "DRIVER REQUEST CUTOFF CHECK:",
-                    {
-                        rawDate: rawDate,
-                        requestDate: requestDate,
-                        matches: matches
-                    }
-                );
+                // ----------------------------------
+                // CUT-OFF CHECK
+                // ----------------------------------
+
+                if (
+                    cutoffBucket === 1
+                ) {
+
+                    return day >= 1 &&
+                           day <= 15;
+
+                }
 
 
-                return matches;
+                if (
+                    cutoffBucket === 2
+                ) {
+
+                    return day >= 16;
+                }
+
+
+                return false;
             });
     }
 
 
     console.log(
-        "ADMIN ROLE - FILTERED DRIVER REQUESTS:",
+        "ADMIN DRIVER REQUEST FILTERED RECORDS:",
         filteredRecords
     );
 
@@ -4025,7 +3956,7 @@ function renderDriverRequests() {
 
 
     // ==========================================
-    // RENDER TABLE
+    // RENDER
     // ==========================================
 
     body.innerHTML =
@@ -4064,6 +3995,7 @@ function renderDriverRequests() {
                     <td>
                         ${
                             status.toLowerCase() === "pending"
+
                             ? `
                                 <button
                                     type="button"
@@ -4076,11 +4008,14 @@ function renderDriverRequests() {
                                     Pending
                                 </button>
                             `
+
                             : `
+
                                 <span
                                     class="driver-request-status ${status.toLowerCase()}">
                                     ${status}
                                 </span>
+
                             `
                         }
                     </td>
