@@ -8330,23 +8330,14 @@ if (scheduleNotes.trim() !== "") {
     document.body.style.overflow = "hidden"; 
 }
 
-    
-  
-
-window.onload = async function () {
-
+    window.onload = async function () {
     const role = localStorage.getItem("userRole");
-    const driverLoggedIn =
-        localStorage.getItem("driverLoggedIn") === "true";
+    const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
+    const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
 
-    const driverExpires =
-        Number(localStorage.getItem("loginExpires") || 0);
-
-    const autoLogin =
-        driverLoggedIn && Date.now() < driverExpires;
+    const autoLogin = driverLoggedIn && Date.now() < driverExpires;
 
     if (!autoLogin) {
-
         localStorage.removeItem("driverLoggedIn");
         localStorage.removeItem("driverName");
         localStorage.removeItem("driverRole");
@@ -8370,13 +8361,21 @@ window.onload = async function () {
     );
 
     try {
+        // IMPORTANT:
+        // Submitted allowances must finish loading FIRST.
+        // loadMainSchedulesAndApprovals() uses submittedDrivers
+        // to hide allowances that were already submitted.
+        await loadSubmittedAllowances();
 
+        // These two can load at the same time because
+        // they do not depend on submittedDrivers.
         await Promise.all([
-            loadSubmittedAllowances(),
             loadMainSchedulesAndApprovals(),
             loadDriverRequests()
         ]);
 
+        // Refresh live allowance data after the initial
+        // submitted state and schedule data are ready.
         await fetchLiveAllowancesFromSheet();
 
         updateCutoffDropdownsDynamically();
@@ -8385,7 +8384,6 @@ window.onload = async function () {
         showHomePage();
 
     } catch (err) {
-
         console.error(
             "Initialization Error:",
             err
@@ -8398,13 +8396,11 @@ window.onload = async function () {
         );
 
     } finally {
-
-        document.getElementById(
-            "pageLoadingOverlay"
-        ).style.display = "none";
+        document.getElementById("pageLoadingOverlay").style.display = "none";
     }
 };
 
+    
 function openManualConfirmModal() {
     const modal = document.getElementById("manualConfirmModal");
 
