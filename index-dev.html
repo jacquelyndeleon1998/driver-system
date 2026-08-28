@@ -8457,7 +8457,13 @@ async function loginDriver() {
     }
 
     try {
-        showLoginSpinner("Signing In...", "Checking your login credentials...");
+        // =====================================================
+        // 1. CHECK LOGIN CREDENTIALS
+        // =====================================================
+        showLoginSpinner(
+            "Signing In...",
+            "Checking your login credentials..."
+        );
 
         const response = await fetch(
             `${WEBAPP_BASE}?action=login`
@@ -8470,10 +8476,17 @@ async function loginDriver() {
 
         if (!result.success) {
             hideLoginSpinner();
-            errorDiv.textContent = result.message || "Invalid username or password.";
+
+            errorDiv.textContent =
+                result.message ||
+                "Invalid username or password.";
+
             return;
         }
 
+        // =====================================================
+        // 2. SAVE LOGIN SESSION
+        // =====================================================
         localStorage.setItem("driverLoggedIn", "true");
         localStorage.setItem("username", result.name);
         localStorage.setItem("userRole", result.role);
@@ -8484,25 +8497,70 @@ async function loginDriver() {
         configureNavigation(result.role);
 
         hideLoginSpinner();
+
         document.getElementById("loginPage").style.display = "none";
 
+        // =====================================================
+        // 3. DRIVER LOGIN
+        //    Driver still gets the reminder first.
+        //    confirmReminder() handles the dashboard loading.
+        // =====================================================
         if (result.role === "driver") {
             showReminderModal();
-        } else {
-            showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-           await loadSubmittedAllowances();
-
-await loadMainSchedulesAndApprovals();
-
-await fetchLiveAllowancesFromSheet();
-
-hideLoginSpinner();
-showHomePage();
+            return;
         }
+
+        // =====================================================
+        // 4. ADMIN / OTHER ROLES
+        // =====================================================
+        showLoginSpinner(
+            "Loading Dashboard...",
+            "Fetching latest schedules..."
+        );
+
+        // =====================================================
+        // IMPORTANT:
+        // LOAD SUBMITTED ALLOWANCES FIRST.
+        //
+        // loadMainSchedulesAndApprovals() checks:
+        //
+        // submittedDrivers[lookupKey]
+        //
+        // Therefore submittedDrivers MUST already be populated
+        // before the schedule cards are rendered.
+        // =====================================================
+        await loadSubmittedAllowances();
+
+        // =====================================================
+        // LOAD LIVE ALLOWANCE DATA
+        // =====================================================
+        await fetchLiveAllowancesFromSheet();
+
+        // =====================================================
+        // ONLY AFTER SUBMITTED DATA IS READY,
+        // RENDER THE SCHEDULES.
+        // =====================================================
+        await loadMainSchedulesAndApprovals();
+
+        // =====================================================
+        // REFRESH CUTOFF DROPDOWNS
+        // =====================================================
+        updateCutoffDropdownsDynamically();
+
+        // =====================================================
+        // SHOW DASHBOARD
+        // =====================================================
+        hideLoginSpinner();
+        showHomePage();
 
     } catch (err) {
         hideLoginSpinner();
-        console.error(err);
+
+        console.error(
+            "Login / Dashboard loading error:",
+            err
+        );
+
         errorDiv.textContent = "Unable to connect to the server.";
     }
 }
