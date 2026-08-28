@@ -5691,18 +5691,15 @@ Thank you, and see you!`;
     document.body.style.overflow = "hidden";
 }
 
-    function openMessageRecipientModal() {
-
-    const selectedTrips =
-        window.selectedPassengerMessageTrips || [];
+  function openMessageRecipientModal() {
+    const selectedTrips = window.selectedPassengerMessageTrips || [];
 
     if (selectedTrips.length === 0) {
         alert("No passenger is available.");
         return;
     }
 
-    const list =
-        document.getElementById("messageRecipientList");
+    const list = document.getElementById("messageRecipientList");
 
     if (!list) {
         console.error("Message recipient list not found.");
@@ -5713,21 +5710,21 @@ Thank you, and see you!`;
     list.innerHTML = "";
 
     selectedTrips.forEach((trip, index) => {
+        const passengerName = (trip.passengerName || "").trim();
+        const contactNumber = (trip.contactNumber || "").trim();
 
-        const passengerName =
-            (trip.passengerName || "").trim();
+        // ==========================================
+        // COLUMN O = MESSAGE SENT
+        // ==========================================
+        const messageStatus = String(trip.messageSent || "").trim().toLowerCase();
+        const alreadySent = messageStatus === "sent";
 
-        const contactNumber =
-            (trip.contactNumber || "").trim();
-
-        // Main row
+        // ==========================================
+        // MAIN ROW
+        // ==========================================
         const row = document.createElement("label");
 
         row.className = "passenger-message-row";
-
-        // IMPORTANT:
-        // Radio stays on the LEFT.
-        // Name + contact stay on the SAME LINE.
         row.style.display = "flex";
         row.style.flexDirection = "row";
         row.style.alignItems = "center";
@@ -5743,21 +5740,20 @@ Thank you, and see you!`;
         row.style.cursor = "pointer";
         row.style.textAlign = "left";
 
-        // Radio button
-       const radio = document.createElement("input");
+        // ==========================================
+        // RADIO BUTTON
+        // ==========================================
+        const radio = document.createElement("input");
 
-radio.type = "radio";
-radio.name = "messageRecipient";
-radio.className = "message-recipient-radio";
-radio.value = index;
+        radio.type = "radio";
+        radio.name = "messageRecipient";
+        radio.className = "message-recipient-radio";
+        radio.value = index;
 
-// Check whether this passenger was already messaged
-const alreadySent =
-    isPassengerMessageSent(trip);
-
-if (alreadySent) {
-    radio.disabled = true;
-}
+        // Disable if Column O = Sent
+        if (alreadySent) {
+            radio.disabled = true;
+        }
 
         radio.style.flex = "0 0 auto";
         radio.style.width = "18px";
@@ -5767,7 +5763,9 @@ if (alreadySent) {
         radio.style.position = "static";
         radio.style.transform = "none";
 
-        // Passenger information
+        // ==========================================
+        // PASSENGER INFORMATION
+        // ==========================================
         const info = document.createElement("span");
 
         info.style.display = "flex";
@@ -5782,9 +5780,7 @@ if (alreadySent) {
         // Passenger name
         const name = document.createElement("strong");
 
-        name.textContent =
-            passengerName || "Unnamed Passenger";
-
+        name.textContent = passengerName || "Unnamed Passenger";
         name.style.display = "inline";
         name.style.flex = "0 1 auto";
         name.style.whiteSpace = "nowrap";
@@ -5793,43 +5789,45 @@ if (alreadySent) {
 
         info.appendChild(name);
 
-        // Add radio first, then passenger information
+        // ==========================================
+        // RADIO + PASSENGER INFO
+        // ==========================================
         row.appendChild(radio);
-row.appendChild(info);
+        row.appendChild(info);
 
-if (alreadySent) {
+        // ==========================================
+        // MESSAGE SENT LABEL
+        // ==========================================
+        if (alreadySent) {
+            const sentLabel = document.createElement("small");
 
-    const sentLabel =
-        document.createElement("small");
+            sentLabel.textContent = "✓ Message Sent";
+            sentLabel.style.color = "#16a34a";
+            sentLabel.style.fontWeight = "700";
+            sentLabel.style.marginLeft = "auto";
+            sentLabel.style.whiteSpace = "nowrap";
 
-    sentLabel.textContent =
-        "✓ Message Sent";
+            row.appendChild(sentLabel);
 
-    sentLabel.style.color = "#16a34a";
-    sentLabel.style.fontWeight = "700";
-    sentLabel.style.marginLeft = "auto";
-    sentLabel.style.whiteSpace = "nowrap";
-
-    row.appendChild(sentLabel);
-
-    row.style.opacity = "0.65";
-    row.style.cursor = "not-allowed";
-    row.style.background = "#f3f4f6";
-    row.style.borderColor = "#d1d5db";
-}
+            row.style.opacity = "0.65";
+            row.style.cursor = "not-allowed";
+            row.style.background = "#f3f4f6";
+            row.style.borderColor = "#d1d5db";
+        }
 
         list.appendChild(row);
     });
 
-    const modal =
-        document.getElementById("messageRecipientModal");
+    // ==========================================
+    // SHOW MODAL
+    // ==========================================
+    const modal = document.getElementById("messageRecipientModal");
 
     if (modal) {
         modal.style.display = "block";
         document.body.style.overflow = "hidden";
     }
 }
-
     async function markPassengerMessageSent(trip) {
 
     if (!trip) return;
