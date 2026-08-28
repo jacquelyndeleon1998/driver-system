@@ -3454,17 +3454,12 @@ async function loadDriverRequests() {
         const lines =
             trimmedCSV.split(/\r?\n/);
 
-        console.log(
-            "DRIVER REQUEST CSV LINES:",
-            lines
-        );
+       
 
 
         if (lines.length <= 1) {
 
-            console.log(
-                "Driver Requests sheet contains header only."
-            );
+        
 
             window.driverRequestRecords = [];
 
@@ -3487,11 +3482,7 @@ async function loadDriverRequests() {
         const headers =
             parseCSVRow(lines[0]);
 
-        console.log(
-            "DRIVER REQUEST HEADERS:",
-            headers
-        );
-
+      
 
         // ==========================================
         // RECORDS
@@ -3505,10 +3496,7 @@ async function loadDriverRequests() {
                     const cols =
                         parseCSVRow(line);
 
-                    console.log(
-                        "DRIVER REQUEST ROW:",
-                        cols
-                    );
+                    
 
 
                     return {
@@ -3558,16 +3546,7 @@ async function loadDriverRequests() {
         // FINAL DEBUG
         // ==========================================
 
-        console.log(
-            "DRIVER REQUEST PARSED RECORDS:",
-            records
-        );
-
-        console.log(
-            "DRIVER REQUEST RECORD COUNT:",
-            records.length
-        );
-
+    
 
         // ==========================================
         // SAVE GLOBAL DATA
@@ -3673,7 +3652,7 @@ async function loadDriverRequests() {
 
     const driverName = (localStorage.getItem("username") || "").trim();
 
-    console.log("DRIVER ROLE - LOGGED IN USERNAME:", driverName);
+  
 
     if (!driverName) {
         body.innerHTML = `
@@ -3689,7 +3668,7 @@ async function loadDriverRequests() {
 
     const records = window.driverRequestRecords || [];
 
-    console.log("DRIVER ROLE - ALL REQUEST RECORDS:", records);
+   
 
     const driverRecords = records.filter(record => {
         const sheetDriver = String(record.driverName || "").trim().toLowerCase();
@@ -3698,7 +3677,7 @@ async function loadDriverRequests() {
         return sheetDriver === loggedInDriver;
     });
 
-    console.log("DRIVER ROLE - MATCHED REQUESTS:", driverRecords);
+   
 
     if (driverRecords.length === 0) {
         body.innerHTML = `
@@ -3752,24 +3731,13 @@ function renderDriverRequests() {
     const records =
         window.driverRequestRecords || [];
 
-    console.log(
-        "ADMIN DRIVER REQUEST RECORDS:",
-        records
-    );
-
-
+ 
     // ==========================================
     // SELECTED CUTOFF
     // ==========================================
 
     const selectedCutoff =
         cutoffSelect?.value || "";
-
-    console.log(
-        "ADMIN DRIVER REQUEST SELECTED CUTOFF:",
-        selectedCutoff
-    );
-
 
     // ==========================================
     // NO RECORDS
@@ -3821,13 +3789,6 @@ function renderDriverRequests() {
     }
 
 
-    console.log(
-        "DRIVER REQUEST CUTOFF:",
-        {
-            month: cutoffMonth,
-            bucket: cutoffBucket
-        }
-    );
 
 
     // ==========================================
@@ -3924,11 +3885,6 @@ function renderDriverRequests() {
             });
     }
 
-
-    console.log(
-        "ADMIN DRIVER REQUEST FILTERED RECORDS:",
-        filteredRecords
-    );
 
 
     // ==========================================
@@ -4238,10 +4194,7 @@ async function confirmDriverRequestAction() {
         const text =
             await response.text();
 
-        console.log(
-            "DRIVER REQUEST STATUS RESPONSE:",
-            text
-        );
+     
 
         const result =
             JSON.parse(text);
@@ -8437,23 +8390,14 @@ window.onload = async function () {
     );
 
  try {
-    console.time("LOAD submitted allowances");
-    await loadSubmittedAllowances();
-    console.timeEnd("LOAD submitted allowances");
+   await Promise.all([
+    loadSubmittedAllowances(),
+    loadMainSchedulesAndApprovals(),
+    fetchLiveAllowancesFromSheet(),
+    loadDriverRequests()
+]);
 
-    console.time("LOAD main schedules");
-    await loadMainSchedulesAndApprovals();
-    console.timeEnd("LOAD main schedules");
-
-    console.time("LOAD live allowances");
-    await fetchLiveAllowancesFromSheet();
-    console.timeEnd("LOAD live allowances");
-
-    console.time("LOAD driver requests");
-    await loadDriverRequests();
-    console.timeEnd("LOAD driver requests");
-
-    updateCutoffDropdownsDynamically();
+updateCutoffDropdownsDynamically();
 
     hideLoginSpinner();
     showHomePage();
@@ -8581,13 +8525,14 @@ async function loginDriver() {
             showReminderModal();
         } else {
             showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
-           await loadSubmittedAllowances();
+           await Promise.all([
+    loadSubmittedAllowances(),
+    fetchLiveAllowancesFromSheet(),
+    loadMainSchedulesAndApprovals()
+]);
 
-await fetchLiveAllowancesFromSheet();
-
-await loadMainSchedulesAndApprovals();
-            hideLoginSpinner();
-            showHomePage();
+hideLoginSpinner();
+showHomePage();
         }
 
     } catch (err) {
