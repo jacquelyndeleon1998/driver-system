@@ -8609,31 +8609,50 @@ function showReminderModal() {
 
 async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-
     showLoginSpinner(
         "Loading Dashboard...",
         "Fetching latest schedules..."
     );
 
     try {
+        // =====================================================
+        // 1. LOAD SCHEDULE FIRST
+        //    THIS IS THE ONLY DATA THAT BLOCKS THE DASHBOARD
+        // =====================================================
+        await loadMainSchedulesAndApprovals();
 
-        await Promise.all([
-            loadSubmittedAllowances(),
-            fetchLiveAllowancesFromSheet(),
-            loadMainSchedulesAndApprovals(),
-            loadDriverRequests()
-        ]);
-
+        // Update cutoff dropdowns using the schedule we already have
         updateCutoffDropdownsDynamically();
 
-    } catch (err) {
+        // =====================================================
+        // 2. SHOW DASHBOARD IMMEDIATELY
+        // =====================================================
+        hideLoginSpinner();
+        showHomePage();
 
+        // =====================================================
+        // 3. LOAD NON-CRITICAL DATA IN BACKGROUND
+        //    These must NOT delay the dashboard.
+        // =====================================================
+        Promise.allSettled([
+            loadSubmittedAllowances(),
+            fetchLiveAllowancesFromSheet(),
+            loadDriverRequests()
+        ]).then(() => {
+            // Refresh cutoff dropdowns after background data arrives
+            updateCutoffDropdownsDynamically();
+        }).catch(err => {
+            console.warn(
+                "Background dashboard data loading completed with errors:",
+                err
+            );
+        });
+
+    } catch (err) {
         console.error(
             "Error loading driver dashboard:",
             err
         );
-
-    } finally {
 
         hideLoginSpinner();
         showHomePage();
