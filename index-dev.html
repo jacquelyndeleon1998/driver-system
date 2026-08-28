@@ -6977,6 +6977,9 @@ if (!isPast && !isToday) {
             }
         });
 
+        console.log("FINAL PAGE HTML LENGTH:", pageHTML.length);
+console.log("FINAL PAGE HTML PREVIEW:", pageHTML.substring(0, 500));
+
         if (container) {
             container.style.visibility = "hidden";
             container.innerHTML = pageHTML;
