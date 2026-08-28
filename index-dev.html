@@ -6430,9 +6430,13 @@ const [
 // Organic: hide past schedules
 // Driver/Admin: show approved schedules
 if (role === "organic") {
-    if (isPast) return;
-} else {
-    if (status !== "approved") return;
+    if (isPast) return; 
+} 
+else {
+    // Future schedules must be approved.
+    // Today's schedule may still be displayed even if
+    // the approval sheet does not yet contain an entry.
+    if (status !== "approved" && !isPast && !isToday) return;
 }
 
             let pendingBadgeHeaderHtml = "";
