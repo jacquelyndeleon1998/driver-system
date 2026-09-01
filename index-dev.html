@@ -6388,9 +6388,17 @@ function closeDriverLogin() {
 
 function showDriverAllowanceSummary() {
     const loggedInDriverName = localStorage.getItem("driverName");
+
+    const requestPage =
+        document.getElementById("driverRequestsPage");
+
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "block";
+
+    if (requestPage) {
+        requestPage.style.display = "none";
+    }
 
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.remove("active");
