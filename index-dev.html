@@ -3931,15 +3931,24 @@ function renderDriverRequests() {
 
                             ? `
                                 <button
-                                    type="button"
-                                    class="driver-request-status pending"
-                                    onclick="showDriverRequestAction(
-                                        '${encodeURIComponent(record.date || "")}',
-                                        '${encodeURIComponent(record.driverName || "")}',
-                                        '${encodeURIComponent(record.request || "")}'
-                                    )">
-                                    Pending
-                                </button>
+    type="button"
+    class="driver-request-status pending"
+    style="
+        background:#16a34a;
+        color:#ffffff;
+        border:none;
+        padding:7px 14px;
+        border-radius:6px;
+        font-weight:600;
+        cursor:pointer;
+    "
+    onclick="showDriverRequestAction(
+        '${encodeURIComponent(record.date || "")}',
+        '${encodeURIComponent(record.driverName || "")}',
+        '${encodeURIComponent(record.request || "")}'
+    )">
+    Pending
+</button>
                             `
 
                             : `
