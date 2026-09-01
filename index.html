@@ -3028,8 +3028,9 @@ async function showAdminDashboard() {
   
 
     const driverDashboard = document.getElementById("driverDashboard");
-    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
-    const driverAllowancePage = document.getElementById("driverAllowancePage");
+const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+const driverAllowancePage = document.getElementById("driverAllowancePage");
+const driverRequestsPage = document.getElementById("driverRequestsPage");
     const scheduleViewerPage = document.getElementById("scheduleViewerPage");
     const allowanceSummaryBody = document.getElementById("allowanceSummaryBody");
 
@@ -3045,6 +3046,9 @@ async function showAdminDashboard() {
     if (scheduleViewerPage) {
         scheduleViewerPage.style.display = "none";
     }
+    if (driverRequestsPage) {
+    driverRequestsPage.style.display = "none";
+}
 
     // Show Admin page
     if (scheduleApprovalPage) {
@@ -3108,6 +3112,17 @@ async function showAdminDashboard() {
         }
     } catch (err) {
         console.warn("Could not refresh live allowance data:", err);
+    }
+
+     // ---------------------------------------------------------
+    // REFRESH DRIVER REQUESTS
+    // ---------------------------------------------------------
+    try {
+        if (typeof loadDriverRequests === "function") {
+            await loadDriverRequests();
+        }
+    } catch (err) {
+        console.warn("Could not refresh Driver Requests:", err);
     }
 
     // ---------------------------------------------------------
@@ -3916,15 +3931,25 @@ function renderDriverRequests() {
 
                             ? `
                                 <button
-                                    type="button"
-                                    class="driver-request-status pending"
-                                    onclick="showDriverRequestAction(
-                                        '${encodeURIComponent(record.date || "")}',
-                                        '${encodeURIComponent(record.driverName || "")}',
-                                        '${encodeURIComponent(record.request || "")}'
-                                    )">
-                                    Pending
-                                </button>
+    type="button"
+    class="driver-request-status pending"
+    style="
+    background:#ffffff;
+    color:#374151;
+    border:1px solid #d1d5db;
+    padding:5px 10px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+"
+    onclick="showDriverRequestAction(
+        '${encodeURIComponent(record.date || "")}',
+        '${encodeURIComponent(record.driverName || "")}',
+        '${encodeURIComponent(record.request || "")}'
+    )">
+    Pending
+</button>
                             `
 
                             : `
@@ -6384,9 +6409,17 @@ function closeDriverLogin() {
 
 function showDriverAllowanceSummary() {
     const loggedInDriverName = localStorage.getItem("driverName");
+
+    const requestPage =
+        document.getElementById("driverRequestsPage");
+
     document.getElementById("driverDashboard").style.display = "none";
     document.getElementById("scheduleApprovalPage").style.display = "none";
     document.getElementById("driverAllowancePage").style.display = "block";
+
+    if (requestPage) {
+        requestPage.style.display = "none";
+    }
 
     document.getElementById("dashboardBtn").classList.remove("active");
     document.getElementById("adminBtn").classList.remove("active");
@@ -6397,7 +6430,7 @@ function showDriverAllowanceSummary() {
     window.scrollTo(0, 0);
 }
 
-    function showDriverRequestsPage() {
+    async function showDriverRequestsPage() {
 
     const dashboardPage = document.getElementById("driverDashboard");
     const allowancePage = document.getElementById("driverAllowancePage");
@@ -6420,7 +6453,7 @@ function showDriverAllowanceSummary() {
         requestPage.style.display = "block";
     }
 
-    // Update navigation active state
+    // Update active navigation state
     document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.classList.remove("active");
     });
@@ -6430,6 +6463,13 @@ function showDriverAllowanceSummary() {
     if (requestBtn) {
         requestBtn.classList.add("active");
     }
+
+    // ==========================================
+    // REFRESH DRIVER REQUESTS
+    // ==========================================
+    if (typeof loadDriverRequests === "function") {
+    await loadDriverRequests();
+}
 
     window.scrollTo(0, 0);
 }
@@ -8166,12 +8206,11 @@ function showHomePage() {
 
 function backToMainDashboard() {
  
-
-    const driverDashboard = document.getElementById("driverDashboard");
-    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
-    const driverAllowancePage = document.getElementById("driverAllowancePage");
-    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
-
+const driverDashboard = document.getElementById("driverDashboard");
+const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+const driverAllowancePage = document.getElementById("driverAllowancePage");
+const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+const driverRequestsPage = document.getElementById("driverRequestsPage");
     // Show Main Dashboard
     if (driverDashboard) {
         driverDashboard.style.display = "block";
@@ -8191,6 +8230,10 @@ function backToMainDashboard() {
     if (scheduleViewerPage) {
         scheduleViewerPage.style.display = "none";
     }
+
+    if (driverRequestsPage) {
+    driverRequestsPage.style.display = "none";
+}
 
     // Restore page scrolling
     document.body.style.overflow = "";
@@ -8688,6 +8731,62 @@ showHomePage();
                 onclick="continueToManualSheet()">
                 Continue
             </button>
+        </div>
+
+    </div>
+</div>
+
+    <!-- Driver Request Submission Confirmation Modal -->
+<div id="requestConfirmModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
+    <div class="request-modal">
+
+        <div class="request-modal-title">
+            Confirm Request
+        </div>
+
+        <div class="request-modal-body">
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Date</span>
+                <span id="confirmRequestDate">N/A</span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Request</span>
+                <span id="confirmRequestType">N/A</span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Reason / Duty</span>
+                <span id="confirmReasonDuty">N/A</span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Requested Time</span>
+                <span id="confirmRequestedTime">N/A</span>
+            </div>
+
+        </div>
+
+        <div class="request-modal-buttons">
+
+            <button
+                type="button"
+                class="request-modal-cancel"
+                onclick="closeRequestConfirmModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="confirmDriverRequestSubmission()">
+                Submit
+            </button>
+
         </div>
 
     </div>
