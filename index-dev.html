@@ -8170,12 +8170,11 @@ function showHomePage() {
 
 function backToMainDashboard() {
  
-
-    const driverDashboard = document.getElementById("driverDashboard");
-    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
-    const driverAllowancePage = document.getElementById("driverAllowancePage");
-    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
-
+const driverDashboard = document.getElementById("driverDashboard");
+const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+const driverAllowancePage = document.getElementById("driverAllowancePage");
+const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+const driverRequestsPage = document.getElementById("driverRequestsPage");
     // Show Main Dashboard
     if (driverDashboard) {
         driverDashboard.style.display = "block";
@@ -8195,6 +8194,10 @@ function backToMainDashboard() {
     if (scheduleViewerPage) {
         scheduleViewerPage.style.display = "none";
     }
+
+    if (driverRequestsPage) {
+    driverRequestsPage.style.display = "none";
+}
 
     // Restore page scrolling
     document.body.style.overflow = "";
