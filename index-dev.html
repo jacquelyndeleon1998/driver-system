@@ -3114,6 +3114,17 @@ const driverRequestsPage = document.getElementById("driverRequestsPage");
         console.warn("Could not refresh live allowance data:", err);
     }
 
+     // ---------------------------------------------------------
+    // REFRESH DRIVER REQUESTS
+    // ---------------------------------------------------------
+    try {
+        if (typeof loadDriverRequests === "function") {
+            await loadDriverRequests();
+        }
+    } catch (err) {
+        console.warn("Could not refresh Driver Requests:", err);
+    }
+
     // ---------------------------------------------------------
     // NOW render the summary using the latest data.
     // ---------------------------------------------------------
