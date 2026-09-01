@@ -8693,6 +8693,62 @@ showHomePage();
     </div>
 </div>
 
+    <!-- Driver Request Submission Confirmation Modal -->
+<div id="requestConfirmModal"
+     class="request-modal-overlay"
+     style="display:none;">
+
+    <div class="request-modal">
+
+        <div class="request-modal-title">
+            Confirm Request
+        </div>
+
+        <div class="request-modal-body">
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Date</span>
+                <span id="confirmRequestDate">N/A</span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Request</span>
+                <span id="confirmRequestType">N/A</span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Reason / Duty</span>
+                <span id="confirmReasonDuty">N/A</span>
+            </div>
+
+            <div class="request-detail-row">
+                <span class="request-detail-label">Requested Time</span>
+                <span id="confirmRequestedTime">N/A</span>
+            </div>
+
+        </div>
+
+        <div class="request-modal-buttons">
+
+            <button
+                type="button"
+                class="request-modal-cancel"
+                onclick="closeRequestConfirmModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="request-modal-submit"
+                onclick="confirmDriverRequestSubmission()">
+                Submit
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
  <!-- Driver Request Confirmation Modal -->
 <div id="driverRequestConfirmModal"
      class="request-modal-overlay"
