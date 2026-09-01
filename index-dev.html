@@ -3934,14 +3934,15 @@ function renderDriverRequests() {
     type="button"
     class="driver-request-status pending"
     style="
-        background:#16a34a;
-        color:#ffffff;
-        border:none;
-        padding:7px 14px;
-        border-radius:6px;
-        font-weight:600;
-        cursor:pointer;
-    "
+    background:#ffffff;
+    color:#374151;
+    border:1px solid #d1d5db;
+    padding:5px 10px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+"
     onclick="showDriverRequestAction(
         '${encodeURIComponent(record.date || "")}',
         '${encodeURIComponent(record.driverName || "")}',
