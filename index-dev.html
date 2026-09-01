@@ -3028,8 +3028,9 @@ async function showAdminDashboard() {
   
 
     const driverDashboard = document.getElementById("driverDashboard");
-    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
-    const driverAllowancePage = document.getElementById("driverAllowancePage");
+const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+const driverAllowancePage = document.getElementById("driverAllowancePage");
+const driverRequestsPage = document.getElementById("driverRequestsPage");
     const scheduleViewerPage = document.getElementById("scheduleViewerPage");
     const allowanceSummaryBody = document.getElementById("allowanceSummaryBody");
 
@@ -3045,6 +3046,9 @@ async function showAdminDashboard() {
     if (scheduleViewerPage) {
         scheduleViewerPage.style.display = "none";
     }
+    if (driverRequestsPage) {
+    driverRequestsPage.style.display = "none";
+}
 
     // Show Admin page
     if (scheduleApprovalPage) {
