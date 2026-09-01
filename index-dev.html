@@ -6409,7 +6409,7 @@ function showDriverAllowanceSummary() {
     window.scrollTo(0, 0);
 }
 
-    function showDriverRequestsPage() {
+    async function showDriverRequestsPage() {
 
     const dashboardPage = document.getElementById("driverDashboard");
     const allowancePage = document.getElementById("driverAllowancePage");
@@ -6447,8 +6447,8 @@ function showDriverAllowanceSummary() {
     // REFRESH DRIVER REQUESTS
     // ==========================================
     if (typeof loadDriverRequests === "function") {
-        loadDriverRequests();
-    }
+    await loadDriverRequests();
+}
 
     window.scrollTo(0, 0);
 }
