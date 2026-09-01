@@ -6432,7 +6432,7 @@ function showDriverAllowanceSummary() {
         requestPage.style.display = "block";
     }
 
-    // Update navigation active state
+    // Update active navigation state
     document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.classList.remove("active");
     });
@@ -6441,6 +6441,13 @@ function showDriverAllowanceSummary() {
 
     if (requestBtn) {
         requestBtn.classList.add("active");
+    }
+
+    // ==========================================
+    // REFRESH DRIVER REQUESTS
+    // ==========================================
+    if (typeof loadDriverRequests === "function") {
+        loadDriverRequests();
     }
 
     window.scrollTo(0, 0);
