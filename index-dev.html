@@ -7693,10 +7693,13 @@ ${
                     d.trips.forEach((trip, index) => {
                         with (trip) {
                             tripsHTML += `
-                            <div class="trip">
-                                <div class="trip-title">
-    Pick-Up ${index + 1}
-  ${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}
+                            <div class="trip-title">
+    Pick-Up ${index + 1}${
+        String(trip.messageSent || "").trim().toLowerCase() === "sent" ||
+        isPassengerMessageSent(trip)
+            ? " ✉️"
+            : ""
+    }
 </div>
                                 ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                                 ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
