@@ -7518,6 +7518,14 @@ const [
     chargeTo,
     messageSent
 ] = cols.map(v => (v || "").replace(/"/g, "").trim());
+
+            console.log("COLUMN O CHECK:", {
+    driver: driver,
+    passenger: passengerName,
+    totalColumns: cols.length,
+    columnO: cols[14],
+    messageSent: messageSent
+});
             const key = driver + "_" + date;
 
             if (!summaryDrivers[date]) summaryDrivers[date] = {};
