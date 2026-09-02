@@ -7499,7 +7499,7 @@ if (
                 } else current += char;
             }
             cols.push(current.trim());
-            if (cols.length < 13) return;
+           if (cols.length < 15) return;
 
 const [
     driver,
@@ -7518,6 +7518,14 @@ const [
     chargeTo,
     messageSent
 ] = cols.map(v => (v || "").replace(/"/g, "").trim());
+
+            console.log("COLUMN O CHECK:", {
+    driver: driver,
+    passenger: passengerName,
+    totalColumns: cols.length,
+    columnO: cols[14],
+    messageSent: messageSent
+});
             const key = driver + "_" + date;
 
             if (!summaryDrivers[date]) summaryDrivers[date] = {};
@@ -7690,13 +7698,19 @@ ${
                     if (noAllowanceItineraries.includes(itinerary)) return;
 
                     let tripsHTML = "";
-                    d.trips.forEach((trip, index) => {
-                        with (trip) {
+
+d.trips.forEach((trip, index) => {
+
+  
+
+    with (trip) {
                             tripsHTML += `
-                            <div class="trip">
-                                <div class="trip-title">
-    Pick-Up ${index + 1}
-  ${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}
+                            <div class="trip-title">
+    Pick-Up ${index + 1}${
+        String(trip.messageSent || "").trim().toLowerCase() === "sent"
+            ? " ✉️"
+            : ""
+    }
 </div>
                                 ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                                 ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
@@ -7911,9 +7925,13 @@ if (!isPast && !isToday) {
                     tripsHTML += `
                         <div class="trip">
 
-                            <div class="trip-title">
-                                Pick-Up ${index + 1}
-                            </div>
+                           <div class="trip-title">
+    Pick-Up ${index + 1}${
+        String(trip.messageSent || "").trim().toLowerCase() === "sent"
+            ? " ✉️"
+            : ""
+    }
+</div>
 
                             ${
                                 pickupTime
@@ -8061,10 +8079,7 @@ if (!isPast && !isToday) {
 
                     <div class="driver-header">
 
-                       <h2>
-    ${d.driver}
-    ${hasPassengerMessageSent(d.trips) ? " ✉️" : ""}
-</h2>
+                       <h2>${d.driver}</h2>
 
                         <div class="info-item">
                             <div class="info-label">
@@ -8339,7 +8354,11 @@ if (scheduleNotes.trim() !== "") {
                     tripsHTML += `
                     <div class="trip">
                        <div class="trip-title">
-    Pick-Up ${index + 1}${String(messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}
+    Pick-Up ${index + 1}${
+        String(trip.messageSent || "").trim().toLowerCase() === "sent"
+            ? " ✉️"
+            : ""
+    }
 </div>
                         ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
                         ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
