@@ -7701,20 +7701,13 @@ ${
 
 d.trips.forEach((trip, index) => {
 
-    console.log("PICK-UP MESSAGE CHECK:", {
-        driver: d.driver,
-        pickup: index + 1,
-        passenger: trip.passengerName,
-        messageSent: trip.messageSent,
-        localSent: isPassengerMessageSent(trip)
-    });
+  
 
     with (trip) {
                             tripsHTML += `
                             <div class="trip-title">
     Pick-Up ${index + 1}${
-        String(trip.messageSent || "").trim().toLowerCase() === "sent" ||
-        isPassengerMessageSent(trip)
+        String(trip.messageSent || "").trim().toLowerCase() === "sent"
             ? " ✉️"
             : ""
     }
@@ -7932,9 +7925,13 @@ if (!isPast && !isToday) {
                     tripsHTML += `
                         <div class="trip">
 
-                            <div class="trip-title">
-                                Pick-Up ${index + 1}
-                            </div>
+                           <div class="trip-title">
+    Pick-Up ${index + 1}${
+        String(trip.messageSent || "").trim().toLowerCase() === "sent"
+            ? " ✉️"
+            : ""
+    }
+</div>
 
                             ${
                                 pickupTime
