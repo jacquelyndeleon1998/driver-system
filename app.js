@@ -2928,7 +2928,7 @@ function viewSchedule(date){
     document.body.style.overflow = "hidden"; 
 }
 
-window.onload = async function () {
+window.onload = function () {
     const role = localStorage.getItem("userRole");
     const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
     const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
@@ -2951,23 +2951,22 @@ window.onload = async function () {
     configureNavigation(role);
     document.getElementById("loginPage").style.display = "none";
 
-    // Show homepage IMMEDIATELY
+    // 1. IPAPAKITA AGAD ANG HOMEPAGE (0 Seconds Delay)
     showHomePage();
 
-    // Fetch and sync in the background
-    try {
-        await Promise.all([
-            loadSubmittedAllowances(),
-            loadMainSchedulesAndApprovals(),
-            loadDriverRequests(),
-            fetchLiveAllowancesFromSheet()
-        ]);
+    // 2. SABAY-SABAY NA IBABATO ANG LAHAT NG API CALLS SA BACKGROUND
+    Promise.allSettled([
+        loadSubmittedAllowances(),
+        loadMainSchedulesAndApprovals(),
+        loadDriverRequests(),
+        fetchLiveAllowancesFromSheet()
+    ]).then(() => {
         updateCutoffDropdownsDynamically();
-    } catch (err) {
-        console.error("Initialization Sync Error:", err);
-    } finally {
         document.getElementById("pageLoadingOverlay").style.display = "none";
-    }
+    }).catch(err => {
+        console.error("Initialization Sync Error:", err);
+        document.getElementById("pageLoadingOverlay").style.display = "none";
+    });
 };
 
 function openManualConfirmModal() {
