@@ -2425,6 +2425,19 @@ function hasPassengerMessageSent(trips) {
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
+    // 1. INSTANT DISPLAY FROM LOCALSTORAGE CACHE
+    const cachedSchedules = localStorage.getItem("cached_schedules");
+    const cachedApprovals = localStorage.getItem("cached_approvals");
+
+    if (cachedSchedules && cachedApprovals) {
+        try {
+            processScheduleData(cachedSchedules, cachedApprovals, role);
+        } catch (e) {
+            console.warn("Error rendering cached schedules:", e);
+        }
+    }
+
+    // 2. BACKGROUND FETCH FROM GOOGLE SHEETS
     try {
         const cacheBust = Date.now();
         const scheduleFetchURL = `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
@@ -2444,198 +2457,298 @@ async function loadMainSchedulesAndApprovals() {
 
         if (data.trim().startsWith("<!DOCTYPE") || approvalData.trim().startsWith("<!DOCTYPE")) return false;
 
-        const rows = data.trim().split("\n").slice(1);
-        const approvalAllRows = approvalData.trim().split("\n");
-        const approvalHeaders = parseCSVRow(approvalAllRows[0] || "");
-        const approvalRows = approvalAllRows.slice(1);
+        // Save fresh data to cache
+        localStorage.setItem("cached_schedules", data);
+        localStorage.setItem("cached_approvals", approvalData);
 
-        grouped = {};
-        summaryDrivers = {};
-        approvalDates = {};
-        approvalNotes = {};
-        approvalConfirmations = {};
+        // Render fresh data
+        processScheduleData(data, approvalData, role);
+        return true;
+    } catch (err) {
+        console.error("Safely handled schedule loading error:", err);
+        return false;
+    }
+}
 
-        approvalRows.forEach(row => {
-            let cols = parseCSVRow(row);
-            const date = (cols[0] || "").replace(/"/g, "").trim();
-            const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
-            const notes = (cols[2] || "").replace(/"/g, "").trim();
+// Helper function to process and render schedule data
+function processScheduleData(data, approvalData, role) {
+    const rows = data.trim().split("\n").slice(1);
+    const approvalAllRows = approvalData.trim().split("\n");
+    const approvalHeaders = parseCSVRow(approvalAllRows[0] || "");
+    const approvalRows = approvalAllRows.slice(1);
 
-            if (!approvalDates[date] || status === "approved") {
-                approvalDates[date] = status;
+    grouped = {};
+    summaryDrivers = {};
+    approvalDates = {};
+    approvalNotes = {};
+    approvalConfirmations = {};
+
+    approvalRows.forEach(row => {
+        let cols = parseCSVRow(row);
+        const date = (cols[0] || "").replace(/"/g, "").trim();
+        const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
+        const notes = (cols[2] || "").replace(/"/g, "").trim();
+
+        if (!approvalDates[date] || status === "approved") {
+            approvalDates[date] = status;
+        }
+        if (!approvalNotes[date] || notes) {
+            approvalNotes[date] = notes;
+        }
+
+        if (!approvalConfirmations[date]) {
+            approvalConfirmations[date] = {};
+        }
+
+        for (let i = 3; i <= 8; i++) {
+            const driverName = (approvalHeaders[i] || "").replace(/"/g, "").trim();
+            const confirmation = (cols[i] || "").replace(/"/g, "").trim();
+            if (driverName) {
+                approvalConfirmations[date][driverName] = confirmation.toLowerCase() === "confirm";
             }
-            if (!approvalNotes[date] || notes) {
-                approvalNotes[date] = notes;
-            }
+        }
+    });
 
-            if (!approvalConfirmations[date]) {
-                approvalConfirmations[date] = {};
-            }
+    rows.forEach(row => {
+        let cols = parseCSVRow(row);
+        if (cols.length < 15) return;
 
-            for (let i = 3; i <= 8; i++) {
-                const driverName = (approvalHeaders[i] || "").replace(/"/g, "").trim();
-                const confirmation = (cols[i] || "").replace(/"/g, "").trim();
-                if (driverName) {
-                    approvalConfirmations[date][driverName] = confirmation.toLowerCase() === "confirm";
-                }
-            }
+        const [
+            driver, date, timeIn, vehicle, itinerary,
+            pickupTime, requestedBy, passengerName, contactNumber,
+            origin, destination, remarks, tripType, chargeTo, messageSent
+        ] = cols.map(v => (v || "").replace(/"/g, "").trim());
+
+        const key = driver + "_" + date;
+
+        if (!summaryDrivers[date]) summaryDrivers[date] = {};
+        if (!summaryDrivers[date][driver]) {
+            summaryDrivers[date][driver] = { driver, timeIn, vehicle, itinerary, tripType };
+        }
+
+        if (!grouped[key]) {
+            grouped[key] = { driver, date, timeIn, vehicle, itinerary, tripType, trips: [] };
+        }
+
+        if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
+        grouped[key].trips.push({
+            pickupTime, requestedBy, passengerName, contactNumber,
+            origin, destination, remarks, chargeTo, messageSent
         });
+    });
 
-        rows.forEach(row => {
-            let cols = parseCSVRow(row);
-            if (cols.length < 15) return;
+    scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
 
-            const [
-                driver, date, timeIn, vehicle, itinerary,
-                pickupTime, requestedBy, passengerName, contactNumber,
-                origin, destination, remarks, tripType, chargeTo, messageSent
-            ] = cols.map(v => (v || "").replace(/"/g, "").trim());
+    const container = document.getElementById("driversContainer");
+    let pageHTML = "";
+    if (container) container.innerHTML = "";
 
-            const key = driver + "_" + date;
+    const phNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+    today.setHours(0, 0, 0, 0);
 
-            if (!summaryDrivers[date]) summaryDrivers[date] = {};
-            if (!summaryDrivers[date][driver]) {
-                summaryDrivers[date][driver] = { driver, timeIn, vehicle, itinerary, tripType };
-            }
+    scheduleDates.sort((a, b) => {
+        const da = new Date(a);
+        const db = new Date(b);
+        da.setHours(0, 0, 0, 0);
+        db.setHours(0, 0, 0, 0);
 
-            if (!grouped[key]) {
-                grouped[key] = { driver, date, timeIn, vehicle, itinerary, tripType, trips: [] };
-            }
+        const aToday = da.getTime() === today.getTime();
+        const bToday = db.getTime() === today.getTime();
+        const aPast = da < today;
+        const bPast = db < today;
 
-            if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
-            grouped[key].trips.push({
-                pickupTime, requestedBy, passengerName, contactNumber,
-                origin, destination, remarks, chargeTo, messageSent
+        if (aPast && !bPast) return -1;
+        if (!aPast && bPast) return 1;
+        if (aToday && !bToday) return -1;
+        if (!aToday && bToday) return 1;
+        return da - db;
+    });
+
+    scheduleDates.forEach(date => {
+        const scheduleDate = new Date(date);
+        scheduleDate.setHours(0, 0, 0, 0);
+
+        const isPast = scheduleDate.getTime() < today.getTime();
+        const isToday = scheduleDate.getTime() === today.getTime();
+        const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
+        const status = (approvalDates[date] || "").toLowerCase();
+
+        if (role === "organic") {
+            if (isPast) return; 
+        } else {
+            if (status !== "approved" && !isPast && !isToday) return;
+        }
+
+        let pendingBadgeHeaderHtml = "";
+        if (role === "organic" && status !== "approved") {
+            pendingBadgeHeaderHtml = `
+            <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
+                Pending for Approval
+            </div>`;
+        }
+
+        if (isToday) {
+            const hideSummaryTable = phNow.getHours() >= 16;
+            let tableRows = "";
+
+            Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                let itineraryDisplay = (driver.itinerary || "").trim();
+                const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                let rowClass = isRestDay ? "rest-day-row" : "";
+
+                if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+
+                const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
+                const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
+
+                tableRows += `
+                <tr class="${rowClass}">
+                    <td>${driverNameDisplay}</td>
+                    <td>${driver.timeIn}</td>
+                    <td><span style="${getCodingHighlightStyle(driver.vehicle, date)} padding:2px 6px; border-radius:5px; font-weight:700;">${driver.vehicle}</span></td>
+                    <td>${itineraryDisplay}</td>
+                </tr>`;
             });
-        });
 
-        scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
-
-        const container = document.getElementById("driversContainer");
-        let pageHTML = "";
-        if (container) container.innerHTML = "";
-
-        const phNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        today.setHours(0, 0, 0, 0);
-
-        scheduleDates.sort((a, b) => {
-            const da = new Date(a);
-            const db = new Date(b);
-            da.setHours(0, 0, 0, 0);
-            db.setHours(0, 0, 0, 0);
-
-            const aToday = da.getTime() === today.getTime();
-            const bToday = db.getTime() === today.getTime();
-            const aPast = da < today;
-            const bPast = db < today;
-
-            if (aPast && !bPast) return -1;
-            if (!aPast && bPast) return 1;
-            if (aToday && !bToday) return -1;
-            if (!aToday && bToday) return 1;
-            return da - db;
-        });
-
-        scheduleDates.forEach(date => {
-            const scheduleDate = new Date(date);
-            scheduleDate.setHours(0, 0, 0, 0);
-
-            const isPast = scheduleDate.getTime() < today.getTime();
-            const isToday = scheduleDate.getTime() === today.getTime();
-            const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
-            const status = (approvalDates[date] || "").toLowerCase();
-
-            if (role === "organic") {
-                if (isPast) return; 
-            } else {
-                if (status !== "approved" && !isPast && !isToday) return;
-            }
-
-            let pendingBadgeHeaderHtml = "";
-            if (role === "organic" && status !== "approved") {
-                pendingBadgeHeaderHtml = `
-                <div style="display: inline-block; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 6px;">
-                    Pending for Approval
+            if (!hideSummaryTable) {
+                pageHTML += `
+                <div class="summary-card">
+                    ${pendingBadgeHeaderHtml}
+                    <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                    <table class="summary-table">
+                        <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                    ${approvalNotes[date] && approvalNotes[date].trim() !== "" ? `<div class="schedule-notes-box"><div class="schedule-notes-header">Schedule Notes</div><div class="schedule-notes-body">${approvalNotes[date].replace(/\n/g,"<br>")}</div></div>` : ""}
                 </div>`;
             }
 
-            if (isToday) {
-                const hideSummaryTable = phNow.getHours() >= 16;
-                let tableRows = "";
+            Object.values(grouped).filter(d => d.date === date).forEach(d => {
+                const itinerary = (d.itinerary || "").trim();
+                const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                if (noAllowanceItineraries.includes(itinerary)) return;
 
-                Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                    let itineraryDisplay = (driver.itinerary || "").trim();
-                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                    let rowClass = isRestDay ? "rest-day-row" : "";
+                let tripsHTML = "";
+                d.trips.forEach((trip, index) => {
+                    with (trip) {
+                        tripsHTML += `
+                        <div class="trip-title">Pick-Up ${index + 1}${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}</div>
+                        ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                        ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                        ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                        ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                        ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                        ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                        `;
+                    }
+                });
 
-                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+                const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
+                const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
 
-                    const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
-                    const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
+                const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
 
-                    tableRows += `
+                if (!window.passengerMessageData) window.passengerMessageData = {};
+                const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                window.passengerMessageData[messageKey] = { driver: d.driver, date: d.date, trips: d.trips };
+
+                const messagePassengerBtnHtml = role === "organic" ? "" : `<button class="message-passenger-btn" onclick="openPassengerMessage('${d.driver}','${d.date}')">Notify Passenger</button>`;
+                const allowanceBtnHtml = role === "organic" ? "" : (
+                    isAlreadySubmitted
+                        ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
+                        : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Allowance</button>`
+                );
+
+                pageHTML += `
+                <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
+                    <div class="driver-header">
+                       <h2>${d.driver}</h2>
+                        <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                        <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                        <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                        <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
+                    </div>
+                    ${tripsHTML}
+                    <div class="driver-action-buttons">
+                        ${messagePassengerBtnHtml}
+                        ${allowanceBtnHtml}
+                    </div>
+                </div>`;
+            });
+        }
+
+        if (!isPast && !isToday) {
+            let tableRows = "";
+            Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                let itineraryDisplay = (driver.itinerary || "").trim();
+                const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                let rowClass = isRestDay ? "rest-day-row" : "";
+
+                const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
+                const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
+
+                if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
+
+                tableRows += `
                     <tr class="${rowClass}">
                         <td>${driverNameDisplay}</td>
                         <td>${driver.timeIn}</td>
-                        <td><span style="${getCodingHighlightStyle(driver.vehicle, date)} padding:2px 6px; border-radius:5px; font-weight:700;">${driver.vehicle}</span></td>
+                        <td><span style="${getCodingHighlightStyle(driver.vehicle, date)}">${driver.vehicle}</span></td>
                         <td>${itineraryDisplay}</td>
                     </tr>`;
-                });
+            });
 
-                if (!hideSummaryTable) {
-                    pageHTML += `
-                    <div class="summary-card">
+            if (tableRows !== "") {
+                pageHTML += `
+                    <div class="summary-card ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? "schedule-locked" : ""}">
                         ${pendingBadgeHeaderHtml}
                         <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
+                        ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? `
+                            <div class="acknowledge-schedule-box">
+                                <p class="acknowledge-message">Kindly acknowledge this schedule.</p>
+                                <p class="acknowledge-submessage">If there is any confusion about your schedule, just message the Admin.</p>
+                                <button class="acknowledge-schedule-btn" onclick="acknowledgeDriverSchedule('${date}', this)">Acknowledge Schedule</button>
+                            </div>
+                        ` : ""}
                         <table class="summary-table">
                             <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                             <tbody>${tableRows}</tbody>
                         </table>
-                        ${approvalNotes[date] && approvalNotes[date].trim() !== "" ? `<div class="schedule-notes-box"><div class="schedule-notes-header">Schedule Notes</div><div class="schedule-notes-body">${approvalNotes[date].replace(/\n/g,"<br>")}</div></div>` : ""}
+                        ${approvalNotes[date] && approvalNotes[date].trim() !== "" ? `<div class="schedule-notes-box"><div class="schedule-notes-header">Schedule Notes</div><div class="schedule-notes-body">${approvalNotes[date].replace(/\n/g, "<br>")}</div></div>` : ""}
                     </div>`;
-                }
+            }
 
-                Object.values(grouped).filter(d => d.date === date).forEach(d => {
-                    const itinerary = (d.itinerary || "").trim();
-                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                    if (noAllowanceItineraries.includes(itinerary)) return;
+            Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
+                const itinerary = (d.itinerary || "").trim();
+                const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                if (noAllowanceItineraries.includes(itinerary)) return;
 
-                    let tripsHTML = "";
-                    d.trips.forEach((trip, index) => {
-                        with (trip) {
-                            tripsHTML += `
-                            <div class="trip-title">Pick-Up ${index + 1}${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}</div>
-                            ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                            ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                            ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                            ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                            ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                            ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                            `;
-                        }
-                    });
+                let tripsHTML = "";
+                d.trips.forEach((trip, index) => {
+                    with (trip) {
+                        tripsHTML += `
+                            <div class="trip">
+                               <div class="trip-title">Pick-Up ${index + 1}${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}</div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                            </div>`;
+                    }
+                });
 
-                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
-                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+                if (!window.passengerMessageData) window.passengerMessageData = {};
+                const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                window.passengerMessageData[messageKey] = { driver: d.driver, date: d.date, trips: d.trips };
 
-                    const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
-
-                    if (!window.passengerMessageData) window.passengerMessageData = {};
-                    const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    window.passengerMessageData[messageKey] = { driver: d.driver, date: d.date, trips: d.trips };
-
-                    const messagePassengerBtnHtml = role === "organic" ? "" : `<button class="message-passenger-btn" onclick="openPassengerMessage('${d.driver}','${d.date}')">Notify Passenger</button>`;
-                    const allowanceBtnHtml = role === "organic" ? "" : (
-                        isAlreadySubmitted
-                            ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
-                            : `<button class="allowance-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit Allowance</button>`
-                    );
-
-                    pageHTML += `
-                    <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
+                pageHTML += `
+                    <div class="driver-card ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? "schedule-locked" : ""}">
                         <div class="driver-header">
                            <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
@@ -2644,140 +2757,46 @@ async function loadMainSchedulesAndApprovals() {
                             <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                         </div>
                         ${tripsHTML}
-                        <div class="driver-action-buttons">
-                            ${messagePassengerBtnHtml}
-                            ${allowanceBtnHtml}
-                        </div>
+                        ${role !== "organic" ? `<div class="driver-action-buttons"><button type="button" class="message-passenger-btn" onclick="openPassengerMessage('${d.driver}','${d.date}')">Notify Passenger</button></div>` : ""}
                     </div>`;
-                });
-            }
-
-            if (!isPast && !isToday) {
-                let tableRows = "";
-                Object.values(summaryDrivers[date] || {}).forEach(driver => {
-                    let itineraryDisplay = (driver.itinerary || "").trim();
-                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-                    let rowClass = isRestDay ? "rest-day-row" : "";
-
-                    const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
-                    const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
-
-                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
-                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
-
-                    tableRows += `
-                        <tr class="${rowClass}">
-                            <td>${driverNameDisplay}</td>
-                            <td>${driver.timeIn}</td>
-                            <td><span style="${getCodingHighlightStyle(driver.vehicle, date)}">${driver.vehicle}</span></td>
-                            <td>${itineraryDisplay}</td>
-                        </tr>`;
-                });
-
-                if (tableRows !== "") {
-                    pageHTML += `
-                        <div class="summary-card ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? "schedule-locked" : ""}">
-                            ${pendingBadgeHeaderHtml}
-                            <div class="summary-header"><h2>${dayName} | ${date}</h2></div>
-                            ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? `
-                                <div class="acknowledge-schedule-box">
-                                    <p class="acknowledge-message">Kindly acknowledge this schedule.</p>
-                                    <p class="acknowledge-submessage">If there is any confusion about your schedule, just message the Admin.</p>
-                                    <button class="acknowledge-schedule-btn" onclick="acknowledgeDriverSchedule('${date}', this)">Acknowledge Schedule</button>
-                                </div>
-                            ` : ""}
-                            <table class="summary-table">
-                                <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
-                                <tbody>${tableRows}</tbody>
-                            </table>
-                            ${approvalNotes[date] && approvalNotes[date].trim() !== "" ? `<div class="schedule-notes-box"><div class="schedule-notes-header">Schedule Notes</div><div class="schedule-notes-body">${approvalNotes[date].replace(/\n/g, "<br>")}</div></div>` : ""}
-                        </div>`;
-                }
-
-                Object.values(grouped).sort().filter(d => d.date === date).forEach(d => {
-                    const itinerary = (d.itinerary || "").trim();
-                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
-                    if (noAllowanceItineraries.includes(itinerary)) return;
-
-                    let tripsHTML = "";
-                    d.trips.forEach((trip, index) => {
-                        with (trip) {
-                            tripsHTML += `
-                                <div class="trip">
-                                   <div class="trip-title">Pick-Up ${index + 1}${String(trip.messageSent || "").trim().toLowerCase() === "sent" ? " ✉️" : ""}</div>
-                                    ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                                    ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                                    ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                                    ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                                    ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                                    ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                                </div>`;
-                        }
-                    });
-
-                    if (!window.passengerMessageData) window.passengerMessageData = {};
-                    const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-                    window.passengerMessageData[messageKey] = { driver: d.driver, date: d.date, trips: d.trips };
-
-                    pageHTML += `
-                        <div class="driver-card ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? "schedule-locked" : ""}">
-                            <div class="driver-header">
-                               <h2>${d.driver}</h2>
-                                <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
-                                <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
-                                <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
-                                <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
-                            </div>
-                            ${tripsHTML}
-                            ${role !== "organic" ? `<div class="driver-action-buttons"><button type="button" class="message-passenger-btn" onclick="openPassengerMessage('${d.driver}','${d.date}')">Notify Passenger</button></div>` : ""}
-                        </div>`;
-                });
-            }
-
-            if (isPast && role !== "organic") {
-               const pendingDrivers = Object.values(grouped).filter(d => {
-                    if (d.date !== date) return false;
-                    const itinerary = (d.itinerary || "").trim();
-                    const noAllowanceItineraries = ["AM","PM","AM / Banking","Banking / PM","Rest Day","Standby","ED","AM / ED","ED / PM","ED / Banking","Banking"];
-                    if (noAllowanceItineraries.includes(itinerary)) return false;
-
-                    const cleanDriver = d.driver.trim().replace(/\s+/g, " ").toLowerCase();
-                    const lookupKey = `${cleanDriver}|${standardizeDateStr(d.date)}`;
-                    return submittedDrivers[lookupKey] !== true;
-                });
-
-                if (pendingDrivers.length === 0) return;
-
-                pageHTML += `<div class="pending-summary-card"><div class="pending-summary-header">${dayName} | ${date}</div><table class="pending-table"><tbody>`;
-                pendingDrivers.forEach(d => {
-                    const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
-                    const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
-                    pageHTML += `
-                        <tr>
-                            <td class="pending-driver-cell">${d.driver}</td>
-                            <td class="pending-action-cell"><button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit</button></td>
-                        </tr>`;
-                });
-                pageHTML += `</tbody></table></div>`;
-            }
-        });
-
-        if (container) {
-            container.style.visibility = "hidden";
-            container.innerHTML = pageHTML;
+            });
         }
 
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        updateCutoffDropdownsDynamically();
-        loadScheduleApprovalPage();
+        if (isPast && role !== "organic") {
+           const pendingDrivers = Object.values(grouped).filter(d => {
+                if (d.date !== date) return false;
+                const itinerary = (d.itinerary || "").trim();
+                const noAllowanceItineraries = ["AM","PM","AM / Banking","Banking / PM","Rest Day","Standby","ED","AM / ED","ED / PM","ED / Banking","Banking"];
+                if (noAllowanceItineraries.includes(itinerary)) return false;
 
-        window.scrollTo(0, 0);
-        if (container) container.style.visibility = "visible";
-        return true;
-    } catch (err) {
-        console.error("Safely handled schedule loading error:", err);
-        return false;
+                const cleanDriver = d.driver.trim().replace(/\s+/g, " ").toLowerCase();
+                const lookupKey = `${cleanDriver}|${standardizeDateStr(d.date)}`;
+                return submittedDrivers[lookupKey] !== true;
+            });
+
+            if (pendingDrivers.length === 0) return;
+
+            pageHTML += `<div class="pending-summary-card"><div class="pending-summary-header">${dayName} | ${date}</div><table class="pending-table"><tbody>`;
+            pendingDrivers.forEach(d => {
+                const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
+                const distinctPass = [...new Set(d.trips.map(t => t.passengerName))].filter(Boolean).join(", ");
+                pageHTML += `
+                    <tr>
+                        <td class="pending-driver-cell">${d.driver}</td>
+                        <td class="pending-action-cell"><button class="pending-submit-btn" onclick="submitAllowance('${d.driver}','${d.date}','${distinctReq}','${distinctPass}','${d.tripType}')">Submit</button></td>
+                    </tr>`;
+            });
+            pageHTML += `</tbody></table></div>`;
+        }
+    });
+
+    if (container) {
+        container.style.visibility = "visible";
+        container.innerHTML = pageHTML;
     }
+
+    updateCutoffDropdownsDynamically();
+    loadScheduleApprovalPage();
 }
 
 function showHomePage() {
@@ -2931,8 +2950,11 @@ window.onload = async function () {
 
     configureNavigation(role);
     document.getElementById("loginPage").style.display = "none";
-    showLoginSpinner("Welcome Back!", "Loading latest schedules...");
 
+    // Show homepage IMMEDIATELY
+    showHomePage();
+
+    // Fetch and sync in the background
     try {
         await Promise.all([
             loadSubmittedAllowances(),
@@ -2940,14 +2962,9 @@ window.onload = async function () {
             loadDriverRequests(),
             fetchLiveAllowancesFromSheet()
         ]);
-
         updateCutoffDropdownsDynamically();
-        hideLoginSpinner();
-        showHomePage();
     } catch (err) {
-        console.error("Initialization Error:", err);
-        hideLoginSpinner();
-        alert("Failed to load dashboard data. Please refresh.");
+        console.error("Initialization Sync Error:", err);
     } finally {
         document.getElementById("pageLoadingOverlay").style.display = "none";
     }
@@ -3052,8 +3069,11 @@ function showReminderModal() {
 
 async function confirmReminder() {
     document.getElementById("driverReminderModal").style.display = "none";
-    showLoginSpinner("Loading Dashboard...", "Fetching latest schedules...");
+    
+    // Open main page immediately
+    showHomePage();
 
+    // Background sync
     try {
         await Promise.all([
             loadSubmittedAllowances(),
@@ -3061,13 +3081,8 @@ async function confirmReminder() {
             fetchLiveAllowancesFromSheet(),
             loadDriverRequests()
         ]);
-
         updateCutoffDropdownsDynamically();
-        hideLoginSpinner();
-        showHomePage();
     } catch (err) {
-        console.error("Error loading driver dashboard:", err);
-        hideLoginSpinner();
-        showHomePage();
+        console.error("Error syncing driver dashboard:", err);
     }
 }
