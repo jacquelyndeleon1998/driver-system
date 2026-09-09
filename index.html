@@ -7573,17 +7573,22 @@ async function loadMainSchedulesAndApprovals() {
                     const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
                     const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
 
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driverNameDisplay}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>
-                            <span style="${getCodingHighlightStyle(driver.vehicle, date)} padding:2px 6px; border-radius:5px; font-weight:700;">
-                                ${driver.vehicle}
-                            </span>
-                        </td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
+                  tableRows += `
+<tr class="${rowClass}">
+    <td>${driverNameDisplay}</td>
+    <td>${driver.timeIn}</td>
+   <td>
+    <span style="
+        ${getCodingHighlightStyle(driver.vehicle, date)}
+        padding:2px 6px;
+        border-radius:5px;
+        font-weight:700;
+    ">
+        ${driver.vehicle}
+    </span>
+</td>
+    <td>${itineraryDisplay}</td>
+</tr>`;
                 });
 
                 if (!hideSummaryTable) {
@@ -7703,17 +7708,22 @@ async function loadMainSchedulesAndApprovals() {
                     if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
                     if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
-                    tableRows += `
-                    <tr class="${rowClass}">
-                        <td>${driverNameDisplay}</td>
-                        <td>${driver.timeIn}</td>
-                        <td>
-                            <span style="${getCodingHighlightStyle(driver.vehicle, date)}">
-                                ${driver.vehicle}
-                            </span>
-                        </td>
-                        <td>${itineraryDisplay}</td>
-                    </tr>`;
+                   tableRows += `
+<tr class="${rowClass}">
+    <td>${driverNameDisplay}</td>
+    <td>${driver.timeIn}</td>
+   <td>
+    <span style="
+        ${getCodingHighlightStyle(driver.vehicle, date)}
+        padding:2px 6px;
+        border-radius:5px;
+        font-weight:normal;
+    ">
+        ${driver.vehicle}
+    </span>
+</td>
+    <td>${itineraryDisplay}</td>
+</tr>`;
                 });
 
                 if (tableRows !== "") {
