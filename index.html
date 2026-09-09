@@ -463,21 +463,21 @@
     }
 
     .driver-card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 16px;
-        box-shadow: 0 6px 18px rgba(0,0,0,.08);
-        border: 1px solid #e5e7eb;
-    }
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 24px !important; /* Updated spacing */
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    border: 1px solid #e5e7eb;
+}
 
-    .summary-card {
-        background: #b7d58c;
-        border-radius: 14px;
-        padding: 8px;
-        margin-bottom: 18px;
-        box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    }
+   .summary-card {
+    background: #b7d58c;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 24px !important; /* Updated spacing */
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
 
     .pending-summary-card {
         background:#ECFDF5;
@@ -779,11 +779,12 @@
     flex-shrink: 0;
 }
 
-        .driver-action-buttons {
+       .driver-action-buttons {
     display: flex;
     gap: 10px;
     width: 100%;
     margin-top: 14px;
+    margin-bottom: 12px; /* Updated spacing */
 }
 
 .driver-action-buttons .message-passenger-btn,
@@ -7312,14 +7313,9 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
 }
 
     async function fetchDataWithRetry(url, options = {}, retries = 1, delay = 300) {
-
     for (let attempt = 0; attempt <= retries; attempt++) {
-
         try {
-
             const response = await fetch(url, options);
-
-          
 
             if (response.ok) {
                 return response;
@@ -7328,11 +7324,7 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
             throw new Error(
                 `HTTP ${response.status}: ${response.statusText}`
             );
-
         } catch (error) {
-
-           
-
             if (attempt === retries) {
                 throw error;
             }
@@ -7344,7 +7336,7 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
     }
 }
 
-    function hasPassengerMessageSent(trips) {
+function hasPassengerMessageSent(trips) {
     if (!Array.isArray(trips)) return false;
 
     return trips.some(trip => {
@@ -7355,33 +7347,32 @@ function createScheduleRow(weekday, date, actionHtml, showLineBreak = false) {
         return value === "sent";
     });
 }
-    
+
 async function loadMainSchedulesAndApprovals() {
     const role = localStorage.getItem("userRole");
 
     try {
         const cacheBust = Date.now();
 
-const scheduleFetchURL =
-    `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
+        const scheduleFetchURL =
+            `${WEBAPP_BASE}?action=fetchScheduleCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
 
-const approvalFetchURL =
-    `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
+        const approvalFetchURL =
+            `${WEBAPP_BASE}?action=fetchApprovalCSV&token=${encodeURIComponent(SECRET_TOKEN)}&_nc=${cacheBust}`;
 
+        const [scheduleResponse, approvalResponse] = await Promise.all([
+            fetchDataWithRetry(scheduleFetchURL, {
+                method: "GET",
+                cache: "no-store",
+                credentials: "omit"
+            }),
 
-const [scheduleResponse, approvalResponse] = await Promise.all([
-    fetchDataWithRetry(scheduleFetchURL, {
-        method: "GET",
-        cache: "no-store",
-        credentials: "omit"
-    }),
-
-    fetchDataWithRetry(approvalFetchURL, {
-        method: "GET",
-        cache: "no-store",
-        credentials: "omit"
-    })
-]);
+            fetchDataWithRetry(approvalFetchURL, {
+                method: "GET",
+                cache: "no-store",
+                credentials: "omit"
+            })
+        ]);
 
         if (!scheduleResponse.ok || !approvalResponse.ok) {
             console.warn("Schedule CSV endpoints returned non-OK status.");
@@ -7399,92 +7390,63 @@ const [scheduleResponse, approvalResponse] = await Promise.all([
         }
 
         const rows = data.trim().split("\n").slice(1);
+        const approvalAllRows = approvalData.trim().split("\n");
 
-const approvalAllRows = approvalData.trim().split("\n");
+        const approvalHeaders = parseCSVRow(approvalAllRows[0] || "");
+        const approvalRows = approvalAllRows.slice(1);
 
-const approvalHeaders = parseCSVRow(approvalAllRows[0] || "");
-const approvalRows = approvalAllRows.slice(1);
-
-     grouped = {};
-summaryDrivers = {};
-approvalDates = {};
-approvalNotes = {};
+        grouped = {};
+        summaryDrivers = {};
+        approvalDates = {};
+        approvalNotes = {};
         approvalConfirmations = {};
 
-approvalRows.forEach(row => {
+        approvalRows.forEach(row => {
+            let cols = [];
+            let current = "";
+            let insideQuotes = false;
 
-    let cols = [];
-    let current = "";
-    let insideQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
 
-    for (let i = 0; i < row.length; i++) {
+                if (char === '"') {
+                    insideQuotes = !insideQuotes;
+                } else if (char === "," && !insideQuotes) {
+                    cols.push(current.trim());
+                    current = "";
+                } else {
+                    current += char;
+                }
+            }
 
-        const char = row[i];
-
-        if (char === '"') {
-            insideQuotes = !insideQuotes;
-        }
-        else if (char === "," && !insideQuotes) {
             cols.push(current.trim());
-            current = "";
-        }
-        else {
-            current += char;
-        }
-    }
 
-    cols.push(current.trim());
+            const date = (cols[0] || "").replace(/"/g, "").trim();
+            const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
+            const notes = (cols[2] || "").replace(/"/g, "").trim();
 
-    // -----------------------------
-    // Approval information
-    // -----------------------------
-    const date = (cols[0] || "").replace(/"/g, "").trim();
-    const status = (cols[1] || "").replace(/"/g, "").trim().toLowerCase();
-    const notes = (cols[2] || "").replace(/"/g, "").trim();
-// Keep an existing approved status from being overwritten
-// by a blank/empty status from another row with the same date.
-if (
-    !approvalDates[date] ||
-    status === "approved"
-) {
-    approvalDates[date] = status;
-}
+            if (!approvalDates[date] || status === "approved") {
+                approvalDates[date] = status;
+            }
 
-if (
-    !approvalNotes[date] ||
-    notes
-) {
-    approvalNotes[date] = notes;
-}
+            if (!approvalNotes[date] || notes) {
+                approvalNotes[date] = notes;
+            }
 
-    // -----------------------------
-    // Driver confirmations
-    // Columns D:I = index 3:8
-    // -----------------------------
-    if (!approvalConfirmations[date]) {
-        approvalConfirmations[date] = {};
-    }
+            if (!approvalConfirmations[date]) {
+                approvalConfirmations[date] = {};
+            }
 
-    for (let i = 3; i <= 8; i++) {
+            for (let i = 3; i <= 8; i++) {
+                const driverName = (approvalHeaders[i] || "").replace(/"/g, "").trim();
+                const confirmation = (cols[i] || "").replace(/"/g, "").trim();
 
-        const driverName =
-            (approvalHeaders[i] || "")
-                .replace(/"/g, "")
-                .trim();
-
-        const confirmation =
-            (cols[i] || "")
-                .replace(/"/g, "")
-                .trim();
-
-        if (driverName) {
-            approvalConfirmations[date][driverName] =
-                confirmation.toLowerCase() === "confirm";
-        }
-    }
-
-});
-    
+                if (driverName) {
+                    approvalConfirmations[date][driverName] =
+                        confirmation.toLowerCase() === "confirm";
+                }
+            }
+        });
 
         rows.forEach(row => {
             let cols = [];
@@ -7499,33 +7461,26 @@ if (
                 } else current += char;
             }
             cols.push(current.trim());
-           if (cols.length < 15) return;
+            if (cols.length < 15) return;
 
-const [
-    driver,
-    date,
-    timeIn,
-    vehicle,
-    itinerary,
-    pickupTime,
-    requestedBy,
-    passengerName,
-    contactNumber,
-    origin,
-    destination,
-    remarks,
-    tripType,
-    chargeTo,
-    messageSent
-] = cols.map(v => (v || "").replace(/"/g, "").trim());
+            const [
+                driver,
+                date,
+                timeIn,
+                vehicle,
+                itinerary,
+                pickupTime,
+                requestedBy,
+                passengerName,
+                contactNumber,
+                origin,
+                destination,
+                remarks,
+                tripType,
+                chargeTo,
+                messageSent
+            ] = cols.map(v => (v || "").replace(/"/g, "").trim());
 
-            console.log("COLUMN O CHECK:", {
-    driver: driver,
-    passenger: passengerName,
-    totalColumns: cols.length,
-    columnO: cols[14],
-    messageSent: messageSent
-});
             const key = driver + "_" + date;
 
             if (!summaryDrivers[date]) summaryDrivers[date] = {};
@@ -7539,16 +7494,16 @@ const [
 
             if (tripType && !grouped[key].tripType) grouped[key].tripType = tripType;
             grouped[key].trips.push({
-    pickupTime,
-    requestedBy,
-    passengerName,
-    contactNumber,
-    origin,
-    destination,
-    remarks,
-    chargeTo,
-    messageSent
-});
+                pickupTime,
+                requestedBy,
+                passengerName,
+                contactNumber,
+                origin,
+                destination,
+                remarks,
+                chargeTo,
+                messageSent
+            });
         });
 
         scheduleDates = [...new Set(Object.values(grouped).map(d => d.date))].sort();
@@ -7588,25 +7543,11 @@ const [
             const dayName = scheduleDate.toLocaleDateString("en-US", { weekday: "long" });
             const status = (approvalDates[date] || "").toLowerCase();
 
-       
-
-            // -----------------------------------------------------------
-            // ROLE FILTERING LOGIC
-            // -----------------------------------------------------------
-           // -----------------------------------------------------------
-// ROLE FILTERING LOGIC
-// -----------------------------------------------------------
-// Organic: hide past schedules
-// Driver/Admin: show approved schedules
-if (role === "organic") {
-    if (isPast) return; 
-} 
-else {
-    // Future schedules must be approved.
-    // Today's schedule may still be displayed even if
-    // the approval sheet does not yet contain an entry.
-    if (status !== "approved" && !isPast && !isToday) return;
-}
+            if (role === "organic") {
+                if (isPast) return;
+            } else {
+                if (status !== "approved" && !isPast && !isToday) return;
+            }
 
             let pendingBadgeHeaderHtml = "";
             if (role === "organic" && status !== "approved") {
@@ -7629,66 +7570,42 @@ else {
                     if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
                     if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
-                    const isAcknowledgedDriver =
-    isScheduleAcknowledged(date, driver.driver);
+                    const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
+                    const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
 
-const driverNameDisplay =
-    isAcknowledgedDriver
-        ? `<strong>${driver.driver}</strong>`
-        : driver.driver;
-
-tableRows += `
-<tr class="${rowClass}">
-    <td>${driverNameDisplay}</td>
-    <td>${driver.timeIn}</td>
-   <td>
-    <span style="
-        ${getCodingHighlightStyle(driver.vehicle, date)}
-        padding:2px 6px;
-        border-radius:5px;
-        font-weight:700;
-    ">
-        ${driver.vehicle}
-    </span>
-</td>
-    <td>${itineraryDisplay}</td>
-</tr>`;
+                    tableRows += `
+                    <tr class="${rowClass}">
+                        <td>${driverNameDisplay}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>
+                            <span style="${getCodingHighlightStyle(driver.vehicle, date)} padding:2px 6px; border-radius:5px; font-weight:700;">
+                                ${driver.vehicle}
+                            </span>
+                        </td>
+                        <td>${itineraryDisplay}</td>
+                    </tr>`;
                 });
 
                 if (!hideSummaryTable) {
                     pageHTML += `
                     <div class="summary-card">
                         ${pendingBadgeHeaderHtml}
-                       <div class="summary-header">
-    <h2>${dayName} | ${date}</h2>
-
-    
-</div>
+                        <div class="summary-header">
+                            <h2>${dayName} | ${date}</h2>
+                        </div>
                         <table class="summary-table">
                             <thead><tr><th>Driver Name</th><th>Time In</th><th>Unit</th><th>Assignment</th></tr></thead>
                             <tbody>${tableRows}</tbody>
                         </table>
-${
-        approvalNotes[date] && approvalNotes[date].trim() !== ""
-        ?
-        `
-        <div class="schedule-notes-box">
-
-            <div class="schedule-notes-header">
-                Schedule Notes
-            </div>
-
-            <div class="schedule-notes-body">
-                ${approvalNotes[date].replace(/\n/g,"<br>")}
-            </div>
-
-        </div>
-        `
-        :
-        ""
-    }
-
-                        
+                        ${
+                            approvalNotes[date] && approvalNotes[date].trim() !== ""
+                                ? `
+                                <div class="schedule-notes-box">
+                                    <div class="schedule-notes-header">Schedule Notes</div>
+                                    <div class="schedule-notes-body">${approvalNotes[date].replace(/\n/g, "<br>")}</div>
+                                </div>`
+                                : ""
+                        }
                     </div>`;
                 }
 
@@ -7699,27 +7616,28 @@ ${
 
                     let tripsHTML = "";
 
-d.trips.forEach((trip, index) => {
+                    d.trips.forEach((trip, index) => {
+                        const pickupTime = trip.pickupTime || "";
+                        const requestedBy = trip.requestedBy || "";
+                        const passengerName = trip.passengerName || "";
+                        const contactNumber = trip.contactNumber || "";
+                        const origin = trip.origin || "";
+                        const destination = trip.destination || "";
+                        const remarks = trip.remarks || "";
+                        const messageSent = String(trip.messageSent || "").trim().toLowerCase() === "sent";
 
-  
-
-    with (trip) {
-                            tripsHTML += `
+                        tripsHTML += `
+                        <div class="trip">
                             <div class="trip-title">
-    Pick-Up ${index + 1}${
-        String(trip.messageSent || "").trim().toLowerCase() === "sent"
-            ? " ✉️"
-            : ""
-    }
-</div>
-                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                            </div>`;
-                        }
+                                Pick-Up ${index + 1}${messageSent ? " ✉️" : ""}
+                            </div>
+                            ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                            ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                            ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                            ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                            ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                            ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                        </div>`;
                     });
 
                     const distinctReq = [...new Set(d.trips.map(t => t.requestedBy))].filter(Boolean).join(", ");
@@ -7727,24 +7645,24 @@ d.trips.forEach((trip, index) => {
 
                     const lookupKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
                     const isAlreadySubmitted = submittedDrivers[lookupKey] === true;
-if (!window.passengerMessageData) {
-    window.passengerMessageData = {};
-}
 
-const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    if (!window.passengerMessageData) {
+                        window.passengerMessageData = {};
+                    }
 
-window.passengerMessageData[messageKey] = {
-    driver: d.driver,
-    date: d.date,
-    trips: d.trips
-};
-const messagePassengerBtnHtml = role === "organic" ? "" : `
-    <button class="message-passenger-btn"
-        onclick="openPassengerMessage('${d.driver}','${d.date}')">
-        Notify Passenger
-    </button>
-`;
-                    
+                    const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                    window.passengerMessageData[messageKey] = {
+                        driver: d.driver,
+                        date: d.date,
+                        trips: d.trips
+                    };
+
+                    const messagePassengerBtnHtml = role === "organic" ? "" : `
+                        <button class="message-passenger-btn" onclick="openPassengerMessage('${d.driver}','${d.date}')">
+                            Notify Passenger
+                        </button>
+                    `;
+
                     const allowanceBtnHtml = role === "organic" ? "" : (
                         isAlreadySubmitted
                             ? `<button class="allowance-btn" style="background:#9ca3af;cursor:default;" disabled>Allowance Submitted</button>`
@@ -7754,408 +7672,168 @@ const messagePassengerBtnHtml = role === "organic" ? "" : `
                     pageHTML += `
                     <div class="driver-card" id="driver-${d.driver.replace(/\s+/g, '-')}">
                         <div class="driver-header">
-                           <h2>${d.driver}</h2>
+                            <h2>${d.driver}</h2>
                             <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                             <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                             <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
                             <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                         </div>
-                       ${tripsHTML}
+                        ${tripsHTML}
 
-<div class="driver-action-buttons">
-    ${messagePassengerBtnHtml}
-    ${allowanceBtnHtml}
-</div>
+                        <div class="driver-action-buttons">
+                            ${messagePassengerBtnHtml}
+                            ${allowanceBtnHtml}
+                        </div>
                     </div>`;
                 });
             }
 
-         // FUTURE SCHEDULES RENDERING
-if (!isPast && !isToday) {
-    let tableRows = "";
+            // FUTURE SCHEDULES RENDERING
+            if (!isPast && !isToday) {
+                let tableRows = "";
 
-    Object.values(summaryDrivers[date] || {}).forEach(driver => {
-        let itineraryDisplay = (driver.itinerary || "").trim();
-        const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-        let rowClass = isRestDay ? "rest-day-row" : "";
+                Object.values(summaryDrivers[date] || {}).forEach(driver => {
+                    let itineraryDisplay = (driver.itinerary || "").trim();
+                    const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
+                    let rowClass = isRestDay ? "rest-day-row" : "";
 
-        const isAcknowledgedDriver =
-            isScheduleAcknowledged(date, driver.driver);
+                    const isAcknowledgedDriver = isScheduleAcknowledged(date, driver.driver);
+                    const driverNameDisplay = isAcknowledgedDriver ? `<strong>${driver.driver}</strong>` : driver.driver;
 
-        const driverNameDisplay =
-            isAcknowledgedDriver
-                ? `<strong>${driver.driver}</strong>`
-                : driver.driver;
+                    if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
+                    if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
-        if (/\bam\b/i.test(itineraryDisplay)) {
-            itineraryDisplay = itineraryDisplay.replace(
-                /\bam\b/gi,
-                `<span style="color: #b45309; font-weight: 800;">AM</span>`
-            );
-        }
+                    tableRows += `
+                    <tr class="${rowClass}">
+                        <td>${driverNameDisplay}</td>
+                        <td>${driver.timeIn}</td>
+                        <td>
+                            <span style="${getCodingHighlightStyle(driver.vehicle, date)}">
+                                ${driver.vehicle}
+                            </span>
+                        </td>
+                        <td>${itineraryDisplay}</td>
+                    </tr>`;
+                });
 
-        if (/\bpm\b/i.test(itineraryDisplay)) {
-            itineraryDisplay = itineraryDisplay.replace(
-                /\bpm\b/gi,
-                `<span style="color: #1e40af; font-weight: 800;">PM</span>`
-            );
-        }
-
-        tableRows += `
-            <tr class="${rowClass}">
-                <td>${driverNameDisplay}</td>
-                <td>${driver.timeIn}</td>
-               <td>
-    <span style="${getCodingHighlightStyle(driver.vehicle, date)}">
-        ${driver.vehicle}
-    </span>
-</td>
-                <td>${itineraryDisplay}</td>
-            </tr>`;
-    });
-
-    if (tableRows !== "") {
-        pageHTML += `
-            <div class="summary-card ${
-                role === "driver" &&
-                status === "approved" &&
-                !isScheduleAcknowledged(date, getLoggedInDriverName())
-                    ? "schedule-locked"
-                    : ""
-            }">
-
-                ${pendingBadgeHeaderHtml}
-
-                <div class="summary-header">
-                    <h2>${dayName} | ${date}</h2>
-                </div>
-
-                ${
-                    role === "driver" &&
-                    status === "approved" &&
-                    !isScheduleAcknowledged(date, getLoggedInDriverName())
-                        ?
-                        `
-                        <div class="acknowledge-schedule-box">
-                            <p class="acknowledge-message">
-                                Kindly acknowledge this schedule.
-                            </p>
-
-                            <p class="acknowledge-submessage">
-                                If there is any confusion about your schedule, just message the Admin.
-                            </p>
-
-                            <button
-                                class="acknowledge-schedule-btn"
-                                onclick="acknowledgeDriverSchedule('${date}', this)">
-                                Acknowledge Schedule
-                            </button>
+                if (tableRows !== "") {
+                    pageHTML += `
+                    <div class="summary-card ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? "schedule-locked" : ""}">
+                        ${pendingBadgeHeaderHtml}
+                        <div class="summary-header">
+                            <h2>${dayName} | ${date}</h2>
                         </div>
-                        `
-                        :
-                        ""
+                        ${
+                            role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName())
+                                ? `
+                                <div class="acknowledge-schedule-box">
+                                    <p class="acknowledge-message">Kindly acknowledge this schedule.</p>
+                                    <p class="acknowledge-submessage">If there is any confusion about your schedule, just message the Admin.</p>
+                                    <button class="acknowledge-schedule-btn" onclick="acknowledgeDriverSchedule('${date}', this)">
+                                        Acknowledge Schedule
+                                    </button>
+                                </div>`
+                                : ""
+                        }
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Driver Name</th>
+                                    <th>Time In</th>
+                                    <th>Unit</th>
+                                    <th>Assignment</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                        ${
+                            approvalNotes[date] && approvalNotes[date].trim() !== ""
+                                ? `
+                                <div class="schedule-notes-box">
+                                    <div class="schedule-notes-header">Schedule Notes</div>
+                                    <div class="schedule-notes-body">${approvalNotes[date].replace(/\n/g, "<br>")}</div>
+                                </div>`
+                                : ""
+                        }
+                    </div>`;
                 }
 
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>Driver Name</th>
-                            <th>Time In</th>
-                            <th>Unit</th>
-                            <th>Assignment</th>
-                        </tr>
-                    </thead>
+                Object.values(grouped)
+                    .sort()
+                    .filter(d => d.date === date)
+                    .forEach(d => {
+                        const itinerary = (d.itinerary || "").trim();
+                        const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
+                        if (noAllowanceItineraries.includes(itinerary)) return;
 
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
+                        let tripsHTML = "";
 
-                ${
-                    approvalNotes[date] &&
-                    approvalNotes[date].trim() !== ""
-                        ?
-                        `
-                        <div class="schedule-notes-box">
+                        d.trips.forEach((trip, index) => {
+                            const pickupTime = trip.pickupTime || "";
+                            const requestedBy = trip.requestedBy || "";
+                            const passengerName = trip.passengerName || "";
+                            const contactNumber = trip.contactNumber || "";
+                            const origin = trip.origin || "";
+                            const destination = trip.destination || "";
+                            const remarks = trip.remarks || "";
+                            const messageSent = String(trip.messageSent || "").trim().toLowerCase() === "sent";
 
-                            <div class="schedule-notes-header">
-                                Schedule Notes
+                            tripsHTML += `
+                            <div class="trip">
+                                <div class="trip-title">
+                                    Pick-Up ${index + 1}${messageSent ? " ✉️" : ""}
+                                </div>
+                                ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                                ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                                ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                                ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                                ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                            </div>`;
+                        });
+
+                        if (!window.passengerMessageData) {
+                            window.passengerMessageData = {};
+                        }
+
+                        const messageKey = `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
+                        window.passengerMessageData[messageKey] = {
+                            driver: d.driver,
+                            date: d.date,
+                            trips: d.trips
+                        };
+
+                        pageHTML += `
+                        <div class="driver-card ${role === "driver" && status === "approved" && !isScheduleAcknowledged(date, getLoggedInDriverName()) ? "schedule-locked" : ""}">
+                            <div class="driver-header">
+                                <h2>${d.driver}</h2>
+                                <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
+                                <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
+                                <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
+                                <div class="info-item"><div class="info-label">Assignment</div><div class="info-value">${d.itinerary}</div></div>
                             </div>
-
-                            <div class="schedule-notes-body">
-                                ${approvalNotes[date].replace(/\n/g, "<br>")}
-                            </div>
-
-                        </div>
-                        `
-                        :
-                        ""
-                }
-
-            </div>`;
-    }
-
-    Object.values(grouped)
-        .sort()
-        .filter(d => d.date === date)
-        .forEach(d => {
-
-            const itinerary = (d.itinerary || "").trim();
-
-            const noAllowanceItineraries = [
-                "AM",
-                "PM",
-                "AM / Banking",
-                "Banking / PM",
-                "Rest Day",
-                "Standby",
-                "ED",
-                "AM / ED",
-                "ED / PM",
-                "ED / Banking",
-                "Banking"
-            ];
-
-            if (noAllowanceItineraries.includes(itinerary)) return;
-
-            let tripsHTML = "";
-
-            d.trips.forEach((trip, index) => {
-                with (trip) {
-                    tripsHTML += `
-                        <div class="trip">
-
-                           <div class="trip-title">
-    Pick-Up ${index + 1}${
-        String(trip.messageSent || "").trim().toLowerCase() === "sent"
-            ? " ✉️"
-            : ""
-    }
-</div>
-
+                            ${tripsHTML}
                             ${
-                                pickupTime
+                                role !== "organic"
                                     ? `
-                                    <div class="info-item">
-                                        <div class="info-label">
-                                            Pick Up Time
-                                        </div>
-                                        <div class="info-value">
-                                            ${pickupTime}
-                                        </div>
-                                    </div>
-                                    `
+                                    <div class="driver-action-buttons">
+                                        <button type="button" class="message-passenger-btn" onclick="openPassengerMessage('${d.driver}','${d.date}')">
+                                            Notify Passenger
+                                        </button>
+                                    </div>`
                                     : ""
                             }
-
-                            ${
-                                requestedBy
-                                    ? `
-                                    <div class="info-item">
-                                        <div class="info-label">
-                                            Requested By
-                                        </div>
-                                        <div class="info-value">
-                                            ${requestedBy}
-                                            ${
-                                                !passengerName && contactNumber
-                                                    ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>`
-                                                    : ""
-                                            }
-                                        </div>
-                                    </div>
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                passengerName
-                                    ? `
-                                    <div class="info-item">
-                                        <div class="info-label">
-                                            Passenger
-                                        </div>
-                                        <div class="info-value">
-                                            ${passengerName}
-                                            ${
-                                                contactNumber
-                                                    ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>`
-                                                    : ""
-                                            }
-                                        </div>
-                                    </div>
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                origin
-                                    ? `
-                                    <div class="info-item">
-                                        <div class="info-label">
-                                            Origin
-                                        </div>
-                                        <div class="info-value">
-                                            <a
-                                                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}"
-                                                target="_blank"
-                                                class="phone-link">
-                                                ${origin}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                destination
-                                    ? `
-                                    <div class="info-item">
-                                        <div class="info-label">
-                                            Destination
-                                        </div>
-                                        <div class="info-value">
-                                            <a
-                                                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}"
-                                                target="_blank"
-                                                class="phone-link">
-                                                ${destination}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                remarks
-                                    ? `
-                                    <div class="info-item">
-                                        <div class="info-label">
-                                            Remarks
-                                        </div>
-                                        <div class="info-value">
-                                            ${remarks}
-                                        </div>
-                                    </div>
-                                    `
-                                    : ""
-                            }
-
                         </div>`;
-                }
-            });
-
-            /*
-             * Register passenger information for this
-             * future schedule so Notify Passenger can
-             * find the correct trips.
-             */
-            if (!window.passengerMessageData) {
-                window.passengerMessageData = {};
+                    });
             }
-
-            const messageKey =
-                `${d.driver.trim().toLowerCase()}|${standardizeDateStr(d.date)}`;
-
-            window.passengerMessageData[messageKey] = {
-                driver: d.driver,
-                date: d.date,
-                trips: d.trips
-            };
-
-            pageHTML += `
-                <div class="driver-card ${
-                    role === "driver" &&
-                    status === "approved" &&
-                    !isScheduleAcknowledged(
-                        date,
-                        getLoggedInDriverName()
-                    )
-                        ? "schedule-locked"
-                        : ""
-                }">
-
-                    <div class="driver-header">
-
-                       <h2>${d.driver}</h2>
-
-                        <div class="info-item">
-                            <div class="info-label">
-                                Date
-                            </div>
-                            <div class="info-value">
-                                ${d.date}
-                            </div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">
-                                Time In
-                            </div>
-                            <div class="info-value">
-                                ${d.timeIn}
-                            </div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">
-                                Unit
-                            </div>
-                            <div class="info-value">
-                                ${d.vehicle}
-                            </div>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">
-                                Assignment
-                            </div>
-                            <div class="info-value">
-                                ${d.itinerary}
-                            </div>
-                        </div>
-
-                    </div>
-
-                    ${tripsHTML}
-
-                    ${
-                        role !== "organic"
-                            ?
-                            `
-                            <div class="driver-action-buttons">
-
-                                <button
-                                    type="button"
-                                    class="message-passenger-btn"
-                                    onclick="openPassengerMessage('${d.driver}','${d.date}')">
-                                    Notify Passenger
-                                </button>
-
-                            </div>
-                            `
-                            :
-                            ""
-                    }
-
-                </div>`;
-        });
-}
 
             // PAST UNSUBMITTED ALLOWANCE CARDS
             if (isPast && role !== "organic") {
-               const pendingDrivers = Object.values(grouped).filter(d => {
+                const pendingDrivers = Object.values(grouped).filter(d => {
                     if (d.date !== date) return false;
 
                     const itinerary = (d.itinerary || "").trim();
-                    const noAllowanceItineraries = [
-                        "AM","PM","AM / Banking","Banking / PM",
-                        "Rest Day","Standby","ED",
-                        "AM / ED","ED / PM","ED / Banking","Banking"
-                    ];
-
+                    const noAllowanceItineraries = ["AM", "PM", "AM / Banking", "Banking / PM", "Rest Day", "Standby", "ED", "AM / ED", "ED / PM", "ED / Banking", "Banking"];
                     if (noAllowanceItineraries.includes(itinerary)) return false;
 
                     const cleanDriver = d.driver.trim().replace(/\s+/g, " ").toLowerCase();
@@ -8188,8 +7866,6 @@ if (!isPast && !isToday) {
             }
         });
 
-       
-
         if (container) {
             container.style.visibility = "hidden";
             container.innerHTML = pageHTML;
@@ -8220,40 +7896,34 @@ function showHomePage() {
 }
 
 function backToMainDashboard() {
- 
-const driverDashboard = document.getElementById("driverDashboard");
-const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
-const driverAllowancePage = document.getElementById("driverAllowancePage");
-const scheduleViewerPage = document.getElementById("scheduleViewerPage");
-const driverRequestsPage = document.getElementById("driverRequestsPage");
-    // Show Main Dashboard
+    const driverDashboard = document.getElementById("driverDashboard");
+    const scheduleApprovalPage = document.getElementById("scheduleApprovalPage");
+    const driverAllowancePage = document.getElementById("driverAllowancePage");
+    const scheduleViewerPage = document.getElementById("scheduleViewerPage");
+    const driverRequestsPage = document.getElementById("driverRequestsPage");
+
     if (driverDashboard) {
         driverDashboard.style.display = "block";
     }
 
-    // Hide Admin page
     if (scheduleApprovalPage) {
         scheduleApprovalPage.style.display = "none";
     }
 
-    // Hide Allowance page
     if (driverAllowancePage) {
         driverAllowancePage.style.display = "none";
     }
 
-    // Hide Schedule Viewer
     if (scheduleViewerPage) {
         scheduleViewerPage.style.display = "none";
     }
 
     if (driverRequestsPage) {
-    driverRequestsPage.style.display = "none";
-}
+        driverRequestsPage.style.display = "none";
+    }
 
-    // Restore page scrolling
     document.body.style.overflow = "";
 
-    // Update navigation
     const dashboardBtn = document.getElementById("dashboardBtn");
     const adminBtn = document.getElementById("adminBtn");
     const allowanceBtn = document.getElementById("allowanceBtn");
@@ -8270,16 +7940,11 @@ const driverRequestsPage = document.getElementById("driverRequestsPage");
         allowanceBtn.classList.remove("active");
     }
 
-    // Clear saved view
     sessionStorage.removeItem("view");
-
-    // Go to top
     window.scrollTo(0, 0);
-
- 
 }
-    
-function viewSchedule(date){
+
+function viewSchedule(date) {
     document.querySelector(".approval-container").style.display = "none";
 
     const viewerPage = document.getElementById("scheduleViewerPage");
@@ -8287,7 +7952,7 @@ function viewSchedule(date){
     document.getElementById("viewerTitle").textContent = "Driver Schedule • " + date;
 
     const viewerContent = document.getElementById("scheduleViewerContent");
-  
+
     let viewerHTML = "";
 
     const scheduleDate = new Date(date);
@@ -8297,18 +7962,18 @@ function viewSchedule(date){
     Object.values(summaryDrivers[date] || {}).forEach(driver => {
         let itineraryDisplay = (driver.itinerary || "").trim();
         const isRestDay = itineraryDisplay.toLowerCase() === "rest day";
-        let rowClass = isRestDay ? "rest-day-row" : ""; 
+        let rowClass = isRestDay ? "rest-day-row" : "";
 
         if (/\bam\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bam\b/gi, `<span style="color: #b45309; font-weight: 800;">AM</span>`);
         if (/\bpm\b/i.test(itineraryDisplay)) itineraryDisplay = itineraryDisplay.replace(/\bpm\b/gi, `<span style="color: #1e40af; font-weight: 800;">PM</span>`);
 
         tableRows += `
-          <tr class="${rowClass}">
+        <tr class="${rowClass}">
             <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.driver}</td>
             <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.timeIn}</td>
             <td style="padding:8px;border-bottom:1px solid #ddd;">${driver.vehicle}</td>
             <td style="padding:8px;border-bottom:1px solid #ddd;">${itineraryDisplay}</td>
-          </tr>`;
+        </tr>`;
     });
 
     if (tableRows !== "") {
@@ -8320,27 +7985,16 @@ function viewSchedule(date){
                 <tbody>${tableRows}</tbody>
             </table>
         </div>`;
-  
 
-const scheduleNotes = approvalNotes[date] || "";
+        const scheduleNotes = approvalNotes[date] || "";
 
-
-
-if (scheduleNotes.trim() !== "") {
-
-    viewerHTML += `
-    <div class="schedule-notes-box">
-
-        <div class="schedule-notes-header">
-            Schedule Notes
-        </div>
-
-        <div class="schedule-notes-body">
-            ${scheduleNotes.replace(/\n/g,"<br>")}
-        </div>
-
-    </div>`;
-}
+        if (scheduleNotes.trim() !== "") {
+            viewerHTML += `
+            <div class="schedule-notes-box">
+                <div class="schedule-notes-header">Schedule Notes</div>
+                <div class="schedule-notes-body">${scheduleNotes.replace(/\n/g, "<br>")}</div>
+            </div>`;
+        }
     }
 
     Object.values(grouped)
@@ -8350,30 +8004,33 @@ if (scheduleNotes.trim() !== "") {
 
             let tripsHTML = "";
             d.trips.forEach((trip, index) => {
-                with (trip) {
-                    tripsHTML += `
-                    <div class="trip">
-                       <div class="trip-title">
-    Pick-Up ${index + 1}${
-        String(trip.messageSent || "").trim().toLowerCase() === "sent"
-            ? " ✉️"
-            : ""
-    }
-</div>
-                        ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
-                        ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                        ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
-                        ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
-                        ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
-                        ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
-                    </div>`;
-                }
+                const pickupTime = trip.pickupTime || "";
+                const requestedBy = trip.requestedBy || "";
+                const passengerName = trip.passengerName || "";
+                const contactNumber = trip.contactNumber || "";
+                const origin = trip.origin || "";
+                const destination = trip.destination || "";
+                const remarks = trip.remarks || "";
+                const messageSent = String(trip.messageSent || "").trim().toLowerCase() === "sent";
+
+                tripsHTML += `
+                <div class="trip">
+                    <div class="trip-title">
+                        Pick-Up ${index + 1}${messageSent ? " ✉️" : ""}
+                    </div>
+                    ${pickupTime ? `<div class="info-item"><div class="info-label">Pick Up Time</div><div class="info-value">${pickupTime}</div></div>` : ""}
+                    ${requestedBy ? `<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">${requestedBy} ${!passengerName && contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                    ${passengerName ? `<div class="info-item"><div class="info-label">Passenger</div><div class="info-value">${passengerName} ${contactNumber ? ` | <a href="tel:${contactNumber}" class="phone-link">${contactNumber}</a>` : ""}</div></div>` : ""}
+                    ${origin ? `<div class="info-item"><div class="info-label">Origin</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(origin)}" target="_blank" class="phone-link">${origin}</a></div></div>` : ""}
+                    ${destination ? `<div class="info-item"><div class="info-label">Destination</div><div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}" target="_blank" class="phone-link">${destination}</a></div></div>` : ""}
+                    ${remarks ? `<div class="info-item"><div class="info-label">Remarks</div><div class="info-value">${remarks}</div></div>` : ""}
+                </div>`;
             });
 
             viewerHTML += `
             <div class="driver-card" style="margin-top: 15px;">
                 <div class="driver-header">
-                  <h2>${d.driver}</h2>
+                    <h2>${d.driver}</h2>
                     <div class="info-item"><div class="info-label">Date</div><div class="info-value">${d.date}</div></div>
                     <div class="info-item"><div class="info-label">Time In</div><div class="info-value">${d.timeIn}</div></div>
                     <div class="info-item"><div class="info-label">Unit</div><div class="info-value">${d.vehicle}</div></div>
@@ -8389,10 +8046,10 @@ if (scheduleNotes.trim() !== "") {
 
     viewerContent.innerHTML = viewerHTML;
     document.getElementById("scheduleViewerPage").style.display = "block";
-    document.body.style.overflow = "hidden"; 
+    document.body.style.overflow = "hidden";
 }
 
-    window.onload = async function () {
+window.onload = async function () {
     const role = localStorage.getItem("userRole");
     const driverLoggedIn = localStorage.getItem("driverLoggedIn") === "true";
     const driverExpires = Number(localStorage.getItem("loginExpires") || 0);
@@ -8423,44 +8080,23 @@ if (scheduleNotes.trim() !== "") {
     );
 
     try {
-        // IMPORTANT:
-        // Submitted allowances must finish loading FIRST.
-        // loadMainSchedulesAndApprovals() uses submittedDrivers
-        // to hide allowances that were already submitted.
         await loadSubmittedAllowances();
-
-        // These two can load at the same time because
-        // they do not depend on submittedDrivers.
-        await loadSubmittedAllowances();
-
-await loadMainSchedulesAndApprovals();
-
-await loadDriverRequests();
-
-await fetchLiveAllowancesFromSheet();
+        await loadMainSchedulesAndApprovals();
+        await loadDriverRequests();
+        await fetchLiveAllowancesFromSheet();
 
         updateCutoffDropdownsDynamically();
 
         hideLoginSpinner();
         showHomePage();
-
     } catch (err) {
-        console.error(
-            "Initialization Error:",
-            err
-        );
-
+        console.error("Initialization Error:", err);
         hideLoginSpinner();
-
-        alert(
-            "Failed to load dashboard data. Please refresh."
-        );
-
+        alert("Failed to load dashboard data. Please refresh.");
     } finally {
         document.getElementById("pageLoadingOverlay").style.display = "none";
     }
 };
-
     
 function openManualConfirmModal() {
     const modal = document.getElementById("manualConfirmModal");
